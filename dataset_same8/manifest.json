@@ -1,0 +1,30 @@
+{
+  "version": "same8.20261020",
+  "rows": 2048,
+  "columns": 23,
+  "training_weeks": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "evaluation_weeks": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "separate_validation": false,
+  "metric": "mean of eight weekly sum(abs(diff(district_net)))",
+  "reset_between_weeks": true,
+  "controller": "2026.10.15.bounded_single_accounting_stable_spans.v2",
+  "train_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+}
