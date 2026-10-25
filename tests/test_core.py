@@ -1,11 +1,12 @@
 """Simplex constraint, dataset integrity, registry and config validation."""
 import shutil
+import tomllib
 
 import numpy as np
 import pytest
 
 from sdm import registry
-from sdm.config import load_config
+from sdm.config import dump_config, load_config, write_new_config
 from sdm.data import DataIntegrityError, load_dataset
 from sdm.interfaces import Surrogate
 from sdm.paths import REPO_ROOT
@@ -75,3 +76,28 @@ def test_config_rejects_unknown_sections(tmp_path):
     path.write_text('[model]\nname = "ridge2"\n[modle.params]\nfolds = 3\n', encoding="utf-8")
     with pytest.raises(ValueError, match="unknown section"):
         load_config(path)
+
+
+NEW_CONFIG = {
+    "data": {"dataset": "dataset_same8"},
+    "model": {"name": "ridge2", "params": {"alphas": [10.0, 100.0], "folds": 5, "seed": 2026}},
+    "optimizer": {"name": "pgd", "params": {"tolerance": 1e-07, "starts": 8}},
+    "evaluate": {"folds": 5, "seed": 2026, "top_k": 50},
+}
+
+
+def test_dump_config_round_trips():
+    assert tomllib.loads(dump_config(NEW_CONFIG)) == NEW_CONFIG
+
+
+def test_write_new_config_validates_and_never_overwrites(tmp_path):
+    path = write_new_config("ridge2-small", NEW_CONFIG, tmp_path)
+    assert load_config(path).model.params["alphas"] == [10.0, 100.0]
+    with pytest.raises(ValueError, match="already exists"):
+        write_new_config("ridge2-small", NEW_CONFIG, tmp_path)
+    with pytest.raises(ValueError, match="lowercase"):
+        write_new_config("Bad Name", NEW_CONFIG, tmp_path)
+    broken = {**NEW_CONFIG, "model": {"name": "ridge2", "params": {"alpha": 1.0}}}
+    with pytest.raises(ValueError, match="unknown parameter"):
+        write_new_config("broken", broken, tmp_path)
+    assert not (tmp_path / "broken.toml").exists()
