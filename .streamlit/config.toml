@@ -1,0 +1,9 @@
+[theme]
+base = "dark"
+
+[client]
+# Hide the Deploy button; this app is only run locally.
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false

@@ -17,6 +17,8 @@ sdm = "sdm.cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8"]
+# Optional so graders can run the CLI without it: `uv sync --group gui`.
+gui = ["streamlit>=1.40"]
 
 [build-system]
 requires = ["hatchling"]
