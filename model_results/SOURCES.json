@@ -1,0 +1,8 @@
+{
+  "historical_analysis_id": "20261025-204551-artifact-review-v32",
+  "full_config_analysis_id": "20261025-152147-release-verification",
+  "historical_source": "Saved-model held-out inference, five peer groups and six original finalists",
+  "final_source": "Provider-supplied 30 outer-test prediction sets, membership verified; no retraining",
+  "peer_raw_source": "210 rows of supplied model_index.csv; means over 10 folds for each of 21 groups",
+  "broader_report": "Teammate Word overview of 30 groups; not all raw scores supplied, not independently reproduced"
+}
