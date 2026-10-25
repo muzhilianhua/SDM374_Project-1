@@ -32,6 +32,25 @@ uv run sdm reproduce <run-id>                          # re-execute and compare 
 training rows than typical spacing is an extrapolation: the baseline W* predicts 75.9 while the best
 measured row is 115.8, so treat such predictions with suspicion.
 
+## Workbench (GUI)
+
+A read-only Streamlit view of `runs/` and the plugin registry. Runs are still created with the CLI;
+refresh the page to see new ones.
+
+```bash
+uv sync --group gui
+uv run --group gui streamlit run app/main.py
+```
+
+- **Overview** — best measured and best predicted ramping, model leaderboard (evaluate runs), proposed
+  weights with an extrapolation flag, recent runs.
+- **Models** — every registered model and optimizer with its parameters; overlay out-of-fold
+  predicted-vs-measured scatter plots of evaluate runs.
+- **Experiments & data** — dataset checksum status and distribution; browse runs, their metrics,
+  outputs (3×7 weight tables), config, provenance, and the command that reproduces them.
+
+The sidebar's *Runs directory* switches to another runs folder (for example one a teammate shared).
+
 ## Layout
 
 ```text
@@ -43,10 +62,12 @@ src/sdm/
   data.py           dataset loading with checksum verification
   simplex.py        weight layout, constraint check, projection, sampling
   evaluate.py       shared CV protocol: MAE, RMSE, R², Spearman, top-50 recall
+  catalog.py        read-only tables of runs (leaderboard, proposals) used by the GUI
   config.py         TOML experiment configs
   runs.py           run folders: config copy, provenance (git commit, data sha256, versions), outputs
   cli.py            the `sdm` command
 experiments/        one TOML per experiment
+app/                Streamlit workbench (main.py + views/); depends on src/sdm, never the reverse
 tests/              regression tests pin ridge2 + pgd to baseline.py
 dataset_same8/      official data package (unchanged)
 baseline.py, model.npz, weights.json, requirements.txt   course baseline (unchanged, reference only)
