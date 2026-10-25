@@ -7,10 +7,11 @@ from pathlib import Path
 import sys
 
 import numpy as np
+import pandas as pd
 
 from .config import load_config
 from .data import load_dataset
-from .evaluate import cross_validate, nearest_distances
+from .evaluate import nearest_distances, out_of_fold, score
 from .registry import build_model, build_optimizer, describe, models, optimizers
 from .runs import Run, create_run, list_runs, resolve_run
 from .simplex import N_BUILDINGS, N_METRICS, check_weights
@@ -44,9 +45,11 @@ def execute(kind: str, config_path, *, runs_root=None, name: str | None = None,
         run.write_json("metrics.json", model.metrics)
     elif kind == "evaluate":
         settings = config.evaluate
-        metrics = cross_validate(lambda: build_model(config.model.name, config.model.params), X, y,
-                                 folds=settings.folds, seed=settings.seed, top_k=settings.top_k)
-        run.write_json("metrics.json", metrics)
+        mean, std = out_of_fold(lambda: build_model(config.model.name, config.model.params), X, y,
+                                folds=settings.folds, seed=settings.seed)
+        pd.DataFrame({"candidate_id": dataset.ids, "actual": y, "predicted_mean": mean,
+                      "predicted_std": std}).to_csv(run.path / "predictions.csv", index=False)
+        run.write_json("metrics.json", score(y, mean, std, top_k=settings.top_k))
     elif kind == "optimize":
         if model_run is not None:
             source = resolve_run(model_run, runs_root)

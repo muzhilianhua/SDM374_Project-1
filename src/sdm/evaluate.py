@@ -17,9 +17,20 @@ from .interfaces import Surrogate
 
 def cross_validate(build: Callable[[], Surrogate], X: np.ndarray, y: np.ndarray, *,
                    folds: int = 5, seed: int = 2026, top_k: int = 50) -> dict[str, float]:
+    mean, std = out_of_fold(build, X, y, folds=folds, seed=seed)
+    return score(y, mean, std, top_k=top_k)
+
+
+def out_of_fold(build: Callable[[], Surrogate], X: np.ndarray, y: np.ndarray, *,
+                folds: int = 5, seed: int = 2026) -> tuple[np.ndarray, np.ndarray]:
+    """Predicted (mean, std) for every row from a model that never saw that row."""
     mean, std = np.empty(len(y)), np.empty(len(y))
     for fit_rows, held_out in KFold(n_splits=folds, shuffle=True, random_state=seed).split(X):
         mean[held_out], std[held_out] = build().fit(X[fit_rows], y[fit_rows]).predict(X[held_out])
+    return mean, std
+
+
+def score(y: np.ndarray, mean: np.ndarray, std: np.ndarray, *, top_k: int = 50) -> dict[str, float]:
     # Optimization only needs the low-ramping end ranked correctly, hence the rank metrics.
     true_top = set(np.argsort(y, kind="stable")[:top_k])
     predicted_top = set(np.argsort(mean, kind="stable")[:top_k])
