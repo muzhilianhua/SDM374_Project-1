@@ -6,7 +6,8 @@ Reviewed remote state on 2026-10-25:
 | --- | --- |
 | main (`835c50d`) | Course baseline plus the teammate's supplied three-model directory |
 | feat/repo-skeleton (`818b762`) | Proposed shared framework, collaboration rules, CLI/GUI, plugins and coupling study |
-| azq (`2e4aca1` before this handoff) | Existing personal branch; publication destination requires owner confirmation |
+| azq (`2e4aca1` before this handoff) | Existing remote branch; left unchanged |
+| runze-liu | User-confirmed personal branch containing the integrated research handoff |
 
 `feat/repo-skeleton` turns the small baseline repository into a shared project structure. The core
 loads data with checksum validation, checks the 21-weight constraints, discovers model/optimizer

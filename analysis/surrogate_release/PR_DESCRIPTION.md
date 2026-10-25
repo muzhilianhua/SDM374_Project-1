@@ -32,6 +32,7 @@ uncertainty interface. Small differences on reused overlapping folds do not esta
 
 ## Publication
 
-Prepared for review on the task branch. Publishing to GitHub and merging main are separate actions;
-neither is implied by preparing this local handoff. Original teammate Word content is unchanged and
+The user explicitly requested publication on the new personal branch `runze-liu`. Main and
+feat/repo-skeleton are not publication destinations; merging main remains a separate action.
+Original teammate Word content is unchanged and
 retained as an attributed source; only the specified 11-group scope was independently reproduced.

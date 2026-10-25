@@ -1,6 +1,7 @@
 # Frozen data and final surrogate model handoff
 
 Release date: 2026-10-25. Owner: member B, Runze Liu.
+Personal publication branch: `runze-liu`; main and feat/repo-skeleton remain unchanged.
 
 This handoff preserves the immutable data partition, the approved v3.2 scoring definition, the
 11-group selection results, and the three supplied full-data deployment models for minimizing
