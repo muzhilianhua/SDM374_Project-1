@@ -24,7 +24,10 @@ uv run python analysis/coupling/study.py --seeds 5          # ~20 s; results/<st
    Two truths with opposite behaviour outside the data are used: `ridge2` is quadratic and rewards
    simplex corners, while `extratrees` is flat beyond the data.
 
-## Results (5 seeds, 2026-10-25, commit 49aa0ea + uncommitted plugin code; rerun after merging)
+## Results (5 seeds 2026–2030, clean commit 1b91233, `results/20261025-151530`)
+
+Provenance: `{"commit": "1b91233", "dirty": false}`, dataset `same8.20261020` (sha256 `877b5f8e…`).
+A rerun of the same command on that commit reproduces every number below exactly.
 
 | Pair | real data: judged by ridge2 / extratrees | distance ratio | regret, truth = extratrees | regret, truth = ridge2 | optimism (extratrees / ridge2 truth) |
 |---|---|---|---|---|---|
