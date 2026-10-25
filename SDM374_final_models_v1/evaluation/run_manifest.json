@@ -1,0 +1,164 @@
+{
+  "experiment": "final_full_data_v1",
+  "created_utc": "2026-10-25T14:13:38Z",
+  "protocol_id": "sdm374.same8.splits.2x5x3.frozen.v1",
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "target_column": "ramping",
+  "feature_columns": [
+    "b1_cost",
+    "b1_carbon",
+    "b1_peak",
+    "b1_discomfort",
+    "b1_degradation",
+    "b1_ramping",
+    "b1_resilience",
+    "b2_cost",
+    "b2_carbon",
+    "b2_peak",
+    "b2_discomfort",
+    "b2_degradation",
+    "b2_ramping",
+    "b2_resilience",
+    "b3_cost",
+    "b3_carbon",
+    "b3_peak",
+    "b3_discomfort",
+    "b3_degradation",
+    "b3_ramping",
+    "b3_resilience"
+  ],
+  "n_records": 2048,
+  "decision_log": {
+    "data": "100% of the 2048 records; ALL trimming removed",
+    "weighting": "config A keeps w20x3 (user decision); B/C unweighted",
+    "params": "modal choice across the 10 outer folds of the lineage experiment; NO re-tuning (user decision)",
+    "seeds": "seed = 20261024 + 1000*model_index + ordinal; ordinal 0 for final fit"
+  },
+  "segment_boundaries": {
+    "q60": 165.92970771675465,
+    "q80": 172.0934837293462,
+    "q90": 174.38207240393385
+  },
+  "configs": [
+    {
+      "name": "xgb_w20x3_full",
+      "lineage": "nestedcv_low90_w20x3_v1 / xgboost (low90 trimming removed, w20x3 kept)",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.1,
+        "n_estimators": 600,
+        "subsample": 0.9
+      },
+      "seed": 20261024,
+      "weight": "w20x3"
+    },
+    {
+      "name": "histgb_low80_full",
+      "lineage": "nestedcv_xgb_gbdt_histgb_low80_v1 / histgb (low80 trimming removed)",
+      "params": {
+        "max_leaf_nodes": 15,
+        "learning_rate": 0.05,
+        "max_iter": 600,
+        "l2_regularization": 0.0
+      },
+      "seed": 20263024,
+      "weight": null
+    },
+    {
+      "name": "histgb_low60_full",
+      "lineage": "nestedcv_xgb_gbdt_histgb_low60_v1 / histgb (low60 trimming removed)",
+      "params": {
+        "max_leaf_nodes": 15,
+        "learning_rate": 0.1,
+        "max_iter": 600,
+        "l2_regularization": 0.0
+      },
+      "seed": 20263025,
+      "weight": null
+    }
+  ],
+  "final_models": {
+    "xgb_w20x3_full": {
+      "lineage": "nestedcv_low90_w20x3_v1 / xgboost (low90 trimming removed, w20x3 kept)",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.1,
+        "n_estimators": 600,
+        "subsample": 0.9
+      },
+      "seed": 20261024,
+      "sample_weight_rule": "lowest floor(0.2*n) ramping records get 3.0, others 1.0",
+      "n_train": 2048,
+      "n_weighted3x": 409,
+      "fit_seconds": 0.885,
+      "insample_metrics": {
+        "n": 2048,
+        "rmse": 2.2551099580209755,
+        "mae": 1.6801279182299544,
+        "r2": 0.979543992972574
+      },
+      "model_file": "models/xgb_w20x3_full.joblib",
+      "model_sha256": "62a928b19c497123ae40734cbe12b23025d7fa4469dca26319928364ef38583f"
+    },
+    "histgb_low80_full": {
+      "lineage": "nestedcv_xgb_gbdt_histgb_low80_v1 / histgb (low80 trimming removed)",
+      "params": {
+        "max_leaf_nodes": 15,
+        "learning_rate": 0.05,
+        "max_iter": 600,
+        "l2_regularization": 0.0
+      },
+      "seed": 20263024,
+      "sample_weight_rule": "uniform",
+      "n_train": 2048,
+      "n_weighted3x": 0,
+      "fit_seconds": 1.653,
+      "insample_metrics": {
+        "n": 2048,
+        "rmse": 1.6314798057340443,
+        "mae": 1.221142479744155,
+        "r2": 0.9892934678903239
+      },
+      "model_file": "models/histgb_low80_full.joblib",
+      "model_sha256": "4e949fdb501aee3b83115a1a5dfb3f70742d850b49d6ddff29263999bc5c3f49"
+    },
+    "histgb_low60_full": {
+      "lineage": "nestedcv_xgb_gbdt_histgb_low60_v1 / histgb (low60 trimming removed)",
+      "params": {
+        "max_leaf_nodes": 15,
+        "learning_rate": 0.1,
+        "max_iter": 600,
+        "l2_regularization": 0.0
+      },
+      "seed": 20263025,
+      "sample_weight_rule": "uniform",
+      "n_train": 2048,
+      "n_weighted3x": 0,
+      "fit_seconds": 1.631,
+      "insample_metrics": {
+        "n": 2048,
+        "rmse": 0.5968056013092217,
+        "mae": 0.4424449489878846,
+        "r2": 0.998567313396821
+      },
+      "model_file": "models/histgb_low60_full.joblib",
+      "model_sha256": "adcbb4bb2f09f1f7d3da11236a535639b3062303cc41c90031b7b36b82d4f242"
+    }
+  },
+  "evaluation_protocol": "PART A: exact final config refit on each FULL frozen outer_train, scored on the held-out outer_test; unbiased for the delivered configuration up to the 100% refit",
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.1.3",
+    "sklearn": "1.6.1",
+    "xgboost": "3.4.1",
+    "joblib": "1.4.2",
+    "pandas": "2.2.3"
+  },
+  "artifacts": {
+    "eval_folds.csv": "41f77007793c4344e92c8f9be11a3f35fcab190950c5a9212521d1aee25828ff",
+    "eval_segments.csv": "ccc736f0f0845de0d546eb4c8eff820a33f7ddd84fdefa0680265b4880dff959",
+    "eval_predictions.csv": "caf877dd74ebd83dd75178e88c4e34aaa146a93cef623af00cb379769e8ddc46",
+    "final_insample_predictions.csv": "4ba2ae177f32d76acee7ec9346107371a3003371d6fc505a6bca9a49adef990f"
+  },
+  "total_seconds": 76.1
+}
