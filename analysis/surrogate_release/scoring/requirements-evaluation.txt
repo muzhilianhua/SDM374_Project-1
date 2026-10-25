@@ -1,0 +1,2 @@
+# V3.1 scoring only; baseline dependencies remain in requirements.txt.
+numpy==1.26.4

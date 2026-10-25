@@ -50,6 +50,11 @@ uv run sdm reproduce <run-id>                          # re-execute and compare 
 
 ## Where to read next
 
+Member B's frozen-data / v3.2 / final-model handoff is in
+[`analysis/surrogate_release/README.md`](analysis/surrogate_release/README.md).
+It preserves the original release packages, the specified 11-group review, and separate scores for
+the supplied full-data configurations. It does not replace the team's shared `sdm evaluate` protocol.
+
 | Document | For |
 |---|---|
 | [`AGENTS.md`](AGENTS.md) | Project summary, repository map, hard rules, definition of done |

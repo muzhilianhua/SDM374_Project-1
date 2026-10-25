@@ -13,12 +13,19 @@ Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protoco
 
 ## Backlog — offline (until the week 8 lab)
 
+- [x] Frozen v3.2 and final-artifact handoff (2026-10-25): `analysis/surrogate_release/README.md`.
+      Original split/scorer/model ZIPs and teammate Word report preserved; 11-group historical scores
+      separated from full-data configurations. Saved full-config predictions score 72.47 / 72.35 /
+      72.34 under v3.2 (analysis `20261025-152147-release-verification`, dirty source provenance).
+      All three full-data artifacts load and match supplied in-sample predictions; this is a smoke
+      check, not a new generalization test. No training, tuning, plugin integration or W optimization.
 - [x] User-requested local artifact review (2026-10-25): screenshot top-five peer groups plus six earlier
       finalists, 110 frozen outer-fold results, no fitting or retuning. Analysis id
       `20261025-204551-artifact-review-v32`; source `analysis/artifact_review/`. Peer held-out errors
       reproduced from 50 saved artifacts; 60 original prediction sets rescored exactly. This uses the
-      preserved local v3.2 protocol, not the team's `sdm evaluate` leaderboard. Source remains uncommitted
-      because local Git identity is unset; provenance includes source/input hashes and the dirty flag.
+      preserved local v3.2 protocol, not the team's `sdm evaluate` leaderboard. Source was uncommitted
+      at execution because Git identity was unset, and was later committed as `c00e955`; original
+      provenance retains source/input hashes and the dirty flag.
 - [x] Reference tree model `extratrees` (A, 2026-10-25): mae 5.723, top50_recall 0.56, spearman 0.882,
       std_coverage 0.857 (std too wide) — run `20261025-145809-evaluate-extratrees-default`
 - [ ] Model leaderboard via `sdm evaluate`: gradient-boosted trees, random forest, Gaussian process

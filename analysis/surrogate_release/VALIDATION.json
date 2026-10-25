@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "date": "2026-10-25",
+  "pytest": {
+    "passed": 48,
+    "xfailed": 1,
+    "seconds": 44.99,
+    "expected_failure": "Known pgd duplicate proposals"
+  },
+  "frozen_zip_sha256": "91fbd29f05d64ff2470e8b8a15ade78b7f234b234bf32f03a67fb4ca5d15a09d",
+  "scoring_zip_sha256": "c6af9ebe412e4bd0f76feb873558302986a39ffde42e7e673a73e6a34a095b5f",
+  "final_package_checksums_verified": 14,
+  "final_models_loaded": 3,
+  "model_smoke_predictions": 6144,
+  "supplied_outer_predictions_rescored": 12288,
+  "frozen_test_memberships_verified": 30,
+  "training_performed": false,
+  "hyperparameter_search_performed": false,
+  "real_evaluator_used": false,
+  "immutable_course_files_changed": false,
+  "team_evaluation_protocol_changed": false,
+  "historical_evidence": "20261025-204551-artifact-review-v32",
+  "full_config_evidence": "20261025-152147-release-verification",
+  "source_report": "Preserved byte-identical; claims beyond 11 groups are attributed, not independently reproduced"
+}
