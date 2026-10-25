@@ -82,6 +82,39 @@ def cli_command(*args: str) -> str:
     return shlex.join([*prefix, *args])
 
 
+JOB_STATUS = {  # status -> (label, badge color, icon)
+    "running": ("运行中", "blue", ":material/progress_activity:"),
+    "succeeded": ("成功", "green", ":material/check_circle:"),
+    "failed": ("失败", "red", ":material/error:"),
+    "cancelled": ("已取消", "gray", ":material/cancel:"),
+}
+
+
+def experiment_configs() -> list[str]:
+    """Config paths relative to the repo root, as the CLI expects them; `_*.toml` templates are skipped."""
+    return sorted(f"experiments/{path.name}" for path in (REPO_ROOT / "experiments").glob("*.toml")
+                  if not path.name.startswith("_"))
+
+
+def parse_param(text: str, type_name: str):
+    """Turn a form field back into the Params type named by registry.describe (int, float, str, tuple[...])."""
+    text = text.strip()
+    if type_name.startswith("tuple"):
+        item = float if "float" in type_name else int if "int" in type_name else str
+        return [item(part.strip()) for part in text.split(",") if part.strip()]
+    if type_name == "int":
+        return int(text)
+    if type_name == "float":
+        return float(text)
+    return text
+
+
+def format_param(value) -> str:
+    if isinstance(value, (list, tuple)):
+        return ", ".join(repr(item) for item in value)
+    return "" if value is None else repr(value) if isinstance(value, float) else str(value)
+
+
 def metric_columns(table: pd.DataFrame, preferred: list[str]) -> list[str]:
     """Preferred columns that exist, plus any top-k recall column (its name depends on top_k)."""
     recall = [column for column in table.columns if column.startswith("top") and column.endswith("_recall")]

@@ -1,4 +1,6 @@
-"""GUI smoke tests: every page renders without exceptions, with and without recorded runs."""
+"""GUI tests: every page renders with and without runs, and buttons launch the right sdm commands."""
+import sys
+
 import pytest
 
 pytest.importorskip("streamlit", reason="GUI tests need `uv sync --group gui`")
@@ -8,7 +10,21 @@ from sdm.cli import main  # noqa: E402
 from sdm.paths import REPO_ROOT  # noqa: E402
 from tests.conftest import BASELINE_CONFIG  # noqa: E402
 
-PAGES = ("views/overview.py", "views/models.py", "views/experiments.py")
+PAGES = ("views/overview.py", "views/launch.py", "views/models.py", "views/experiments.py")
+
+sys.path.insert(0, str(REPO_ROOT / "app"))
+import jobs  # noqa: E402  (same module object the pages import)
+
+
+class FakeJob:
+    id = "fake-job"
+
+
+@pytest.fixture
+def started(monkeypatch):
+    calls = []
+    monkeypatch.setattr(jobs, "start", lambda args, root, **kwargs: calls.append(list(args)) or FakeJob())
+    return calls
 
 
 @pytest.fixture(scope="module")
@@ -45,3 +61,26 @@ def test_overview_flags_extrapolating_baseline(populated_runs):
     labels = {metric.label: metric.value for metric in app.metric}
     assert labels["实测最低波动量"] == "115.76"
     assert labels["运行次数"] == "3"
+
+
+def test_launch_button_runs_the_shown_command(populated_runs, started):
+    app = render(populated_runs, "views/launch.py")
+    app.button(key="launch_run").click().run()
+    assert started == [["evaluate", "-c", "experiments/baseline.toml"]]
+
+
+def test_reproduce_button_starts_a_reproduce_job(populated_runs, started):
+    app = render(populated_runs, "views/experiments.py")
+    chosen = app.selectbox(key="run_choice").value
+    app.button(key="reproduce_run").click().run()
+    assert started == [["reproduce", chosen]]
+
+
+def test_predict_tab_scores_weights_with_the_saved_model(populated_runs):
+    app = render(populated_runs, "views/experiments.py")
+    train_run = next(run for run in app.selectbox(key="run_choice").options if "-train-" in run)
+    app.selectbox(key="run_choice").set_value(train_run).run()
+    app.button(key="predict_run").click().run()
+    assert not app.exception, [e.value for e in app.exception]
+    labels = {metric.label: metric.value for metric in app.metric}
+    assert float(labels["预测波动量"]) > 0

@@ -1,6 +1,10 @@
 [theme]
 base = "dark"
 
+[server]
+# The workbench starts sdm processes, so it must not be reachable from the LAN.
+address = "localhost"
+
 [client]
 # Hide the Deploy button; this app is only run locally.
 toolbarMode = "minimal"
