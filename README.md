@@ -2,7 +2,12 @@
 
 Find 21 controller weights (3 buildings × 7 objectives) that minimize the district's mean ramping
 over weeks 1–8. Surrogate models and optimizers are plugins behind fixed interfaces; every
-experiment runs from a TOML config and is recorded under `runs/` so it can be reproduced.
+experiment runs from a TOML config through the `sdm` CLI and is recorded under `runs/` so it can be
+reproduced.
+
+**Working with a coding agent?** Point it at [`AGENTS.md`](AGENTS.md) and tell it which member it works
+for; it will find the role brief in [`docs/roles/`](docs/roles/). Claude Code loads `AGENTS.md`
+through `CLAUDE.md` automatically.
 
 ## Setup
 
@@ -10,109 +15,48 @@ Python 3.11 and [uv](https://docs.astral.sh/uv/) are required (numpy 1.24.4 has 
 
 ```bash
 uv sync
-uv run pytest
+uv run pytest -q
 ```
-
-## Commands
-
-```bash
-uv run sdm list                                        # registered models / optimizers and their params
-uv run sdm check-data                                  # verify train.csv against manifest sha256
-uv run sdm train    -c experiments/baseline.toml       # fit on all 2048 rows, save model.pkl
-uv run sdm evaluate -c experiments/baseline.toml       # shared offline protocol: outer 5-fold CV
-uv run sdm optimize -c experiments/baseline.toml       # propose W* (add -n 50 for a batch)
-uv run sdm optimize -c experiments/baseline.toml --model-run <train-run-id>
-uv run sdm predict  --model-run <run-id> --weights weights.json
-uv run sdm runs                                        # list recorded runs
-uv run sdm reproduce <run-id>                          # re-execute and compare outputs
-```
-
-`optimize` writes `weights.json` (a 3×7 matrix, same format as the course baseline) and reports
-`nearest_train_distance` next to `train_median_nn_distance`. A W* much farther from the
-training rows than typical spacing is an extrapolation: the baseline W* predicts 75.9 while the best
-measured row is 115.8, so treat such predictions with suspicion.
 
 ## Workbench (GUI)
-
-A read-only Streamlit view of `runs/` and the plugin registry. Runs are still created with the CLI;
-refresh the page to see new ones.
 
 ```bash
 uv sync --group gui
 uv run --group gui streamlit run app/main.py
 ```
 
-- **Overview** — best measured and best predicted ramping, model leaderboard (evaluate runs), proposed
-  weights with an extrapolation flag, recent runs.
-- **Models** — every registered model and optimizer with its parameters; overlay out-of-fold
-  predicted-vs-measured scatter plots of evaluate runs.
-- **Experiments & data** — dataset checksum status and distribution; browse runs, their metrics,
-  outputs (3×7 weight tables), config, provenance, and the command that reproduces them.
+Every button runs an `sdm` command as a background job (logs in `runs/.jobs/`), so results are identical
+to the terminal and the page can be left or reloaded while a job runs. The server listens on localhost only.
 
-The sidebar's *Runs directory* switches to another runs folder (for example one a teammate shared).
+- **总览** — best measured and predicted ramping, model leaderboard, proposals with an extrapolation flag.
+- **运行实验** — create a config from a form generated from the plugin's parameters; run train /
+  evaluate / optimize; follow, cancel and open background jobs.
+- **模型** — registered plugins and their parameters; overlay out-of-fold scatter plots of evaluate runs.
+- **实验与数据** — dataset checksum, run browser (metrics, 3×7 weights, config, provenance), reproduce a
+  run in the background, and predict R for edited weights with a run's saved model.
 
-## Layout
+## Commands
 
-```text
-src/sdm/
-  interfaces.py     Surrogate (fit / predict -> (mean, std) / optional gradient) and Optimizer (propose)
-  registry.py       @register_model / @register_optimizer, auto-discovery, Params validation
-  models/           surrogate plugins (ridge2 = course baseline)
-  optimizers/       optimizer plugins (pgd = course baseline)
-  data.py           dataset loading with checksum verification
-  simplex.py        weight layout, constraint check, projection, sampling
-  evaluate.py       shared CV protocol: MAE, RMSE, R², Spearman, top-50 recall
-  catalog.py        read-only tables of runs (leaderboard, proposals) used by the GUI
-  config.py         TOML experiment configs
-  runs.py           run folders: config copy, provenance (git commit, data sha256, versions), outputs
-  cli.py            the `sdm` command
-experiments/        one TOML per experiment
-app/                Streamlit workbench (main.py + views/); depends on src/sdm, never the reverse
-tests/              regression tests pin ridge2 + pgd to baseline.py
-dataset_same8/      official data package (unchanged)
-baseline.py, model.npz, weights.json, requirements.txt   course baseline (unchanged, reference only)
+```bash
+uv run sdm list [--json]                               # registered models / optimizers and their params
+uv run sdm check-data [--json]                         # verify train.csv against manifest sha256
+uv run sdm evaluate -c experiments/baseline.toml       # shared offline protocol: outer 5-fold CV
+uv run sdm train    -c experiments/baseline.toml       # fit on all 2048 rows, save model.pkl
+uv run sdm optimize -c experiments/baseline.toml -n 50 [--model-run <train-run-id>]
+uv run sdm predict  --model-run <run-id> --weights weights.json   # '-' reads stdin
+uv run sdm runs [--json]                               # list recorded runs
+uv run sdm reproduce <run-id>                          # re-execute and compare outputs
 ```
 
-## Adding a model or optimizer
+## Where to read next
 
-Create one file in `src/sdm/models/` (or `src/sdm/optimizers/`); nothing else needs editing.
-
-```python
-from dataclasses import dataclass
-import numpy as np
-from ..interfaces import Surrogate
-from ..registry import register_model
-
-
-@register_model("my_model")
-class MyModel(Surrogate):
-    """One-line description shown by `sdm list`."""
-
-    @dataclass(frozen=True)
-    class Params:
-        seed: int = 0
-
-    def fit(self, X, y):
-        ...
-        self.metrics = {"some_diagnostic": 0.0}  # optional, saved to metrics.json
-        return self
-
-    def predict(self, X):
-        return mean, std  # both shape (n,)
-```
-
-Then copy `experiments/baseline.toml`, change `[model] name` and its params, and run
-`sdm evaluate` to compare against the baseline on the shared protocol. Optimizers implement
-`propose(model, X, y, n)` and must return an `(n, 21)` batch on the simplex, best first.
-Gradient-based optimizers additionally need `gradient` and `smoothness` from the model.
-
-## Collaboration
-
-- One feature branch per task; merge into `main` through a reviewed pull request.
-- Commit messages follow Conventional Commits (`feat:`, `fix:`, `test:`, `docs:` ...).
-- `uv run pytest` must pass before merging; never loosen the baseline regression tolerances.
-- Quote numbers in discussions and the report by run id, so they can be reproduced.
-- `runs/` is git-ignored; share a run by its id and config, or attach its folder.
+| Document | For |
+|---|---|
+| [`AGENTS.md`](AGENTS.md) | Project summary, repository map, hard rules, definition of done |
+| [`docs/interfaces.md`](docs/interfaces.md) | Surrogate / Optimizer contracts, config schema, run files, CLI |
+| [`docs/decisions.md`](docs/decisions.md) | Settled decisions, known issues, open questions |
+| [`docs/roles/`](docs/roles/) | Per-member mission, owned files, backlog and acceptance criteria |
+| `src/sdm/models/_template.py`, `src/sdm/optimizers/_template.py`, `experiments/_template.toml` | Starting points for new plugins and experiments |
 
 ## Course baseline (original notes)
 
