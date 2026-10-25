@@ -1,6 +1,8 @@
 # 二次岭回归 baseline
 
-使用第1–8周同环境版的2048条训练数据。只有baseline.py、model.npz、requirements.txt、README.md四个文件。
+使用第1–8周同环境版的2048条训练数据。
+
+统一比较模型时，请使用 [冻结数据与分组](frozen_data/README.md) 和 [v3.2 评分标准](evaluation_v3_2/README.md)。两个发布包独立保存，原始数据、冻结分组和评分规则保持不变。
 
 ## 运行
 
