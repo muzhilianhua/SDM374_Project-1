@@ -12,7 +12,7 @@ import pandas as pd
 from . import catalog
 from .config import load_config
 from .data import load_dataset
-from .evaluate import nearest_distances, out_of_fold, score
+from .evaluate import median_spacing, nearest_distances, out_of_fold, score
 from .registry import build_model, build_optimizer, describe, models, optimizers
 from .runs import Run, create_run, list_runs, resolve_run
 from .simplex import N_BUILDINGS, N_METRICS, check_weights
@@ -72,7 +72,7 @@ def execute(kind: str, config_path, *, runs_root=None, name: str | None = None,
             "predicted_mean": float(mean[0]), "predicted_std": float(std[0]),
             "nearest_train_distance": float(distance[0]),
             # Typical spacing inside the table, so the distance above has a scale to compare against.
-            "train_median_nn_distance": float(np.median(_leave_one_out_nn(X))),
+            "train_median_nn_distance": median_spacing(X),
             "best_observed": float(y.min()),
             **{f"optimizer_{key}": value for key, value in optimizer.diagnostics.items()},
             **{f"model_{key}": value for key, value in model.metrics.items()},
@@ -84,13 +84,6 @@ def execute(kind: str, config_path, *, runs_root=None, name: str | None = None,
 
 def _as_matrices(weights: np.ndarray) -> list:
     return weights.reshape(-1, N_BUILDINGS, N_METRICS).tolist()
-
-
-def _leave_one_out_nn(X: np.ndarray) -> np.ndarray:
-    squared = (X ** 2).sum(1)
-    distances = squared[:, None] + squared[None, :] - 2 * X @ X.T
-    np.fill_diagonal(distances, np.inf)
-    return np.sqrt(np.maximum(distances, 0).min(axis=1))
 
 
 def _compare(old, new, path: str = "") -> list[str]:

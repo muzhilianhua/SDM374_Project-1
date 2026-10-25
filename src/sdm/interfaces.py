@@ -58,7 +58,8 @@ class Optimizer(ABC):
 
     @abstractmethod
     def propose(self, model: Surrogate, X: np.ndarray, y: np.ndarray, n: int = 1) -> np.ndarray:
-        """Return an (n, 21) batch, best first; each building's 7 weights non-negative and summing to 1.
+        """Return an (n, 21) batch, best first by the optimizer's own objective (e.g. mean or
+        mean + k * std); each building's 7 weights non-negative and summing to 1.
 
         X, y hold every observation so far: the offline table plus any online evaluations.
         """

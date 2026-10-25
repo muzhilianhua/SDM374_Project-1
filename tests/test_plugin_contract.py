@@ -33,6 +33,8 @@ def test_optimizer_contract(name, dataset, ridge2):
     batch = optimizer.propose(ridge2, dataset.X, dataset.y, n=5)
     assert np.shape(batch) == (5, 21)
     check_weights(batch)
+    # Optimizers order by their own objective (possibly mean + k * std); ridge2's std is constant,
+    # so with this fixture every sensible objective orders like the mean.
     mean, _ = ridge2.predict(batch)
     assert np.all(np.diff(mean) >= -1e-9), "proposals must be ordered best (lowest mean) first"
     json.dumps(optimizer.diagnostics)

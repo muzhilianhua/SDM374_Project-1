@@ -46,6 +46,14 @@ def score(y: np.ndarray, mean: np.ndarray, std: np.ndarray, *, top_k: int = 50) 
     }
 
 
+def median_spacing(X: np.ndarray) -> float:
+    """Median distance from each row of X to its nearest other row: the table's typical spacing."""
+    squared = (X ** 2).sum(1)
+    distances = squared[:, None] + squared[None, :] - 2 * X @ X.T
+    np.fill_diagonal(distances, np.inf)
+    return float(np.median(np.sqrt(np.maximum(distances, 0).min(axis=1))))
+
+
 def nearest_distances(points: np.ndarray, X: np.ndarray) -> np.ndarray:
     """Euclidean distance from each point to its nearest row of X; large values flag extrapolation."""
     squared = (points ** 2).sum(1)[:, None] + (X ** 2).sum(1)[None, :] - 2 * points @ X.T
