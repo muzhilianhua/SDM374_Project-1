@@ -13,6 +13,8 @@ Anything that changes how runs are recorded or how `X, y` are assembled.
 ## Backlog — offline (until the week 8 lab)
 - [ ] Mechanism notes (`analysis/mechanism/README.md`): ratio effects within a building, additivity
       across buildings, low sensitivity of building 2; translate each into a modelling prior for B
+- [ ] Extend `analysis/coupling/study.py` (semi-synthetic truths, exact regret) into the online replayer;
+      the truth × surrogate interaction there is the main open question for the evaluator probes
 - [ ] Offline replayer `src/sdm/replay.py`: hold out a pool from the 2048 rows; each round a strategy
       (any registered model + optimizer) picks 50 rows from the pool, "measures" them from the table,
       retrains; report best-so-far per round. Use `sdm.registry.build_model` / `build_optimizer`

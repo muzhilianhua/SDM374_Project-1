@@ -12,8 +12,11 @@ tests for your models under `tests/`.
 Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protocol.
 
 ## Backlog — offline (until the week 8 lab)
-- [ ] Model leaderboard via `sdm evaluate`: gradient-boosted trees, ExtraTrees / random forest,
-      Gaussian process, MLP ensemble (earlier exploration suggested tree ensembles beat ridge2; confirm here)
+- [x] Reference tree model `extratrees` (A, 2026-10-25): mae 5.723, top50_recall 0.56, spearman 0.882,
+      std_coverage 0.857 (std too wide) — run `20261025-145809-evaluate-extratrees-default`
+- [ ] Model leaderboard via `sdm evaluate`: gradient-boosted trees, random forest, Gaussian process
+      (a read-only probe gave GP-ARD mae 5.02 / top50_recall 0.60 but ~4 min per evaluate), MLP ensemble
+- [ ] Smooth or extrapolation-aware models matter for optimization: see `analysis/coupling/README.md`
 - [ ] Feature engineering inside `fit` / `predict`: within-building ratios (e.g. ramping vs.
       cost / carbon / degradation), per-building additive structure
 - [ ] Per-point `std` for every model (ensemble spread, GP posterior, quantile models). Calibration

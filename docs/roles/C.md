@@ -12,8 +12,9 @@ changing it), `experiments/<optimizer>-*.toml`, tests for your optimizers.
 Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 
 ## Backlog — offline (until the week 8 lab)
-- [ ] Fix the duplicate-batch problem: a proposer that returns `n` distinct rows (e.g. multi-start +
-      deduplication, minimum pairwise distance, k-means over a candidate pool)
+- [x] Reference optimizer `trust-dirichlet` (A, 2026-10-25): gradient-free, distinct batches, trust region,
+      pessimistic objective. Improve on it (CMA-ES, better batch diversity) rather than on frozen `pgd`
+- [ ] Read `analysis/coupling/README.md` first: on ridge2 the optimizer choice barely changes the result
 - [ ] Optimizers on the 3 × 7 simplex: CMA-ES with softmax parametrisation, Dirichlet local perturbation
       around the best observed rows
 - [ ] Trust region: only search near the best measured rows; avoid simplex corners (see the extrapolation

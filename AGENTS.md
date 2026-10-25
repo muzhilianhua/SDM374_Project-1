@@ -48,6 +48,7 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 | `src/sdm/models/` | Surrogate plugins, one file per model | B |
 | `src/sdm/optimizers/` | Optimizer plugins, one file per algorithm | C |
 | `src/sdm/replay.py`, `analysis/mechanism/` | Offline replay of the online loop; mechanism studies | D |
+| `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | A, D |
 | `analysis/ablation/`, `report/` | Ablation tables and figures; IEEE report | E |
 | `experiments/*.toml` | One config per experiment (`_template.toml` is a template) | author of the experiment |
 | `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py` | Core framework | A (others: propose changes in an issue/PR) |
@@ -67,6 +68,9 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
 - MUST NOT import `streamlit` (or anything in `app/`) from `src/sdm`. Dependencies point from `app/` to `src/sdm` only.
 - MUST NOT change the `[evaluate]` protocol (5 folds, seed 2026, top_k 50) used to compare models.
 - MUST NOT add a second way to execute experiments: the GUI and scripts go through the `sdm` CLI so every result has a run folder.
+  Exception: studies under `analysis/` may build plugins through the registry directly when they write a
+  `provenance.json` (git state, dataset sha256, packages, seeds) next to their results, as
+  `analysis/coupling/study.py` does. Leaderboard evidence still comes from `sdm evaluate` / `sdm optimize`.
 - Model inputs stay the raw 21 weights in `FEATURES` order (`sdm.simplex.FEATURES`). Feature engineering happens inside a plugin's `fit` / `predict`.
 - Every proposed `W` must pass `sdm.simplex.check_weights`.
 - New dependencies: `uv add <package>` (updates `pyproject.toml` and `uv.lock`; commit both). Keep versions compatible with the pinned numpy 1.24.4 / scikit-learn 1.2.2.

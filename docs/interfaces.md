@@ -48,13 +48,22 @@ class MyOptimizer(Optimizer):
     class Params:
         seed: int = 0
 
-    def propose(self, model, X, y, n=1):   # -> (n, 21), best first, every row passes check_weights
+    def propose(self, model, X, y, n=1):   # -> (n, 21), best first by its own objective; rows pass check_weights
         ...                                # optional: self.diagnostics = {str: float | int | bool}
 ```
 
 - `X, y` are all observations so far: the 2048 training rows offline, plus evaluated points online.
 - `model` is a fitted `Surrogate`; use only its public methods.
 - Online rounds ask for `n = 50`; the rows must be distinct.
+
+## Registered plugins
+
+| Name | Kind | Notes |
+|---|---|---|
+| `ridge2` | model | course baseline (frozen); has `gradient` / `smoothness`; constant std |
+| `extratrees` | model | extra-trees, std = spread across trees; no gradient (piecewise constant) |
+| `pgd` | optimizer | course baseline (frozen); needs `gradient` + `smoothness`; returns duplicates for n > 1 |
+| `trust-dirichlet` | optimizer | gradient-free Dirichlet local search from the best rows, inside `max_distance_ratio · median_spacing` of the data, ranks by mean + risk · std, distinct batches |
 
 ## Registry (`sdm.registry`)
 
@@ -99,6 +108,8 @@ path)`. It verifies the manifest sha256 and sorts by `candidate_id` (the CV fold
   top50_recall, mean_predicted_std, std_coverage` (share of rows with |error| ≤ std; ≈ 0.68 if calibrated). `build` is a zero-argument factory returning an unfitted model.
 - `out_of_fold(...)` → `(mean, std)` per row; `score(y, mean, std)` → the metrics above.
 - `nearest_distances(points, X)` → distance from each point to its nearest training row.
+- `median_spacing(X)` → median nearest-neighbour distance inside `X` (0.377 for the training table); the
+  unit for trust regions and the `distance_ratio` extrapolation flag.
 - Baseline (ridge2) on this protocol: MAE 6.828, R² 0.646, Spearman 0.838, top-50 recall 0.46,
   std_coverage 0.76 (constant std = out-of-fold RMSE).
 
