@@ -1,4 +1,5 @@
 """End-to-end CLI: runs are recorded, reproducible, and reusable across commands."""
+import io
 import json
 
 from sdm.cli import main
@@ -50,7 +51,7 @@ def test_reproduce_detects_changed_outputs(tmp_path, capsys):
 def test_evaluate_reports_shared_protocol_metrics(tmp_path):
     assert run_cli(tmp_path, "evaluate", "-c", str(BASELINE_CONFIG)) == 0
     metrics = list_runs(tmp_path)[0].read_json("metrics.json")
-    assert {"mae", "rmse", "r2", "spearman", "top50_recall"} <= set(metrics)
+    assert {"mae", "rmse", "r2", "spearman", "top50_recall", "std_coverage"} <= set(metrics)
 
 
 def test_config_errors_exit_cleanly_without_creating_runs(tmp_path, capsys):
@@ -59,3 +60,25 @@ def test_config_errors_exit_cleanly_without_creating_runs(tmp_path, capsys):
     assert run_cli(tmp_path / "runs", "train", "-c", str(bad)) == 2
     assert "unknown parameter" in capsys.readouterr().err
     assert not (tmp_path / "runs").exists()
+
+
+def test_json_outputs_parse(tmp_path, capsys):
+    assert run_cli(tmp_path, "train", "-c", str(BASELINE_CONFIG)) == 0
+    capsys.readouterr()
+    assert run_cli(tmp_path, "list", "--json") == 0
+    plugins = json.loads(capsys.readouterr().out)
+    assert "ridge2" in plugins["models"] and "pgd" in plugins["optimizers"]
+    assert run_cli(tmp_path, "runs", "--json") == 0
+    (record,) = json.loads(capsys.readouterr().out)
+    assert record["kind"] == "train" and record["metrics"]["alpha"] == 100.0
+    assert run_cli(tmp_path, "check-data", "--json") == 0
+    assert json.loads(capsys.readouterr().out)["ok"] is True
+
+
+def test_predict_reads_weights_from_stdin(tmp_path, capsys, monkeypatch):
+    assert run_cli(tmp_path, "train", "-c", str(BASELINE_CONFIG)) == 0
+    (train_run,) = list_runs(tmp_path)
+    capsys.readouterr()
+    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps([[1 / 7] * 7] * 3)))
+    assert run_cli(tmp_path, "predict", "--model-run", train_run.id, "--weights", "-") == 0
+    assert len(json.loads(capsys.readouterr().out)["predicted_mean"]) == 1

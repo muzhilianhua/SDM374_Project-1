@@ -41,6 +41,8 @@ def score(y: np.ndarray, mean: np.ndarray, std: np.ndarray, *, top_k: int = 50) 
         "spearman": float(spearmanr(y, mean).correlation),
         f"top{top_k}_recall": len(true_top & predicted_top) / top_k,
         "mean_predicted_std": float(std.mean()),
+        # Share of rows whose error lies within one predicted std; about 0.68 if std is calibrated.
+        "std_coverage": float(np.mean(np.abs(mean - y) <= std)),
     }
 
 

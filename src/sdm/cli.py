@@ -9,6 +9,7 @@ import sys
 import numpy as np
 import pandas as pd
 
+from . import catalog
 from .config import load_config
 from .data import load_dataset
 from .evaluate import nearest_distances, out_of_fold, score
@@ -109,6 +110,12 @@ def _print_json(data) -> None:
 
 
 def _cmd_list(args) -> int:
+    if args.json:
+        _print_json({title: {name: {"class": f"{cls.__module__}.{cls.__qualname__}",
+                                    "doc": (cls.__doc__ or "").strip(), "params": describe(cls)}
+                             for name, cls in sorted(table.items())}
+                     for title, table in (("models", models()), ("optimizers", optimizers()))})
+        return 0
     for title, table in (("models", models()), ("optimizers", optimizers())):
         print(f"{title}:")
         for name, cls in sorted(table.items()):
@@ -122,10 +129,14 @@ def _cmd_list(args) -> int:
 def _cmd_check_data(args) -> int:
     dataset = load_dataset(args.dataset or load_config(args.config).dataset)
     best = int(np.argmin(dataset.y))
-    _print_json({"path": str(dataset.path), "version": dataset.version, "sha256": dataset.sha256,
-                 "rows": len(dataset.y), "ramping_min": float(dataset.y.min()),
-                 "ramping_median": float(np.median(dataset.y)), "ramping_max": float(dataset.y.max()),
-                 "best_candidate": dataset.ids[best]})
+    summary = {"path": str(dataset.path), "version": dataset.version, "sha256": dataset.sha256,
+               "rows": len(dataset.y), "ramping_min": float(dataset.y.min()),
+               "ramping_median": float(np.median(dataset.y)), "ramping_max": float(dataset.y.max()),
+               "best_candidate": dataset.ids[best]}
+    if args.json:
+        _print_json({**summary, "ok": True})
+        return 0
+    _print_json(summary)
     print("ok: checksum and weight constraints verified")
     return 0
 
@@ -161,6 +172,13 @@ def _cmd_reproduce(args) -> int:
 
 
 def _cmd_runs(args) -> int:
+    if args.json:
+        records = catalog.run_records(args.runs_dir)
+        records["created"] = records["created"].astype(str)
+        # NaN is not valid JSON; missing values become null.
+        records = records.astype(object).where(records.notna(), None)
+        _print_json(records.to_dict(orient="records"))
+        return 0
     for run in list_runs(args.runs_dir):
         meta = run.read_json("meta.json")
         if not run.has("metrics.json"):
@@ -177,7 +195,8 @@ def _cmd_runs(args) -> int:
 
 def _cmd_predict(args) -> int:
     model = resolve_run(args.model_run, args.runs_dir).load_model()
-    weights = check_weights(json.loads(Path(args.weights).read_text(encoding="utf-8-sig")))
+    text = sys.stdin.read() if args.weights == "-" else Path(args.weights).read_text(encoding="utf-8-sig")
+    weights = check_weights(json.loads(text))
     mean, std = model.predict(weights)
     _print_json({"predicted_mean": mean.tolist(), "predicted_std": std.tolist()})
     return 0
@@ -188,13 +207,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--runs-dir", type=Path, help="where run folders go (default: <repo>/runs)")
     commands = parser.add_subparsers(dest="command", required=True)
 
-    commands.add_parser("list", help="show registered models and optimizers with their parameters"
-                        ).set_defaults(handler=_cmd_list)
+    listing = commands.add_parser("list", help="show registered models and optimizers with their parameters")
+    listing.add_argument("--json", action="store_true", help="print one JSON document")
+    listing.set_defaults(handler=_cmd_list)
 
     check = commands.add_parser("check-data", help="verify the dataset checksum and constraints")
     source = check.add_mutually_exclusive_group()
     source.add_argument("--dataset", type=Path)
     source.add_argument("-c", "--config", type=Path, default=Path("experiments/baseline.toml"))
+    check.add_argument("--json", action="store_true", help="print one JSON document")
     check.set_defaults(handler=_cmd_check_data)
 
     helps = {"train": "fit the model on the full table and save it",
@@ -213,11 +234,14 @@ def build_parser() -> argparse.ArgumentParser:
     again.add_argument("run", help="run directory or run id")
     again.set_defaults(handler=_cmd_reproduce)
 
-    commands.add_parser("runs", help="list recorded runs").set_defaults(handler=_cmd_runs)
+    listing = commands.add_parser("runs", help="list recorded runs")
+    listing.add_argument("--json", action="store_true", help="print run records as a JSON array")
+    listing.set_defaults(handler=_cmd_runs)
 
     predict = commands.add_parser("predict", help="predict ramping for weights with a trained model")
     predict.add_argument("--model-run", required=True)
-    predict.add_argument("--weights", type=Path, required=True, help="JSON: one 3x7 matrix or a list of them")
+    predict.add_argument("--weights", required=True,
+                         help="JSON file with one 3x7 matrix or a list of them; '-' reads stdin")
     predict.set_defaults(handler=_cmd_predict)
     return parser
 
