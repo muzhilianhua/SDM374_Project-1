@@ -12,6 +12,13 @@ tests for your models under `tests/`.
 Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protocol.
 
 ## Backlog — offline (until the week 8 lab)
+
+- [x] User-requested local artifact review (2026-10-25): screenshot top-five peer groups plus six earlier
+      finalists, 110 frozen outer-fold results, no fitting or retuning. Analysis id
+      `20261025-204551-artifact-review-v32`; source `analysis/artifact_review/`. Peer held-out errors
+      reproduced from 50 saved artifacts; 60 original prediction sets rescored exactly. This uses the
+      preserved local v3.2 protocol, not the team's `sdm evaluate` leaderboard. Source remains uncommitted
+      because local Git identity is unset; provenance includes source/input hashes and the dirty flag.
 - [x] Reference tree model `extratrees` (A, 2026-10-25): mae 5.723, top50_recall 0.56, spearman 0.882,
       std_coverage 0.857 (std too wide) — run `20261025-145809-evaluate-extratrees-default`
 - [ ] Model leaderboard via `sdm evaluate`: gradient-boosted trees, random forest, Gaussian process
