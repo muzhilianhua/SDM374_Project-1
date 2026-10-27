@@ -59,6 +59,8 @@ st.altair_chart(points + diagonal, width="stretch", alt="交叉验证预测值�
 st.caption("落在虚线上的点预测完全准确。对寻优最重要的是左下角：实测波动量低的点，预测值也应该低。")
 
 selected = board[board.run.isin(chosen)]
-table = selected[["model", "name"] + common.metric_columns(selected, ["mae", "rmse", "r2", "spearman", "mean_predicted_std"])
+table = selected[["model", "name", "protocol"]
+                 + common.metric_columns(selected, ["v32_score", "v32_local_mae", "v32_top1_regret", "mae", "rmse",
+                                                    "r2", "spearman", "mean_predicted_std"])
                  + ["run"]]
 st.dataframe(table, hide_index=True, column_config=common.column_config(table), alt="所选运行的评估指标")

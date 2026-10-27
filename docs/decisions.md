@@ -12,13 +12,15 @@ and record the new decision here with a date.
 | 3 | `Surrogate.predict` returns `(mean, std)`; `std` is mandatory | Pessimistic offline selection and online exploration both need uncertainty |
 | 4 | `Optimizer.propose(model, X, y, n)` takes NumPy arrays, not a DataFrame | Simpler, and online data is appended as rows of `X, y` |
 | 5 | Experiments are TOML files in `experiments/`; every result comes from an `sdm` command and lives in a run folder | Reproducible numbers with provenance (`sdm reproduce`) |
-| 6 | Models are compared only with `sdm evaluate` (outer 5-fold CV, seed 2026, top-50 recall) | Internal CV used for hyper-parameter choice is optimistic |
+| 6 | Models are compared only with `sdm evaluate`. Primary protocol (2026-10-27): `frozen-v32` — the frozen 2×5 outer splits in `frozen_data/`, ranked by the mean v3.2 score from `evaluation_v3_2/`. The original `kfold` protocol (5 folds, seed 2026, top-50 recall) stays available, and its metrics are also reported under `frozen-v32` | Internal CV used for hyper-parameter choice is optimistic; v3.2 rewards what optimization needs (low-region order, first-choice regret), and member B's earlier results use the same splits |
 | 7 | `runs/` is not in git; results are shared by run id or by copying the folder | Run folders hold pickles and are large |
 | 8 | The GUI only launches `sdm` CLI commands (background jobs in `runs/.jobs/`) and never computes results in-process | One execution path for humans, agents and graders |
 | 9 | Core code and docs in English; GUI text in Chinese | Team convention |
 | 10 | `ridge2` + `pgd` must stay equivalent to `baseline.py` (regression tests) | It is the reference every improvement is measured against |
 | 11 | `Optimizer.propose` orders rows by the optimizer's own objective (e.g. mean + risk · std), not necessarily by mean | Risk-aware optimizers rank by a pessimistic score (2026-10-25) |
 | 12 | Analysis scripts under `analysis/` may call plugins directly if they write `provenance.json` | Factorial studies need many fits that are not individual experiments (2026-10-25) |
+| 13 | `frozen_data/` and `evaluation_v3_2/` are read-only releases; `sdm.frozen_v32` reads them in place and refuses to run if their sha256 changes. The v3.2 scale `s` is the population SD of each split's outer-train labels | One copy of the splits and scorer for everyone; reproduces member B's published scores exactly (2026-10-27) |
+| 14 | `kfold` and `frozen-v32` results are never ranked against each other; the leaderboard lists `frozen-v32` runs first (by `v32_score`, higher is better), then `kfold` runs (by MAE) | The two protocols use different splits (2026-10-27) |
 
 ## Findings
 
