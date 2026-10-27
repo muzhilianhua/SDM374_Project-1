@@ -51,6 +51,9 @@ uv run sdm reproduce <run-id>                          # re-execute and compare 
 
 ## Where to read next
 
+The frozen data splits ([`frozen_data/`](frozen_data/README.md)) and the v3.2 scoring standard
+([`evaluation_v3_2/`](evaluation_v3_2/README.md)) are read-only releases shared by the whole team.
+
 | Document | For |
 |---|---|
 | [`AGENTS.md`](AGENTS.md) | Project summary, repository map, hard rules, definition of done |
