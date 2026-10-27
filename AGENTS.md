@@ -91,7 +91,7 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
    (shapes, finiteness, `std >= 0`, determinism, simplex constraint, ordering, distinct batches). Add
    plugin-specific tests in `tests/test_<plugin>.py` for behaviour the contract cannot know about.
 5. `runs/` is git-ignored and starts empty on every machine, so create your own reference first:
-   `uv run sdm evaluate -c experiments/baseline.toml`.
+   `uv run sdm evaluate -c experiments/baseline-v32.toml` (and `baseline.toml` for the k-fold protocol).
 6. Produce evidence with the CLI, not ad-hoc scripts: `uv run sdm evaluate -c experiments/<name>.toml`
    (models) or `uv run sdm optimize ...` (optimizers). Keep one `evaluate` under about two minutes on a
    laptop (it fits the model five times).

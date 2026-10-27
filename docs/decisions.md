@@ -31,6 +31,11 @@ and record the new decision here with a date.
   the data, which only the evaluator can tell. Recommended offline submissions: one conservative pair
   (extratrees + trust-dirichlet, near the data) and one aggressive pair (ridge2, outside the data).
 - Gradient optimizers are incompatible with piecewise-constant surrogates (pgd × extratrees).
+- **First `frozen-v32` results** (commit `28cab43`): ridge2 66.45 (`20261027-174545-evaluate-baseline-v32`),
+  extratrees 68.00 (`20261027-174547-evaluate-extratrees-v32`). Extratrees wins on ordering and global MAE
+  but loses on first-choice regret (5.85 vs 4.51); the 1.55-point gap is well inside the fold SD (≈ 8–9).
+  For reference, member B's tree models score 72.3–74.7 on the same splits (`analysis/surrogate_release` on
+  branch `runze-liu`), so gradient-boosted plugins are the obvious next step.
 
 ## Known issues
 

@@ -130,6 +130,8 @@ path)`. It verifies the manifest sha256 and sorts by `candidate_id` (the CV fold
   repeat's out-of-fold predictions and averaged over the two repeats.
 - The scale `s` of each split is the population SD of that split's outer-train labels. The inner 3-fold
   lists in the release are not used by `sdm evaluate`; a plugin that tunes on v3.2 may read them.
+- Baseline (ridge2) on this protocol: v32_score 66.45 (SD 9.19), top-1 regret 4.51, low-region MAE 11.97,
+  MAE 6.915 — run `20261027-174545-evaluate-baseline-v32`.
 
 ## Runs (`runs/<run-id>/`, `sdm.runs`, `sdm.catalog`)
 

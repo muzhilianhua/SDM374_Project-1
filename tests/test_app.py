@@ -32,6 +32,8 @@ def populated_runs(tmp_path_factory):
     root = tmp_path_factory.mktemp("runs")
     for command in (["evaluate"], ["train"], ["optimize", "-n", "3"]):
         assert main(["--runs-dir", str(root), command[0], "-c", str(BASELINE_CONFIG), *command[1:]]) == 0
+    v32_config = REPO_ROOT / "experiments" / "baseline-v32.toml"
+    assert main(["--runs-dir", str(root), "evaluate", "-c", str(v32_config)]) == 0
     return root
 
 
@@ -55,12 +57,17 @@ def test_pages_render_without_runs(tmp_path, page):
     render(tmp_path / "empty", page)
 
 
+def test_overview_leads_with_v32_score(populated_runs):
+    app = render(populated_runs, PAGES[0])
+    assert any(metric.label == "最佳 v3.2 总分" for metric in app.metric)
+
+
 def test_overview_flags_extrapolating_baseline(populated_runs):
     app = render(populated_runs, PAGES[0])
     assert any("外推" in warning.value for warning in app.warning)
     labels = {metric.label: metric.value for metric in app.metric}
     assert labels["实测最低波动量"] == "115.76"
-    assert labels["运行次数"] == "3"
+    assert labels["运行次数"] == "4"
 
 
 def test_launch_button_runs_the_shown_command(populated_runs, started):
