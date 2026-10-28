@@ -40,7 +40,8 @@ to the terminal and the page can be left or reloaded while a job runs. The serve
 ```bash
 uv run sdm list [--json]                               # registered models / optimizers and their params
 uv run sdm check-data [--json]                         # verify train.csv against manifest sha256
-uv run sdm evaluate -c experiments/baseline.toml       # shared offline protocol: outer 5-fold CV
+uv run sdm evaluate -c experiments/baseline-v32.toml   # primary protocol: frozen 2x5 splits, v3.2 score
+uv run sdm evaluate -c experiments/baseline.toml       # original protocol: outer 5-fold CV
 uv run sdm train    -c experiments/baseline.toml       # fit on all 2048 rows, save model.pkl
 uv run sdm optimize -c experiments/baseline.toml -n 50 [--model-run <train-run-id>]
 uv run sdm predict  --model-run <run-id> --weights weights.json   # '-' reads stdin

@@ -9,7 +9,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from . import catalog
+from . import catalog, frozen_v32
 from .config import load_config
 from .data import load_dataset
 from .evaluate import median_spacing, nearest_distances, out_of_fold, score
@@ -44,6 +44,14 @@ def execute(kind: str, config_path, *, runs_root=None, name: str | None = None,
         model.fit(X, y)
         run.save_model(model)
         run.write_json("metrics.json", model.metrics)
+    elif kind == "evaluate" and config.evaluate.protocol == frozen_v32.PROTOCOL:
+        splits = frozen_v32.load_outer_splits(dataset)
+        predictions = frozen_v32.out_of_fold(lambda: build_model(config.model.name, config.model.params),
+                                             dataset, splits)
+        metrics, folds = frozen_v32.score_predictions(predictions, dataset, splits, top_k=config.evaluate.top_k)
+        predictions.to_csv(run.path / "predictions.csv", index=False)
+        folds.to_csv(run.path / "fold_scores.csv", index=False)
+        run.write_json("metrics.json", metrics)
     elif kind == "evaluate":
         settings = config.evaluate
         mean, std = out_of_fold(lambda: build_model(config.model.name, config.model.params), X, y,
@@ -178,7 +186,7 @@ def _cmd_runs(args) -> int:
             summary = "incomplete"
         else:
             metrics = run.read_json("metrics.json")
-            keys = [k for k in ("cv_mae", "cv_r2", "mae", "r2", "spearman", "predicted_mean",
+            keys = [k for k in ("v32_score", "cv_mae", "cv_r2", "mae", "r2", "spearman", "predicted_mean",
                                 "nearest_train_distance") if k in metrics]
             summary = "  ".join(f"{k}={metrics[k]:.4g}" for k in keys)
         dirty = "*" if meta["git"].get("dirty") else ""
@@ -212,7 +220,7 @@ def build_parser() -> argparse.ArgumentParser:
     check.set_defaults(handler=_cmd_check_data)
 
     helps = {"train": "fit the model on the full table and save it",
-             "evaluate": "outer K-fold CV of the model (the shared offline protocol)",
+             "evaluate": "score the model with the config's [evaluate] protocol (kfold or frozen-v32)",
              "optimize": "propose weights by optimizing over a model"}
     for kind in KINDS:
         sub = commands.add_parser(kind, help=helps[kind])

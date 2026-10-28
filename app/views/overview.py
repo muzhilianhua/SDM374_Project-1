@@ -26,6 +26,9 @@ else:
                     help=f"{top.model} + {top.optimizer} · {top.run}。这是模型预测值，不是实测成绩。")
 if board.empty:
     tiles[2].metric("最佳交叉验证 MAE", "—", border=True)
+elif board.iloc[0].protocol == "frozen-v32":
+    tiles[2].metric("最佳 v3.2 总分", f"{board.iloc[0].v32_score:.2f}", border=True,
+                    help=f"{board.iloc[0].model} · {board.iloc[0].run}。冻结分组上的 v3.2 综合评分，满分 100。")
 else:
     tiles[2].metric("最佳交叉验证 MAE", f"{board.iloc[0].mae:.3f}", border=True,
                     help=f"{board.iloc[0].model} · {board.iloc[0].run}")
@@ -41,11 +44,13 @@ if records.empty:
     st.stop()
 
 st.subheader("模型排行榜")
-st.caption("来自 evaluate 运行：在训练表上做外层 K 折交叉验证，按交叉验证 MAE 从低到高排序。")
+st.caption("来自 evaluate 运行。冻结分组（frozen-v32）的运行按 v3.2 总分从高到低排在前面；"
+           "K 折（kfold）的运行按交叉验证 MAE 从低到高排在后面。两种协议的分组不同，不互相比较。")
 if board.empty:
-    st.info(f"还没有 evaluate 运行：`{common.cli_command('evaluate', '-c', 'experiments/baseline.toml')}`")
+    st.info(f"还没有 evaluate 运行：`{common.cli_command('evaluate', '-c', 'experiments/baseline-v32.toml')}`")
 else:
-    table = board[["model", "name"] + common.metric_columns(board, ["mae", "rmse", "r2", "spearman"])
+    table = board[["model", "name", "protocol"]
+                  + common.metric_columns(board, ["v32_score", "v32_top1_regret", "mae", "rmse", "r2", "spearman"])
                   + ["run", "commit", "dirty"]]
     st.dataframe(table, hide_index=True, column_config=common.column_config(table), alt="模型排行榜")
 
