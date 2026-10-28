@@ -12,6 +12,11 @@ tests for your models under `tests/`.
 Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protocol.
 
 ## Backlog — offline (until the week 8 lab)
+- [x] Prepared saved-prediction release evidence on `feat/surrogate-release` (2026-10-28):
+      11 historical groups plus 3 full-data configurations, without fitting. Both score-lock tests
+      pass against PR #3 head `52fa976` in a dependency preview. Submit after #3 is corrected and merged.
+- [ ] PR #3 review follow-up: validate exact frozen test IDs, repeats and labels in `score_predictions`;
+      review `5684157684` requests changes. The existing suite passes (55 passed, 1 known xfail).
 - [x] Reference tree model `extratrees` (A, 2026-10-25): mae 5.723, top50_recall 0.56, spearman 0.882,
       std_coverage 0.857 (std too wide) — run `20261025-145809-evaluate-extratrees-default`
 - [ ] Model leaderboard via `sdm evaluate`: gradient-boosted trees, random forest, Gaussian process
