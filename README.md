@@ -12,6 +12,7 @@ through `CLAUDE.md` automatically.
 ## Setup
 
 Python 3.11 and [uv](https://docs.astral.sh/uv/) are required (numpy 1.24.4 has no 3.12+ wheels).
+On macOS, the `xgboost` surrogate also needs the OpenMP runtime once: `brew install libomp`.
 
 ```bash
 uv sync

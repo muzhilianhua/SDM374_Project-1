@@ -21,6 +21,8 @@ and record the new decision here with a date.
 | 12 | Analysis scripts under `analysis/` may call plugins directly if they write `provenance.json` | Factorial studies need many fits that are not individual experiments (2026-10-25) |
 | 13 | `frozen_data/` and `evaluation_v3_2/` are read-only releases; `sdm.frozen_v32` reads them in place and refuses to run if their sha256 changes. The v3.2 scale `s` is the population SD of each split's outer-train labels | One copy of the splits and scorer for everyone; reproduces member B's published scores exactly (2026-10-27) |
 | 14 | `kfold` and `frozen-v32` results are never ranked against each other; the leaderboard lists `frozen-v32` runs first (by `v32_score`, higher is better), then `kfold` runs (by MAE) | The two protocols use different splits (2026-10-27) |
+| 15 | `xgboost==3.2.0` is a dependency (works with numpy 1.24.4); macOS needs `brew install libomp` once | B's best artifacts are XGBoost; macOS wheels link the system OpenMP runtime (2026-10-29) |
+| 16 | Boosted-tree plugins share `models/_gbdt.py`: std is the 0.68 quantile of \|out-of-fold residual\| in bins of distance to the nearest training row, non-decreasing with distance | Boosted trees have no native uncertainty; distance bins widen std where the optimizer extrapolates (2026-10-29) |
 
 ## Findings
 
@@ -31,6 +33,13 @@ and record the new decision here with a date.
   the data, which only the evaluator can tell. Recommended offline submissions: one conservative pair
   (extratrees + trust-dirichlet, near the data) and one aggressive pair (ridge2, outside the data).
 - Gradient optimizers are incompatible with piecewise-constant surrogates (pgd × extratrees).
+- **Boosted trees in the framework** (commit `d1504d6`): histgb 72.35 (`20261029-073439-evaluate-histgb-v32`,
+  identical to B's saved `histgb_low80_full` predictions to 1e-14), xgboost 73.47
+  (`20261029-073455-evaluate-xgboost-v32`, top-1 regret 1.07). Conformal std is calibrated: std_coverage
+  0.696 / 0.687. With trust-dirichlet, both give 50 distinct proposals inside the trust region (distance
+  ratio ≈ 0.7), but their best predictions (106.9 / 99.4, runs `…-073519-optimize-histgb-v32`,
+  `…-073522-optimize-xgboost-v32`) sit 9–16 below the best measured row, which is likely optimism from
+  searching on model error. Treat them as candidates, not expected scores.
 - **First `frozen-v32` results** (commit `28cab43`): ridge2 66.45 (`20261027-174545-evaluate-baseline-v32`),
   extratrees 68.00 (`20261027-174547-evaluate-extratrees-v32`). Extratrees wins on ordering and global MAE
   but loses on first-choice regret (5.85 vs 4.51); the 1.55-point gap is well inside the fold SD (≈ 8–9).
