@@ -1,0 +1,464 @@
+{
+  "status": "passed",
+  "versions": {
+    "python": "3.13.5",
+    "numpy": "2.1.3",
+    "sklearn": "1.6.1",
+    "xgboost": "3.4.1",
+    "joblib": "1.4.2"
+  },
+  "records": [
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r01_f01",
+      "mae": 5.121376562770059,
+      "rmse": 7.823493276285954,
+      "source_sha256": "9738d94df154b84be89d480c7a54b93097cc088050985b1f42bbc68003912745",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r01_f01.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r01_f02",
+      "mae": 5.627276090648067,
+      "rmse": 9.602794362732384,
+      "source_sha256": "8a43dc95c0a49ee402a1ee78a70d2a100452aa4f56fb03b3c14b2326d7b91eaf",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r01_f02.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r01_f03",
+      "mae": 5.1766271943138324,
+      "rmse": 8.07224858984199,
+      "source_sha256": "5d6f71951af5bfea27dbca03292c59f9a16c24cdf5bd80b67d9425618688295f",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r01_f03.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r01_f04",
+      "mae": 4.760472719123688,
+      "rmse": 8.253801968441277,
+      "source_sha256": "719945494f2da029c404ecd9c91a684e48cd3cd441a3a3831dff4a88fb9352d0",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r01_f04.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r01_f05",
+      "mae": 5.293289427946476,
+      "rmse": 8.414317898426,
+      "source_sha256": "f6d355e68325c18eb3c87fb39e8da09104ab660ca471590825d7cde02701586f",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r01_f05.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r02_f01",
+      "mae": 5.363510546825114,
+      "rmse": 9.039813457858953,
+      "source_sha256": "f821f6112ef51d012701ae95dad7226b9c3059f501339be79fe5db1a248f3339",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r02_f01.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r02_f02",
+      "mae": 5.168645526102194,
+      "rmse": 8.364291696280446,
+      "source_sha256": "81a1d1c7ba3d97f08f1e3333890e4fb524bf5443b066590d0bd1a00d8713cf57",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r02_f02.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r02_f03",
+      "mae": 5.222196027915663,
+      "rmse": 8.089833584630616,
+      "source_sha256": "850a02f93817b43c1fc4595bf1a5003629efd6f9f4ecfd236efb2a299512c39a",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r02_f03.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r02_f04",
+      "mae": 4.967593759450015,
+      "rmse": 7.80952469723538,
+      "source_sha256": "59c95bff5785270158a83b8cefb79801074a796916b451f865dbf60c674af394",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r02_f04.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low90_xgb",
+      "split_id": "r02_f05",
+      "mae": 5.448734043876824,
+      "rmse": 9.14491716584619,
+      "source_sha256": "a31e38484fee2f578824f115bb5f06b9a5b5b38beb8375030b13720b9ae979b0",
+      "prediction_file": "peer_predictions\\peer_low90_xgb_r02_f05.npz",
+      "model_class": "XGBRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r01_f01",
+      "mae": 5.311870201292898,
+      "rmse": 8.110984796896405,
+      "source_sha256": "bc7df75286530275e504e4ced9d857a9a6d993763634921d4cb086c89d5a4119",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r01_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r01_f02",
+      "mae": 6.171298772738837,
+      "rmse": 10.73724631261218,
+      "source_sha256": "e26e635b5b3c91699d7a896c8cb078260ffa0088f8814061912c8b0c556e3b60",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r01_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r01_f03",
+      "mae": 5.3434249559896845,
+      "rmse": 8.432528595893402,
+      "source_sha256": "5360ad7a9deb32d9200914f71c82b4db337162803f74672b166823455dbd729d",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r01_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r01_f04",
+      "mae": 4.951751590868444,
+      "rmse": 8.676566001980358,
+      "source_sha256": "989f080598d886151becba119444cb66256b735878e5d38774d850640b5af63e",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r01_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r01_f05",
+      "mae": 5.527657165598224,
+      "rmse": 8.98437699886496,
+      "source_sha256": "b9d2e75e857f85ecc8e53a84c61d666e447d1bfd4b7f379def51990ab9f1c41a",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r01_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r02_f01",
+      "mae": 5.710707707770503,
+      "rmse": 9.657922889293022,
+      "source_sha256": "cd3be92aa8b044e98fb0568a2b7efbb5e97abef3051ca18b052d6f93a1ad37fb",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r02_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r02_f02",
+      "mae": 5.404241851009212,
+      "rmse": 8.906235995778015,
+      "source_sha256": "bdf7b6a8d3751931acfb0e6567efca4251a4f6ea691cacb45b77d7c9e493a12c",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r02_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r02_f03",
+      "mae": 5.624351591874591,
+      "rmse": 9.123690789617356,
+      "source_sha256": "b752a02b2ecf69c5207920a4de36666b32f4188817db68f9c5cb0ad98f556fe3",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r02_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r02_f04",
+      "mae": 4.952043701228782,
+      "rmse": 7.9279206376306925,
+      "source_sha256": "2fb86d28f131e3ac001a7289b00fc223ff66cd1f682442a9c4233a867a1b5735",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r02_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low80_histgb",
+      "split_id": "r02_f05",
+      "mae": 5.830037281717041,
+      "rmse": 9.61058395743577,
+      "source_sha256": "823cd22da01c21695ab8d153ab04b816c9d179159d71c7c375328babd65a5386",
+      "prediction_file": "peer_predictions\\peer_low80_histgb_r02_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r01_f01",
+      "mae": 7.291544328962763,
+      "rmse": 10.38444766641477,
+      "source_sha256": "380ad58bd145c3a59e696af671fb299672bbfd641359bd0d02d23c946bd74b90",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r01_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r01_f02",
+      "mae": 8.068651019922797,
+      "rmse": 12.807344179491093,
+      "source_sha256": "af34d0a0fda211d460a9455970a25a2e92fa4c6de35e439b41bea777adb70443",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r01_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r01_f03",
+      "mae": 7.293408324802309,
+      "rmse": 10.678469920558838,
+      "source_sha256": "f60e719afb7fcacc94422a04892ee9bbcc47d652a5f42e2d7b9b0d7e5dfaafc7",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r01_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r01_f04",
+      "mae": 6.847583483781707,
+      "rmse": 11.01366439676095,
+      "source_sha256": "1ad16c6743a672c4212c29907df1e42db2d7e2f79d13b18627d618a648c878ae",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r01_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r01_f05",
+      "mae": 7.386291848679845,
+      "rmse": 11.104698476829054,
+      "source_sha256": "c4a9fa54f7ca9301a080dfccae9f965fc744ef505f9fa73178646ed1dfa60d0f",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r01_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r02_f01",
+      "mae": 7.6906333104121805,
+      "rmse": 11.928402212779316,
+      "source_sha256": "359c1f012a2ea943c552df51f6e7cfa117cbd5c59daf3b13ac58365a09a02e8a",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r02_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r02_f02",
+      "mae": 7.513883173638054,
+      "rmse": 11.231837249996142,
+      "source_sha256": "6c2d9dd20ea891fedb636fae3449a69c96cfc713a56ad6336092eaac4459a99f",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r02_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r02_f03",
+      "mae": 7.7361677047933695,
+      "rmse": 11.710329678244609,
+      "source_sha256": "5d5d169f2ebdb717ff21e1b9eb09ada1e0b75e4af87db188c528e1db61d706b2",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r02_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r02_f04",
+      "mae": 6.348857751377646,
+      "rmse": 9.566640230212,
+      "source_sha256": "09cf815f96de221bdd19551367035bbb1625d9aded5316d68c7ee1471e2bdc34",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r02_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low60_histgb",
+      "split_id": "r02_f05",
+      "mae": 7.3188593505443995,
+      "rmse": 11.470349152473464,
+      "source_sha256": "6d40f4f144eb19bdce58c224d8f9edf9a4063416f34d8aad0f75015cab8a86b4",
+      "prediction_file": "peer_predictions\\peer_low60_histgb_r02_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r01_f01",
+      "mae": 4.836389265354702,
+      "rmse": 7.671033024216623,
+      "source_sha256": "2d1403a03aa035641d2a56371e94dd10bba39a7faa14ff95414b366749295070",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r01_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r01_f02",
+      "mae": 5.6738831259302245,
+      "rmse": 9.990598972722141,
+      "source_sha256": "9df3fa63cfccbd22af481be3cf2dad65e17be25b4d989200eb2cbd4aba221007",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r01_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r01_f03",
+      "mae": 4.971114851528057,
+      "rmse": 8.123092816422599,
+      "source_sha256": "c5c7ebfe789fe0d6190836b32ee7e6010e0384e2e6fc84a52406f6ff2f72bc39",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r01_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r01_f04",
+      "mae": 4.899963002233993,
+      "rmse": 8.39398478779052,
+      "source_sha256": "a048e04ac7371e3f967a27cb7b58dcf0b21e45fa54c137d3d262ad3a05bd219b",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r01_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r01_f05",
+      "mae": 5.168709556217584,
+      "rmse": 8.539177344879038,
+      "source_sha256": "adf0d8941047e3ff10dd56def62cd8db6b889eb48ebe8d919c3a8fe44d0a3317",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r01_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r02_f01",
+      "mae": 5.185658354070156,
+      "rmse": 8.980157752752882,
+      "source_sha256": "533d67576b9dbc9b11c1f4e54ad7a6ada95593eeb2fa73dd01ed63772fff6712",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r02_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r02_f02",
+      "mae": 4.9632888545530465,
+      "rmse": 8.224466101946101,
+      "source_sha256": "e6d2f2ffa905b61ad72484733dd9dc73d32ea5ceaed1f532a7fcc8ad47d8a46f",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r02_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r02_f03",
+      "mae": 5.125993075681575,
+      "rmse": 8.553301496416061,
+      "source_sha256": "212ce9e40e26a60e2a2a177f9b72bcf5fc73ef8865daa5ead08cfc8b43a0d1f0",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r02_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r02_f04",
+      "mae": 4.667754916331832,
+      "rmse": 7.408808467948006,
+      "source_sha256": "6aedb27b98432a76aee86c15e47e3a6f795a17ceb747ef07da3477e3e6fe0228",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r02_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_low90_histgb",
+      "split_id": "r02_f05",
+      "mae": 5.402260476427392,
+      "rmse": 9.08476903096983,
+      "source_sha256": "da6c6fcd888c52e082466e30c476a3c94a03bb02170b61e7321b41eaf78e54da",
+      "prediction_file": "peer_predictions\\peer_low90_histgb_r02_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r01_f01",
+      "mae": 4.573236097433991,
+      "rmse": 6.674238383273379,
+      "source_sha256": "4d791283d5a58da895f8b50b8316a871b1420503e05cac57007ad98b4c957c29",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r01_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r01_f02",
+      "mae": 5.460179801519222,
+      "rmse": 8.42799600246997,
+      "source_sha256": "d316a0cc4a3c927d6a6e414b06999cdf6d2b6b75a17004e14b0c516e82ed3382",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r01_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r01_f03",
+      "mae": 5.140919587579593,
+      "rmse": 7.58394494970412,
+      "source_sha256": "857a251b19f2a0c4cd83cb8267c256597635c8302d041d20ecc555e5af0a44ba",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r01_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r01_f04",
+      "mae": 4.427826417899135,
+      "rmse": 7.069472127949451,
+      "source_sha256": "2d46986f17e4a8a43b0ef8260ac7fbc2ac3ee386437f4c52ac91ceb9503b9c28",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r01_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r01_f05",
+      "mae": 4.834062743434295,
+      "rmse": 7.079732177135366,
+      "source_sha256": "99fd82353041192bd6dec243efbde9f65d36e7e3cd983192b61621e645ec9285",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r01_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r02_f01",
+      "mae": 4.901198222737551,
+      "rmse": 7.77529876995248,
+      "source_sha256": "0a1038153206cd00389f641f6eb01e4d53b43547cdb229c6e369f7b371ea89f8",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r02_f01.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r02_f02",
+      "mae": 4.928373005018038,
+      "rmse": 7.205480041619124,
+      "source_sha256": "1e133e4b4b0c41022e8dc5aabaf41b4bea68ca6d2485186e9d8aecca5260f9f1",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r02_f02.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r02_f03",
+      "mae": 4.697772804373965,
+      "rmse": 6.663036211578344,
+      "source_sha256": "2875f456aea31674f0ad3e9e6fe70bcdede456c2a921b5e1d5b8f2417eee9315",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r02_f03.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r02_f04",
+      "mae": 5.09598543585223,
+      "rmse": 7.61230534461667,
+      "source_sha256": "0945bd1707f2dff827161d3d71557256552cc29db87ddeea90b8143d1aaa11eb",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r02_f04.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    },
+    {
+      "group": "peer_tiered_histgb",
+      "split_id": "r02_f05",
+      "mae": 4.987129733984921,
+      "rmse": 7.443311967205675,
+      "source_sha256": "4cf0b211ceeef766411f3f1be5d2127395804174dfaeefc6dea90f952eef34ec",
+      "prediction_file": "peer_predictions\\peer_tiered_histgb_r02_f05.npz",
+      "model_class": "HistGradientBoostingRegressor"
+    }
+  ],
+  "model_fit_calls": 0,
+  "recorded_metric_tolerance": 1e-06
+}
