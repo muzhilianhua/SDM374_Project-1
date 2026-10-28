@@ -1,0 +1,18 @@
+{
+  "analysis_id": "20261025-152147-release-verification",
+  "created_utc": "2026-10-25T15:21:47.733172+00:00",
+  "commit": "12d4e18aa71318c7d405a4a7b7cfcfebbb1b4410",
+  "branch": "feat/v32-artifact-review",
+  "git_dirty": true,
+  "python": "3.12.10",
+  "numpy": "1.26.4",
+  "source_sha256": "2ddbc57ed74a7da03e03f753ea4a4933c7262dd5f944f52e10a9f3a1adeaf07e",
+  "packages": {
+    "SDM374_data_splits_frozen_v1.zip": "91fbd29f05d64ff2470e8b8a15ade78b7f234b234bf32f03a67fb4ca5d15a09d",
+    "SDM374_final_models_v1.zip": "1bec59173d36a484b3af074da4e5de27201cbdcfd0210d4c83fe27423f1af1b0",
+    "SDM374_scoring_v3_2.zip": "c6af9ebe412e4bd0f76feb873558302986a39ffde42e7e673a73e6a34a095b5f"
+  },
+  "fitting_performed": false,
+  "retuning_performed": false,
+  "evidence_origin": "Provider's saved outer-test predictions; training membership declared by provider, not independently proven"
+}
