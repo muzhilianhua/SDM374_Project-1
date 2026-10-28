@@ -122,7 +122,9 @@ path)`. It verifies the manifest sha256 and sorts by `candidate_id` (the CV fold
   `evaluation_v3_2/README.md`.
 - `load_outer_splits(dataset)` → 10 `OuterSplit(split_id, repeat, train, test)` with row positions.
 - `out_of_fold(build, dataset, splits)` → DataFrame with one prediction per (split, test row).
-- `score_predictions(predictions, dataset, splits, top_k=50)` → `(metrics, fold_scores)`. Metrics:
+- `score_predictions(predictions, dataset, splits, top_k=50)` → `(metrics, fold_scores)`. It raises
+  `ValueError` unless the rows are exactly the 10 frozen splits, one row per test id of each split, with the
+  split's `repeat` and the dataset's `ramping` as `actual` (saved prediction files are checked, not trusted). Metrics:
   `v32_score` (mean over the 10 splits, 0–100, higher is better), `v32_score_std` (population SD across
   splits; descriptive only, the splits reuse rows), `v32_points_<component>` for `local_order`, `local_mae`,
   `global_order`, `global_mae`, `top1_regret`, the raw `v32_local_pair_accuracy`, `v32_global_pair_accuracy`,

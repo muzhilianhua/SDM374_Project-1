@@ -98,14 +98,45 @@ def out_of_fold(build: Callable[[], Surrogate], dataset: Dataset,
     return pd.concat(frames, ignore_index=True)
 
 
+def _aligned(part: pd.DataFrame, split: OuterSplit, dataset: Dataset) -> pd.DataFrame:
+    """This split's predictions in frozen test order, after checking they are exactly its test rows.
+
+    Predictions may come from saved files, so a wrong join or label must fail here instead of scoring.
+    """
+    expected = np.asarray(dataset.ids)[split.test]
+    ids = part.candidate_id.astype(str)
+    if ids.duplicated().any():
+        raise ValueError(f"{split.split_id}: duplicate candidate_id rows, e.g. {ids[ids.duplicated()].iloc[0]}")
+    missing, extra = set(expected) - set(ids), set(ids) - set(expected)
+    if missing or extra:
+        raise ValueError(f"{split.split_id}: predictions must cover exactly its {len(expected)} test rows; "
+                         f"{len(missing)} missing, {len(extra)} not in this test fold")
+    if not (part["repeat"] == split.repeat).all():
+        raise ValueError(f"{split.split_id}: repeat must be {split.repeat} on every row")
+    part = part.set_index(ids).loc[expected].reset_index(drop=True)
+    if not np.allclose(part.actual.to_numpy(dtype=float), dataset.y[split.test], rtol=0, atol=1e-9):
+        raise ValueError(f"{split.split_id}: actual values differ from the dataset's ramping for the same ids")
+    return part
+
+
 def score_predictions(predictions: pd.DataFrame, dataset: Dataset, splits: list[OuterSplit], *,
                       top_k: int = 50) -> tuple[dict[str, float], pd.DataFrame]:
-    """(metrics, per-split scores): v3.2 averaged over the outer splits, plus the k-fold metrics per repeat."""
+    """(metrics, per-split scores): v3.2 averaged over the outer splits, plus the k-fold metrics per repeat.
+
+    `predictions` needs one row per (split, test row): split_id, repeat, candidate_id, actual,
+    predicted_mean, predicted_std. Missing, extra or mislabelled rows raise ValueError.
+    """
     scorer, policy = load_scorer()
+    expected_splits = {split.split_id for split in splits}
+    found = set(predictions.split_id)
+    if found != expected_splits:
+        raise ValueError(f"predictions must cover exactly the frozen splits; missing {sorted(expected_splits - found)}, "
+                         f"unknown {sorted(found - expected_splits)}")
     by_split = dict(tuple(predictions.groupby("split_id", sort=False)))
-    rows = []
+    aligned, rows = [], []
     for split in splits:
-        part = by_split[split.split_id]
+        part = _aligned(by_split[split.split_id], split, dataset)
+        aligned.append(part)
         # The scale s comes from the labels the model was allowed to train on: this split's outer train.
         context = scorer.make_context(dataset.y[split.train], policy)
         result = scorer.evaluate(part.actual.to_numpy(), part.predicted_mean.to_numpy(), context, policy,
@@ -123,6 +154,6 @@ def score_predictions(predictions: pd.DataFrame, dataset: Dataset, splits: list[
                **{f"v32_{key}": float(folds[key].mean()) for key in DIAGNOSTICS}}
     # Each repeat predicts every row once, so the k-fold metrics are computed per repeat and averaged.
     legacy = [score(part.actual.to_numpy(), part.predicted_mean.to_numpy(), part.predicted_std.to_numpy(),
-                    top_k=top_k) for _, part in predictions.groupby("repeat")]
+                    top_k=top_k) for _, part in pd.concat(aligned).groupby("repeat")]
     metrics.update({key: float(np.mean([entry[key] for entry in legacy])) for key in legacy[0]})
     return metrics, folds

@@ -46,14 +46,77 @@ def test_edited_release_files_are_rejected(dataset, tmp_path, monkeypatch):
         frozen_v32.load_scorer()
 
 
-def test_perfect_predictions_score_full_marks(dataset, splits):
+def perfect_predictions(dataset, splits):
     frames = [pd.DataFrame({"split_id": split.split_id, "repeat": split.repeat,
                             "candidate_id": np.asarray(dataset.ids)[split.test], "actual": dataset.y[split.test],
                             "predicted_mean": dataset.y[split.test], "predicted_std": 1.0}) for split in splits]
-    metrics, folds = frozen_v32.score_predictions(pd.concat(frames, ignore_index=True), dataset, splits)
+    return pd.concat(frames, ignore_index=True)
+
+
+def test_perfect_predictions_score_full_marks(dataset, splits):
+    metrics, folds = frozen_v32.score_predictions(perfect_predictions(dataset, splits), dataset, splits)
     assert metrics["v32_score"] == pytest.approx(100.0)
     assert metrics["v32_top1_regret"] == 0.0 and metrics["mae"] == 0.0
     assert len(folds) == 10
+
+
+def test_row_order_does_not_matter(dataset, splits):
+    predictions = perfect_predictions(dataset, splits)
+    predictions["predicted_mean"] += np.random.default_rng(0).normal(0, 5, len(predictions))
+    shuffled = predictions.sample(frac=1, random_state=0)
+    assert (frozen_v32.score_predictions(shuffled, dataset, splits)[0]
+            == frozen_v32.score_predictions(predictions, dataset, splits)[0])
+
+
+def _training_id(p, dataset, splits):
+    p.loc[0, "candidate_id"] = dataset.ids[splits[0].train[0]]
+    return p
+
+
+def _relabel(p, dataset, splits):
+    p.loc[0, ["actual", "predicted_mean"]] = 300.0
+    return p
+
+
+def _wrong_repeat(p, dataset, splits):
+    p.loc[p.split_id == "r01_f01", "repeat"] = 1
+    return p
+
+
+def _missing_row(p, dataset, splits):
+    return p.drop(index=0)
+
+
+def _duplicate_row(p, dataset, splits):
+    return pd.concat([p, p.iloc[[0]]], ignore_index=True)
+
+
+def _missing_split(p, dataset, splits):
+    return p[p.split_id != "r02_f05"]
+
+
+def _unknown_split(p, dataset, splits):
+    return pd.concat([p, p.iloc[[0]].assign(split_id="r09_f01")], ignore_index=True)
+
+
+# Saved-prediction files that are wrongly joined or labelled must be rejected, not scored.
+MALFORMED = {
+    "test id replaced by a training id": (_training_id, "not in this test fold"),
+    "label changed together with prediction": (_relabel, "actual values differ"),
+    "wrong repeat": (_wrong_repeat, "repeat must be 0"),
+    "missing test row": (_missing_row, "1 missing"),
+    "duplicate test row": (_duplicate_row, "duplicate candidate_id"),
+    "missing split": (_missing_split, r"missing \['r02_f05'\]"),
+    "unknown split": (_unknown_split, r"unknown \['r09_f01'\]"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(MALFORMED))
+def test_malformed_predictions_are_rejected(dataset, splits, case):
+    corrupt, message = MALFORMED[case]
+    predictions = corrupt(perfect_predictions(dataset, splits), dataset, splits)
+    with pytest.raises(ValueError, match=message):
+        frozen_v32.score_predictions(predictions, dataset, splits)
 
 
 def test_config_rejects_unknown_protocol_and_kfold_settings(tmp_path):
