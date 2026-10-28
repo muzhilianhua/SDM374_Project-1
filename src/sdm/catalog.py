@@ -11,7 +11,7 @@ from .runs import list_runs
 # W* farther than this multiple of the table's typical nearest-neighbour spacing is an extrapolation.
 EXTRAPOLATION_RATIO = 1.5
 
-RUN_COLUMNS = ["run", "kind", "name", "created", "model", "optimizer", "model_run",
+RUN_COLUMNS = ["run", "kind", "name", "created", "model", "optimizer", "protocol", "model_run",
                "commit", "dirty", "complete", "metrics", "path"]
 
 
@@ -29,6 +29,7 @@ def run_records(root: Path | None = None) -> pd.DataFrame:
             "created": pd.Timestamp(meta["created"]),
             "model": config.get("model", {}).get("name"),
             "optimizer": config.get("optimizer", {}).get("name") if is_optimize else None,
+            "protocol": config.get("evaluate", {}).get("protocol", "kfold") if meta["kind"] == "evaluate" else None,
             "model_run": meta["options"].get("model_run"),
             "commit": (meta["git"].get("commit") or "")[:7],
             "dirty": meta["git"].get("dirty"),
@@ -46,11 +47,18 @@ def _with_metrics(records: pd.DataFrame, kind: str) -> pd.DataFrame:
 
 
 def leaderboard(records: pd.DataFrame) -> pd.DataFrame:
-    """Completed evaluate runs ranked by out-of-fold MAE (lower is better)."""
+    """Completed evaluate runs: frozen-v32 runs by v3.2 score (higher is better), then k-fold runs by MAE.
+
+    The two protocols use different splits, so their rows are ranked separately, never against each other.
+    """
     table = _with_metrics(records, "evaluate")
     if table.empty:
         return table
-    return table.sort_values("mae", kind="stable").reset_index(drop=True)
+    v32 = table[table.protocol == "frozen-v32"]
+    if not v32.empty:
+        v32 = v32.sort_values("v32_score", ascending=False, kind="stable")
+    kfold = table[table.protocol != "frozen-v32"].sort_values("mae", kind="stable")
+    return pd.concat([v32, kfold]).reset_index(drop=True)
 
 
 def candidates(records: pd.DataFrame) -> pd.DataFrame:

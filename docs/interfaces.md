@@ -87,7 +87,8 @@ name = "pgd"
 [optimizer.params]
 starts = 16
 
-[evaluate]                     # team-wide protocol; do not change
+[evaluate]                     # team-wide protocols; do not change the numbers
+protocol = "kfold"             # or "frozen-v32", which must omit folds and seed
 folds = 5
 seed = 2026
 top_k = 50
@@ -113,6 +114,27 @@ path)`. It verifies the manifest sha256 and sorts by `candidate_id` (the CV fold
 - Baseline (ridge2) on this protocol: MAE 6.828, R² 0.646, Spearman 0.838, top-50 recall 0.46,
   std_coverage 0.76 (constant std = out-of-fold RMSE).
 
+## Frozen v3.2 protocol (`sdm.frozen_v32`, `[evaluate] protocol = "frozen-v32"`)
+
+- Inputs are member B's frozen releases, read in place and checked by sha256: the outer splits from
+  `frozen_data/SDM374_data_splits_frozen_v1.zip` (2 repeats × 5 folds, every row tested once per repeat) and
+  the approved scorer `evaluation_v3_2/surrogate_scoring_v3_2.py` with its policy JSON. Rules of the score:
+  `evaluation_v3_2/README.md`.
+- `load_outer_splits(dataset)` → 10 `OuterSplit(split_id, repeat, train, test)` with row positions.
+- `out_of_fold(build, dataset, splits)` → DataFrame with one prediction per (split, test row).
+- `score_predictions(predictions, dataset, splits, top_k=50)` → `(metrics, fold_scores)`. It raises
+  `ValueError` unless the rows are exactly the 10 frozen splits, one row per test id of each split, with the
+  split's `repeat` and the dataset's `ramping` as `actual` (saved prediction files are checked, not trusted). Metrics:
+  `v32_score` (mean over the 10 splits, 0–100, higher is better), `v32_score_std` (population SD across
+  splits; descriptive only, the splits reuse rows), `v32_points_<component>` for `local_order`, `local_mae`,
+  `global_order`, `global_mae`, `top1_regret`, the raw `v32_local_pair_accuracy`, `v32_global_pair_accuracy`,
+  `v32_local_mae`, `v32_global_mae`, `v32_top1_regret`, and the k-fold metrics above computed on each
+  repeat's out-of-fold predictions and averaged over the two repeats.
+- The scale `s` of each split is the population SD of that split's outer-train labels. The inner 3-fold
+  lists in the release are not used by `sdm evaluate`; a plugin that tunes on v3.2 may read them.
+- Baseline (ridge2) on this protocol: v32_score 66.45 (SD 9.19), top-1 regret 4.51, low-region MAE 11.97,
+  MAE 6.915 — run `20261027-174545-evaluate-baseline-v32`.
+
 ## Runs (`runs/<run-id>/`, `sdm.runs`, `sdm.catalog`)
 
 Run id: `<YYYYmmdd-HHMMSS>-<kind>-<config file name or --name>`. `runs/` is git-ignored, so each machine
@@ -123,12 +145,13 @@ starts empty; run `sdm evaluate -c experiments/baseline.toml` to get a local ref
 | `config.toml` | all | copy of the config used |
 | `meta.json` | all | kind, options, git commit + dirty flag, dataset sha256, package versions |
 | `metrics.json` | all | metrics; missing means the run failed |
-| `predictions.csv` | evaluate | `candidate_id, actual, predicted_mean, predicted_std` |
+| `predictions.csv` | evaluate | `candidate_id, actual, predicted_mean, predicted_std`; `frozen-v32` adds `split_id, repeat` (each row appears twice) |
+| `fold_scores.csv` | evaluate (`frozen-v32`) | per outer split: total, the five v3.2 points, pair accuracies, MAEs, top-1 regret and candidate |
 | `model.pkl` | train, optimize | fitted model (pickle: load only runs made by this team) |
 | `weights.json` | optimize | one 3×7 matrix (`-n 1`, same format as the course `weights.json`) or a list |
 | `proposals.json` | optimize | per proposal: weights, predicted mean/std, nearest training distance |
 
-`sdm.catalog.run_records(root=None)` → DataFrame of all runs (default root `runs/`); `leaderboard(records)` → evaluate runs by MAE;
+`sdm.catalog.run_records(root=None)` → DataFrame of all runs (default root `runs/`); `leaderboard(records)` → evaluate runs, `frozen-v32` first by `v32_score` (descending), then `kfold` by MAE;
 `candidates(records)` → optimize runs with `distance_ratio` and an `extrapolating` flag (ratio > 1.5).
 `runs/.jobs/` holds GUI background jobs and is not a run.
 

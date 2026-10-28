@@ -18,7 +18,9 @@ name = "pgd"
 [optimizer.params]
 starts = 16
 
-[evaluate]  # team-wide protocol: do not change
+[evaluate]  # team-wide protocols: do not change the numbers
+# protocol = "kfold" (default): outer 5-fold CV below. For the frozen 2x5 splits scored by v3.2, use
+# protocol = "frozen-v32" and delete folds and seed (see experiments/baseline-v32.toml).
 folds = 5
 seed = 2026
 top_k = 50

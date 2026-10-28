@@ -22,7 +22,8 @@ METRIC_LABELS = ("电费", "碳排", "峰值", "舒适", "损耗", "波动", "�
 COLUMN_LABELS = {
     "run": "运行 ID", "kind": "类型", "name": "配置", "created": "创建时间", "model": "模型",
     "optimizer": "寻优器", "model_run": "模型来源运行", "commit": "提交", "dirty": "有未提交改动",
-    "complete": "已完成", "mae": "MAE", "rmse": "RMSE", "r2": "R²", "spearman": "Spearman",
+    "complete": "已完成", "protocol": "评估协议", "v32_score": "v3.2 总分", "v32_score_std": "v3.2 折间标准差",
+    "v32_top1_regret": "第一推荐差距", "v32_local_mae": "低值区 MAE", "mae": "MAE", "rmse": "RMSE", "r2": "R²", "spearman": "Spearman",
     "mean_predicted_std": "平均预测标准差", "predicted_mean": "预测波动量", "predicted_std": "预测标准差",
     "nearest_train_distance": "最近训练点距离", "distance_ratio": "距离比", "extrapolating": "外推",
     "candidate_id": "候选编号", "ramping": "波动量 R", "actual": "实测波动量", "type": "类型",

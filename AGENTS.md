@@ -32,7 +32,7 @@ uv sync                                   # core + dev dependencies
 uv run pytest -q                          # must pass before you finish any task
 uv run sdm list --json                    # registered models/optimizers and their parameters
 uv run sdm check-data --json              # dataset checksum and summary
-uv run sdm evaluate -c experiments/<name>.toml    # shared offline protocol (outer 5-fold CV)
+uv run sdm evaluate -c experiments/<name>.toml    # protocol set by [evaluate]: frozen-v32 (primary) or kfold
 uv run sdm train    -c experiments/<name>.toml    # fit on all rows, save model.pkl
 uv run sdm optimize -c experiments/<name>.toml -n 50 [--model-run <train-run-id>]
 uv run sdm predict  --model-run <run-id> --weights weights.json   # or --weights - (stdin)
@@ -57,6 +57,7 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 | `docs/` | Interfaces, decisions, role briefs | A; each member keeps their own role brief's backlog current |
 | `runs/` | Generated run folders (git-ignored) | nobody edits by hand |
 | `baseline.py`, `model.npz`, `weights.json`, `requirements.txt`, `dataset_same8/` | Course-provided files | **read-only** |
+| `frozen_data/`, `evaluation_v3_2/` | Frozen data splits and v3.2 scorer (released by B, checked by sha256 in `sdm.frozen_v32`) | **read-only** |
 
 Details of every interface: `docs/interfaces.md`. Settled design decisions and open questions:
 `docs/decisions.md`. Do not re-open a settled decision without asking the user.
@@ -66,7 +67,8 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
 - MUST NOT edit the course-provided read-only files listed above.
 - MUST NOT loosen tolerances or frozen numbers in `tests/test_baseline_regression.py`.
 - MUST NOT import `streamlit` (or anything in `app/`) from `src/sdm`. Dependencies point from `app/` to `src/sdm` only.
-- MUST NOT change the `[evaluate]` protocol (5 folds, seed 2026, top_k 50) used to compare models.
+- MUST NOT change the `[evaluate]` protocols used to compare models: `frozen-v32` (primary: frozen 2×5 splits,
+  v3.2 score) and `kfold` (5 folds, seed 2026, top_k 50). Never rank results of the two against each other.
 - MUST NOT add a second way to execute experiments: the GUI and scripts go through the `sdm` CLI so every result has a run folder.
   Exception: studies under `analysis/` may build plugins through the registry directly when they write a
   `provenance.json` (git state, dataset sha256, packages, seeds) next to their results, as
@@ -89,7 +91,7 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
    (shapes, finiteness, `std >= 0`, determinism, simplex constraint, ordering, distinct batches). Add
    plugin-specific tests in `tests/test_<plugin>.py` for behaviour the contract cannot know about.
 5. `runs/` is git-ignored and starts empty on every machine, so create your own reference first:
-   `uv run sdm evaluate -c experiments/baseline.toml`.
+   `uv run sdm evaluate -c experiments/baseline-v32.toml` (and `baseline.toml` for the k-fold protocol).
 6. Produce evidence with the CLI, not ad-hoc scripts: `uv run sdm evaluate -c experiments/<name>.toml`
    (models) or `uv run sdm optimize ...` (optimizers). Keep one `evaluate` under about two minutes on a
    laptop (it fits the model five times).
@@ -107,8 +109,9 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
 - One branch per task; merge to `main` through a reviewed PR.
 - Run ids are `<YYYYmmdd-HHMMSS>-<kind>-<config file name or --name>`, e.g.
   `20261025-134915-evaluate-gbdt-default`. Quote results by run id; never paste numbers without one.
-- Metric names are the JSON keys in `metrics.json`: `mae`, `rmse`, `r2`, `spearman`, `top50_recall`,
-  `mean_predicted_std`, `std_coverage` (evaluate); `predicted_mean`, `nearest_train_distance`, ... (optimize).
+- Metric names are the JSON keys in `metrics.json`: `v32_score`, `v32_points_*`, `v32_top1_regret`, ...
+  (evaluate, `frozen-v32` only); `mae`, `rmse`, `r2`, `spearman`, `top50_recall`,
+  `mean_predicted_std`, `std_coverage` (evaluate, both protocols); `predicted_mean`, `nearest_train_distance`, ... (optimize).
 - Plugin docstrings: the first line is shown in `sdm list` and the GUI, so make it a one-line summary.
 - Configs created from the GUI form are named `[a-z0-9-]+` and are never overwritten.
 

@@ -12,6 +12,8 @@ only person who sends points to the real evaluator so the 20 × 50 budget is nev
 - [x] Repository skeleton, plugin interfaces, registry, `sdm` CLI, run records, `reproduce`
 - [x] Baseline regression tests; shared evaluation protocol (`sdm evaluate`)
 - [x] Workbench GUI that launches every CLI command as a background job
+- [x] `frozen-v32` evaluate protocol: B's frozen 2×5 splits + approved v3.2 scorer, hash-checked;
+      leaderboard ranks it first (2026-10-27, see decisions 6, 13, 14)
 - [ ] Review and merge B/C/D/E pull requests; keep `docs/interfaces.md` in sync with the code
 - [ ] Before the lab: run the offline-submission decision meeting; pick two candidates from
       `sdm.catalog.candidates` (first conservative and non-extrapolating, second more aggressive)
