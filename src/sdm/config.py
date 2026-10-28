@@ -19,8 +19,14 @@ class Component:
     params: dict[str, Any] = field(default_factory=dict)
 
 
+PROTOCOLS = ("kfold", "frozen-v32")
+
+
 @dataclass(frozen=True)
 class EvaluateSettings:
+    # "kfold": outer K-fold CV (folds, seed). "frozen-v32": the frozen 2x5 splits scored by v3.2,
+    # where folds and seed are fixed by the release. top_k feeds the k-fold metrics under both.
+    protocol: str = "kfold"
     folds: int = 5
     seed: int = 2026
     top_k: int = 50
@@ -56,6 +62,11 @@ def load_config(path) -> Config:
     valid = [item.name for item in fields(EvaluateSettings)]
     if set(evaluate) - set(valid):
         raise ValueError(f"[evaluate] accepts {valid}; got {sorted(evaluate)}")
+    protocol = evaluate.get("protocol", "kfold")
+    if protocol not in PROTOCOLS:
+        raise ValueError(f"[evaluate] protocol must be one of {list(PROTOCOLS)}; got {protocol!r}")
+    if protocol == "frozen-v32" and {"folds", "seed"} & set(evaluate):
+        raise ValueError("[evaluate] protocol 'frozen-v32' uses the frozen splits; remove folds and seed")
     return Config(
         dataset=resolve(raw.get("data", {}).get("dataset", "dataset_same8")),
         model=model,
