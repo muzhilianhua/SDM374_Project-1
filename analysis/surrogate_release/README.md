@@ -29,5 +29,7 @@ The supplied full-config predictions come from separately fitted outer-training 
 from testing all-data weights on their own training rows. Their fitting history is provider-declared.
 The reused folds are descriptive evidence, not a fresh independent final test or proof for new W.
 Original provenance remains unchanged, including dirty-source flags and original environment paths.
+The added `full_data_configs/outer_predictions.csv.gz` is a deterministic gzip copy of
+`SDM374_final_models_v1/evaluation/eval_predictions.csv` from historical commit `835c50d`.
 The supplied models provide point predictions only. `rescore.py` uses zero as a required uncertainty
 placeholder and returns only the v3.2 total; it does not estimate or validate uncertainty.
