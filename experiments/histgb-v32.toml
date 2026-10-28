@@ -1,0 +1,29 @@
+# Histogram gradient boosting (B's histgb_low80_full settings) on the frozen 2x5 splits with the v3.2 score,
+# searched by the trust-region Dirichlet optimizer.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "histgb"
+
+[model.params]
+max_leaf_nodes = 15
+learning_rate = 0.05
+max_iter = 600
+l2_regularization = 0.0
+low_fraction = 0.2
+low_weight = 1.0
+seed = 2026
+
+[optimizer]
+name = "trust-dirichlet"
+
+[optimizer.params]
+risk = 1.0
+max_distance_ratio = 1.5
+seed = 2026
+
+[evaluate]
+protocol = "frozen-v32"  # folds and seed come from frozen_data/; do not set them here
+top_k = 50
