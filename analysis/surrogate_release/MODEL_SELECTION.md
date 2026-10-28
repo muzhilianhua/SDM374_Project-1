@@ -106,6 +106,6 @@ our independently reproduced selection scope remains the specified 11 groups, no
 
 The final model binaries remain on the teammate's `surrogate-models` branch; this directory contains
 only saved predictions, metrics and documentation. The primary `frozen-v32` evaluation protocol is
-implemented by PR #3; it is a dependency of this evidence handoff. Its kfold predecessor remains a
+implemented by PR #3, merged into main at `c9272ad`. Its kfold predecessor remains a
 separate protocol, not a score to mix with this ranking. Original dirty-run provenance is retained
 unchanged; later source commits do not rewrite the state at historical execution.

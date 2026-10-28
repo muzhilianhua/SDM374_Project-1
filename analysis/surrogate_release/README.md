@@ -2,7 +2,7 @@
 
 This directory preserves the saved outer-test predictions behind member B's 11-group v3.2 review
 and the three selected full-data configurations. No training or hyperparameter search is performed.
-It requires the `sdm.frozen_v32` implementation in PR #3 before the tests can run on main.
+It uses the team's primary `frozen-v32` protocol, merged into main by PR #3 (`c9272ad`).
 
 | Evidence | Content |
 | --- | --- |
@@ -15,7 +15,7 @@ It requires the `sdm.frozen_v32` implementation in PR #3 before the tests can ru
 
 The shared input releases are [`../../frozen_data/`](../../frozen_data/) and
 [`../../evaluation_v3_2/`](../../evaluation_v3_2/); no duplicate copies or model binaries are included.
-After PR #3 is merged, use the team Python 3.11 environment:
+Use the team Python 3.11 environment:
 
 ```bash
 uv sync --group gui
@@ -24,8 +24,10 @@ uv run --group gui pytest -q
 ```
 
 `tests/test_surrogate_release.py` locks all 14 recorded scores. Historical trimmed leaders scored
-74.72, 74.50 and 74.21; removing trimming changed the full-data configurations to about 72.34?72.47.
+74.72, 74.50 and 74.21; removing trimming changed the full-data configurations to about 72.34–72.47.
 The supplied full-config predictions come from separately fitted outer-training counterparts, not
 from testing all-data weights on their own training rows. Their fitting history is provider-declared.
 The reused folds are descriptive evidence, not a fresh independent final test or proof for new W.
 Original provenance remains unchanged, including dirty-source flags and original environment paths.
+The supplied models provide point predictions only. `rescore.py` uses zero as a required uncertainty
+placeholder and returns only the v3.2 total; it does not estimate or validate uncertainty.
