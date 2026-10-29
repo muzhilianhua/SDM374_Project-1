@@ -48,7 +48,10 @@ def main():
     fig.suptitle("Alternative surrogate methods",fontsize=16,fontweight="bold")
     fig.supxlabel("Green: meets prespecified discovery guard. Reused benchmark; no simulator measurements.",fontsize=9)
     for suffix in ("png","svg"):
-        fig.savefig(args.summary/f"method_comparison.{suffix}",dpi=180)
+        path=args.summary/f"method_comparison.{suffix}"
+        fig.savefig(path,dpi=180)
+        if suffix=="svg":
+            path.write_text("\n".join(line.rstrip() for line in path.read_text().splitlines())+"\n")
     plt.close(fig)
 
 
