@@ -1,0 +1,11 @@
+{
+  "round": 1,
+  "maximum_rounds": 20,
+  "maximum_points_this_round": 50,
+  "planned_points": 50,
+  "controls_count_against_planned_points": true,
+  "real_evaluations_performed_by_this_task": 0,
+  "official_submission": false,
+  "status": "prepared",
+  "global_team_budget_usage": "not asserted by this preparation packet"
+}

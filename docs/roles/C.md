@@ -61,6 +61,12 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       Exact source-model bytes are preserved; all1503 comparison predictions match on CLI replay.
 
 ## Backlog — online (weeks 8–10)
+- [x] Prepare the first50-point online packet under the supplied course slides' page3/page7 rules
+      (`analysis/online_round1/delivery/`). Thirty exploitation,15 exploration,5 controls; this initial
+      ratio is a heuristic pending D's replay. All50 are mutually distinct and simplex feasible;
+      one p01969 repeat is deliberate,49 are novel. Include baseline, existing recommendations,
+      mechanism probes, JSON/CSV/individual files and a pending worksheet. No evaluator calls.
+      Full suite:112 pass,1 known xfail; selected stack predictions replay and all payloads agree.
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)
 - [ ] TuRBO-style trust-region radius: grow after successes, shrink after failures
 

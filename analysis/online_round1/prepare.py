@@ -153,6 +153,8 @@ def build(out):
     for candidate,w in zip(selected.candidate_id,batch):write(folder/f'{candidate}.json',w.reshape(3,7).tolist())
     candidates=pd.DataFrame(batch,columns=FEATURES);candidates.insert(0,'candidate_id',selected.candidate_id)
     candidates.to_csv(out/'candidates.csv',index=False,float_format='%.17g')
+    candidates.rename(columns={name:f'w{i}' for i,name in enumerate(FEATURES)}).to_csv(
+        out/'weights_w0_w20.csv',index=False,float_format='%.17g')
     selected.to_csv(out/'plan.csv',index=False,float_format='%.17g')
     pending=candidates.copy();pending.insert(0,'round',1)
     pending['measured_R']='';pending['evaluator_version']='';pending['status']='pending';pending['notes']=''
@@ -174,13 +176,17 @@ def build(out):
     print(selected[['candidate_id','strategy','origin','stack_mean','distance_ratio']].to_string(index=False))
 
 
-def verify(out):
+def verify(out,replay=False):
     W=check_weights(read(out/'weights.json'))
     assert W.shape==(50,21)
     plan=pd.read_csv(out/'plan.csv');csv=pd.read_csv(out/'candidates.csv',float_precision='round_trip')
     assert plan.candidate_id.tolist()==[f'r01-{i:03}' for i in range(1,51)]==csv.candidate_id.tolist()
     assert plan.strategy.value_counts().to_dict()=={'exploit':30,'explore':15,'control':5}
     np.testing.assert_array_equal(csv[list(FEATURES)].to_numpy(),W)
+    ppt_csv=pd.read_csv(out/'weights_w0_w20.csv',float_precision='round_trip')
+    np.testing.assert_array_equal(ppt_csv[[f'w{i}' for i in range(21)]].to_numpy(),W)
+    assert ppt_csv.candidate_id.tolist()==plan.candidate_id.tolist()
+    assert len(list((out/'weights').glob('*.json')))==50
     for row,w in zip(plan.itertuples(),W):np.testing.assert_array_equal(check_weights(read(out/'weights'/f'{row.candidate_id}.json'))[0],w)
     matrix=np.linalg.norm(W[:,None]-W[None,:],axis=2);np.fill_diagonal(matrix,np.inf)
     provenance=read(out/'provenance.json');assert matrix.min()>=provenance['min_batch_separation']
@@ -197,10 +203,23 @@ def verify(out):
             np.testing.assert_allclose(plan[label+'_'+field],np.asarray(pred[key])[plan.point_index],rtol=1e-12)
     np.testing.assert_array_equal(W,pool[plan.point_index])
     np.testing.assert_array_equal(W[45],check_weights(read(REPO_ROOT/'weights.json'))[0])
+    for i,(_,path) in enumerate(ANCHORS):np.testing.assert_array_equal(W[i],check_weights(read(REPO_ROOT/path))[0])
     best=int(dataset.y.argmin());np.testing.assert_array_equal(W[46],dataset.X[best])
+    np.testing.assert_array_equal(W[47],np.full(21,1/7))
+    np.testing.assert_array_equal(W[48],np.tile([0,0,0,0,0,1,0],3))
+    np.testing.assert_array_equal(W[49],np.tile([0,0,0,0,0,.5,.5],3))
     pending=pd.read_csv(out/'pending_results.csv',float_precision='round_trip')
     assert len(pending)==50 and (pending['round']==1).all() and (pending.status=='pending').all()
     assert pending.measured_R.isna().all()
+    assert pending.candidate_id.tolist()==plan.candidate_id.tolist()
+    np.testing.assert_array_equal(pending[list(FEATURES)].to_numpy(),W)
+    if replay:
+        command=[str(Path(sys.executable).with_name('sdm')),'predict','--model-run',MODELS['stack'],
+                 '--weights',str((out/'weights.json').resolve())]
+        result=subprocess.run(command,cwd=REPO_ROOT,text=True,capture_output=True,check=True)
+        actual=json.loads(result.stdout)
+        np.testing.assert_allclose(actual['predicted_mean'],plan.stack_mean,rtol=1e-9,atol=1e-9)
+        np.testing.assert_allclose(actual['predicted_std'],plan.stack_proxy,rtol=1e-9,atol=1e-9)
     if (out/'checksums.json').exists():
         for name,digest in read(out/'checksums.json').items():assert sha256_of(out/name)==digest,name
     record={'valid':True,'batch_count':50,'shape':[50,3,7],'nonnegative':True,'each_building_has_positive_weight':True,
@@ -208,16 +227,17 @@ def verify(out):
         'unique_within_batch':50,'minimum_pair_distance':float(matrix.min()),
         'strategy_counts':{'exploit':30,'explore':15,'control':5},'intentional_offline_repeats':1,
         'offline_novel_points':49,'csv_json_individual_files_match':True,'all_results_pending':True,
-        'simulator_calls':0}
+        'stack_cli_replay':replay,'simulator_calls':0}
     print(json.dumps(record,indent=2));return record
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase',choices=['build','verify']);parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--replay-cli',action='store_true')
     args=parser.parse_args()
     if args.phase=='build':build(args.out)
-    else:verify(args.out)
+    else:verify(args.out,args.replay_cli)
 
 
 if __name__=='__main__':main()

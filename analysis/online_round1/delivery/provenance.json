@@ -1,0 +1,89 @@
+{
+  "git": {
+    "commit": "1309a05ec2714de8af930224fcea79936ff400b3",
+    "dirty": false
+  },
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "seed": 20261029,
+  "python": "3.11.9",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0",
+    "catboost": "1.2.8"
+  },
+  "source_pdf": {
+    "name": "SDM374_Project1_v3.pdf",
+    "sha256": "fb0ad671e95c99af1c9e1f08f625b0e8e7e0dce0bb30cd63963754d7d890239c",
+    "constraint_page": 3,
+    "budget_page": 7
+  },
+  "source_hashes": {
+    "analysis/common_judge/delivery/inputs.json": "6d5f66afa87fe4a7b062c37eae856cdde091ddb76ae678ca51a3dd35331b928f",
+    "weights.json": "d2d1d2b00203ca739462caa35d0efe29f59c8671d4af04effac4d8d054c0178e",
+    "analysis/common_judge/delivery/exported_weights/primary/blend-fixed.json": "47adcde097856a4528197039a200c216db74975439d79d5dd285c79c15ef9ef8",
+    "analysis/common_judge/delivery/exported_weights/posthoc/blend-fixed.json": "73d0d9af6cec6ad957d37b95eff72ac71681635be50e74b36a363a8050c1557f",
+    "analysis/offline_submission/submission/weights.json": "be2e4cfb95dedd4dc36e48791d0896f1ab1c71fa6446ddb12f14e63a6068955a",
+    "analysis/robust_search/delivery/challenger_weights.json": "98ce57bb5224551712a56c6269a86e4aa801d5d784dcdbb8758688817591b1f2"
+  },
+  "model_hashes": {
+    "artifacts/best_model/model.pkl": "bc1c16ae9b73448058400a3280c212d519a22ecf6bcf7244c1109bebada82500",
+    "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/runs/20261029-171329-train-method-cat-weighted/model.pkl": "9b8789aa0b5ef0387644d7017859a76695068f42421aeb2d4ab19145836e4ab1",
+    "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/runs/20261029-125052-optimize-histgb-v32/model.pkl": "e1ae4bbafe5bdf50ed2bacace5839796b4005b5053c7870341d8d985148301bf",
+    "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/runs/20261029-125052-optimize-xgboost-v32/model.pkl": "b0c01b7958fd973b3c9f65a05492be84b3cfda674c31df304a2e05600bfd327e",
+    "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/runs/20261029-125052-optimize-extratrees-default/model.pkl": "8adb6e8ef94d92d5d15940ac10a12a5bf93b8bd6947920a01d0bee117576de1d"
+  },
+  "prediction_commands": [
+    [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "predict",
+      "--model-run",
+      "artifacts/best_model",
+      "--weights",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/analysis/online_round1/results/20261029-round1-v1/pool_weights.json"
+    ],
+    [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "predict",
+      "--model-run",
+      "20261029-171329-train-method-cat-weighted",
+      "--weights",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/analysis/online_round1/results/20261029-round1-v1/pool_weights.json"
+    ],
+    [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "predict",
+      "--model-run",
+      "20261029-125052-optimize-histgb-v32",
+      "--weights",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/analysis/online_round1/results/20261029-round1-v1/pool_weights.json"
+    ],
+    [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "predict",
+      "--model-run",
+      "20261029-125052-optimize-xgboost-v32",
+      "--weights",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/analysis/online_round1/results/20261029-round1-v1/pool_weights.json"
+    ],
+    [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "predict",
+      "--model-run",
+      "20261029-125052-optimize-extratrees-default",
+      "--weights",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/analysis/online_round1/results/20261029-round1-v1/pool_weights.json"
+    ]
+  ],
+  "training_spacing": 0.37711307211776746,
+  "min_batch_separation": 0.09427826802944186,
+  "planned_round": 1,
+  "planned_evaluations": 50,
+  "maximum_rounds": 20,
+  "maximum_per_round": 50,
+  "simulator_calls": 0,
+  "known_row_repeats": 1,
+  "ratio_basis": "first-round heuristic, not replay validated"
+}

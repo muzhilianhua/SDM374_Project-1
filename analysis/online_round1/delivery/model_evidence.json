@@ -1,0 +1,230 @@
+{
+  "stack": {
+    "reference": "artifacts/best_model",
+    "meta": {
+      "kind": "train",
+      "name": "method-blend-stack",
+      "created": "2026-10-29T17:12:51",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/method-blend-stack.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "076b75f8f9a4335e3d5202af0117feba22e77264",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "config": "# Alternative-method discovery: fixed before evaluating outer scores.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"method-study\"\n[model.params]\niterations = 600\nseed = 2026\ncalib_folds = 3\nfamily = \"ensemble\"\nensemble_mode = \"stack\"\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n",
+    "metrics": {
+      "weight_xgboost": 0.2920246172436632,
+      "weight_catboost": 0.4437867721586836,
+      "weight_histgb": 0.2641886105976533,
+      "training_rows": 2048,
+      "conformal_edge_0": 0.28071179443397104,
+      "conformal_edge_1": 0.3864120294023049,
+      "conformal_edge_2": 0.5111152157156711,
+      "conformal_std_0": 3.44203188566413,
+      "conformal_std_1": 4.486825335322294,
+      "conformal_std_2": 5.836513848814625,
+      "conformal_std_3": 8.494855197313855
+    }
+  },
+  "catboost": {
+    "reference": "20261029-171329-train-method-cat-weighted",
+    "meta": {
+      "kind": "train",
+      "name": "method-cat-weighted",
+      "created": "2026-10-29T17:13:29",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/method-cat-weighted.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "076b75f8f9a4335e3d5202af0117feba22e77264",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "config": "# Alternative-method discovery: fixed before evaluating outer scores.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"method-study\"\n[model.params]\niterations = 600\nseed = 2026\ncalib_folds = 3\nfamily = \"catboost\"\nloss = \"RMSE\"\nlow_weight = 3.0\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n",
+    "metrics": {
+      "training_rows": 2048,
+      "conformal_edge_0": 0.28071179443397104,
+      "conformal_edge_1": 0.3864120294023049,
+      "conformal_edge_2": 0.5111152157156711,
+      "conformal_std_0": 3.892764720495117,
+      "conformal_std_1": 4.7407184352406775,
+      "conformal_std_2": 5.882527235685187,
+      "conformal_std_3": 8.906739940013013
+    }
+  },
+  "histgb": {
+    "reference": "20261029-125052-optimize-histgb-v32",
+    "meta": {
+      "kind": "optimize",
+      "name": "histgb-v32",
+      "created": "2026-10-29T12:50:52",
+      "options": {
+        "n": 50,
+        "model_run": null
+      },
+      "source_config": "experiments/histgb-v32.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "3f1a6d74985edd008895896aafa9d21b9bbdb9e8",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "config": "# Histogram gradient boosting (B's histgb_low80_full settings) on the frozen 2x5 splits with the v3.2 score,\n# searched by the trust-region Dirichlet optimizer.\n\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"histgb\"\n\n[model.params]\nmax_leaf_nodes = 15\nlearning_rate = 0.05\nmax_iter = 600\nl2_regularization = 0.0\nlow_fraction = 0.2\nlow_weight = 1.0\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"  # folds and seed come from frozen_data/; do not set them here\ntop_k = 50\n",
+    "metrics": {
+      "predicted_mean": 106.87748744169936,
+      "predicted_std": 3.359982978703235,
+      "nearest_train_distance": 0.2549318373320666,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 110.23747042040259,
+      "optimizer_best_mean": 106.87748744169936,
+      "optimizer_best_std": 3.359982978703235,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_weighted_rows": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.359982978703235,
+      "model_conformal_std_1": 4.069534087111397,
+      "model_conformal_std_2": 5.374074072714059,
+      "model_conformal_std_3": 8.529176076155549
+    }
+  },
+  "xgboost": {
+    "reference": "20261029-125052-optimize-xgboost-v32",
+    "meta": {
+      "kind": "optimize",
+      "name": "xgboost-v32",
+      "created": "2026-10-29T12:50:52",
+      "options": {
+        "n": 50,
+        "model_run": null
+      },
+      "source_config": "experiments/xgboost-v32.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "3f1a6d74985edd008895896aafa9d21b9bbdb9e8",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "config": "# XGBoost (B's xgb_w20x3_full settings: lowest 20% ramping weighted 3x) on the frozen 2x5 splits with the\n# v3.2 score, searched by the trust-region Dirichlet optimizer.\n\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"xgboost\"\n\n[model.params]\nmax_depth = 3\nlearning_rate = 0.1\nn_estimators = 600\nsubsample = 0.9\nlow_fraction = 0.2\nlow_weight = 3.0\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"  # folds and seed come from frozen_data/; do not set them here\ntop_k = 50\n",
+    "metrics": {
+      "predicted_mean": 99.39921569824219,
+      "predicted_std": 3.4436398946563713,
+      "nearest_train_distance": 0.27155817201458304,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 102.84285559289856,
+      "optimizer_best_mean": 99.39921569824219,
+      "optimizer_best_std": 3.4436398946563713,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_weighted_rows": 409.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.4436398946563713,
+      "model_conformal_std_1": 4.280744969673106,
+      "model_conformal_std_2": 5.80033982467372,
+      "model_conformal_std_3": 8.445723811055068
+    }
+  },
+  "extratrees": {
+    "reference": "20261029-125052-optimize-extratrees-default",
+    "meta": {
+      "kind": "optimize",
+      "name": "extratrees-default",
+      "created": "2026-10-29T12:50:52",
+      "options": {
+        "n": 50,
+        "model_run": null
+      },
+      "source_config": "experiments/extratrees-default.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "3f1a6d74985edd008895896aafa9d21b9bbdb9e8",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "config": "# Extra-trees surrogate searched by the trust-region Dirichlet optimizer (gradient-free pair).\n\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"extratrees\"\n\n[model.params]\nn_estimators = 300\nmin_samples_leaf = 2\nmax_features = 0.5\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nfolds = 5\nseed = 2026\ntop_k = 50\n",
+    "metrics": {
+      "predicted_mean": 121.30421196097777,
+      "predicted_std": 3.0233140404992493,
+      "nearest_train_distance": 0.036148750131714376,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 124.32752600147701,
+      "optimizer_best_mean": 121.30421196097777,
+      "optimizer_best_std": 3.023314040499249,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_n_estimators": 300.0
+    }
+  }
+}

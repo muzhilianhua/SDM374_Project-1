@@ -2,6 +2,10 @@
 
 Role C, continuing on `azq`. Preparation only; the user defers actual simulator calls.
 
+Completed [50-point packet and handoff](delivery/README.md), [batch JSON](delivery/weights.json),
+[PPT-column CSV](delivery/weights_w0_w20.csv). All50 are feasible and mutually distinct; one known
+offline row is deliberately included for calibration. Real evaluator calls remain zero.
+
 ## Course requirements checked before selection
 
 Source: the locally supplied `SDM374_Project1_v3.pdf`, pages3 and7, visually checked after rendering.
@@ -31,7 +35,7 @@ Round newly sampled points to8 decimals and repair the largest component to keep
   novel relative to the offline dataset. All50 points are distinct from one another.
 - Candidate pool: all1500 existing method proposals, the named anchors/controls,3600 Dirichlet
   perturbations around64 low-R measured centers plus the four exploitation anchors (concentrations
-  30/100/300, alpha floor .05), and600 uniform-over-product-simplex Dirichlet(.6) coverage draws.
+  30/100/300, alpha floor .05), and600 global product-simplex Dirichlet(.6) coverage draws.
 - One unchanged packaged stack model and the four existing local judge models score the pool through
   `sdm predict`. No surrogate is retrained. Predictions/error proxies are not simulator measurements.
 

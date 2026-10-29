@@ -168,6 +168,23 @@ the candidate generators, and baseline is further from the data (ratio1.7484 ver
 limitations preclude a measured-improvement claim. Replaying one CLI batch matches all1503 mean/proxy
 predictions within1e-9. Full suite:109 passed,1 known expected failure. No real evaluation budget used.
 
+## Online handoff: first50-point packet
+
+The user requested50 feasible weights for later online testing. The supplied course PDF was checked
+on pages3 and7: each building's weights must be nonnegative with positive mass, with at most20 rounds
+and50 evaluated points per round. The [prepared packet](../analysis/online_round1/delivery/README.md)
+uses the repository's sum-one representation and a30 exploit /15 explore /5 control heuristic.
+This initial split is not a replay-selected optimum. Source generation/scoring used clean1309a05.
+
+Preserve the fixed-blend primary and post-hoc points, existing operational W and consensus challenger;
+fill the exploitation subset using strong-model conservative risk and spatial separation. Exploration
+targets committee disagreement with a bounded stack prediction. Baseline, p01969, uniform, pure ramping
+and50/50 ramping/resilience provide controls. One known offline row is deliberately remeasured; the
+remaining49 are novel, and all50 are distinct, finite, nonnegative and feasible. Minimum pair distance
+is .09482. Archive JSON, PPT-order CSV, individual W files, plan, source pool and a pending results sheet.
+All fresh measured_R fields remain blank. There were zero simulator calls or official submissions.
+The112-test suite passes with1 known xfail; final payload predictions reproduce through the packaged model.
+
 ## Next work
 
 Use real-evaluator results to compare the default and challenger if the course submission budget

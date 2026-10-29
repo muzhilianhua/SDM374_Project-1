@@ -1,0 +1,35 @@
+{
+  "valid": true,
+  "batch_count": 50,
+  "shape": [
+    50,
+    3,
+    7
+  ],
+  "nonnegative": true,
+  "each_building_has_positive_weight": true,
+  "max_row_sum_error": 2.220446049250313e-16,
+  "unique_within_batch": 50,
+  "minimum_pair_distance": 0.09482197442203491,
+  "strategy_counts": {
+    "exploit": 30,
+    "explore": 15,
+    "control": 5
+  },
+  "intentional_offline_repeats": 1,
+  "offline_novel_points": 49,
+  "csv_json_individual_files_match": true,
+  "all_results_pending": true,
+  "stack_cli_replay": true,
+  "simulator_calls": 0,
+  "tests": {
+    "passed": 112,
+    "known_xfailed": 1,
+    "elapsed_seconds": 53.43
+  },
+  "source_pdf_pages_visually_checked": [
+    3,
+    7
+  ],
+  "preparation_script_sha256": "337c7aab9715a8ca19ea9869ee84453c6060ee4c5a6a57dcf9ba61515403234e"
+}
