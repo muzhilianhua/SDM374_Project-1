@@ -62,6 +62,8 @@ class MyOptimizer(Optimizer):
 |---|---|---|
 | `ridge2` | model | course baseline (frozen); has `gradient` / `smoothness`; constant std |
 | `extratrees` | model | extra-trees, std = spread across trees; no gradient (piecewise constant) |
+| `histgb` | model | scikit-learn histogram gradient boosting (B's `histgb_low80_full`); std = distance-binned conformal quantile of out-of-fold residuals (`models/_gbdt.py`); no gradient |
+| `xgboost` | model | XGBoost, 20% lowest-ramping rows weighted 3× (B's `xgb_w20x3_full`); same conformal std; single-threaded for reproducibility; no gradient; macOS needs `brew install libomp` |
 | `pgd` | optimizer | course baseline (frozen); needs `gradient` + `smoothness`; returns duplicates for n > 1 |
 | `trust-dirichlet` | optimizer | gradient-free Dirichlet local search from the best rows, inside `max_distance_ratio · median_spacing` of the data, ranks by mean + risk · std, distinct batches |
 

@@ -1,0 +1,29 @@
+# XGBoost (B's xgb_w20x3_full settings: lowest 20% ramping weighted 3x) on the frozen 2x5 splits with the
+# v3.2 score, searched by the trust-region Dirichlet optimizer.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "xgboost"
+
+[model.params]
+max_depth = 3
+learning_rate = 0.1
+n_estimators = 600
+subsample = 0.9
+low_fraction = 0.2
+low_weight = 3.0
+seed = 2026
+
+[optimizer]
+name = "trust-dirichlet"
+
+[optimizer.params]
+risk = 1.0
+max_distance_ratio = 1.5
+seed = 2026
+
+[evaluate]
+protocol = "frozen-v32"  # folds and seed come from frozen_data/; do not set them here
+top_k = 50

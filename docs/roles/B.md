@@ -20,7 +20,10 @@ Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protoco
       approved in review `5684596716`. Submit the evidence-only PR for team review.
 - [x] Reference tree model `extratrees` (A, 2026-10-25): mae 5.723, top50_recall 0.56, spearman 0.882,
       std_coverage 0.857 (std too wide) — run `20261025-145809-evaluate-extratrees-default`
-- [ ] Model leaderboard via `sdm evaluate`: gradient-boosted trees, random forest, Gaussian process
+- [x] Gradient-boosted trees `histgb` and `xgboost` (A, 2026-10-29, with B's agreement; B's
+      full-data settings): v32_score 72.35 / 73.47, std_coverage 0.696 / 0.687 — runs
+      `20261029-073439-evaluate-histgb-v32`, `20261029-073455-evaluate-xgboost-v32`
+- [ ] Model leaderboard via `sdm evaluate`: random forest, Gaussian process
       (a read-only probe gave GP-ARD mae 5.02 / top50_recall 0.60 but ~4 min per evaluate), MLP ensemble
 - [ ] Smooth or extrapolation-aware models matter for optimization: see `analysis/coupling/README.md`
 - [ ] Feature engineering inside `fit` / `predict`: within-building ratios (e.g. ramping vs.
