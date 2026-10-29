@@ -95,7 +95,10 @@ def main():
         passes = bool(soft.v32_score >= base.v32_score and soft.mae <= 1.05 * base.mae
                       and soft.v32_local_mae <= 1.10 * base.v32_local_mae)
         selection[family] = {"soft_passes_outer_guard": passes,
-            "recommended_workflow": f"{family}-soft" if passes else f"{family}-unweighted",
+            "soft_vs_uniform_choice": f"{family}-soft" if passes else f"{family}-unweighted",
+            "highest_mean_full_support_workflow": max(
+                [f"{family}-{s}" for s in ("unweighted", "step", "soft")],
+                key=lambda label: summary.loc[label, "v32_score"]),
             "soft_minus_uniform_score": float(soft.v32_score - base.v32_score)}
         for reference in ("unweighted", "step", "trimmed-step"):
             left = fold_table[fold_table.label == f"{family}-soft"].set_index("split_id")
