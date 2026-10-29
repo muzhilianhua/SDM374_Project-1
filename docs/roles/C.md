@@ -28,12 +28,15 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       HistGB/XGBoost 107.8045/107.2767, distance ratio 0.6382. Audit mean risk improves by 1.0911,
       but two of five pairs regress slightly; retain the original default under the predefined gate.
       88 tests pass, 1 known xfail; source search reproduced. No real score is available.
-- [ ] Read `analysis/coupling/README.md` first: on ridge2 the optimizer choice barely changes the result
-- [ ] Optimizers on the 3 × 7 simplex: CMA-ES with softmax parametrisation, Dirichlet local perturbation
-      around the best observed rows
-- [ ] Trust region: only search near the best measured rows; avoid simplex corners (see the extrapolation
-      flag, `nearest_train_distance` in optimize runs)
-- [ ] Pessimistic objective `mean + k · std` for choosing the offline W*
+- [x] Read `analysis/coupling/README.md`: on ridge2 the optimizer choice barely changes the result.
+- [x] Study Dirichlet local perturbations around good observed rows and projected DE on the 3 × 7 simplex.
+- [x] Compare distance-limited searches; require distance ratio <=0.75 for the current submission.
+      This limits extrapolation but does not exclude every simplex boundary coordinate.
+- [x] Apply pessimistic `mean + k · std` and cross-model risk selection; document that the error
+      proxies are not calibrated confidence bounds.
+- [x] Consolidate methods, decisions, provenance and handoff in
+      [the research log](../optimizer-research-2026-10-29.md).
+- [ ] Explore CMA-ES with softmax parametrisation if further optimizer comparisons are justified.
 
 ## Backlog — online (weeks 8–10)
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)

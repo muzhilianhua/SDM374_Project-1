@@ -60,6 +60,7 @@ The frozen data splits ([`frozen_data/`](frozen_data/README.md)) and the v3.2 sc
 | [`AGENTS.md`](AGENTS.md) | Project summary, repository map, hard rules, definition of done |
 | [`docs/interfaces.md`](docs/interfaces.md) | Surrogate / Optimizer contracts, config schema, run files, CLI |
 | [`docs/decisions.md`](docs/decisions.md) | Settled decisions, known issues, open questions |
+| [`docs/optimizer-research-2026-10-29.md`](docs/optimizer-research-2026-10-29.md) | Role C research log, recommended weights, evidence and reproduction |
 | [`docs/roles/`](docs/roles/) | Per-member mission, owned files, backlog and acceptance criteria |
 | `src/sdm/models/_template.py`, `src/sdm/optimizers/_template.py`, `experiments/_template.toml` | Starting points for new plugins and experiments |
 
