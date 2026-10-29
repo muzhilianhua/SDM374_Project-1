@@ -1,0 +1,1860 @@
+{
+  "20261029-160232-evaluate-soft-histgb-soft-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-histgb-soft-2026",
+      "created": "2026-10-29T16:02:32",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-soft-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 71.98149185287434,
+      "v32_score_std": 6.356290898912376,
+      "v32_points_local_order": 18.640411907897832,
+      "v32_points_local_mae": 10.584942987088194,
+      "v32_points_global_order": 13.166769336764514,
+      "v32_points_global_mae": 11.490009644514535,
+      "v32_points_top1_regret": 18.09935797660927,
+      "v32_local_pair_accuracy": 0.7662915986842547,
+      "v32_global_pair_accuracy": 0.9388923112254837,
+      "v32_local_mae": 6.611532860920074,
+      "v32_global_mae": 4.81822260312664,
+      "v32_top1_regret": 2.0084234209851273,
+      "mae": 4.818266213498913,
+      "rmse": 7.356483336003878,
+      "r2": 0.7823147620318397,
+      "spearman": 0.9011073442487793,
+      "top50_recall": 0.59,
+      "mean_predicted_std": 5.67183055065233,
+      "std_coverage": 0.6982421875
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160418-train-soft-histgb-soft-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-histgb-soft-2026",
+      "created": "2026-10-29T16:04:18",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-soft-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 1.0,
+      "selected_temperature": 0.3,
+      "training_rows": 2048,
+      "dropped_rows": 0,
+      "weight_min": 1.0000000021353972,
+      "weight_max": 1.9989232095925917,
+      "effective_sample_size": 1917.0645005172357,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 72.17204234600375,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.4324896111982035,
+      "conformal_std_1": 4.30076708422303,
+      "conformal_std_2": 5.8371440318507,
+      "conformal_std_3": 8.213137865277421
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160430-optimize-soft-histgb-soft-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-soft-2026",
+      "created": "2026-10-29T16:04:30",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160418-train-soft-histgb-soft-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-soft-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 109.35444404842589,
+      "predicted_std": 3.4324896111982035,
+      "nearest_train_distance": 0.26532654824957036,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11215,
+      "optimizer_best_objective": 112.7869336596241,
+      "optimizer_best_mean": 109.35444404842589,
+      "optimizer_best_std": 3.4324896111982035,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 1.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0000000021353972,
+      "model_weight_max": 1.9989232095925917,
+      "model_effective_sample_size": 1917.0645005172357,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 72.17204234600375,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.4324896111982035,
+      "model_conformal_std_1": 4.30076708422303,
+      "model_conformal_std_2": 5.8371440318507,
+      "model_conformal_std_3": 8.213137865277421
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160431-optimize-soft-histgb-soft-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-soft-2027",
+      "created": "2026-10-29T16:04:31",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160418-train-soft-histgb-soft-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-soft-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 109.39836755418561,
+      "predicted_std": 3.4324896111982035,
+      "nearest_train_distance": 0.26668260710011865,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11225,
+      "optimizer_best_objective": 112.83085716538382,
+      "optimizer_best_mean": 109.39836755418561,
+      "optimizer_best_std": 3.4324896111982035,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 1.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0000000021353972,
+      "model_weight_max": 1.9989232095925917,
+      "model_effective_sample_size": 1917.0645005172357,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 72.17204234600375,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.4324896111982035,
+      "model_conformal_std_1": 4.30076708422303,
+      "model_conformal_std_2": 5.8371440318507,
+      "model_conformal_std_3": 8.213137865277421
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160156-evaluate-soft-histgb-step-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-histgb-step-2026",
+      "created": "2026-10-29T16:01:56",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 72.34266605288786,
+      "v32_score_std": 8.646805366950485,
+      "v32_points_local_order": 18.989822392279446,
+      "v32_points_local_mae": 10.619394479512628,
+      "v32_points_global_order": 13.163470705901073,
+      "v32_points_global_mae": 11.47062049858545,
+      "v32_points_top1_regret": 18.09935797660927,
+      "v32_local_pair_accuracy": 0.7712831770325634,
+      "v32_global_pair_accuracy": 0.9387823568633692,
+      "v32_local_mae": 6.552084078166667,
+      "v32_global_mae": 4.8549980798178165,
+      "v32_top1_regret": 2.0084234209851273,
+      "mae": 4.8550524705693405,
+      "rmse": 7.367940171379619,
+      "r2": 0.7816329512748486,
+      "spearman": 0.9010722457193725,
+      "top50_recall": 0.5900000000000001,
+      "mean_predicted_std": 5.798797413863296,
+      "std_coverage": 0.694091796875
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160224-train-soft-histgb-step-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-histgb-step-2026",
+      "created": "2026-10-29T16:02:24",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 2.0,
+      "selected_temperature": 0.3,
+      "training_rows": 2048,
+      "dropped_rows": 0,
+      "weight_min": 1.0,
+      "weight_max": 3.0,
+      "effective_sample_size": 1543.9766917293234,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 0.0,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.2521871772698185,
+      "conformal_std_1": 4.545944649812615,
+      "conformal_std_2": 5.609269227578433,
+      "conformal_std_3": 8.419474007117296
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160228-optimize-soft-histgb-step-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-step-2026",
+      "created": "2026-10-29T16:02:28",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160224-train-soft-histgb-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 110.03484589697857,
+      "predicted_std": 3.2521871772698185,
+      "nearest_train_distance": 0.25369476243493205,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11837,
+      "optimizer_best_objective": 113.28703307424838,
+      "optimizer_best_mean": 110.03484589697857,
+      "optimizer_best_std": 3.2521871772698185,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1543.9766917293234,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.2521871772698185,
+      "model_conformal_std_1": 4.545944649812615,
+      "model_conformal_std_2": 5.609269227578433,
+      "model_conformal_std_3": 8.419474007117296
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160230-optimize-soft-histgb-step-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-step-2027",
+      "created": "2026-10-29T16:02:30",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160224-train-soft-histgb-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-step-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 109.80322120019295,
+      "predicted_std": 3.2521871772698185,
+      "nearest_train_distance": 0.23761181178282306,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11585,
+      "optimizer_best_objective": 113.05540837746277,
+      "optimizer_best_mean": 109.80322120019295,
+      "optimizer_best_std": 3.2521871772698185,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1543.9766917293234,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.2521871772698185,
+      "model_conformal_std_1": 4.545944649812615,
+      "model_conformal_std_2": 5.609269227578433,
+      "model_conformal_std_3": 8.419474007117296
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160232-evaluate-soft-histgb-trimmed-step-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-histgb-trimmed-step-2026",
+      "created": "2026-10-29T16:02:32",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-trimmed-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 72.45161182402046,
+      "v32_score_std": 6.4778106850655215,
+      "v32_points_local_order": 19.508428320693028,
+      "v32_points_local_mae": 10.710541371834418,
+      "v32_points_global_order": 12.868903313210755,
+      "v32_points_global_mae": 11.341798591638518,
+      "v32_points_top1_regret": 18.02194022664373,
+      "v32_local_pair_accuracy": 0.7786918331527575,
+      "v32_global_pair_accuracy": 0.9289634437736918,
+      "v32_local_mae": 6.354443764037718,
+      "v32_global_mae": 5.086926739418554,
+      "v32_top1_regret": 2.1073573949663116,
+      "mae": 5.087034163053968,
+      "rmse": 8.49124657975132,
+      "r2": 0.7099784060802937,
+      "spearman": 0.8904219420608294,
+      "top50_recall": 0.56,
+      "mean_predicted_std": 5.62830424936868,
+      "std_coverage": 0.686279296875
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160302-train-soft-histgb-trimmed-step-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-histgb-trimmed-step-2026",
+      "created": "2026-10-29T16:03:02",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-trimmed-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 2.0,
+      "selected_temperature": 0.3,
+      "training_rows": 1843,
+      "dropped_rows": 205,
+      "weight_min": 1.0,
+      "weight_max": 3.0,
+      "effective_sample_size": 1384.3442815249266,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 0.0,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.388952095145004,
+      "conformal_std_1": 4.244025524041095,
+      "conformal_std_2": 5.819747964583432,
+      "conformal_std_3": 8.35233776188332
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160306-optimize-soft-histgb-trimmed-step-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-trimmed-step-2026",
+      "created": "2026-10-29T16:03:06",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160302-train-soft-histgb-trimmed-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-trimmed-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 110.49249729347467,
+      "predicted_std": 3.388952095145004,
+      "nearest_train_distance": 0.26425786801615636,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11630,
+      "optimizer_best_objective": 113.88144938861967,
+      "optimizer_best_mean": 110.49249729347467,
+      "optimizer_best_std": 3.388952095145004,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 1843,
+      "model_dropped_rows": 205,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1384.3442815249266,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.388952095145004,
+      "model_conformal_std_1": 4.244025524041095,
+      "model_conformal_std_2": 5.819747964583432,
+      "model_conformal_std_3": 8.35233776188332
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160308-optimize-soft-histgb-trimmed-step-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-trimmed-step-2027",
+      "created": "2026-10-29T16:03:08",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160302-train-soft-histgb-trimmed-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-trimmed-step-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 111.36317947355911,
+      "predicted_std": 3.388952095145004,
+      "nearest_train_distance": 0.2695449808520714,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11924,
+      "optimizer_best_objective": 114.75213156870412,
+      "optimizer_best_mean": 111.36317947355911,
+      "optimizer_best_std": 3.388952095145004,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 1843,
+      "model_dropped_rows": 205,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1384.3442815249266,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.388952095145004,
+      "model_conformal_std_1": 4.244025524041095,
+      "model_conformal_std_2": 5.819747964583432,
+      "model_conformal_std_3": 8.35233776188332
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160156-evaluate-soft-histgb-unweighted-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-histgb-unweighted-2026",
+      "created": "2026-10-29T16:01:56",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-unweighted-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 72.34651197825697,
+      "v32_score_std": 6.660073772127624,
+      "v32_points_local_order": 18.886754099685604,
+      "v32_points_local_mae": 10.547550649207563,
+      "v32_points_global_order": 13.194433834283137,
+      "v32_points_global_mae": 11.504726637087241,
+      "v32_points_top1_regret": 18.21304675799342,
+      "v32_local_pair_accuracy": 0.7698107728526515,
+      "v32_global_pair_accuracy": 0.9398144611427712,
+      "v32_local_mae": 6.672838563911332,
+      "v32_global_mae": 4.791926500493325,
+      "v32_top1_regret": 1.8767536872070196,
+      "mae": 4.7919934009614735,
+      "rmse": 7.288423566384288,
+      "r2": 0.786323121981508,
+      "spearman": 0.9029101181263015,
+      "top50_recall": 0.5700000000000001,
+      "mean_predicted_std": 5.657506043537209,
+      "std_coverage": 0.69580078125
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160224-train-soft-histgb-unweighted-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-histgb-unweighted-2026",
+      "created": "2026-10-29T16:02:24",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-unweighted-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 2.0,
+      "selected_temperature": 0.3,
+      "training_rows": 2048,
+      "dropped_rows": 0,
+      "weight_min": 1.0,
+      "weight_max": 1.0,
+      "effective_sample_size": 2048.0,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 0.0,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.359982978703235,
+      "conformal_std_1": 4.069534087111397,
+      "conformal_std_2": 5.374074072714059,
+      "conformal_std_3": 8.529176076155549
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160228-optimize-soft-histgb-unweighted-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-unweighted-2026",
+      "created": "2026-10-29T16:02:28",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160224-train-soft-histgb-unweighted-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-unweighted-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 106.87748744169936,
+      "predicted_std": 3.359982978703235,
+      "nearest_train_distance": 0.2549318373320666,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11482,
+      "optimizer_best_objective": 110.23747042040259,
+      "optimizer_best_mean": 106.87748744169936,
+      "optimizer_best_std": 3.359982978703235,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 1.0,
+      "model_effective_sample_size": 2048.0,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.359982978703235,
+      "model_conformal_std_1": 4.069534087111397,
+      "model_conformal_std_2": 5.374074072714059,
+      "model_conformal_std_3": 8.529176076155549
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160230-optimize-soft-histgb-unweighted-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-histgb-unweighted-2027",
+      "created": "2026-10-29T16:02:30",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160224-train-soft-histgb-unweighted-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-histgb-unweighted-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.77110880149566,
+      "predicted_std": 3.359982978703235,
+      "nearest_train_distance": 0.2614550315424174,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11620,
+      "optimizer_best_objective": 111.13109178019889,
+      "optimizer_best_mean": 107.77110880149566,
+      "optimizer_best_std": 3.359982978703235,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 1.0,
+      "model_effective_sample_size": 2048.0,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.359982978703235,
+      "model_conformal_std_1": 4.069534087111397,
+      "model_conformal_std_2": 5.374074072714059,
+      "model_conformal_std_3": 8.529176076155549
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"histgb\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.05\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160420-evaluate-soft-xgboost-soft-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-xgboost-soft-2026",
+      "created": "2026-10-29T16:04:20",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-soft-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 72.4696175630916,
+      "v32_score_std": 6.9725411250308165,
+      "v32_points_local_order": 19.895247160794256,
+      "v32_points_local_mae": 10.519258217249618,
+      "v32_points_global_order": 13.078588702184868,
+      "v32_points_global_mae": 11.391447933876696,
+      "v32_points_top1_regret": 17.585075548986165,
+      "v32_local_pair_accuracy": 0.784217816582775,
+      "v32_global_pair_accuracy": 0.9359529567394956,
+      "v32_local_mae": 6.746737994134506,
+      "v32_global_mae": 4.9971874564089145,
+      "v32_top1_regret": 2.577808316497612,
+      "mae": 4.99736215945014,
+      "rmse": 7.549664883119324,
+      "r2": 0.770733314407394,
+      "spearman": 0.8959742169407069,
+      "top50_recall": 0.5700000000000001,
+      "mean_predicted_std": 5.7629567631342065,
+      "std_coverage": 0.685546875
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160518-train-soft-xgboost-soft-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-xgboost-soft-2026",
+      "created": "2026-10-29T16:05:18",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-soft-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 3.0,
+      "selected_temperature": 0.1,
+      "training_rows": 2048,
+      "dropped_rows": 0,
+      "weight_min": 1.0,
+      "weight_max": 3.999999996242331,
+      "effective_sample_size": 1389.6975628310097,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 72.64283276612763,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.724808141186368,
+      "conformal_std_1": 4.754255655764137,
+      "conformal_std_2": 6.194216040507309,
+      "conformal_std_3": 8.384626828390173
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160525-optimize-soft-xgboost-soft-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-soft-2026",
+      "created": "2026-10-29T16:05:25",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160518-train-soft-xgboost-soft-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-soft-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 102.01531219482422,
+      "predicted_std": 3.724808141186368,
+      "nearest_train_distance": 0.2727035552387098,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11355,
+      "optimizer_best_objective": 105.74012033601059,
+      "optimizer_best_mean": 102.01531219482422,
+      "optimizer_best_std": 3.724808141186368,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 3.0,
+      "model_selected_temperature": 0.1,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.999999996242331,
+      "model_effective_sample_size": 1389.6975628310097,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 72.64283276612763,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.724808141186368,
+      "model_conformal_std_1": 4.754255655764137,
+      "model_conformal_std_2": 6.194216040507309,
+      "model_conformal_std_3": 8.384626828390173
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160526-optimize-soft-xgboost-soft-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-soft-2027",
+      "created": "2026-10-29T16:05:26",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160518-train-soft-xgboost-soft-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-soft-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 102.75702667236328,
+      "predicted_std": 3.724808141186368,
+      "nearest_train_distance": 0.25970473487462964,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 10989,
+      "optimizer_best_objective": 106.48183481354965,
+      "optimizer_best_mean": 102.75702667236328,
+      "optimizer_best_std": 3.724808141186368,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 3.0,
+      "model_selected_temperature": 0.1,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.999999996242331,
+      "model_effective_sample_size": 1389.6975628310097,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 72.64283276612763,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.724808141186368,
+      "model_conformal_std_1": 4.754255655764137,
+      "model_conformal_std_2": 6.194216040507309,
+      "model_conformal_std_3": 8.384626828390173
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"soft\"\ntune = true\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160333-evaluate-soft-xgboost-step-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-xgboost-step-2026",
+      "created": "2026-10-29T16:03:33",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 73.47461093406352,
+      "v32_score_std": 5.838703817060322,
+      "v32_points_local_order": 19.507863496591263,
+      "v32_points_local_mae": 10.570227144632067,
+      "v32_points_global_order": 13.09118297862384,
+      "v32_points_global_mae": 11.402736100293538,
+      "v32_points_top1_regret": 18.902601213922825,
+      "v32_local_pair_accuracy": 0.778683764237018,
+      "v32_global_pair_accuracy": 0.9363727659541281,
+      "v32_local_mae": 6.633053407372829,
+      "v32_global_mae": 4.976391671427409,
+      "v32_top1_regret": 1.0653054828953827,
+      "mae": 4.976462616368591,
+      "rmse": 7.530747027384708,
+      "r2": 0.7718520837894546,
+      "spearman": 0.8968209888191644,
+      "top50_recall": 0.5800000000000001,
+      "mean_predicted_std": 5.838682689934611,
+      "std_coverage": 0.68798828125
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160351-train-soft-xgboost-step-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-xgboost-step-2026",
+      "created": "2026-10-29T16:03:51",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 2.0,
+      "selected_temperature": 0.3,
+      "training_rows": 2048,
+      "dropped_rows": 0,
+      "weight_min": 1.0,
+      "weight_max": 3.0,
+      "effective_sample_size": 1543.9766917293234,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 0.0,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.6331188703957022,
+      "conformal_std_1": 4.65331332810747,
+      "conformal_std_2": 5.907144974814728,
+      "conformal_std_3": 8.489017848495862
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160354-optimize-soft-xgboost-step-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-step-2026",
+      "created": "2026-10-29T16:03:54",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160351-train-soft-xgboost-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 99.19915771484375,
+      "predicted_std": 3.6331188703957022,
+      "nearest_train_distance": 0.2562824496704229,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11450,
+      "optimizer_best_objective": 102.83227658523946,
+      "optimizer_best_mean": 99.19915771484375,
+      "optimizer_best_std": 3.6331188703957022,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1543.9766917293234,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.6331188703957022,
+      "model_conformal_std_1": 4.65331332810747,
+      "model_conformal_std_2": 5.907144974814728,
+      "model_conformal_std_3": 8.489017848495862
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160355-optimize-soft-xgboost-step-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-step-2027",
+      "created": "2026-10-29T16:03:55",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160351-train-soft-xgboost-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-step-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 100.1493148803711,
+      "predicted_std": 3.6331188703957022,
+      "nearest_train_distance": 0.2681559401789624,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11427,
+      "optimizer_best_objective": 103.7824337507668,
+      "optimizer_best_mean": 100.1493148803711,
+      "optimizer_best_std": 3.6331188703957022,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1543.9766917293234,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.6331188703957022,
+      "model_conformal_std_1": 4.65331332810747,
+      "model_conformal_std_2": 5.907144974814728,
+      "model_conformal_std_3": 8.489017848495862
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160357-evaluate-soft-xgboost-trimmed-step-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-xgboost-trimmed-step-2026",
+      "created": "2026-10-29T16:03:57",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-trimmed-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 73.6639313860212,
+      "v32_score_std": 7.390313416840126,
+      "v32_points_local_order": 21.608960821342677,
+      "v32_points_local_mae": 10.609725586317628,
+      "v32_points_global_order": 12.843221431743208,
+      "v32_points_global_mae": 11.303394805556485,
+      "v32_points_top1_regret": 17.298628741061215,
+      "v32_local_pair_accuracy": 0.8086994403048955,
+      "v32_global_pair_accuracy": 0.928107381058107,
+      "v32_local_mae": 6.550650769694171,
+      "v32_global_mae": 5.158029883157285,
+      "v32_top1_regret": 2.8742288987985374,
+      "mae": 5.158071370982491,
+      "rmse": 8.385686137959521,
+      "r2": 0.7171456415583592,
+      "spearman": 0.8876524418490241,
+      "top50_recall": 0.64,
+      "mean_predicted_std": 5.759619872422492,
+      "std_coverage": 0.692138671875
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160414-train-soft-xgboost-trimmed-step-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-xgboost-trimmed-step-2026",
+      "created": "2026-10-29T16:04:14",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-trimmed-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 2.0,
+      "selected_temperature": 0.3,
+      "training_rows": 1843,
+      "dropped_rows": 205,
+      "weight_min": 1.0,
+      "weight_max": 3.0,
+      "effective_sample_size": 1384.3442815249266,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 0.0,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.3646498538833116,
+      "conformal_std_1": 4.323236553396565,
+      "conformal_std_2": 6.0110138524929075,
+      "conformal_std_3": 8.740796070136057
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160417-optimize-soft-xgboost-trimmed-step-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-trimmed-step-2026",
+      "created": "2026-10-29T16:04:17",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160414-train-soft-xgboost-trimmed-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-trimmed-step-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 108.68453979492188,
+      "predicted_std": 3.3646498538833116,
+      "nearest_train_distance": 0.2184193173968454,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 112.04918964880518,
+      "optimizer_best_mean": 108.68453979492188,
+      "optimizer_best_std": 3.3646498538833116,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 1843,
+      "model_dropped_rows": 205,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1384.3442815249266,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.3646498538833116,
+      "model_conformal_std_1": 4.323236553396565,
+      "model_conformal_std_2": 6.0110138524929075,
+      "model_conformal_std_3": 8.740796070136057
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160419-optimize-soft-xgboost-trimmed-step-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-trimmed-step-2027",
+      "created": "2026-10-29T16:04:19",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160414-train-soft-xgboost-trimmed-step-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-trimmed-step-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 109.96783447265625,
+      "predicted_std": 3.3646498538833116,
+      "nearest_train_distance": 0.22927996423842995,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11945,
+      "optimizer_best_objective": 113.33248432653956,
+      "optimizer_best_mean": 109.96783447265625,
+      "optimizer_best_std": 3.3646498538833116,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 1843,
+      "model_dropped_rows": 205,
+      "model_weight_min": 1.0,
+      "model_weight_max": 3.0,
+      "model_effective_sample_size": 1384.3442815249266,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.3646498538833116,
+      "model_conformal_std_1": 4.323236553396565,
+      "model_conformal_std_2": 6.0110138524929075,
+      "model_conformal_std_3": 8.740796070136057
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"trimmed-step\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160310-evaluate-soft-xgboost-unweighted-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "soft-xgboost-unweighted-2026",
+      "created": "2026-10-29T16:03:10",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-unweighted-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 70.62009097517753,
+      "v32_score_std": 6.399937775437789,
+      "v32_points_local_order": 19.001538454963573,
+      "v32_points_local_mae": 10.372517077959865,
+      "v32_points_global_order": 13.105124301205365,
+      "v32_points_global_mae": 11.422574705557901,
+      "v32_points_top1_regret": 16.718336435490837,
+      "v32_local_pair_accuracy": 0.7714505493566225,
+      "v32_global_pair_accuracy": 0.9368374767068456,
+      "v32_local_mae": 7.059319639746411,
+      "v32_global_mae": 4.940389041521232,
+      "v32_top1_regret": 3.6220588890955696,
+      "mae": 4.940489691619852,
+      "rmse": 7.463038020883339,
+      "r2": 0.7759278886135637,
+      "spearman": 0.8967526525432982,
+      "top50_recall": 0.54,
+      "mean_predicted_std": 5.717607000437386,
+      "std_coverage": 0.68603515625
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160327-train-soft-xgboost-unweighted-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "soft-xgboost-unweighted-2026",
+      "created": "2026-10-29T16:03:27",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-unweighted-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "selected_alpha": 2.0,
+      "selected_temperature": 0.3,
+      "training_rows": 2048,
+      "dropped_rows": 0,
+      "weight_min": 1.0,
+      "weight_max": 1.0,
+      "effective_sample_size": 2048.0,
+      "cutoff": 148.08475300975843,
+      "target_std": 15.767298536933115,
+      "inner_selected_score": 0.0,
+      "conformal_edge_0": 0.27659507371372566,
+      "conformal_edge_1": 0.38334693041200657,
+      "conformal_edge_2": 0.5017850106249211,
+      "conformal_std_0": 3.5496039040316827,
+      "conformal_std_1": 4.329703000646551,
+      "conformal_std_2": 6.006054789735355,
+      "conformal_std_3": 8.59028851801064
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160330-optimize-soft-xgboost-unweighted-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-unweighted-2026",
+      "created": "2026-10-29T16:03:30",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160327-train-soft-xgboost-unweighted-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-unweighted-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 103.94805908203125,
+      "predicted_std": 3.5496039040316827,
+      "nearest_train_distance": 0.22252678788007443,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11996,
+      "optimizer_best_objective": 107.49766298606293,
+      "optimizer_best_mean": 103.94805908203125,
+      "optimizer_best_std": 3.5496039040316827,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 1.0,
+      "model_effective_sample_size": 2048.0,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.5496039040316827,
+      "model_conformal_std_1": 4.329703000646551,
+      "model_conformal_std_2": 6.006054789735355,
+      "model_conformal_std_3": 8.59028851801064
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-160332-optimize-soft-xgboost-unweighted-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "soft-xgboost-unweighted-2027",
+      "created": "2026-10-29T16:03:32",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-160327-train-soft-xgboost-unweighted-2026"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/soft-xgboost-unweighted-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 101.57147979736328,
+      "predicted_std": 3.5496039040316827,
+      "nearest_train_distance": 0.26708495929224485,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11640,
+      "optimizer_best_objective": 105.12108370139497,
+      "optimizer_best_mean": 101.57147979736328,
+      "optimizer_best_std": 3.5496039040316827,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_selected_alpha": 2.0,
+      "model_selected_temperature": 0.3,
+      "model_training_rows": 2048,
+      "model_dropped_rows": 0,
+      "model_weight_min": 1.0,
+      "model_weight_max": 1.0,
+      "model_effective_sample_size": 2048.0,
+      "model_cutoff": 148.08475300975843,
+      "model_target_std": 15.767298536933115,
+      "model_inner_selected_score": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.5496039040316827,
+      "model_conformal_std_1": 4.329703000646551,
+      "model_conformal_std_2": 6.006054789735355,
+      "model_conformal_std_3": 8.59028851801064
+    },
+    "config": "# Controlled weighting study; thresholds are fitted on training labels only.\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"lowramp-boosted\"\n[model.params]\nfamily = \"xgboost\"\nstrategy = \"unweighted\"\ntune = false\nalpha = 2.0\nfraction = 0.2\ntemperature = 0.3\nalpha_grid = [1.0, 3.0]\ntemperature_grid = [0.1, 0.3]\nlearning_rate = 0.1\niterations = 600\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-125052-optimize-histgb-v32": {
+    "meta": {
+      "kind": "optimize",
+      "name": "histgb-v32",
+      "created": "2026-10-29T12:50:52",
+      "options": {
+        "n": 50,
+        "model_run": null
+      },
+      "source_config": "experiments/histgb-v32.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "3f1a6d74985edd008895896aafa9d21b9bbdb9e8",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 106.87748744169936,
+      "predicted_std": 3.359982978703235,
+      "nearest_train_distance": 0.2549318373320666,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 110.23747042040259,
+      "optimizer_best_mean": 106.87748744169936,
+      "optimizer_best_std": 3.359982978703235,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_weighted_rows": 0.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.359982978703235,
+      "model_conformal_std_1": 4.069534087111397,
+      "model_conformal_std_2": 5.374074072714059,
+      "model_conformal_std_3": 8.529176076155549
+    },
+    "config": "# Histogram gradient boosting (B's histgb_low80_full settings) on the frozen 2x5 splits with the v3.2 score,\n# searched by the trust-region Dirichlet optimizer.\n\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"histgb\"\n\n[model.params]\nmax_leaf_nodes = 15\nlearning_rate = 0.05\nmax_iter = 600\nl2_regularization = 0.0\nlow_fraction = 0.2\nlow_weight = 1.0\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"  # folds and seed come from frozen_data/; do not set them here\ntop_k = 50\n"
+  },
+  "20261029-125052-optimize-xgboost-v32": {
+    "meta": {
+      "kind": "optimize",
+      "name": "xgboost-v32",
+      "created": "2026-10-29T12:50:52",
+      "options": {
+        "n": 50,
+        "model_run": null
+      },
+      "source_config": "experiments/xgboost-v32.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "3f1a6d74985edd008895896aafa9d21b9bbdb9e8",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 99.39921569824219,
+      "predicted_std": 3.4436398946563713,
+      "nearest_train_distance": 0.27155817201458304,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 102.84285559289856,
+      "optimizer_best_mean": 99.39921569824219,
+      "optimizer_best_std": 3.4436398946563713,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_weighted_rows": 409.0,
+      "model_conformal_edge_0": 0.27659507371372566,
+      "model_conformal_edge_1": 0.38334693041200657,
+      "model_conformal_edge_2": 0.5017850106249211,
+      "model_conformal_std_0": 3.4436398946563713,
+      "model_conformal_std_1": 4.280744969673106,
+      "model_conformal_std_2": 5.80033982467372,
+      "model_conformal_std_3": 8.445723811055068
+    },
+    "config": "# XGBoost (B's xgb_w20x3_full settings: lowest 20% ramping weighted 3x) on the frozen 2x5 splits with the\n# v3.2 score, searched by the trust-region Dirichlet optimizer.\n\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"xgboost\"\n\n[model.params]\nmax_depth = 3\nlearning_rate = 0.1\nn_estimators = 600\nsubsample = 0.9\nlow_fraction = 0.2\nlow_weight = 3.0\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"  # folds and seed come from frozen_data/; do not set them here\ntop_k = 50\n"
+  },
+  "20261029-125052-optimize-extratrees-default": {
+    "meta": {
+      "kind": "optimize",
+      "name": "extratrees-default",
+      "created": "2026-10-29T12:50:52",
+      "options": {
+        "n": 50,
+        "model_run": null
+      },
+      "source_config": "experiments/extratrees-default.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "3f1a6d74985edd008895896aafa9d21b9bbdb9e8",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 121.30421196097777,
+      "predicted_std": 3.0233140404992493,
+      "nearest_train_distance": 0.036148750131714376,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 124.32752600147701,
+      "optimizer_best_mean": 121.30421196097777,
+      "optimizer_best_std": 3.023314040499249,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_n_estimators": 300.0
+    },
+    "config": "# Extra-trees surrogate searched by the trust-region Dirichlet optimizer (gradient-free pair).\n\n[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"extratrees\"\n\n[model.params]\nn_estimators = 300\nmin_samples_leaf = 2\nmax_features = 0.5\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nfolds = 5\nseed = 2026\ntop_k = 50\n"
+  }
+}

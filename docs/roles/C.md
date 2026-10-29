@@ -37,9 +37,12 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 - [x] Consolidate methods, decisions, provenance and handoff in
       [the research log](../optimizer-research-2026-10-29.md).
 - [ ] Explore CMA-ES with softmax parametrisation if further optimizer comparisons are justified.
-- [ ] Complete the full-support sigmoid-weighting study requested by the user: training-only inner
-      selection, unchanged frozen-v32 evaluation, controlled trimming/step/uniform comparisons,
-      CLI candidate searches and a traceable parameter handoff (`analysis/soft_weighting/`).
+- [x] Complete the full-support sigmoid-weighting study: training-only inner selection, eight unchanged
+      frozen-v32 evaluations and sixteen CLI candidate searches (`analysis/soft_weighting/delivery/`).
+      Sigmoid XGBoost 72.4696 beats uniform 70.6201 but trails full-data step weighting 73.4746.
+      Sigmoid HistGB 71.9815 trails uniform 72.3465. Retain step XGBoost and the original W default;
+      the new point only improves expanded risk by .3045. 97 tests pass, 1 known xfail; evaluation
+      and selected search reproduce. No measured improvement or new SOTA is established.
 
 ## Backlog — online (weeks 8–10)
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)

@@ -115,6 +115,16 @@ behavior). The selected consensus search reproduced within rtol=1e-9; exported w
 simplex checks, and predictions recomputed from those weights match the stored values.
 Frozen data, evaluation protocols and course-provided files were preserved.
 
+## Round 3: full-support soft weighting
+
+The subsequent full-support weighting comparison is complete in
+[the third-round handoff](../analysis/soft_weighting/delivery/README.md): eight frozen-v32 workflows,
+32 CLI runs and guarded training-only sigmoid tuning. Sigmoid XGBoost scores 72.4696 versus uniform
+70.6201, but does not beat full-support step XGBoost at 73.4746; sigmoid HistGB also fails to improve
+on uniform. The original controller weights remain recommended. The updated suite has 97 passing
+tests and 1 known expected failure. Full parameters, source predictions and reproduction evidence
+are included in that handoff; no simulator measurements were added.
+
 ## Next work
 
 Use real-evaluator results to compare the default and challenger if the course submission budget

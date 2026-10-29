@@ -1,0 +1,14 @@
+{
+  "histgb": {
+    "soft_passes_outer_guard": false,
+    "soft_vs_uniform_choice": "histgb-unweighted",
+    "highest_mean_full_support_workflow": "histgb-unweighted",
+    "soft_minus_uniform_score": -0.3650201253826282
+  },
+  "xgboost": {
+    "soft_passes_outer_guard": true,
+    "soft_vs_uniform_choice": "xgboost-soft",
+    "highest_mean_full_support_workflow": "xgboost-step",
+    "soft_minus_uniform_score": 1.8495265879140703
+  }
+}

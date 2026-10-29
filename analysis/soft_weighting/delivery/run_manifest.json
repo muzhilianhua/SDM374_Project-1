@@ -1,0 +1,82 @@
+[
+  {
+    "family": "histgb",
+    "strategy": "soft",
+    "optimize": [
+      "20261029-160430-optimize-soft-histgb-soft-2026",
+      "20261029-160431-optimize-soft-histgb-soft-2027"
+    ],
+    "evaluate": "20261029-160232-evaluate-soft-histgb-soft-2026",
+    "train": "20261029-160418-train-soft-histgb-soft-2026"
+  },
+  {
+    "family": "histgb",
+    "strategy": "step",
+    "optimize": [
+      "20261029-160228-optimize-soft-histgb-step-2026",
+      "20261029-160230-optimize-soft-histgb-step-2027"
+    ],
+    "evaluate": "20261029-160156-evaluate-soft-histgb-step-2026",
+    "train": "20261029-160224-train-soft-histgb-step-2026"
+  },
+  {
+    "family": "histgb",
+    "strategy": "trimmed-step",
+    "optimize": [
+      "20261029-160306-optimize-soft-histgb-trimmed-step-2026",
+      "20261029-160308-optimize-soft-histgb-trimmed-step-2027"
+    ],
+    "evaluate": "20261029-160232-evaluate-soft-histgb-trimmed-step-2026",
+    "train": "20261029-160302-train-soft-histgb-trimmed-step-2026"
+  },
+  {
+    "family": "histgb",
+    "strategy": "unweighted",
+    "optimize": [
+      "20261029-160228-optimize-soft-histgb-unweighted-2026",
+      "20261029-160230-optimize-soft-histgb-unweighted-2027"
+    ],
+    "evaluate": "20261029-160156-evaluate-soft-histgb-unweighted-2026",
+    "train": "20261029-160224-train-soft-histgb-unweighted-2026"
+  },
+  {
+    "family": "xgboost",
+    "strategy": "soft",
+    "optimize": [
+      "20261029-160525-optimize-soft-xgboost-soft-2026",
+      "20261029-160526-optimize-soft-xgboost-soft-2027"
+    ],
+    "evaluate": "20261029-160420-evaluate-soft-xgboost-soft-2026",
+    "train": "20261029-160518-train-soft-xgboost-soft-2026"
+  },
+  {
+    "family": "xgboost",
+    "strategy": "step",
+    "optimize": [
+      "20261029-160354-optimize-soft-xgboost-step-2026",
+      "20261029-160355-optimize-soft-xgboost-step-2027"
+    ],
+    "evaluate": "20261029-160333-evaluate-soft-xgboost-step-2026",
+    "train": "20261029-160351-train-soft-xgboost-step-2026"
+  },
+  {
+    "family": "xgboost",
+    "strategy": "trimmed-step",
+    "optimize": [
+      "20261029-160417-optimize-soft-xgboost-trimmed-step-2026",
+      "20261029-160419-optimize-soft-xgboost-trimmed-step-2027"
+    ],
+    "evaluate": "20261029-160357-evaluate-soft-xgboost-trimmed-step-2026",
+    "train": "20261029-160414-train-soft-xgboost-trimmed-step-2026"
+  },
+  {
+    "family": "xgboost",
+    "strategy": "unweighted",
+    "optimize": [
+      "20261029-160330-optimize-soft-xgboost-unweighted-2026",
+      "20261029-160332-optimize-soft-xgboost-unweighted-2027"
+    ],
+    "evaluate": "20261029-160310-evaluate-soft-xgboost-unweighted-2026",
+    "train": "20261029-160327-train-soft-xgboost-unweighted-2026"
+  }
+]

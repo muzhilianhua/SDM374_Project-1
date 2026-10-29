@@ -1,5 +1,7 @@
 # Full-support soft target weighting
 
+Completed results, recommended parameters and weights: [delivery/README.md](delivery/README.md).
+
 Role C's task-required surrogate extension on `azq`. No shared interface, original plugin,
 frozen release or evaluation protocol is changed. All model/search evidence uses the `sdm` CLI.
 
