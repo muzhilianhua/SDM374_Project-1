@@ -1,0 +1,21 @@
+# Offline candidate study: fixed model, optimizer seed varied, conservative trust radius.
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "histgb"
+
+[model.params]
+seed = 2026
+
+[optimizer]
+name = "trust-dirichlet"
+
+[optimizer.params]
+risk = 1.0
+max_distance_ratio = 0.75
+seed = 2027
+
+[evaluate]
+protocol = "frozen-v32"
+top_k = 50

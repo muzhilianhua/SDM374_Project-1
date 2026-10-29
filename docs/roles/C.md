@@ -14,6 +14,10 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 ## Backlog — offline (until the week 8 lab)
 - [x] Reference optimizer `trust-dirichlet` (A, 2026-10-25): gradient-free, distinct batches, trust region,
       pessimistic objective. Improve on it (CMA-ES, better batch diversity) rather than on frozen `pgd`
+- [x] Add `simplex-de`: gradient-free differential evolution with simplex projection, a trust region,
+      observed-row exclusion, distinct batches and deterministic seeded search (2026-10-29).
+- [ ] Finish the two-seed HistGB/XGBoost optimizer comparison and export the offline submission with
+      cross-model selection evidence (`analysis/offline_submission/`).
 - [ ] Read `analysis/coupling/README.md` first: on ridge2 the optimizer choice barely changes the result
 - [ ] Optimizers on the 3 × 7 simplex: CMA-ES with softmax parametrisation, Dirichlet local perturbation
       around the best observed rows
