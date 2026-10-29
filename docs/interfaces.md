@@ -64,6 +64,7 @@ class MyOptimizer(Optimizer):
 | `extratrees` | model | extra-trees, std = spread across trees; no gradient (piecewise constant) |
 | `histgb` | model | scikit-learn histogram gradient boosting (B's `histgb_low80_full`); std = distance-binned conformal quantile of out-of-fold residuals (`models/_gbdt.py`); no gradient |
 | `xgboost` | model | XGBoost, 20% lowest-ramping rows weighted 3× (B's `xgb_w20x3_full`); same conformal std; single-threaded for reproducibility; no gradient; macOS needs `brew install libomp` |
+| `boosted-consensus` | model | unchanged HistGB/XGBoost members; arithmetic mean prediction and a risk envelope in the `std` field so mean + std equals the worse member mean + std; this envelope is not a calibrated standard deviation; use optimizer risk=1 for direct minimax search |
 | `pgd` | optimizer | course baseline (frozen); needs `gradient` + `smoothness`; returns duplicates for n > 1 |
 | `trust-dirichlet` | optimizer | gradient-free Dirichlet local search from the best rows, inside `max_distance_ratio · median_spacing` of the data, ranks by mean + risk · std, distinct batches |
 | `simplex-de` | optimizer | gradient-free DE/rand/1/bin with per-building simplex projection, observed-row exclusion, distance trust region, and distinct batches ranked by mean + risk · std; default radius ratio 0.75 |

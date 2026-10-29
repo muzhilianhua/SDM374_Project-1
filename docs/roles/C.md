@@ -22,6 +22,9 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       108.9778/108.8717, distance ratio 0.5410. Real score unknown; ExtraTrees disagrees (125.2473).
       DE did not improve the cross-model selection score in this small fixed-budget comparison.
       82 tests passed, 1 known xfail; source optimizer run and final selection reproduce.
+- [ ] Direct HistGB/XGBoost consensus search at three radii and three seeds, followed by separate
+      five-subsample screening and five-subsample audit (`analysis/robust_search/`). Preserve the
+      original submission unless the predefined replacement gate passes; no real score is available.
 - [ ] Read `analysis/coupling/README.md` first: on ridge2 the optimizer choice barely changes the result
 - [ ] Optimizers on the 3 × 7 simplex: CMA-ES with softmax parametrisation, Dirichlet local perturbation
       around the best observed rows
