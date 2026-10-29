@@ -1,0 +1,48 @@
+{
+  "analysis_id": "20261029-consensus-audit-v1",
+  "screen_analysis_id": "20261029-consensus-screen-v1",
+  "replace_incumbent": false,
+  "chosen_index": 154,
+  "recommended_index": 0,
+  "challenger_source": {
+    "label": "joint_search",
+    "source_run": "20261029-132648-optimize-consensus-r075-2026",
+    "source_rank": 1,
+    "selectable": true,
+    "distance_ratio": 0.6381709229164247,
+    "eligible": true,
+    "histgb_full_mean": 107.80451210403616,
+    "histgb_full_std": 3.359982978703235,
+    "xgboost_full_mean": 107.27674865722656,
+    "xgboost_full_std": 3.4436398946563718,
+    "full_score": 111.16449508273938,
+    "screen_q90": 118.0427648383947,
+    "screen_mean": 115.83599911813016
+  },
+  "incumbent": {
+    "label": "incumbent",
+    "source_run": "20261029-125052-optimize-histgb-v32",
+    "source_rank": 16,
+    "selectable": true,
+    "distance_ratio": 0.541002129774171,
+    "eligible": true,
+    "histgb_full_mean": 108.9777625245508,
+    "histgb_full_std": 3.359982978703235,
+    "xgboost_full_mean": 108.87174224853516,
+    "xgboost_full_std": 3.4436398946563718,
+    "full_score": 112.33774550325404,
+    "screen_q90": 119.48426741536676,
+    "screen_mean": 117.55927561585494
+  },
+  "audit_challenger_minus_incumbent": [
+    -3.2983814817951327,
+    0.08748287057370874,
+    -2.4704360961914062,
+    -0.0169219970703125,
+    0.2427388259686296
+  ],
+  "audit_mean_delta": -1.0911035757029026,
+  "measured_score": null,
+  "gate": "better full-data and screening scores; all five audit paired deltas < 0; mean delta <= -1",
+  "limitation": "Training subsample stress test only. No real measurements or independent validation."
+}
