@@ -33,6 +33,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--reference-histgb", default="20261029-125052-optimize-histgb-v32")
+    parser.add_argument("--reference-xgboost", default="20261029-125052-optimize-xgboost-v32")
+    parser.add_argument("--reference-extratrees", default="20261029-125052-optimize-extratrees-default")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
     dataset = load_dataset(REPO_ROOT / "dataset_same8")
@@ -140,14 +143,21 @@ def main():
     for family in ("histgb", "xgboost"):
         label = family + "-soft"
         judges.append(label)
-        run = resolve_run("20261029-125052-optimize-" + ("histgb-v32" if family == "histgb" else "xgboost-v32"))
+        run = resolve_run(getattr(args, "reference_" + family))
         key = "original-" + family
         table[key + "_mean"], table[key + "_std"] = run.load_model().predict(points)
         judges.append(key)
         inputs.extend([run.path / "model.pkl", run.path / "meta.json"])
-    extra_run = resolve_run("20261029-125052-optimize-extratrees-default")
+    extra_run = resolve_run(args.reference_extratrees)
     table["extratrees_mean"], table["extratrees_std"] = extra_run.load_model().predict(points)
     inputs.extend([extra_run.path / "model.pkl", extra_run.path / "meta.json"])
+    for ref in (args.reference_histgb, args.reference_xgboost, args.reference_extratrees):
+        run = resolve_run(ref)
+        meta = run.read_json("meta.json")
+        if meta["dataset"]["sha256"] != dataset.sha256 or meta["git"]["dirty"]:
+            raise ValueError("reference model must have clean, matching-dataset provenance")
+        evidence[run.id] = {"meta": meta, "metrics": run.read_json("metrics.json"),
+                            "config": run.config_path.read_text()}
     table["joint_risk"] = np.maximum.reduce([table[j + "_mean"] + table[j + "_std"] for j in judges])
     chosen = int(table[table.eligible].sort_values(["joint_risk", "distance_ratio"], kind="stable").index[0])
     table.to_csv(args.out / "candidate_scores.csv", index_label="point_index")
