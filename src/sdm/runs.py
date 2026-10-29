@@ -15,7 +15,7 @@ from typing import Any
 from .data import Dataset
 from .paths import DEFAULT_RUNS_DIR, REPO_ROOT
 
-PACKAGES = ("numpy", "pandas", "scipy", "scikit-learn")
+PACKAGES = ("numpy", "pandas", "scipy", "scikit-learn", "xgboost")
 # Only changes here make a run irreproducible from its recorded commit.
 TRACKED_FOR_DIRTY = ("src", "experiments", "pyproject.toml", "uv.lock")
 
