@@ -37,6 +37,9 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 - [x] Consolidate methods, decisions, provenance and handoff in
       [the research log](../optimizer-research-2026-10-29.md).
 - [ ] Explore CMA-ES with softmax parametrisation if further optimizer comparisons are justified.
+- [ ] Complete the full-support sigmoid-weighting study requested by the user: training-only inner
+      selection, unchanged frozen-v32 evaluation, controlled trimming/step/uniform comparisons,
+      CLI candidate searches and a traceable parameter handoff (`analysis/soft_weighting/`).
 
 ## Backlog — online (weeks 8–10)
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)

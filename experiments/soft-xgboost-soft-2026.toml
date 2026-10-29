@@ -1,0 +1,29 @@
+# Controlled weighting study; thresholds are fitted on training labels only.
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "lowramp-boosted"
+[model.params]
+family = "xgboost"
+strategy = "soft"
+tune = true
+alpha = 2.0
+fraction = 0.2
+temperature = 0.3
+alpha_grid = [1.0, 3.0]
+temperature_grid = [0.1, 0.3]
+learning_rate = 0.1
+iterations = 600
+seed = 2026
+
+[optimizer]
+name = "trust-dirichlet"
+[optimizer.params]
+risk = 1.0
+max_distance_ratio = 0.75
+seed = 2026
+
+[evaluate]
+protocol = "frozen-v32"
+top_k = 50
