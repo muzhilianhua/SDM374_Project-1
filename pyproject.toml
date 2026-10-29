@@ -11,6 +11,7 @@ dependencies = [
     "scipy==1.10.1",
     "scikit-learn==1.2.2",
     "xgboost==3.2.0",
+    "catboost==1.2.8",
 ]
 
 [project.scripts]

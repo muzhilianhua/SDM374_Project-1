@@ -1,0 +1,24 @@
+# Alternative-method discovery: fixed before evaluating outer scores.
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "method-study"
+[model.params]
+iterations = 600
+seed = 2026
+calib_folds = 3
+family = "gbdt"
+loss = "squared_error"
+depth = 3
+
+[optimizer]
+name = "trust-dirichlet"
+[optimizer.params]
+risk = 1.0
+max_distance_ratio = 0.75
+seed = 2026
+
+[evaluate]
+protocol = "frozen-v32"
+top_k = 50
