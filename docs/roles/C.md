@@ -16,8 +16,12 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       pessimistic objective. Improve on it (CMA-ES, better batch diversity) rather than on frozen `pgd`
 - [x] Add `simplex-de`: gradient-free differential evolution with simplex projection, a trust region,
       observed-row exclusion, distinct batches and deterministic seeded search (2026-10-29).
-- [ ] Finish the two-seed HistGB/XGBoost optimizer comparison and export the offline submission with
-      cross-model selection evidence (`analysis/offline_submission/`).
+- [x] Finish the two-seed HistGB/XGBoost optimizer comparison and export the offline submission with
+      cross-model selection evidence (`analysis/offline_submission/submission/`, 2026-10-29).
+      Recommended: proposal 16 from `20261029-125052-optimize-histgb-v32`; HistGB/XGBoost predictions
+      108.9778/108.8717, distance ratio 0.5410. Real score unknown; ExtraTrees disagrees (125.2473).
+      DE did not improve the cross-model selection score in this small fixed-budget comparison.
+      82 tests passed, 1 known xfail; source optimizer run and final selection reproduce.
 - [ ] Read `analysis/coupling/README.md` first: on ridge2 the optimizer choice barely changes the result
 - [ ] Optimizers on the 3 × 7 simplex: CMA-ES with softmax parametrisation, Dirichlet local perturbation
       around the best observed rows

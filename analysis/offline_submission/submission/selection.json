@@ -1,0 +1,36 @@
+{
+  "run": "20261029-125052-optimize-histgb-v32",
+  "rank": 16,
+  "kind": "proposal",
+  "distance_ratio": 0.541002129774171,
+  "histgb_mean": 108.9777625245508,
+  "histgb_std": 3.359982978703235,
+  "xgboost_mean": 108.87174224853516,
+  "xgboost_std": 3.4436398946563713,
+  "extratrees_mean": 125.24726406989583,
+  "extratrees_std": 7.570337256969309,
+  "ridge2_mean": 95.5530686022449,
+  "ridge2_std": 9.359590236617361,
+  "selection_score": 112.33774550325403,
+  "boosted_disagreement": 0.10602027601564146,
+  "eligible": true,
+  "source_index_zero_based": 15,
+  "raw_to_export_max_abs_change": 6.329931079296358e-09,
+  "best_observed_actual": 115.76481925917324,
+  "measured_score": null,
+  "sensitivity": {
+    "histgb": {
+      "median": 110.91331634851511,
+      "q10": 109.36454168547516,
+      "q90": 111.94722141466391
+    },
+    "xgboost": {
+      "median": 109.20877456665039,
+      "q10": 108.00104751586915,
+      "q90": 111.11269836425781
+    },
+    "median_perturbation_distance": 0.030487053989151452
+  },
+  "selection_rule": "min max(histgb mean + std, xgboost mean + std), distance_ratio <= 0.75",
+  "warning": "Heuristic risk penalties, not calibrated confidence bounds for optimized points. Model agreement is not independent validation. ExtraTrees is an additional diagnostic."
+}
