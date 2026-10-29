@@ -48,6 +48,10 @@ and record the new decision here with a date.
 
 ## Known issues
 
+- `xgboost` results can differ slightly across operating systems and CPUs (floating-point order in the
+  library), so `sdm reproduce` may report small mismatches on another machine. Reproduce on the machine
+  that made the run; compare across machines with a tolerance. Run provenance records the xgboost version.
+
 - `pgd` returns duplicate rows when `n > 1` (all starts converge to the same point). Online rounds need
   distinct points. Owner: C. Tracked by the `xfail` in `tests/test_plugin_contract.py`.
 - The baseline W* is an extrapolation: nearest training row 0.66 away vs. typical spacing 0.38; predicted
