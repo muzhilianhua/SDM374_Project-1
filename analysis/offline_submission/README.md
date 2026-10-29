@@ -15,7 +15,7 @@ queries, not real-evaluator calls. This is a small, approximately budget-matched
 Generate every candidate through `sdm optimize` so it has a run ID. `--model-run` may reuse
 the corresponding original optimize run's fitted model, avoiding any refitting differences.
 
-`select.py` consumes recorded proposals and judges them with saved models. Its rule is fixed:
+`select_candidates.py` consumes recorded proposals and judges them with saved models. Its rule is fixed:
 minimize the worse of HistGB/XGBoost `mean + std`, among novel candidates within distance ratio
 0.75. Ridge and ExtraTrees provide additional diagnostics, not votes in this selection rule,
 because their frozen-v32 first-choice errors are larger. Ranking uses the eight-decimal exported
@@ -31,7 +31,7 @@ accuracy. Only the real evaluator can establish the submitted weights' score.
 Example (substitute the recorded run IDs):
 
 ```bash
-env -u PYTHONPATH uv run --group gui python analysis/offline_submission/select.py \
+env -u PYTHONPATH uv run --group gui python analysis/offline_submission/select_candidates.py \
   --proposals <optimize-run-1> <optimize-run-2> \
   --judges histgb=<histgb-model-run> xgboost=<xgboost-model-run> extratrees=<extratrees-model-run> ridge2=<ridge-run> \
   --evaluations histgb=<histgb-v32-evaluate-run> xgboost=<xgboost-v32-evaluate-run> \
