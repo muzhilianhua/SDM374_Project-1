@@ -43,9 +43,13 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       Sigmoid HistGB 71.9815 trails uniform 72.3465. Retain step XGBoost and the original W default;
       the new point only improves expanded risk by .3045. 97 tests pass, 1 known xfail; evaluation
       and selected search reproduce. No measured improvement or new SOTA is established.
-- [ ] Broaden the search to CatBoost, robust/quantile losses, pairwise regression, explicit
+- [x] Broaden the search to CatBoost, robust/quantile losses, pairwise regression, explicit
       interactions, kernel geometry and convex ensembles; freeze discovery selection before a
-      matched model-seed audit (`analysis/method_expansion/`).
+      matched model-seed audit (`analysis/method_expansion/delivery/`). Fifteen recipes and 64
+      CLI evidence runs; OOF stack passes the gate: mean score 75.3591 vs reference 73.1322,
+      global MAE improves at every seed, average regret 1.1078 vs 1.7181. Recommend the stack
+      surrogate recipe; preserve operational W. New CatBoost-search rank6 W is exploratory,
+      with no real evaluation. 109 tests pass, 1 known xfail; evaluation and search reproduce.
 
 ## Backlog — online (weeks 8–10)
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)

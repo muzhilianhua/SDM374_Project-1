@@ -1,0 +1,19 @@
+{
+  "replace_model": true,
+  "chosen_label": "blend-stack",
+  "mean_score_challenger": 75.35905138114855,
+  "mean_score_reference": 73.13216617965249,
+  "mean_regret_challenger": 1.1078203700590163,
+  "mean_regret_reference": 1.7180503473893018,
+  "score_deltas": {
+    "2026": 1.6390475419533317,
+    "2027": 1.300980479326526,
+    "2028": 3.7406275832083224
+  },
+  "mae_ratios": {
+    "2026": 0.9430969562553424,
+    "2027": 0.942012562053068,
+    "2028": 0.9442624304700178
+  },
+  "measured_score": null
+}

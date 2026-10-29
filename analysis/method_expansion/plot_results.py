@@ -35,12 +35,15 @@ def main():
     left.set_title("15 methods: discovery seed 2026",loc="left",fontweight="bold")
     left.legend(loc="lower right",fontsize=8)
     right.scatter(table.mae,table.v32_top1_regret,c=colors,s=55,alpha=.9)
+    offsets={"cat-rmse":(4,-12),"cat-weighted":(4,6)}
     for _,row in table.iterrows():
-        right.annotate(row.label,(row.mae,row.v32_top1_regret),xytext=(4,4),textcoords="offset points",fontsize=7)
+        right.annotate(row.label,(row.mae,row.v32_top1_regret),
+            xytext=offsets.get(row.label,(4,4)),textcoords="offset points",fontsize=7)
     right.scatter([ref["mae"]],[ref["v32_top1_regret"]],marker="*",s=180,color="#af5139",zorder=5)
     right.set_xlabel("Global MAE (lower is better)")
     right.set_ylabel("First-choice regret (lower is better)")
     right.set_title("Accuracy and candidate selection",loc="left",fontweight="bold")
+    right.set_xlim(table.mae.min()-.08,table.mae.max()+.23)
     right.grid(alpha=.15)
     fig.suptitle("Alternative surrogate methods",fontsize=16,fontweight="bold")
     fig.supxlabel("Green: meets prespecified discovery guard. Reused benchmark; no simulator measurements.",fontsize=9)

@@ -125,6 +125,29 @@ on uniform. The original controller weights remain recommended. The updated suit
 tests and 1 known expected failure. Full parameters, source predictions and reproduction evidence
 are included in that handoff; no simulator measurements were added.
 
+## Round 4: broader model and objective exploration
+
+The [alternative-method handoff](../analysis/method_expansion/delivery/README.md) records 15 fixed
+recipes: CatBoost, robust/quantile GBDT, pseudo-Huber XGBoost, explicit interactions, pairwise losses,
+raw/Hellinger kernel ridge and fixed/OOF-learned convex ensembles. Sixty discovery CLI runs have
+clean source commit `076b75f`; four matched seed-audit runs have clean `8c39898` (model code unchanged).
+This task-required model work extends outside role C's usual paths without changing shared interfaces.
+
+The discovery-selected OOF stack scores 75.1137 at seed2026; weighted CatBoost is close at75.0766.
+Freeze the stack before auditing it and the step-XGBoost reference at seeds2027/2028. Its three-seed
+mean is75.3591 versus73.1322; MAE improves at all three seeds and average first-choice regret falls
+to1.1078 from1.7181. The prespecified model-replacement guard passes. Recommend the stacking recipe
+in `experiments/method-blend-stack.toml`, not a retrospectively selected seed. Full-data blend weights
+are .2920246/.4437868/.2641886 for XGBoost/CatBoost/HistGB; each outer fit relearns them.
+
+The expanded candidate panel prefers CatBoost-search proposal6 from
+`20261029-171333-optimize-method-cat-weighted-search2026`, distance ratio .6450, risk116.9736
+versus incumbent119.9333 within that same panel. This W is exploratory: no separate candidate audit
+or real-evaluator call exists, and ExtraTrees remains pessimistic. Preserve the old operational W.
+Kernel models and tested pairwise losses underperform; retain their negative results in the report.
+The suite has109 passing tests and1 known xfail; selected model evaluation and source search reproduce.
+Reused frozen scores and sensitivity seeds do not establish independent SOTA or measured improvement.
+
 ## Next work
 
 Use real-evaluator results to compare the default and challenger if the course submission budget

@@ -1,0 +1,155 @@
+{
+  "cases": [
+    {
+      "label": "blend-fixed",
+      "config": "experiments/method-blend-fixed.toml",
+      "optimize": [
+        "20261029-171259-optimize-method-blend-fixed-search2026",
+        "20261029-171301-optimize-method-blend-fixed-search2027"
+      ],
+      "evaluate": "20261029-171154-evaluate-method-blend-fixed",
+      "train": "20261029-171251-train-method-blend-fixed"
+    },
+    {
+      "label": "blend-stack",
+      "config": "experiments/method-blend-stack.toml",
+      "optimize": [
+        "20261029-171259-optimize-method-blend-stack-search2026",
+        "20261029-171301-optimize-method-blend-stack-search2027"
+      ],
+      "evaluate": "20261029-171154-evaluate-method-blend-stack",
+      "train": "20261029-171251-train-method-blend-stack"
+    },
+    {
+      "label": "cat-mae",
+      "config": "experiments/method-cat-mae.toml",
+      "optimize": [
+        "20261029-171226-optimize-method-cat-mae-search2026",
+        "20261029-171228-optimize-method-cat-mae-search2027"
+      ],
+      "evaluate": "20261029-171154-evaluate-method-cat-mae",
+      "train": "20261029-171222-train-method-cat-mae"
+    },
+    {
+      "label": "cat-rmse",
+      "config": "experiments/method-cat-rmse.toml",
+      "optimize": [
+        "20261029-171300-optimize-method-cat-rmse-search2026",
+        "20261029-171302-optimize-method-cat-rmse-search2027"
+      ],
+      "evaluate": "20261029-171230-evaluate-method-cat-rmse",
+      "train": "20261029-171256-train-method-cat-rmse"
+    },
+    {
+      "label": "cat-weighted",
+      "config": "experiments/method-cat-weighted.toml",
+      "optimize": [
+        "20261029-171333-optimize-method-cat-weighted-search2026",
+        "20261029-171335-optimize-method-cat-weighted-search2027"
+      ],
+      "evaluate": "20261029-171303-evaluate-method-cat-weighted",
+      "train": "20261029-171329-train-method-cat-weighted"
+    },
+    {
+      "label": "gbdt-huber",
+      "config": "experiments/method-gbdt-huber.toml",
+      "optimize": [
+        "20261029-171542-optimize-method-gbdt-huber-search2026",
+        "20261029-171544-optimize-method-gbdt-huber-search2027"
+      ],
+      "evaluate": "20261029-171303-evaluate-method-gbdt-huber",
+      "train": "20261029-171523-train-method-gbdt-huber"
+    },
+    {
+      "label": "gbdt-median",
+      "config": "experiments/method-gbdt-median.toml",
+      "optimize": [
+        "20261029-171538-optimize-method-gbdt-median-search2026",
+        "20261029-171540-optimize-method-gbdt-median-search2027"
+      ],
+      "evaluate": "20261029-171304-evaluate-method-gbdt-median",
+      "train": "20261029-171519-train-method-gbdt-median"
+    },
+    {
+      "label": "gbdt-square",
+      "config": "experiments/method-gbdt-square.toml",
+      "optimize": [
+        "20261029-171557-optimize-method-gbdt-square-search2026",
+        "20261029-171558-optimize-method-gbdt-square-search2027"
+      ],
+      "evaluate": "20261029-171337-evaluate-method-gbdt-square",
+      "train": "20261029-171538-train-method-gbdt-square"
+    },
+    {
+      "label": "kernel-hellinger",
+      "config": "experiments/method-kernel-hellinger.toml",
+      "optimize": [
+        "20261029-171547-optimize-method-kernel-hellinger-search2026",
+        "20261029-171549-optimize-method-kernel-hellinger-search2027"
+      ],
+      "evaluate": "20261029-171541-evaluate-method-kernel-hellinger",
+      "train": "20261029-171545-train-method-kernel-hellinger"
+    },
+    {
+      "label": "kernel-raw",
+      "config": "experiments/method-kernel-raw.toml",
+      "optimize": [
+        "20261029-171552-optimize-method-kernel-raw-search2026",
+        "20261029-171553-optimize-method-kernel-raw-search2027"
+      ],
+      "evaluate": "20261029-171546-evaluate-method-kernel-raw",
+      "train": "20261029-171550-train-method-kernel-raw"
+    },
+    {
+      "label": "pairwise-010",
+      "config": "experiments/method-pairwise-010.toml",
+      "optimize": [
+        "20261029-171615-optimize-method-pairwise-010-search2026",
+        "20261029-171617-optimize-method-pairwise-010-search2027"
+      ],
+      "evaluate": "20261029-171551-evaluate-method-pairwise-010",
+      "train": "20261029-171612-train-method-pairwise-010"
+    },
+    {
+      "label": "pairwise-030",
+      "config": "experiments/method-pairwise-030.toml",
+      "optimize": [
+        "20261029-171620-optimize-method-pairwise-030-search2026",
+        "20261029-171621-optimize-method-pairwise-030-search2027"
+      ],
+      "evaluate": "20261029-171555-evaluate-method-pairwise-030",
+      "train": "20261029-171616-train-method-pairwise-030"
+    },
+    {
+      "label": "pairwise-zero",
+      "config": "experiments/method-pairwise-zero.toml",
+      "optimize": [
+        "20261029-171621-optimize-method-pairwise-zero-search2026",
+        "20261029-171623-optimize-method-pairwise-zero-search2027"
+      ],
+      "evaluate": "20261029-171600-evaluate-method-pairwise-zero",
+      "train": "20261029-171618-train-method-pairwise-zero"
+    },
+    {
+      "label": "xgb-huber",
+      "config": "experiments/method-xgb-huber.toml",
+      "optimize": [
+        "20261029-171634-optimize-method-xgb-huber-search2026",
+        "20261029-171636-optimize-method-xgb-huber-search2027"
+      ],
+      "evaluate": "20261029-171619-evaluate-method-xgb-huber",
+      "train": "20261029-171632-train-method-xgb-huber"
+    },
+    {
+      "label": "xgb-interactions",
+      "config": "experiments/method-xgb-interactions.toml",
+      "optimize": [
+        "20261029-171720-optimize-method-xgb-interactions-search2026",
+        "20261029-171722-optimize-method-xgb-interactions-search2027"
+      ],
+      "evaluate": "20261029-171623-evaluate-method-xgb-interactions",
+      "train": "20261029-171714-train-method-xgb-interactions"
+    }
+  ],
+  "failures": []
+}

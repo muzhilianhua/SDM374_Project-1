@@ -62,6 +62,7 @@ The frozen data splits ([`frozen_data/`](frozen_data/README.md)) and the v3.2 sc
 | [`docs/decisions.md`](docs/decisions.md) | Settled decisions, known issues, open questions |
 | [`docs/optimizer-research-2026-10-29.md`](docs/optimizer-research-2026-10-29.md) | Role C research log, recommended weights, evidence and reproduction |
 | [`analysis/soft_weighting/delivery/README.md`](analysis/soft_weighting/delivery/README.md) | Full-support weighting comparison, nested evaluation and recommended parameters |
+| [`analysis/method_expansion/delivery/README.md`](analysis/method_expansion/delivery/README.md) | Fifteen alternative methods, matched seed audit, recommended OOF ensemble and exploratory weights |
 | [`docs/roles/`](docs/roles/) | Per-member mission, owned files, backlog and acceptance criteria |
 | `src/sdm/models/_template.py`, `src/sdm/optimizers/_template.py`, `experiments/_template.toml` | Starting points for new plugins and experiments |
 

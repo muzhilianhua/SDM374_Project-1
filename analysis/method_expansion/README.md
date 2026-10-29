@@ -3,6 +3,11 @@
 Continue on `azq` for role C. This task requires surrogate extensions under `models/` and a pinned
 CatBoost dependency; shared interfaces, prior plugins, frozen releases and scoring are unchanged.
 
+Completed results: [delivery report](delivery/README.md), [audit decision](delivery/audit_decision.json),
+[recommended model configuration](../../experiments/method-blend-stack.toml).
+The OOF ensemble passes the prespecified audit (three-seed mean 75.3591 vs 73.1322);
+the operational controller remains unchanged. This is reused-benchmark evidence, not measured R.
+
 ## Discovery scope fixed before inspecting scores
 
 Fifteen configurations cover:
