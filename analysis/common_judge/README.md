@@ -3,6 +3,10 @@
 Continue role C on `azq`. This is a comparison of **controller candidates using a fixed surrogate**,
 not a new surrogate leaderboard evaluation. The user explicitly defers real-simulator confirmation.
 
+Completed [results and exact exported weights](delivery/README.md): 13 of15 original seed2026
+top choices predict lower R than the same baseline W; fixed-blend top1 is109.3303 versus118.7316.
+All15 candidate pools contain a lower-predicted point after explicitly post-hoc reranking.
+
 ## Protocol fixed before computing this comparison
 
 - Fixed judge: the existing audited OOF-stacking recipe, **one unchanged full-data fit**, model seed

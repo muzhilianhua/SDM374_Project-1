@@ -148,6 +148,26 @@ Kernel models and tested pairwise losses underperform; retain their negative res
 The suite has109 passing tests and1 known xfail; selected model evaluation and source search reproduce.
 Reused frozen scores and sensitivity seeds do not establish independent SOTA or measured improvement.
 
+## Round 5: one fixed judge for all15 controller generators
+
+The user requested an intuitive R comparison with baseline W and deferred the real simulator.
+The [controlled comparison](../analysis/common_judge/delivery/README.md) scores all1500 existing
+proposals, root baseline W, current operational W and best measured row using the unchanged full-data
+stack judge `20261029-171251-train-method-blend-stack`. The comparison script and primary endpoint
+(seed2026/rank1) were committed at `fe7f882` before the CLI batch. No additional search or fitting occurs.
+
+Under this same judge, baseline W predicts118.7316, not Ridge's75.8957. Thirteen original top choices
+predict lower R. The leading original top choice is fixed-blend search seed2026/rank1 at109.3303
+(-7.9181%); OOF-stack top1 is109.5113. Fixed-blend seed2027/rank1 is109.1711 and is the best common-judge
+point among all1500, but is explicitly a secondary post-hoc choice. The existing operational W
+predicts112.0811. Exact primary/post-hoc weights for every method and unchanged baseline weights
+are archived for later simulation. No operational recommendation was automatically replaced.
+
+This controls the scoring model and baseline but not surrogate error. The judge shares models with
+the candidate generators, and baseline is further from the data (ratio1.7484 versus<=.75); these
+limitations preclude a measured-improvement claim. Replaying one CLI batch matches all1503 mean/proxy
+predictions within1e-9. Full suite:109 passed,1 known expected failure. No real evaluation budget used.
+
 ## Next work
 
 Use real-evaluator results to compare the default and challenger if the course submission budget

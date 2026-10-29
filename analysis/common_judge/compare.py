@@ -43,7 +43,9 @@ def predict(weights_path):
 def tables(inputs, predictions):
     weights = check_weights(inputs['weights'])
     rows = pd.DataFrame(inputs['rows'])
+    assert inputs['feature_order'] == list(FEATURES)
     assert len(rows) == len(weights) == len(predictions['predicted_mean']) == 1503
+    assert rows.point_index.tolist() == list(range(len(rows)))
     assert len(predictions['predicted_std']) == len(rows)
     rows['judge_mean'] = predictions['predicted_mean']
     rows['judge_proxy'] = predictions['predicted_std']
@@ -55,10 +57,17 @@ def tables(inputs, predictions):
     rows['reduction_pct'] = -100*rows.delta_vs_baseline/baseline.judge_mean
     rows['risk_delta_vs_baseline'] = rows.judge_mean_plus_proxy-baseline.judge_mean_plus_proxy
     rows['below_baseline'] = rows.delta_vs_baseline < 0
+    proposals = rows[rows.kind == 'proposal']
+    assert (proposals.distance_ratio <= .750001).all()
+    np.testing.assert_allclose(proposals.nearest_distance, proposals.source_nearest_distance,
+                               rtol=1e-7, atol=1e-9)
     summaries = []
     for label, group in rows[rows.kind == 'proposal'].groupby('label', sort=True):
         assert len(group) == 100 and group.groupby('optimizer_seed').size().to_dict() == {2026:50,2027:50}
         assert all(sorted(g['rank']) == list(range(1,51)) for _,g in group.groupby('optimizer_seed'))
+        for _,g in group.groupby('optimizer_seed'):
+            original_order = g.sort_values('rank')
+            assert (np.diff(original_order.source_mean + original_order.source_proxy) >= -1e-9).all()
         first = group[(group.optimizer_seed == 2026) & (group['rank'] == 1)].iloc[0]
         second = group[(group.optimizer_seed == 2027) & (group['rank'] == 1)].iloc[0]
         best = group.sort_values(['judge_mean', 'optimizer_seed', 'rank'], kind='stable').iloc[0]
@@ -191,7 +200,21 @@ def verify(out, replay):
             assert len(own)==50
             source_count += len(own)
     assert source_count==1500
+    if (out/'baseline_weights.json').exists():
+        np.testing.assert_array_equal(check_weights(read(out/'baseline_weights.json')),
+                                      check_weights(read(REPO_ROOT/'weights.json')))
+        assert (out/'operational_weights.json').read_bytes() == (
+            REPO_ROOT/'analysis/offline_submission/submission/weights.json').read_bytes()
+        for group,column in [('primary','primary_point_index'),('posthoc','best100_point_index')]:
+            for row in summary.to_dict('records'):
+                np.testing.assert_array_equal(check_weights(read(out/'exported_weights'/group/f"{row['label']}.json")),
+                    check_weights(inputs['weights'][int(row[column])]))
     if replay:
+        for ref,part in rows[rows.kind=='proposal'].groupby('source_run'):
+            original = resolve_run(ref).read_json('proposals.json')
+            for row in part.to_dict('records'):
+                np.testing.assert_array_equal(check_weights(original[int(row['rank'])-1]['weights']),
+                    check_weights(inputs['weights'][int(row['point_index'])]))
         _,stdout,_ = predict(out/'weights.json')
         actual=json.loads(stdout); expected=read(out/'cli_predictions.json')
         for key in expected: np.testing.assert_allclose(actual[key],expected[key],rtol=1e-9,atol=1e-9)

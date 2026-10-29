@@ -50,6 +50,12 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       global MAE improves at every seed, average regret 1.1078 vs 1.7181. Recommend the stack
       surrogate recipe; preserve operational W. New CatBoost-search rank6 W is exploratory,
       with no real evaluation. 109 tests pass, 1 known xfail; evaluation and search reproduce.
+- [x] Compare all1500 proposals from the15 methods with root baseline W using one unchanged
+      audited ensemble judge (`analysis/common_judge/delivery/`). At original seed2026/rank1,
+      13 of15 predict lower R; fixed-blend top1 is109.3303 versus baseline118.7316. Keep post-hoc
+      best-of100 separate (fixed blend109.1711); archive source ranks, all predictions and exact
+      weights. CLI replay matches all1503 inputs; 109 tests pass,1 known xfail. Real simulation
+      is deferred by the user; operational W is unchanged and no measured improvement is claimed.
 
 ## Backlog — online (weeks 8–10)
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)

@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "methods": 15,
+  "candidate_count": 1500,
+  "reference_count": 3,
+  "prediction_count": 1503,
+  "same_judge": "20261029-171251-train-method-blend-stack",
+  "judge_refit": false,
+  "raw_source_weights_match_all_30_optimizer_runs": true,
+  "primary_and_posthoc_exports_verified": true,
+  "summary_and_all_candidate_predictions_verified": true,
+  "cli_replay": true,
+  "rtol": 1e-09,
+  "atol": 1e-09,
+  "simulator_calls": 0,
+  "operational_weights_unchanged": true,
+  "baseline_weights_unchanged": true,
+  "primary_below_baseline_methods": 13,
+  "posthoc_below_baseline_methods": 15,
+  "tests": {
+    "command": "env -u PYTHONPATH uv run --locked --group gui pytest -q",
+    "passed": 109,
+    "known_xfailed": 1,
+    "elapsed_seconds": 51.13
+  },
+  "verifier_sha256": "29918a736cd1d1beb07cfc163c97a2f5089d01879ab60a558381ae13a7556eb3",
+  "baseline_export_values_identical": true,
+  "baseline_export_line_endings": "LF"
+}
