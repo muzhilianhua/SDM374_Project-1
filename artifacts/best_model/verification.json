@@ -1,0 +1,13 @@
+{
+  "model_run": "20261029-171251-train-method-blend-stack",
+  "source_model_bytes_identical": true,
+  "loaded_through": "sdm predict --model-run artifacts/best_model",
+  "comparison_inputs": 1503,
+  "mean_and_proxy_match_archived_predictions": true,
+  "rtol": 1e-09,
+  "atol": 1e-09,
+  "baseline_weights_predicted_R": 118.73160774401767,
+  "operational_weights_predicted_R": 112.0811462999705,
+  "training_rows": 2048,
+  "simulator_calls": 0
+}

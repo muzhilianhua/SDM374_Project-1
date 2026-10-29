@@ -56,6 +56,9 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       best-of100 separate (fixed blend109.1711); archive source ranks, all predictions and exact
       weights. CLI replay matches all1503 inputs; 109 tests pass,1 known xfail. Real simulation
       is deferred by the user; operational W is unchanged and no measured improvement is claimed.
+- [x] Publish the user-requested selected full-data stack binary in `artifacts/best_model/`, with
+      original config/meta/metrics, dependency versions, checksums and CLI loading instructions.
+      Exact source-model bytes are preserved; all1503 comparison predictions match on CLI replay.
 
 ## Backlog — online (weeks 8–10)
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)

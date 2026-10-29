@@ -7,6 +7,8 @@ Completed results: [delivery report](delivery/README.md), [audit decision](deliv
 [recommended model configuration](../../experiments/method-blend-stack.toml).
 The OOF ensemble passes the prespecified audit (three-seed mean 75.3591 vs 73.1322);
 the operational controller remains unchanged. This is reused-benchmark evidence, not measured R.
+The exact selected all-data fitted model is now published in
+[`artifacts/best_model/`](../../artifacts/best_model/README.md) for use without the original ignored runs.
 
 ## Discovery scope fixed before inspecting scores
 
