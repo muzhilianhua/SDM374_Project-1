@@ -1,0 +1,73 @@
+{
+  "source": {
+    "name": "SDM374_Project1_v3.pdf",
+    "sha256": "fb0ad671e95c99af1c9e1f08f625b0e8e7e0dce0bb30cd63963754d7d890239c",
+    "constraint_page": 3,
+    "budget_page": 7
+  },
+  "course_rules": [
+    {
+      "page": 3,
+      "requirement": "Three buildings, seven nonnegative weights per building, at least one positive per building"
+    },
+    {
+      "page": 3,
+      "column_order": [
+        "cost",
+        "carbon",
+        "peak",
+        "discomfort",
+        "degradation",
+        "ramping",
+        "resilience"
+      ]
+    },
+    {
+      "page": 7,
+      "maximum_online_iterations": 20,
+      "maximum_evaluated_points_per_iteration": 50,
+      "objective": "minimize R"
+    }
+  ],
+  "representation_choice": {
+    "per_building_sum": 1,
+    "basis": "repository simplex representation; stronger than course feasibility requirement"
+  },
+  "portfolio_choices": {
+    "exploit": 30,
+    "explore": 15,
+    "controls": 5,
+    "minimum_distance_ratio_between_batch_points": 0.25,
+    "known_offline_row_retest": 1,
+    "basis": "first-round design heuristic, not a course requirement"
+  },
+  "column_mapping": {
+    "w0": "b1_cost",
+    "w1": "b1_carbon",
+    "w2": "b1_peak",
+    "w3": "b1_discomfort",
+    "w4": "b1_degradation",
+    "w5": "b1_ramping",
+    "w6": "b1_resilience",
+    "w7": "b2_cost",
+    "w8": "b2_carbon",
+    "w9": "b2_peak",
+    "w10": "b2_discomfort",
+    "w11": "b2_degradation",
+    "w12": "b2_ramping",
+    "w13": "b2_resilience",
+    "w14": "b3_cost",
+    "w15": "b3_carbon",
+    "w16": "b3_peak",
+    "w17": "b3_discomfort",
+    "w18": "b3_degradation",
+    "w19": "b3_ramping",
+    "w20": "b3_resilience"
+  },
+  "payload_shape": [
+    50,
+    3,
+    7
+  ],
+  "external_evaluator_file_schema": "not specified in slides; confirm when evaluator is available"
+}

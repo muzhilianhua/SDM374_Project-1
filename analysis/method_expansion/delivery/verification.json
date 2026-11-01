@@ -1,0 +1,139 @@
+{
+  "outer_prediction_archives_rescored": 20,
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "strict_json": true,
+  "simplex_and_unique_candidates": 1503,
+  "risk_selection_verified": true,
+  "model_audit_gate_recomputed": true,
+  "operational_weights_unchanged": true,
+  "cli_prediction_checks": [
+    {
+      "weights": "recommended_weights.json",
+      "model": "blend-stack",
+      "run": "20261029-171251-train-method-blend-stack",
+      "predicted_mean": [
+        112.0811462999705
+      ],
+      "predicted_std": [
+        3.44203188566413
+      ]
+    },
+    {
+      "weights": "recommended_weights.json",
+      "model": "cat-weighted",
+      "run": "20261029-171329-train-method-cat-weighted",
+      "predicted_mean": [
+        116.04048837078777
+      ],
+      "predicted_std": [
+        3.892764720495117
+      ]
+    },
+    {
+      "weights": "recommended_weights.json",
+      "model": "original-histgb",
+      "run": "20261029-125052-optimize-histgb-v32",
+      "predicted_mean": [
+        108.9777625245508
+      ],
+      "predicted_std": [
+        3.359982978703235
+      ]
+    },
+    {
+      "weights": "recommended_weights.json",
+      "model": "original-xgboost",
+      "run": "20261029-125052-optimize-xgboost-v32",
+      "predicted_mean": [
+        108.87174224853516
+      ],
+      "predicted_std": [
+        3.4436398946563713
+      ]
+    },
+    {
+      "weights": "recommended_weights.json",
+      "model": "extratrees",
+      "run": "20261029-125052-optimize-extratrees-default",
+      "predicted_mean": [
+        125.24726406989575
+      ],
+      "predicted_std": [
+        7.5703372569693075
+      ]
+    },
+    {
+      "weights": "study_weights.json",
+      "model": "blend-stack",
+      "run": "20261029-171251-train-method-blend-stack",
+      "predicted_mean": [
+        112.80464808246191
+      ],
+      "predicted_std": [
+        3.44203188566413
+      ]
+    },
+    {
+      "weights": "study_weights.json",
+      "model": "cat-weighted",
+      "run": "20261029-171329-train-method-cat-weighted",
+      "predicted_mean": [
+        112.47688324624347
+      ],
+      "predicted_std": [
+        3.892764720495117
+      ]
+    },
+    {
+      "weights": "study_weights.json",
+      "model": "original-histgb",
+      "run": "20261029-125052-optimize-histgb-v32",
+      "predicted_mean": [
+        113.613607648189
+      ],
+      "predicted_std": [
+        3.359982978703235
+      ]
+    },
+    {
+      "weights": "study_weights.json",
+      "model": "original-xgboost",
+      "run": "20261029-125052-optimize-xgboost-v32",
+      "predicted_mean": [
+        112.5708999633789
+      ],
+      "predicted_std": [
+        3.4436398946563713
+      ]
+    },
+    {
+      "weights": "study_weights.json",
+      "model": "extratrees",
+      "run": "20261029-125052-optimize-extratrees-default",
+      "predicted_mean": [
+        124.54566322990969
+      ],
+      "predicted_std": [
+        7.156893564598863
+      ]
+    }
+  ],
+  "reproduction": [
+    {
+      "original": "20261029-171154-evaluate-method-blend-stack",
+      "rerun": "20261029-171901-evaluate-method-blend-stack",
+      "rtol": 1e-09,
+      "matched": true
+    },
+    {
+      "original": "20261029-171333-optimize-method-cat-weighted-search2026",
+      "rerun": "20261029-172241-optimize-method-cat-weighted-search2026",
+      "rtol": 1e-09,
+      "matched": true
+    }
+  ],
+  "tests": {
+    "passed": 109,
+    "known_xfailed": 1
+  }
+}

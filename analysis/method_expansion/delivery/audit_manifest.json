@@ -1,0 +1,22 @@
+[
+  {
+    "label": "blend-stack",
+    "seed": 2027,
+    "evaluate": "20261029-171901-evaluate-audit-blend-stack-seed2027"
+  },
+  {
+    "label": "blend-stack",
+    "seed": 2028,
+    "evaluate": "20261029-171901-evaluate-audit-blend-stack-seed2028"
+  },
+  {
+    "label": "reference-xgboost",
+    "seed": 2027,
+    "evaluate": "20261029-172001-evaluate-audit-reference-xgboost-seed2027"
+  },
+  {
+    "label": "reference-xgboost",
+    "seed": 2028,
+    "evaluate": "20261029-172001-evaluate-audit-reference-xgboost-seed2028"
+  }
+]

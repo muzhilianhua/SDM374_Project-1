@@ -1,0 +1,12 @@
+{
+  "recommended_model": "blend-stack",
+  "config": "experiments/method-blend-stack.toml",
+  "train_run": "20261029-171251-train-method-blend-stack",
+  "model_gate_passed": true,
+  "recommended_controller": "recommended_weights.json",
+  "controller_source_run": "20261029-125052-optimize-histgb-v32",
+  "controller_rank": 16,
+  "replace_controller": false,
+  "exploratory_controller": "study_weights.json",
+  "measured_score": null
+}

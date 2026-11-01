@@ -1,0 +1,4 @@
+label,kind,source_run,rank,optimizer_seed,measured_R,point_index,nearest_distance,distance_ratio,source_mean,source_proxy,source_nearest_distance,judge_mean,judge_proxy,judge_mean_plus_proxy,delta_vs_baseline,reduction_pct,risk_delta_vs_baseline,below_baseline
+course-baseline,reference,weights.json,0,0,,0,0.6593494343995664,1.7484130971563356,,,,118.73160774401767,8.494855197313855,127.22646294133152,0.0,-0.0,0.0,False
+operational-recommendation,reference,analysis/offline_submission/submission/weights.json,0,0,,1,0.2040189751813927,0.541002129774171,,,,112.0811462999705,3.44203188566413,115.52317818563463,-6.650461444047167,5.601256119082791,-11.703284755696885,True
+best-observed-p01969,reference,p01969,0,0,115.76481925917324,2,0.0,0.0,,,,118.17768368712012,3.44203188566413,121.61971557278426,-0.553924056897543,0.4665346215910671,-5.606747368547261,True

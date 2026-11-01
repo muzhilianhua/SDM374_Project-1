@@ -1,0 +1,30 @@
+{
+  "analysis_id": "20261029-consensus-screen-v1",
+  "chosen_index": 154,
+  "incumbent_index": 0,
+  "committee_run": "20261029-132622-train-consensus-r075-2026",
+  "source": {
+    "label": "joint_search",
+    "source_run": "20261029-132648-optimize-consensus-r075-2026",
+    "source_rank": 1,
+    "selectable": true,
+    "distance_ratio": 0.6381709229164247,
+    "eligible": true,
+    "histgb_full_mean": 107.80451210403615,
+    "histgb_full_std": 3.359982978703235,
+    "xgboost_full_mean": 107.27674865722656,
+    "xgboost_full_std": 3.4436398946563713,
+    "full_score": 111.16449508273938,
+    "screen_q90": 118.0427648383947,
+    "screen_mean": 115.83599911813016
+  },
+  "candidate_count": 304,
+  "eligible_count": 301,
+  "audit_seeds_frozen_before_audit": [
+    28101,
+    28102,
+    28103,
+    28104,
+    28105
+  ]
+}

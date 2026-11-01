@@ -1,0 +1,486 @@
+{
+  "20261029-132622-evaluate-consensus-r075-2026": {
+    "meta": {
+      "kind": "evaluate",
+      "name": "consensus-r075-2026",
+      "created": "2026-10-29T13:26:22",
+      "options": {},
+      "source_config": "experiments/consensus-r075-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "v32_score": 73.41231049421643,
+      "v32_score_std": 6.625120939735654,
+      "v32_points_local_order": 19.807386025696637,
+      "v32_points_local_mae": 10.607870103510106,
+      "v32_points_global_order": 13.241084135801447,
+      "v32_points_global_mae": 11.542923471214817,
+      "v32_points_top1_regret": 18.21304675799342,
+      "v32_local_pair_accuracy": 0.782962657509952,
+      "v32_global_pair_accuracy": 0.9413694711933814,
+      "v32_local_mae": 6.550969802262959,
+      "v32_global_mae": 4.724104429895471,
+      "v32_top1_regret": 1.8767536872070196,
+      "mae": 4.72416064797116,
+      "rmse": 7.240501617476277,
+      "r2": 0.7891139499063287,
+      "spearman": 0.9054742448976327,
+      "top50_recall": 0.58,
+      "mean_predicted_std": 6.922183929361424,
+      "std_coverage": 0.77587890625
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132622-train-consensus-r075-2026": {
+    "meta": {
+      "kind": "train",
+      "name": "consensus-r075-2026",
+      "created": "2026-10-29T13:26:22",
+      "options": {},
+      "source_config": "experiments/consensus-r075-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "members": 2,
+      "risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r035-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r035-2026",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r035-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 109.01104411078308,
+      "predicted_std": 3.5176945699550544,
+      "nearest_train_distance": 0.13063831387953265,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 8954,
+      "optimizer_best_objective": 112.52873868073813,
+      "optimizer_best_mean": 109.01104411078308,
+      "optimizer_best_std": 3.5176945699550544,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.35\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r035-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r035-2027",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r035-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 110.01623430817395,
+      "predicted_std": 3.4491924455685847,
+      "nearest_train_distance": 0.12130186563950304,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 9634,
+      "optimizer_best_objective": 113.46542675374253,
+      "optimizer_best_mean": 110.01623430817395,
+      "optimizer_best_std": 3.4491924455685847,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.35\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r035-2028": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r035-2028",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r035-2028.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 110.17409465752542,
+      "predicted_std": 3.4384905496309557,
+      "nearest_train_distance": 0.1318017489003717,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 8222,
+      "optimizer_best_objective": 113.61258520715637,
+      "optimizer_best_mean": 110.17409465752542,
+      "optimizer_best_std": 3.4384905496309557,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.35\nseed = 2028\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r075-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r075-2026",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r075-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.54063038063136,
+      "predicted_std": 3.6238647021080226,
+      "nearest_train_distance": 0.24066259871033233,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11924,
+      "optimizer_best_objective": 111.16449508273938,
+      "optimizer_best_mean": 107.54063038063136,
+      "optimizer_best_std": 3.6238647021080226,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r075-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r075-2027",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r075-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.66434159488733,
+      "predicted_std": 3.7045537606022663,
+      "nearest_train_distance": 0.2511544400928015,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11971,
+      "optimizer_best_objective": 111.3688953554896,
+      "optimizer_best_mean": 107.66434159488733,
+      "optimizer_best_std": 3.7045537606022663,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r075-2028": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r075-2028",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r075-2028.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.73719128271519,
+      "predicted_std": 3.515425299016073,
+      "nearest_train_distance": 0.22686911427094666,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 11986,
+      "optimizer_best_objective": 111.25261658173126,
+      "optimizer_best_mean": 107.73719128271519,
+      "optimizer_best_std": 3.515425299016073,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 0.75\nseed = 2028\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r150-2026": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r150-2026",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r150-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.54063038063136,
+      "predicted_std": 3.6238647021080226,
+      "nearest_train_distance": 0.24066259871033233,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 111.16449508273938,
+      "optimizer_best_mean": 107.54063038063136,
+      "optimizer_best_std": 3.6238647021080226,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2026\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132648-optimize-consensus-r150-2027": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r150-2027",
+      "created": "2026-10-29T13:26:48",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r150-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.66434159488733,
+      "predicted_std": 3.7045537606022663,
+      "nearest_train_distance": 0.2511544400928015,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 111.3688953554896,
+      "optimizer_best_mean": 107.66434159488733,
+      "optimizer_best_std": 3.7045537606022663,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2027\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  },
+  "20261029-132649-optimize-consensus-r150-2028": {
+    "meta": {
+      "kind": "optimize",
+      "name": "consensus-r150-2028",
+      "created": "2026-10-29T13:26:49",
+      "options": {
+        "n": 50,
+        "model_run": "20261029-132622-train-consensus-r075-2026"
+      },
+      "source_config": "experiments/consensus-r150-2028.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "60c76e291d4939faa55e246c46cd912bd520a7a7",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "metrics": {
+      "predicted_mean": 107.73719128271519,
+      "predicted_std": 3.515425299016073,
+      "nearest_train_distance": 0.22686911427094666,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 12000,
+      "optimizer_best_objective": 111.25261658173126,
+      "optimizer_best_mean": 107.73719128271519,
+      "optimizer_best_std": 3.515425299016073,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "model_members": 2,
+      "model_risk_envelope_not_standard_deviation": true
+    },
+    "config": "[data]\ndataset = \"dataset_same8\"\n\n[model]\nname = \"boosted-consensus\"\n[model.params]\nseed = 2026\n\n[optimizer]\nname = \"trust-dirichlet\"\n[optimizer.params]\nrisk = 1.0\nmax_distance_ratio = 1.5\nseed = 2028\n\n[evaluate]\nprotocol = \"frozen-v32\"\ntop_k = 50\n"
+  }
+}

@@ -14,14 +14,59 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 ## Backlog — offline (until the week 8 lab)
 - [x] Reference optimizer `trust-dirichlet` (A, 2026-10-25): gradient-free, distinct batches, trust region,
       pessimistic objective. Improve on it (CMA-ES, better batch diversity) rather than on frozen `pgd`
-- [ ] Read `analysis/coupling/README.md` first: on ridge2 the optimizer choice barely changes the result
-- [ ] Optimizers on the 3 × 7 simplex: CMA-ES with softmax parametrisation, Dirichlet local perturbation
-      around the best observed rows
-- [ ] Trust region: only search near the best measured rows; avoid simplex corners (see the extrapolation
-      flag, `nearest_train_distance` in optimize runs)
-- [ ] Pessimistic objective `mean + k · std` for choosing the offline W*
+- [x] Add `simplex-de`: gradient-free differential evolution with simplex projection, a trust region,
+      observed-row exclusion, distinct batches and deterministic seeded search (2026-10-29).
+- [x] Finish the two-seed HistGB/XGBoost optimizer comparison and export the offline submission with
+      cross-model selection evidence (`analysis/offline_submission/submission/`, 2026-10-29).
+      Recommended: proposal 16 from `20261029-125052-optimize-histgb-v32`; HistGB/XGBoost predictions
+      108.9778/108.8717, distance ratio 0.5410. Real score unknown; ExtraTrees disagrees (125.2473).
+      DE did not improve the cross-model selection score in this small fixed-budget comparison.
+      82 tests passed, 1 known xfail; source optimizer run and final selection reproduce.
+- [x] Direct HistGB/XGBoost consensus search at three radii and three seeds, followed by separate
+      five-subsample screening and five-subsample audit (`analysis/robust_search/delivery/`). New
+      exploratory candidate: `20261029-132648-optimize-consensus-r075-2026`, rank 1, full-data
+      HistGB/XGBoost 107.8045/107.2767, distance ratio 0.6382. Audit mean risk improves by 1.0911,
+      but two of five pairs regress slightly; retain the original default under the predefined gate.
+      88 tests pass, 1 known xfail; source search reproduced. No real score is available.
+- [x] Read `analysis/coupling/README.md`: on ridge2 the optimizer choice barely changes the result.
+- [x] Study Dirichlet local perturbations around good observed rows and projected DE on the 3 × 7 simplex.
+- [x] Compare distance-limited searches; require distance ratio <=0.75 for the current submission.
+      This limits extrapolation but does not exclude every simplex boundary coordinate.
+- [x] Apply pessimistic `mean + k · std` and cross-model risk selection; document that the error
+      proxies are not calibrated confidence bounds.
+- [x] Consolidate methods, decisions, provenance and handoff in
+      [the research log](../optimizer-research-2026-10-29.md).
+- [ ] Explore CMA-ES with softmax parametrisation if further optimizer comparisons are justified.
+- [x] Complete the full-support sigmoid-weighting study: training-only inner selection, eight unchanged
+      frozen-v32 evaluations and sixteen CLI candidate searches (`analysis/soft_weighting/delivery/`).
+      Sigmoid XGBoost 72.4696 beats uniform 70.6201 but trails full-data step weighting 73.4746.
+      Sigmoid HistGB 71.9815 trails uniform 72.3465. Retain step XGBoost and the original W default;
+      the new point only improves expanded risk by .3045. 97 tests pass, 1 known xfail; evaluation
+      and selected search reproduce. No measured improvement or new SOTA is established.
+- [x] Broaden the search to CatBoost, robust/quantile losses, pairwise regression, explicit
+      interactions, kernel geometry and convex ensembles; freeze discovery selection before a
+      matched model-seed audit (`analysis/method_expansion/delivery/`). Fifteen recipes and 64
+      CLI evidence runs; OOF stack passes the gate: mean score 75.3591 vs reference 73.1322,
+      global MAE improves at every seed, average regret 1.1078 vs 1.7181. Recommend the stack
+      surrogate recipe; preserve operational W. New CatBoost-search rank6 W is exploratory,
+      with no real evaluation. 109 tests pass, 1 known xfail; evaluation and search reproduce.
+- [x] Compare all1500 proposals from the15 methods with root baseline W using one unchanged
+      audited ensemble judge (`analysis/common_judge/delivery/`). At original seed2026/rank1,
+      13 of15 predict lower R; fixed-blend top1 is109.3303 versus baseline118.7316. Keep post-hoc
+      best-of100 separate (fixed blend109.1711); archive source ranks, all predictions and exact
+      weights. CLI replay matches all1503 inputs; 109 tests pass,1 known xfail. Real simulation
+      is deferred by the user; operational W is unchanged and no measured improvement is claimed.
+- [x] Publish the user-requested selected full-data stack binary in `artifacts/best_model/`, with
+      original config/meta/metrics, dependency versions, checksums and CLI loading instructions.
+      Exact source-model bytes are preserved; all1503 comparison predictions match on CLI replay.
 
 ## Backlog — online (weeks 8–10)
+- [x] Prepare the first50-point online packet under the supplied course slides' page3/page7 rules
+      (`analysis/online_round1/delivery/`). Thirty exploitation,15 exploration,5 controls; this initial
+      ratio is a heuristic pending D's replay. All50 are mutually distinct and simplex feasible;
+      one p01969 repeat is deliberate,49 are novel. Include baseline, existing recommendations,
+      mechanism probes, JSON/CSV/individual files and a pending worksheet. No evaluator calls.
+      Full suite:112 pass,1 known xfail; selected stack predictions replay and all payloads agree.
 - [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)
 - [ ] TuRBO-style trust-region radius: grow after successes, shrink after failures
 

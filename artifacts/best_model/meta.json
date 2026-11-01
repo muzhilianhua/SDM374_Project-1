@@ -1,0 +1,24 @@
+{
+  "kind": "train",
+  "name": "method-blend-stack",
+  "created": "2026-10-29T17:12:51",
+  "options": {},
+  "source_config": "/Users/aiziqi/Desktop/春/SDM374/Lab6/SDM374_Project-1/experiments/method-blend-stack.toml",
+  "dataset": {
+    "path": "/Users/aiziqi/Desktop/春/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+    "version": "same8.20261020",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "git": {
+    "commit": "076b75f8f9a4335e3d5202af0117feba22e77264",
+    "dirty": false
+  },
+  "python": "3.11.9",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  }
+}

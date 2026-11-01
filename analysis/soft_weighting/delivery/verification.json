@@ -1,0 +1,32 @@
+{
+  "full_suite": {
+    "passed": 97,
+    "xfailed": 1,
+    "command": "env -u PYTHONPATH uv run --locked --group gui pytest -q"
+  },
+  "source_cli_commit": "092efff2496bb020b1cf3eb3d9f49e56e6ef11ad",
+  "summary_commit": "957b707",
+  "reproductions": [
+    {
+      "source": "20261029-160420-evaluate-soft-xgboost-soft-2026",
+      "rerun": "20261029-160610-evaluate-soft-xgboost-soft-2026",
+      "match": true,
+      "rtol": 1e-09
+    },
+    {
+      "source": "20261029-160431-optimize-soft-histgb-soft-2027",
+      "rerun": "20261029-160656-optimize-soft-histgb-soft-2027",
+      "match": true,
+      "rtol": 1e-09
+    }
+  ],
+  "delivered_outer_predictions_rescored": 8,
+  "rescore_rtol": 1e-12,
+  "unique_candidates": 802,
+  "eligible_candidates": 801,
+  "simplex_verified": true,
+  "recommended_weights_byte_identical_to_original": true,
+  "exported_predictions_match": true,
+  "protected_files_changed": [],
+  "real_evaluator_calls": 0
+}

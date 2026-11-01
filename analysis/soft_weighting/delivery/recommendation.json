@@ -1,0 +1,41 @@
+{
+  "decision": "Retain full-data step-weighted XGBoost as the primary surrogate; retain the original controller weights.",
+  "primary_config": "experiments/soft-xgboost-step-2026.toml",
+  "primary_train_run": "20261029-160351-train-soft-xgboost-step-2026",
+  "primary_evaluate_run": "20261029-160333-evaluate-soft-xgboost-step-2026",
+  "primary_parameters": {
+    "family": "xgboost",
+    "strategy": "step",
+    "tune": false,
+    "alpha": 2.0,
+    "fraction": 0.2,
+    "max_depth": 3,
+    "learning_rate": 0.1,
+    "iterations": 600,
+    "subsample": 0.9,
+    "seed": 2026
+  },
+  "supporting_config": "experiments/soft-histgb-unweighted-2026.toml",
+  "soft_workflow_config": "experiments/soft-xgboost-soft-2026.toml",
+  "soft_final_fit_parameters": {
+    "alpha": 3.0,
+    "fraction": 0.2,
+    "temperature": 0.1,
+    "cutoff": 148.08475300975843,
+    "temperature_in_ramping_units": 1.5767298536933114
+  },
+  "soft_score_scope": "72.4696 evaluates the nested selection workflow, not one fixed alpha/temperature pair in all outer folds.",
+  "controller_weights": "recommended_weights.json",
+  "controller_source_run": "20261029-125052-optimize-histgb-v32",
+  "controller_source_rank": 16,
+  "study_candidate_weights": "study_weights.json",
+  "study_candidate_source_run": "20261029-160431-optimize-soft-histgb-soft-2027",
+  "study_candidate_source_rank": 6,
+  "replace_controller_weights": false,
+  "reason": "Soft XGBoost improves on uniform but trails the existing full-support step workflow. The new controller point improves the expanded risk criterion by only 0.3045 and worsens the original two-model risk criterion. No independent audit or simulator result supports replacement.",
+  "measured_score": null,
+  "best_known_measured_reference": {
+    "candidate_id": "p01969",
+    "ramping": 115.76481925917324
+  }
+}

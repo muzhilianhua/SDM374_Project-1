@@ -60,6 +60,12 @@ The frozen data splits ([`frozen_data/`](frozen_data/README.md)) and the v3.2 sc
 | [`AGENTS.md`](AGENTS.md) | Project summary, repository map, hard rules, definition of done |
 | [`docs/interfaces.md`](docs/interfaces.md) | Surrogate / Optimizer contracts, config schema, run files, CLI |
 | [`docs/decisions.md`](docs/decisions.md) | Settled decisions, known issues, open questions |
+| [`docs/optimizer-research-2026-10-29.md`](docs/optimizer-research-2026-10-29.md) | Role C research log, recommended weights, evidence and reproduction |
+| [`analysis/soft_weighting/delivery/README.md`](analysis/soft_weighting/delivery/README.md) | Full-support weighting comparison, nested evaluation and recommended parameters |
+| [`analysis/method_expansion/delivery/README.md`](analysis/method_expansion/delivery/README.md) | Fifteen alternative methods, matched seed audit, recommended OOF ensemble and exploratory weights |
+| [`analysis/common_judge/delivery/README.md`](analysis/common_judge/delivery/README.md) | All 1500 method candidates versus course baseline W, scored by one fixed ensemble judge |
+| [`artifacts/best_model/README.md`](artifacts/best_model/README.md) | Downloadable trained ensemble model, configuration, provenance and loading command |
+| [`analysis/online_round1/delivery/README.md`](analysis/online_round1/delivery/README.md) | First online round: 50 feasible weights, JSON/CSV/individual files and pending-result worksheet |
 | [`docs/roles/`](docs/roles/) | Per-member mission, owned files, backlog and acceptance criteria |
 | `src/sdm/models/_template.py`, `src/sdm/optimizers/_template.py`, `experiments/_template.toml` | Starting points for new plugins and experiments |
 
