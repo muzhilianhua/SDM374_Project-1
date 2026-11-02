@@ -1,5 +1,13 @@
 # SDM374 Project 1 — Data-driven Tuning of Building Energy Controllers
 
+## Bayesian exploration after the first reported measurement
+
+See [the Bayesian study and five unmeasured candidates](analysis/bayesian_search/delivery/README.md)
+for the new additive ARD Gaussian process (frozen-v3.2 score **83.1496** versus the same-machine
+tree-stack reference **74.3862**), fitted model, acquisition experiments and reproducibility evidence.
+Prediction accuracy improves, while top1 regret does not consistently improve. These are exploratory
+results: the original handoff below is preserved, and the new candidate weights still need real validation.
+
 Member C's [submission handoff](SUBMISSION_READY/README.md); current scores and rules: [team decisions](docs/decisions.md).
 
 Find 21 controller weights (3 buildings × 7 objectives) that minimize the district's mean ramping
