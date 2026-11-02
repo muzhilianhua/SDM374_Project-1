@@ -1,6 +1,6 @@
 """Checks for covariance validity and the new uncertainty-based search."""
 import numpy as np
-from sdm.models.bayes_search import BuildingKernel, BayesianSearchModel
+from sdm.models.bayes_search import BuildingKernel, BuildingARDKernel, BayesianSearchModel
 
 
 def test_building_covariance_positive_semidefinite():
@@ -31,3 +31,16 @@ def test_log_gp_inverse_positive(dataset):
     mean, std = model.predict(dataset.X[100:150])
     assert (mean > 0).all() and (std >= 0).all()
     assert np.isfinite(mean).all() and np.isfinite(std).all()
+
+
+def test_ard_covariance_analytic_gradient():
+    rng = np.random.default_rng(3)
+    X = rng.dirichlet(np.ones(7),size=(8,3)).reshape(8,21)
+    kernel = BuildingARDKernel()
+    matrix, gradient = kernel(X,eval_gradient=True)
+    assert np.linalg.eigvalsh(matrix).min() > -1e-9
+    for j in range(7):
+        upper, lower = kernel.theta.copy(), kernel.theta.copy()
+        upper[j] += 1e-5; lower[j] -= 1e-5
+        numeric = (kernel.clone_with_theta(upper)(X)-kernel.clone_with_theta(lower)(X))/2e-5
+        np.testing.assert_allclose(gradient[:,:,j],numeric,atol=1e-7,rtol=1e-5)
