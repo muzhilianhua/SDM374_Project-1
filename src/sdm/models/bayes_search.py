@@ -3,7 +3,8 @@ from dataclasses import dataclass
 
 import numpy as np
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import Kernel, Matern, RBF, RationalQuadratic, WhiteKernel
+from sklearn.gaussian_process.kernels import Kernel, Hyperparameter, Matern, RBF, RationalQuadratic, WhiteKernel
+from scipy.optimize import minimize
 from sklearn.linear_model import BayesianRidge, ARDRegression
 from sklearn.model_selection import KFold
 from sklearn.pipeline import make_pipeline
@@ -33,6 +34,43 @@ class BuildingKernel(Kernel):
 
     def is_stationary(self):
         return True
+
+
+class BuildingARDKernel(Kernel):
+    """Learn seven shared objective length scales across three building kernels."""
+    def __init__(self, length_scale=(.5,)*7, global_weight=.1):
+        self.length_scale = length_scale
+        self.global_weight = global_weight
+
+    @property
+    def hyperparameter_length_scale(self):
+        return Hyperparameter('length_scale', 'numeric', (.03, 3.0), len(self.length_scale))
+
+    def __call__(self, X, Y=None, eval_gradient=False):
+        kernel = Matern(np.asarray(self.length_scale), length_scale_bounds=(.03, 3), nu=2.5)
+        parts = [kernel(X[:,7*b:7*b+7], None if Y is None else Y[:,7*b:7*b+7],
+                        eval_gradient=eval_gradient) for b in range(3)]
+        full_kernel = Matern(np.tile(self.length_scale, 3), length_scale_bounds=(.03, 3), nu=2.5)
+        full = full_kernel(X,Y,eval_gradient=eval_gradient)
+        weight = self.global_weight
+        if eval_gradient:
+            matrix = sum(p[0] for p in parts)*(1-weight)/3+weight*full[0]
+            grad = sum(p[1] for p in parts)*(1-weight)/3
+            grad += weight*full[1].reshape(len(X),len(X),3,7).sum(axis=2)
+            return matrix, grad
+        return sum(parts)*(1-weight)/3+weight*full
+
+    def diag(self, X):
+        return np.ones(len(X))
+
+    def is_stationary(self):
+        return True
+
+
+def limited_optimizer(objective, theta, bounds):
+    result = minimize(objective, theta, method='L-BFGS-B', jac=True, bounds=bounds,
+                      options={'maxiter': 18, 'ftol': 1e-5, 'maxls': 10})
+    return result.x, result.fun
 
 
 @register_model("bayes-search")
@@ -71,7 +109,9 @@ class BayesianSearchModel(Surrogate):
         if p.family == "gp":
             best = -np.inf
             for length in p.lengths:
-                if p.kernel == "additive":
+                if p.kernel == "additive-ard":
+                    signal = BuildingARDKernel()
+                elif p.kernel == "additive":
                     signal = BuildingKernel(length)
                 elif p.kernel == "rbf":
                     signal = RBF(length, length_scale_bounds="fixed")
@@ -80,8 +120,9 @@ class BayesianSearchModel(Surrogate):
                 else:
                     signal = Matern(length, length_scale_bounds="fixed", nu=2.5)
                 for noise in p.noises:
-                    kernel = signal+WhiteKernel(noise, noise_level_bounds="fixed")
-                    model = GaussianProcessRegressor(kernel=kernel, optimizer=None, normalize_y=False,
+                    ard = p.kernel == "additive-ard"
+                    kernel = signal+WhiteKernel(noise, noise_level_bounds=(.001,.3) if ard else "fixed")
+                    model = GaussianProcessRegressor(kernel=kernel, optimizer=limited_optimizer if ard else None, normalize_y=False,
                                                      alpha=1e-8, random_state=p.seed).fit(X, z)
                     value = model.log_marginal_likelihood_value_
                     if value > best:
