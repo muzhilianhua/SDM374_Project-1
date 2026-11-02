@@ -1,0 +1,78 @@
+{
+  "recipes": {
+    "gp-matern": {
+      "family": "gp",
+      "kernel": "matern"
+    },
+    "gp-matern-log": {
+      "family": "gp",
+      "kernel": "matern",
+      "target": "log"
+    },
+    "gp-sqrt": {
+      "family": "gp",
+      "kernel": "matern",
+      "transform": "sqrt"
+    },
+    "gp-sqrt-log": {
+      "family": "gp",
+      "kernel": "matern",
+      "transform": "sqrt",
+      "target": "log"
+    },
+    "gp-additive": {
+      "family": "gp",
+      "kernel": "additive"
+    },
+    "gp-additive-log": {
+      "family": "gp",
+      "kernel": "additive",
+      "target": "log"
+    },
+    "gp-rbf": {
+      "family": "gp",
+      "kernel": "rbf"
+    },
+    "gp-rq-log": {
+      "family": "gp",
+      "kernel": "rq",
+      "target": "log"
+    },
+    "gp-trend": {
+      "family": "gp",
+      "kernel": "matern",
+      "trend": true
+    },
+    "bayes-quadratic": {
+      "family": "bayesian-ridge"
+    },
+    "ard-quadratic": {
+      "family": "ard"
+    },
+    "svr": {
+      "family": "svr"
+    },
+    "svr-log": {
+      "family": "svr",
+      "target": "log"
+    },
+    "svr-sqrt-log": {
+      "family": "svr",
+      "target": "log",
+      "transform": "sqrt"
+    }
+  },
+  "seed": 2026,
+  "protocol": "unchanged frozen-v32; 10 complete outer folds",
+  "gp_selection": "training-only marginal likelihood over 3 lengths x 2 noises",
+  "svr_selection": "3-fold training-only low-weighted MAE; inner training-only scaling",
+  "promotion": "discovery only; use matched folds, regret and low-region error; no measured improvement claim",
+  "reported_measurement": {
+    "source": "user",
+    "approximate_R": 119,
+    "approximate_baseline_R": 118,
+    "exact_R": null,
+    "used_as_training_label": false
+  },
+  "simulator_calls": 0
+}
