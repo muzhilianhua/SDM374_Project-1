@@ -1,0 +1,9 @@
+{
+  "original": "20261102-195535-train-bayes-study-gp-ard",
+  "rerun": "20261102-200619-train-bayes-study-gp-ard",
+  "rows": 64,
+  "max_mean_difference": 0.0,
+  "max_spread_difference": 0.0,
+  "rtol": 1e-09,
+  "passed": true
+}

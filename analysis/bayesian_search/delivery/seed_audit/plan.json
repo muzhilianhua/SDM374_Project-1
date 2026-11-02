@@ -1,0 +1,12 @@
+{
+  "seeds": [
+    2027,
+    2028
+  ],
+  "fixed_blend_weight": 0.5,
+  "retune_after_audit": false,
+  "unchanged_frozen_v32": true,
+  "gate": "3-seed mean score improves; mean top1 regret does not increase; global/local MAE <=1.05x reference at each seed",
+  "caveat": "Reused folds; seeds assess algorithm sensitivity, not independent confirmation",
+  "simulator_calls": 0
+}

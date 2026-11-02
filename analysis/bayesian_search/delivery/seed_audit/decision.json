@@ -1,0 +1,10 @@
+{
+  "gate_passed": false,
+  "old_mean_score": 74.8915538369471,
+  "new_mean_score": 76.29982599283558,
+  "old_mean_regret": 1.3601483518787063,
+  "new_mean_regret": 1.6342621091989713,
+  "decision": "Exploratory models and candidates only; no automatic controller replacement",
+  "independent_confirmation": false,
+  "simulator_calls": 0
+}

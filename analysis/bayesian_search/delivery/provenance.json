@@ -1,0 +1,21 @@
+{
+  "commit": "5b76ab22faffeddae142a8cd1747ddd24b6feb50",
+  "branch": "ref: refs/heads/feat/c-bayesian-study",
+  "python": "3.11.18",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0",
+    "catboost": "1.2.8"
+  },
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "seed": 2026,
+  "files": {
+    "src\\sdm\\models\\bayes_search.py": "c6e2607675c6aa7dd57e60a839ea8b506c1b1eab907db25ccb5e67c26c4ba411",
+    "src\\sdm\\optimizers\\bayes_pool.py": "57d1db2ec0077ad620017c2281b515c4dadc6a590ccf0ebbc0d5facd828765aa",
+    "analysis\\bayesian_search\\run.py": "ebdd1e3cf021aa47c6bbcef5a0989af59a8d0b4a925bb21a0eb8c91900727f09"
+  },
+  "note": "CLI run git fields can be null if git executable is unavailable; this records the actual Git HEAD."
+}

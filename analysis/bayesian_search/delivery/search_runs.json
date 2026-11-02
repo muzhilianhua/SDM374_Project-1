@@ -1,0 +1,32 @@
+[
+  {
+    "model": "gp-tree-blend",
+    "acquisition": "ei",
+    "run_id": "20261102-195813-optimize-bayes-search-gp-tree-blend-ei"
+  },
+  {
+    "model": "gp-tree-blend",
+    "acquisition": "mean",
+    "run_id": "20261102-195818-optimize-bayes-search-gp-tree-blend-mean"
+  },
+  {
+    "model": "gp-tree-blend",
+    "acquisition": "pessimistic",
+    "run_id": "20261102-195822-optimize-bayes-search-gp-tree-blend-pessimistic"
+  },
+  {
+    "model": "gp-ard",
+    "acquisition": "ei",
+    "run_id": "20261102-195826-optimize-bayes-search-gp-ard-ei"
+  },
+  {
+    "model": "gp-ard",
+    "acquisition": "mean",
+    "run_id": "20261102-195830-optimize-bayes-search-gp-ard-mean"
+  },
+  {
+    "model": "gp-ard",
+    "acquisition": "pessimistic",
+    "run_id": "20261102-195834-optimize-bayes-search-gp-ard-pessimistic"
+  }
+]

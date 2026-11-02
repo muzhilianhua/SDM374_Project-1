@@ -1,0 +1,29 @@
+{
+  "commit": "990ad03c0caafb6dc98cb0f61378e76e03966c74",
+  "branch": "ref: refs/heads/feat/c-bayesian-study",
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "script_sha256": "87887f5e0071a8a75c34202df4d0cb24660f73dced8296322d3116327fb528eb",
+  "source_model_sha256": {
+    "bayes_search.py": "558978435139841b6fec5a2c113d3c781f7986d7ab8f24048166bdba01667493",
+    "boosted_consensus.py": "f8dd84e6d92159fb0df43617a21b402a6ad825c79fc0cdac8d792c75f738b76d",
+    "extratrees.py": "0d5f0c0086b9198dc750600a75e99e953fecc80faa511698e2a180bd59acac33",
+    "gp_tree_blend.py": "6f1d9a0b0082e4bf6b19b746bddbfc58e694b4172c90a010fb96c3f6e5e42e69",
+    "histgb.py": "4a7f620fb60010460f3b694289f56d43c488ee4f4d9967c1657c1a1d1964d703",
+    "honest_stack.py": "afe27d313d3683e402b37bb3926f5e546793deb40bb9267fc38e9aecb950f704",
+    "lowramp.py": "71f41eed5a54f90e753778b7348fc26a9641ab209e89def650b65a45783e9402",
+    "method_study.py": "25758afdb1fe66733bf9543b203cb86a1bec6c446c8bf105237c002da2562db8",
+    "ridge2.py": "cb789db8bdbbed3f614f9f7ea9669ff95fedb8644125540e11aecb01c996f11c",
+    "selection_stack.py": "c14172fc945be1ba25cff76730ed78506d24978f05cc79f7bc02aaca38436b6b",
+    "stable_stack.py": "5f78b47a008631b2c6ccf9ac14687f43e8551ced5e80d25659901b58f3d42c9c",
+    "xgb.py": "16ffa7f6192c75bd989aa61fbc931342878dc48198e49293c5b2c8f371acf95d",
+    "_gbdt.py": "270aa3b10e9652d5a535a42b57e31ff90244c9eb898771d91529f5833c5721e6",
+    "_template.py": "ca1f69803411ce2832203b28167a879bdee3ec895a2ffc6d10c5d9c16a0b377b",
+    "__init__.py": "b9e7c5a3f225238a4584064c23b0e7c16258da67f6c51cc8eac9331435cfdd1d"
+  },
+  "seeds": [
+    2061,
+    2062,
+    2063,
+    2064
+  ]
+}

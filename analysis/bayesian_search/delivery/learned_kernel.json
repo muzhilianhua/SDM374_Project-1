@@ -1,0 +1,24 @@
+{
+  "shared_objectives": [
+    "cost",
+    "carbon",
+    "peak",
+    "discomfort",
+    "degradation",
+    "ramping",
+    "resilience"
+  ],
+  "length_scales": [
+    0.27450903517071346,
+    0.23631491266157142,
+    1.0965793334730336,
+    3.0000000000000004,
+    0.17549677123482726,
+    0.17979489460570833,
+    3.0000000000000004
+  ],
+  "noise": 0.0010000000000000002,
+  "global_interaction_weight": 0.1,
+  "max_optimizer_iterations": 18,
+  "convergence_certified": false
+}

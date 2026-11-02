@@ -1,0 +1,15 @@
+{
+  "shape": [
+    5,
+    3,
+    7
+  ],
+  "all_feasible": true,
+  "distinct": 5,
+  "max_row_sum_error": 1.1102230246251565e-16,
+  "tests": "129 passed, 1 skipped (GUI dependency unavailable), 1 known xfailed",
+  "reproduce_search": "passed at rtol=1e-9",
+  "reproduce_gp_training": "passed at rtol=1e-9",
+  "simulator_calls": 0,
+  "official_submissions": 0
+}
