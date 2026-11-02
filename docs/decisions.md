@@ -23,15 +23,46 @@ and record the new decision here with a date.
 | 14 | `kfold` and `frozen-v32` results are never ranked against each other; the leaderboard lists `frozen-v32` runs first (by `v32_score`, higher is better), then `kfold` runs (by MAE) | The two protocols use different splits (2026-10-27) |
 | 15 | `xgboost==3.2.0` is a dependency (works with numpy 1.24.4); macOS needs `brew install libomp` once | B's best artifacts are XGBoost; macOS wheels link the system OpenMP runtime (2026-10-29) |
 | 16 | Boosted-tree plugins share `models/_gbdt.py`: std is the 0.68 quantile of \|out-of-fold residual\| in bins of distance to the nearest training row, non-decreasing with distance | Boosted trees have no native uncertainty; distance bins widen std where the optimizer extrapolates (2026-10-29) |
+| 17 | Offline bar is **R < 115.76**: the TA sets it to min(baseline W\*'s real score 119.0916, best training row `p01969` 115.7648). Submitting a training row only ties the bar | TA, 2026-10-31 |
+| 18 | Offline: two submissions, made one after the other with the first result visible before the second; any gap between them; both due before the end of class on **2026-11-05**. The window is open, so the first can go in early | TA, 2026-10-31 and 2026-11-01. Plan the two as a decision tree: the second depends on the first result |
+| 19 | Online (revised 2026-11-01): the evaluator is handed to us and may be run locally without limit while we develop. The submitted, reproducible code may call it **at most 20 times, one weight set per call, sequentially** (each call may use the results of earlier calls). Before its first call the code may use **only the 2048 training rows**. The group grade is the **best** R of the 20 calls | TA via the user, 2026-11-01; supersedes the earlier "20 rounds × 50 points, minimum per round" reading. The online deliverable is a budget-20 sequential optimisation policy, not a set of batches |
+| 20 | The evaluator is deterministic (same weights → same R). The 20-call policy must never re-evaluate a point it already evaluated or a training row; local development runs are free | TA, 2026-10-31. With deterministic code and data, a local run of the frozen policy reproduces the graded result exactly |
+| 21 | Evaluator constraint: each building's 7 weights non-negative with at least one > 0; they need not sum to 1. We still submit exactly normalised weights that pass `sdm.simplex.check_weights` | TA, 2026-10-31. Whether the evaluator renormalises is unknown, so normalised inputs are the only ones whose meaning matches the training table |
+| 22 | The online code must be frozen and fully reproducible on the course computer: re-running it there makes the same 20 calls in the same order | TA, 2026-11-01 |
+| 23 | Offline submission 2 is chosen offline: from the 2048 training rows, the two known real scores (baseline W\*, submission 1) and surrogates. The course `RampingSolver.exe` is not used to screen candidates; it currently runs only on the course machines | User, 2026-11-02 |
 
 ## Findings
 
+- **Offline submission 1 failed the bar** (2026-11-02). Submitted C's consensus challenger
+  (`20261029-132648-optimize-consensus-r075-2026` rank 1, identical to `SUBMISSION_READY/01_FIRST_REAL_TEST`);
+  real R = **119.7121**, 3.95 above `p01969` and 0.62 above baseline W\*. Predictions for the same W: stack
+  111.42 (error −8.29), histgb 107.80 (−11.91), xgboost 107.28 (−12.44), extratrees 126.09 (+6.38), ridge2
+  95.13 (−24.58). Predicted gain over each model's own `p01969` prediction: stack −6.76, histgb −9.02,
+  xgboost −9.67, extratrees **+4.93** (real +3.95). Consequences:
+  - The boosted judges' shared basin (all good candidates within cosine ≥ 0.88 of this direction) is an
+    artefact of correlated tree models searched on their own error; its alternatives (C's retained
+    recommendation, fixed-blend rank 1) are not worth a submission.
+  - Extratrees is the only model whose predicted gain had the right sign at both real points (baseline W\*
+    +6.05 vs real +3.33; challenger +4.93 vs real +3.95). Two points; treat as a veto, not as a ranking.
+  - `p01969` is isolated: its nearest training row is 0.30 away (R 127.5) and the next-best row (117.58) is
+    0.78 away. A local Gaussian process (Matern 5/2, ARD, 800 nearest rows, scratch analysis, no run id)
+    predicted the challenger *blind* at 120.08 ± 5.03, where the boosted judges said 107–111.
+- **Baseline W\* settles the extrapolation question** (TA real score 119.0916, 2026-10-31). Predictions for the
+  same `weights.json`: ridge2 75.8957 (error −43.20), stack 118.7316 (−0.36, `artifacts/best_model`),
+  histgb 117.6234 (−1.47, `20261101-140115-train-histgb-v32`), xgboost 114.2081 (−4.88,
+  `20261101-140119-train-xgboost-v32`). The quadratic surrogate's corner-of-simplex optimum is an artefact,
+  so the "aggressive ridge2 candidate" below is dropped; tree ensembles, the stack above all, are the
+  surrogates to trust near this region. Rank offline candidates by predicted improvement over each
+  model's own prediction for `p01969`, not by raw predicted R.
+  *Qualified 2026-11-02: accurate at baseline W\* is not accurate where the trees were searched; submission 1
+  (above) missed by 8–12 on stack and the boosted trees.*
 - **Model–optimizer coupling** (`analysis/coupling/README.md`, 5 seeds): which W* an optimizer finds is
   decided mostly by the surrogate's shape, not by the optimizer. On ridge2, pgd and trust-dirichlet land in
   the same extrapolated region (semi-synthetic regret differs by ≤ 0.25); switching the surrogate changes
   regret by 5–25. Whether ridge2's extrapolated W* is good depends on how the real response behaves outside
   the data, which only the evaluator can tell. Recommended offline submissions: one conservative pair
   (extratrees + trust-dirichlet, near the data) and one aggressive pair (ridge2, outside the data).
+  *Superseded 2026-11-01 for the aggressive pair: the baseline W\* finding above refutes ridge2's extrapolation.*
 - Gradient optimizers are incompatible with piecewise-constant surrogates (pgd × extratrees).
 - **Boosted trees in the framework** (commit `d1504d6`): histgb 72.35 (`20261029-073439-evaluate-histgb-v32`,
   identical to B's saved `histgb_low80_full` predictions to 1e-14), xgboost 73.47
@@ -52,15 +83,35 @@ and record the new decision here with a date.
   library), so `sdm reproduce` may report small mismatches on another machine. Reproduce on the machine
   that made the run; compare across machines with a tolerance. Run provenance records the xgboost version.
 
-- `pgd` returns duplicate rows when `n > 1` (all starts converge to the same point). Online rounds need
-  distinct points. Owner: C. Tracked by the `xfail` in `tests/test_plugin_contract.py`.
-- The baseline W* is an extrapolation: nearest training row 0.66 away vs. typical spacing 0.38; predicted
-  75.9 vs. best measured 115.76. Treat corner-of-simplex predictions with suspicion.
+- `pgd` returns duplicate rows when `n > 1` (all starts converge to the same point). The 20-call policy
+  asks for one point per call, but a call must not repeat an earlier one. Owner: C. Tracked by the `xfail` in
+  `tests/test_plugin_contract.py`.
+- The round-1 packet (`analysis/online_round1/delivery/`) assumes 50-point batches, which revised decision 19
+  removes. Its candidates are still useful as starting points for designing the policy, but the packet is not
+  submitted as a batch. Owner: C.
+- The baseline W* is an extrapolation: nearest training row 0.66 away vs. typical spacing 0.38; ridge2
+  predicted 75.9 but the real score is 119.09. Treat corner-of-simplex predictions with suspicion.
 
-## Open questions (resolve in the week 8 lab)
+## Open questions
 
-- Evaluator input/output format, run time per point, and whether results are deterministic.
-- Whether the evaluator renormalises each building's weights (the slides only require "non-negative,
-  at least one positive"; the data package requires sum = 1).
-- Whether submitting a row from the training table (e.g. `p01969`, R = 115.76) is allowed offline.
-- Schema of `online_log.csv` and how online results are merged into `X, y` (owner: A, after the above).
+- Course computer environment (OS, Python, whether uv and `libomp` are available): decision 22 requires
+  reproducing there. Seen on 2026-11-02 when submission 1 was scored: Windows, PowerShell, a conda
+  environment. Python version and whether uv can be installed are still unknown. Owner: A.
+- When the evaluator becomes usable outside the course machines. Decision 19 assumes unlimited local runs
+  during online development, but on 2026-11-02 `RampingSolver.exe` (Windows only) runs only there (owner: A).
+- Whether the evaluator renormalises each building's weights. Now free to test locally: evaluate a training
+  row scaled × 2 once the evaluator is released (owner: D).
+- Evaluator run time per point. Run time decides how many full 20-call rehearsals fit into development.
+- How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
+  graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
+  Ask the TA whether that is allowed (owner: A).
+- Schema of the policy's call log and how each call's result is merged into `X, y` (owner: A, after the
+  evaluator format is known).
+
+## Resolved
+
+- Evaluator determinism: deterministic (decision 20, 2026-10-31).
+- Submitting a training row offline: allowed but only ties the bar (decision 17, 2026-10-31).
+- Whether weights must sum to 1: no, non-negative with one positive per building (decision 21, 2026-10-31).
+- Evaluator input/output (2026-11-02, from submission 1): `RampingSolver.exe --weights <file>.json` reads a
+  3 × 7 nested JSON list (one row per building, `FEATURES` order) and prints R as one float on stdout.

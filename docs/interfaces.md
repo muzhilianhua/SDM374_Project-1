@@ -54,7 +54,7 @@ class MyOptimizer(Optimizer):
 
 - `X, y` are all observations so far: the 2048 training rows offline, plus evaluated points online.
 - `model` is a fitted `Surrogate`; use only its public methods.
-- Online rounds ask for `n = 50`; the rows must be distinct.
+- The online policy asks for `n = 1` per call (decision 19); whenever `n > 1`, the rows must be distinct.
 
 ## Registered plugins
 
