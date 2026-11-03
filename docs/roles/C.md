@@ -67,8 +67,12 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
       one p01969 repeat is deliberate,49 are novel. Include baseline, existing recommendations,
       mechanism probes, JSON/CSV/individual files and a pending worksheet. No evaluator calls.
       Full suite:112 pass,1 known xfail; selected stack predictions replay and all payloads agree.
-- [ ] Each round, 50 points split into exploit / explore / probe (ratios from D's replay)
+- [ ] Superseded by revised decision 19 (2026-11-01): there are no 50-point rounds. The online deliverable is
+      a policy making 20 sequential single-point calls; the packet above is a pool of starting ideas only
+- [ ] One point per call: exploit / explore choice per call (settings from D's replay)
 - [ ] TuRBO-style trust-region radius: grow after successes, shrink after failures
+- [ ] Note for the policy: offline submission 1 (the consensus challenger) measured 119.71 against predicted
+      107–111 (decisions, Findings). Boosted-tree consensus is over-optimistic where it was searched
 
 ## Acceptance criteria
 - `propose(n=50)` returns 50 distinct rows that pass `check_weights`; the uniqueness check in

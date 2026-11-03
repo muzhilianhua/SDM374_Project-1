@@ -2,7 +2,7 @@
 
 ## Mission
 Keep everyone's work pluggable into one pipeline, keep results reproducible, and (online phase) be the
-only person who sends points to the real evaluator so the 20 × 50 budget is never wasted.
+only person who sends points to the real evaluator so the 20-call budget is never wasted (decision 19).
 
 ## You own
 `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py`, `app/`, `tests/`
@@ -15,20 +15,25 @@ only person who sends points to the real evaluator so the 20 × 50 budget is nev
 - [x] `frozen-v32` evaluate protocol: B's frozen 2×5 splits + approved v3.2 scorer, hash-checked;
       leaderboard ranks it first (2026-10-27, see decisions 6, 13, 14)
 - [ ] Review and merge B/C/D/E pull requests; keep `docs/interfaces.md` in sync with the code
-- [ ] Before the lab: run the offline-submission decision meeting; pick two candidates from
-      `sdm.catalog.candidates` (first conservative and non-extrapolating, second more aggressive)
-- [ ] Prepare an evaluator smoke-test checklist (input format, time per point, determinism, renormalisation)
+- [x] Offline submission 1 (2026-11-02): consensus challenger, real R 119.7121, bar not met (Findings)
+- [ ] Before 2026-11-05 end of class: offline submission 2. The bar is R < 115.76 (decision 17) and it is
+      chosen without the solver (decision 23). Plan: a short step (≈ 0.03) from `p01969` along a local GP's
+      descent direction, kept only if every GP neighbourhood size and extratrees agree; estimated
+      P(R < 115.76) ≈ 0.55–0.70, so not a sure pass
+- [ ] Prepare an evaluator smoke-test checklist (input format, time per point, renormalisation; determinism
+      is settled, decision 20)
+- [ ] Confirm the course computer environment (OS, Python, uv, `libomp`) for decision 22
 
 ## Backlog — online (weeks 8–10)
-- [ ] Define `online_log.csv` (round, point id, 21 weights, R, source strategy, run id) and an append-only writer in `src/sdm/`
-- [ ] Make online rows flow into `X, y` for training and proposing (CLI option or dataset overlay)
-- [ ] GUI online console: budget ledger (used / 1000), pre-submit checks (constraint, duplicates, budget), best-so-far curve
-- [ ] Each round: submit C's reviewed 50 points, log results, host the 15-minute sync
+- [ ] Define the call log `online_log.csv` (call number, 21 weights, R, source strategy, run id) and an append-only writer in `src/sdm/`
+- [ ] Make each call's result flow into `X, y` for training and proposing (CLI option or dataset overlay)
+- [ ] GUI online console: budget ledger (used / 20), pre-submit checks (constraint, duplicates, budget), best-so-far curve
+- [ ] Freeze the 20-call policy (code, configs, seeds) and rehearse it end to end on the course computer (decision 22)
 
 ## Acceptance criteria
 - `uv run pytest -q` green on `main` at all times.
 - Every number in the report traces to a run id that `sdm reproduce` confirms.
-- Budget ledger never exceeds 20 rounds × 50 points; no point is evaluated twice by accident.
+- Budget ledger never exceeds 20 calls; no point is evaluated twice by accident.
 
 ## Interfaces
 Provides every interface in `docs/interfaces.md`. Consumes plugins from B and C, replay results from D,

@@ -18,7 +18,7 @@ Changes to `sdm.catalog` or run-folder formats (add helpers in `analysis/ablatio
 - [ ] Draft Introduction and Method from `docs/interfaces.md` and `docs/decisions.md`
 
 ## Backlog — online (weeks 8–10)
-- [ ] After each round: best-so-far curve and per-round score distribution
+- [ ] Best-so-far curve over the 20 calls, and predicted vs. measured R per call
 - [ ] Collect sections from A–D, keep the report within 4 pages; build the slides and the innovation story
 - [ ] Final code package: README commands that reproduce every reported number
 

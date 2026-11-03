@@ -34,7 +34,7 @@ Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protoco
 - [ ] Provide `gradient` / `smoothness` where cheap so `pgd` can be reused
 
 ## Backlog — online (weeks 8–10)
-- [ ] Retrain each round on offline + online rows; report the previous round's predicted vs. measured error
+- [ ] Retrain after each call on offline + online rows; report the previous call's predicted vs. measured error
 - [ ] Recalibrate `std`; optionally up-weight rows near the current trust region
 
 ## Acceptance criteria

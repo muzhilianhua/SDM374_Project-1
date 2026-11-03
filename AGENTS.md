@@ -16,8 +16,8 @@ best measured R = 115.76, row `p01969`) and optimize `W` over the surrogate.
 
 | Phase | When | Budget | Grade |
 |---|---|---|---|
-| Offline: submit W* from the 2048-row table | Week 8 lab | 2 submissions, best counts | 7%: beat the course baseline |
-| Online: propose → real evaluator → retrain loop | Weeks 8–10 | ≤ 20 rounds × ≤ 50 points | 8%: beat our offline result; 5%: rank among teams |
+| Offline: submit W* from the 2048-row table | Open now; due end of class 2026-11-05 | 2 sequential submissions, best counts | 7%: R < 115.76 (decision 17) |
+| Online: a frozen policy proposes → real evaluator → retrain loop | Weeks 8–10 | ≤ 20 sequential calls, one W per call; only the 2048 training rows before the first call (decision 19) | 8%: beat our offline result; 5%: rank among teams (best call counts) |
 | Presentation + code + IEEE report (≤ 4 pages) | Week 10 lab | — | 5% innovation, 5% report |
 
 The real evaluator is released in week 8; until then everything is offline and only the surrogate's
