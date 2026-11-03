@@ -1,0 +1,15 @@
+{
+  "working_model": "reference_model",
+  "new_model_passed_replacement_gate": false,
+  "new_weights_source_run": "20261101-224445-optimize-selection-study-corrected-search-2040",
+  "new_weights_source_rank": 1,
+  "new_weights_decimal_places": 8,
+  "new_weights_exploratory_only": true,
+  "first_real_test_candidate": "original_consensus_challenger",
+  "first_real_test_weights": "first_test_weights.json",
+  "operational_W_changed": false,
+  "first_test_priority_changed": false,
+  "simulator_calls": 0,
+  "new_measured_rows": 0,
+  "independent_SOTA_claim": false
+}

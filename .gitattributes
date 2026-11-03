@@ -1,2 +1,4 @@
 # Imported controller bytes are evidence; keep their original line endings.
 analysis/selection_training/delivery/raw_source_files/*.json -text whitespace=cr-at-eol
+# Preserve the original CLI evidence log, including its terminal newline.
+analysis/selection_training/delivery/reproduce.log whitespace=-blank-at-eof

@@ -1,5 +1,5 @@
 {
-  "status": "review source verified; final package verification follows",
+  "status": "passed",
   "command": "env -u PYTHONPATH OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run --locked --group gui pytest -q",
   "result": "150 passed, 1 xfailed in 118.98s",
   "exit_code": 0,
@@ -13,5 +13,18 @@
   },
   "new_evaluator_calls": 0,
   "historical_model_retrained": false,
-  "unrelated_untracked_document_preserved": true
+  "unrelated_untracked_document_preserved": true,
+  "tested_source_commit": "811c3b70b47e925eb4055a1f2478fa8ce6603a04",
+  "package_directory": "SUBMISSION_READY",
+  "package_files": 116,
+  "package_checksums_verified": true,
+  "zip_contents_match_directory_bytes": true,
+  "local_readme_links_verified": 28,
+  "archive": "artifacts/SUBMISSION_READY_2026-11-03.zip",
+  "archive_sha256": "d198e4166c85c69354c5352a2ca9ddcfd895740d4bbddd277e41eca2af241562",
+  "large_asset_files_restored_and_verified": 109,
+  "known_observations_recorded": 3,
+  "known_points_not_scheduled": true,
+  "main_rules_and_real_findings_preserved": true,
+  "protected_course_and_frozen_files_unchanged": true
 }

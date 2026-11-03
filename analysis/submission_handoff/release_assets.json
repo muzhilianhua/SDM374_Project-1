@@ -449,5 +449,10 @@
     "bytes": 38043422,
     "head": "651c310905348859fba3aa4f6caed052cac222e1",
     "prerequisite": "fc3223fc36f9ad0d428b960b88793c4a1495b39e"
+  },
+  "handoff": {
+    "file": "SUBMISSION_READY_2026-11-03.zip",
+    "sha256": "d198e4166c85c69354c5352a2ca9ddcfd895740d4bbddd277e41eca2af241562",
+    "bytes": 1197637
   }
 }
