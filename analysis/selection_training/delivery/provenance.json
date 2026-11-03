@@ -1,0 +1,49 @@
+{
+  "git": {
+    "commit": "3b71c8b763d92ad218706eae602229df344f94e2",
+    "dirty": false
+  },
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "catboost": "1.2.8",
+    "xgboost": "3.2.0"
+  },
+  "sources": {
+    "analysis/selection_training/run.py": "e39e2271ef4ceb25c07e0242f484f11795381b45935f5b719b738471c6fdd5a3",
+    "analysis/selection_training/audit.py": "fa7f9da6e20b816b8849d1fb43e429ed9fea8bc582aea6c5a21ae2ce512bb933",
+    "analysis/selection_training/precision.py": "7471162bb37bf7354dd03edf1fbe4cef4eb7eb31762db7c7ce63aa45dafe8d25",
+    "analysis/selection_training/probes.py": "7e9b61a5a1e60c345118a0c839ec6486031d8e98b5b4d3caccb02628d732f452",
+    "analysis/selection_training/publish.py": "98177832bb48ede99345c3e8f840ad0327aa52b095c0094ee2835a27c212e9a8",
+    "analysis/selection_training/README.md": "a722cde2b9cbbfe2314af1527e766b32a3110da76cdab938430bce81717060fa",
+    "analysis/selection_training/delivery/run_manifest_snapshot.json": "0f6c7ce8ff31d53136c7691a928a5dd096056089b2f0564ccc9ab7dd44dadd6a",
+    "src/sdm/models/selection_stack.py": "c14172fc945be1ba25cff76730ed78506d24978f05cc79f7bc02aaca38436b6b",
+    "src/sdm/models/honest_stack.py": "afe27d313d3683e402b37bb3926f5e546793deb40bb9267fc38e9aecb950f704",
+    "src/sdm/models/method_study.py": "25758afdb1fe66733bf9543b203cb86a1bec6c446c8bf105237c002da2562db8",
+    "src/sdm/optimizers/_neighborhood.py": "7ecb1e4a1de466841153a4d4d563361ebb967b5c3c70002675d022309f43c102",
+    "src/sdm/optimizers/neighborhood_trust.py": "d06b70e04807e93c98d6d3b32f5940747e1747387a2dfed4d138f2ad84996813",
+    "uv.lock": "9e6648299951e3cb9a63e3d4f43d983f42438aee484714cad5fcf51937e5326b",
+    "tests/test_selection_training.py": "ba425f688f4ca04d5ef0d7ea2f6ed19b2223da74f8f545b2496da2a2f0c29309",
+    "analysis/selection_training/results/test_result.json": "44edc7ec9d3ff64dbedbfd79b0d943b6dfc7c2c1d79801dc562588f73b9d0c7b"
+  },
+  "seeds": {
+    "pools": 2042,
+    "directions": [
+      2043,
+      2044,
+      2045
+    ],
+    "subsets": [
+      2046,
+      2047,
+      2048,
+      2049,
+      2050
+    ],
+    "regions": 2031
+  },
+  "simulator_calls": 0
+}

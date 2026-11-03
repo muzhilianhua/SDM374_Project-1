@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "command": "env -u PYTHONPATH OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run --locked --group gui pytest -q",
+  "result": "150 passed, 1 xfailed in 118.98s",
+  "exit_code": 0,
+  "tested_source_sha256": {
+    "src/sdm/models/stable_stack.py": "a77367460258d7efc3620b1cd7fb0fb9bc9ff66f2890397ef083e4b30b60e05b",
+    "src/sdm/models/selection_stack.py": "faf6de3e4eb3b65d1e2cb3fa29d4c0a3cefff423856f82af73bddba012cf4b3e",
+    "src/sdm/optimizers/_neighborhood.py": "adef80aa54de5c23c75b3dc55f948799895af9a5a789e5735da99e12a0cba1a4",
+    "tests/test_stable_training.py": "10711c961e57a6097e86f6f71b17508a47b0cceb8bdb721cfedd91577b44594e",
+    "tests/test_selection_training.py": "e83bc40baf4f3350d77e6d0aadd66a55312815959f0952a2d7aa31c4d8323b26",
+    "tests/test_submission_handoff.py": "41ffd5d4131e3e56c79b6c12e6ec0832446d672787f8973634c0357c334b9212"
+  },
+  "new_evaluator_calls": 0,
+  "historical_model_retrained": false,
+  "unrelated_untracked_document_preserved": true,
+  "tested_source_commit": "811c3b70b47e925eb4055a1f2478fa8ce6603a04",
+  "package_directory": "SUBMISSION_READY",
+  "package_files": 116,
+  "package_checksums_verified": true,
+  "zip_contents_match_directory_bytes": true,
+  "local_readme_links_verified": 28,
+  "archive": "artifacts/SUBMISSION_READY_2026-11-03.zip",
+  "archive_sha256": "d198e4166c85c69354c5352a2ca9ddcfd895740d4bbddd277e41eca2af241562",
+  "large_asset_files_restored_and_verified": 109,
+  "known_observations_recorded": 3,
+  "known_points_not_scheduled": true,
+  "main_rules_and_real_findings_preserved": true,
+  "protected_course_and_frozen_files_unchanged": true
+}

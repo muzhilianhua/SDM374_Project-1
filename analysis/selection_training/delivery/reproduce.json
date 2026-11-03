@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+    "reproduce",
+    "20261101-224249-train-selection-study-corrected-fit"
+  ],
+  "returncode": 0,
+  "output": "note: git commit differs: {'commit': '5a912fd482384d19d28514e37d554d30ce9c8f69', 'dirty': False} -> {'commit': 'c2a70f2fa2cc6c8a8650256448f45147231fc5bc', 'dirty': False}\noriginal: /Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/runs/20261101-224249-train-selection-study-corrected-fit\nrerun:    /Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/runs/20261101-224822-train-selection-study-corrected-fit\nreproduced: outputs match within rtol=1e-09\n",
+  "git": {
+    "commit": "c2a70f2fa2cc6c8a8650256448f45147231fc5bc",
+    "dirty": false
+  }
+}

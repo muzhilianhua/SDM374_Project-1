@@ -1,0 +1,30 @@
+{
+  "observations": [
+    {
+      "id": "P1",
+      "alias": "r01-004",
+      "measured_R": 119.71206678869203,
+      "status": "measured_failed",
+      "weights_sha256": "98ce57bb5224551712a56c6269a86e4aa801d5d784dcdbb8758688817591b1f2",
+      "source": "https://github.com/muzhilianhua/SDM374_Project-1/blob/1bf9dbeadbd45ec3f51299b489d8893de1a71186/docs/decisions.md"
+    },
+    {
+      "id": "baseline-W*",
+      "alias": "r01-046",
+      "measured_R": 119.0916,
+      "status": "TA_confirmed",
+      "weights_sha256": "d2d1d2b00203ca739462caa35d0efe29f59c8671d4af04effac4d8d054c0178e",
+      "source": "https://github.com/muzhilianhua/SDM374_Project-1/blob/1bf9dbeadbd45ec3f51299b489d8893de1a71186/docs/decisions.md"
+    },
+    {
+      "id": "p01969",
+      "alias": "r01-047",
+      "measured_R": 115.76481925917324,
+      "status": "training_row",
+      "source": "dataset_same8/train.csv"
+    }
+  ],
+  "imported_from_team_records": true,
+  "new_evaluator_calls": 0,
+  "frozen_training_data_modified": false
+}

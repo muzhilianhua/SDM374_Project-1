@@ -1,0 +1,17 @@
+{
+  "dataset_rows": 2048,
+  "new_measured_rows": 0,
+  "max_metric_abs_difference": 0.0,
+  "max_outer_prediction_abs_difference": 0.0,
+  "max_candidate_prediction_abs_difference": 0.0,
+  "max_consensus_proposal_weight_abs_difference": 0.0,
+  "new_rank1_vs_old_export_max_abs_difference": 4.8742680516800085e-09,
+  "bundle_cli_prediction_matches": true,
+  "old_model_sha256": "bc1c16ae9b73448058400a3280c212d519a22ecf6bcf7244c1109bebada82500",
+  "new_model_sha256": "e99b838bbebe728f65536d48566eafd70d68c813b66e8073278795514eff8df2",
+  "simulator_calls": 0,
+  "tests": {
+    "passed": 115,
+    "xfailed": 1
+  }
+}

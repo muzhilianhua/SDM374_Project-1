@@ -1,0 +1,16 @@
+# Adaptive calibration-only ablation, documented separately from the frozen profile selection.
+[data]
+dataset = "dataset_same8"
+[model]
+name = "honest-stack"
+[model.params]
+seed = 2027
+[optimizer]
+name = "trust-dirichlet"
+[optimizer.params]
+risk = 1.0
+max_distance_ratio = 0.75
+seed = 2026
+[evaluate]
+protocol = "frozen-v32"
+top_k = 50

@@ -1,0 +1,19 @@
+# Prespecified selection-conditioned study; see analysis/selection_training/README.md.
+[data]
+dataset = "dataset_same8"
+[model]
+name = "selection-stack"
+[model.params]
+seed = 2026
+iterations = 600
+[optimizer]
+name = "neighborhood-trust"
+[optimizer.params]
+radii = [0.02, 0.05]
+risk = 1.0
+max_distance_ratio = 0.75
+prediction_budget = 12000
+seed = 2040
+[evaluate]
+protocol = "frozen-v32"
+top_k = 50

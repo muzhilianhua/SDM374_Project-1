@@ -1,0 +1,18 @@
+{
+  "new": {
+    "ridge_eval": "20261101-172439-evaluate-retrain-check-ridge-20261101",
+    "xgb_eval": "20261101-172439-evaluate-retrain-check-xgb-20261101",
+    "stack_eval": "20261101-172439-evaluate-retrain-check-stack-20261101",
+    "stack_train": "20261101-172448-train-retrain-fit-stack-20261101",
+    "consensus_train": "20261101-172448-train-retrain-fit-consensus-20261101",
+    "consensus_search": "20261101-172542-optimize-retrain-search-consensus-20261101"
+  },
+  "old": {
+    "ridge_eval": "20261029-125034-evaluate-baseline-v32",
+    "xgb_eval": "20261029-160333-evaluate-soft-xgboost-step-2026",
+    "stack_eval": "20261029-171154-evaluate-method-blend-stack",
+    "stack_train": "artifacts/best_model",
+    "consensus_train": "20261029-132622-train-consensus-r075-2026",
+    "consensus_search": "20261029-132648-optimize-consensus-r075-2026"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "adaptive_follow_up": true,
+  "mean_recipe_unchanged": true,
+  "checks": [
+    {
+      "seed": 2026,
+      "mean_prediction_max_abs_difference": 0.0,
+      "coverage": 0.70703125,
+      "coverage_gate": true
+    },
+    {
+      "seed": 2027,
+      "mean_prediction_max_abs_difference": 0.0,
+      "coverage": 0.6982421875,
+      "coverage_gate": true
+    },
+    {
+      "seed": 2028,
+      "mean_prediction_max_abs_difference": 0.0,
+      "coverage": 0.702392578125,
+      "coverage_gate": true
+    }
+  ],
+  "calibration_gate_passed": true,
+  "predictive_score_improvement_claimed": false
+}

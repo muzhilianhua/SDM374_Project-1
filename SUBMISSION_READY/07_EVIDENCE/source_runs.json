@@ -1,0 +1,1013 @@
+{
+  "baseline": {
+    "run": "20261101-223009-evaluate-selection-study-baseline",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/baseline-v32.toml",
+      "--name",
+      "selection-study-baseline"
+    ],
+    "seconds": 3.5704187501687557,
+    "metrics": {
+      "v32_score": 66.45075651039826,
+      "v32_score_std": 9.190165697083867,
+      "v32_points_local_order": 19.20962952005262,
+      "v32_points_local_mae": 8.546845110830311,
+      "v32_points_global_order": 11.934071962053903,
+      "v32_points_global_mae": 10.42734301853445,
+      "v32_points_top1_regret": 16.332866898926977,
+      "v32_local_pair_accuracy": 0.7744232788578945,
+      "v32_global_pair_accuracy": 0.89780239873513,
+      "v32_local_mae": 11.96572358783267,
+      "v32_global_mae": 6.915106323662431,
+      "v32_top1_regret": 4.509536169139392,
+      "mae": 6.9151184935023196,
+      "rmse": 9.49282486032762,
+      "r2": 0.6374876825019248,
+      "spearman": 0.8344790799325748,
+      "top50_recall": 0.45,
+      "mean_predicted_std": 9.591280028087235,
+      "std_coverage": 0.755126953125
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-baseline",
+      "created": "2026-11-01T22:30:09",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/baseline-v32.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 122.83868735172146
+  },
+  "reference-2026": {
+    "run": "20261101-223009-evaluate-selection-study-reference-2026",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2026.toml",
+      "--name",
+      "selection-study-reference-2026"
+    ],
+    "seconds": 159.85297712497413,
+    "metrics": {
+      "v32_score": 75.11365847601685,
+      "v32_score_std": 7.757371395043535,
+      "v32_points_local_order": 20.57000097879952,
+      "v32_points_local_mae": 10.681197827120304,
+      "v32_points_global_order": 13.287907356456063,
+      "v32_points_global_mae": 11.560719120173195,
+      "v32_points_top1_regret": 19.013833193467764,
+      "v32_local_pair_accuracy": 0.7938571568399931,
+      "v32_global_pair_accuracy": 0.9429302452152019,
+      "v32_local_mae": 6.398849934112713,
+      "v32_global_mae": 4.693209879714336,
+      "v32_top1_regret": 1.0632429467517794,
+      "mae": 4.693286746415716,
+      "rmse": 7.1857949414456215,
+      "r2": 0.7922949469266052,
+      "spearman": 0.907748459031438,
+      "top50_recall": 0.59,
+      "mean_predicted_std": 5.632671282744002,
+      "std_coverage": 0.70703125
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-reference-2026",
+      "created": "2026-11-01T22:30:09",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 119.39239412933384
+  },
+  "corrected-2026": {
+    "run": "20261101-223013-evaluate-selection-study-corrected-2026",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2026.toml",
+      "--name",
+      "selection-study-corrected-2026"
+    ],
+    "seconds": 260.3760391250253,
+    "metrics": {
+      "v32_score": 75.06792513890262,
+      "v32_score_std": 7.882594832754712,
+      "v32_points_local_order": 20.50908350631562,
+      "v32_points_local_mae": 10.696944439016951,
+      "v32_points_global_order": 13.289076883757417,
+      "v32_points_global_mae": 11.558987116344879,
+      "v32_points_top1_regret": 19.013833193467764,
+      "v32_local_pair_accuracy": 0.7929869072330803,
+      "v32_global_pair_accuracy": 0.9429692294585805,
+      "v32_local_mae": 6.363695101188962,
+      "v32_global_mae": 4.696244662438486,
+      "v32_top1_regret": 1.0632429467517794,
+      "mae": 4.696325207151144,
+      "rmse": 7.177603895046353,
+      "r2": 0.7927673199677996,
+      "spearman": 0.9077764231625614,
+      "top50_recall": 0.58,
+      "mean_predicted_std": 5.726868492776335,
+      "std_coverage": 0.713134765625
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-corrected-2026",
+      "created": "2026-11-01T22:30:13",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 119.39239412933384
+  },
+  "reference-2027": {
+    "run": "20261101-223250-evaluate-selection-study-reference-2027",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2027.toml",
+      "--name",
+      "selection-study-reference-2027"
+    ],
+    "seconds": 168.2894270408433,
+    "metrics": {
+      "v32_score": 74.06889589811692,
+      "v32_score_std": 7.510821330381914,
+      "v32_points_local_order": 20.441686885960543,
+      "v32_points_local_mae": 10.702837485527429,
+      "v32_points_global_order": 13.277925193237536,
+      "v32_points_global_mae": 11.547088356782144,
+      "v32_points_top1_regret": 18.09935797660927,
+      "v32_local_pair_accuracy": 0.7920240983708648,
+      "v32_global_pair_accuracy": 0.9425975064412512,
+      "v32_local_mae": 6.351519177199189,
+      "v32_global_mae": 4.717596736262201,
+      "v32_top1_regret": 2.0084234209851273,
+      "mae": 4.717674875728183,
+      "rmse": 7.194509402905829,
+      "r2": 0.7917965733733774,
+      "spearman": 0.9072948540723722,
+      "top50_recall": 0.59,
+      "mean_predicted_std": 5.619482383514406,
+      "std_coverage": 0.6982421875
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-reference-2027",
+      "created": "2026-11-01T22:32:50",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 120.33757460356719
+  },
+  "corrected-2027": {
+    "run": "20261101-223434-evaluate-selection-study-corrected-2027",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2027.toml",
+      "--name",
+      "selection-study-corrected-2027"
+    ],
+    "seconds": 273.7002694590483,
+    "metrics": {
+      "v32_score": 73.88162832434685,
+      "v32_score_std": 7.325211595571832,
+      "v32_points_local_order": 20.149669069741243,
+      "v32_points_local_mae": 10.798890112406568,
+      "v32_points_global_order": 13.27886646564842,
+      "v32_points_global_mae": 11.554844699941349,
+      "v32_points_top1_regret": 18.09935797660927,
+      "v32_local_pair_accuracy": 0.7878524152820178,
+      "v32_global_pair_accuracy": 0.9426288821882809,
+      "v32_local_mae": 6.166206437278918,
+      "v32_global_mae": 4.703936400899658,
+      "v32_top1_regret": 2.0084234209851273,
+      "mae": 4.7040151864854085,
+      "rmse": 7.1733995942259146,
+      "r2": 0.7930162833112738,
+      "spearman": 0.9074002635148052,
+      "top50_recall": 0.59,
+      "mean_predicted_std": 5.754254184834442,
+      "std_coverage": 0.712646484375
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-corrected-2027",
+      "created": "2026-11-01T22:34:34",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2027.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 120.33757460356719
+  },
+  "reference-2028": {
+    "run": "20261101-223538-evaluate-selection-study-reference-2028",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2028.toml",
+      "--name",
+      "selection-study-reference-2028"
+    ],
+    "seconds": 168.2051548748277,
+    "metrics": {
+      "v32_score": 76.89459976931187,
+      "v32_score_std": 6.261225468405733,
+      "v32_points_local_order": 21.59330406854396,
+      "v32_points_local_mae": 10.748219529036879,
+      "v32_points_global_order": 13.283083130199731,
+      "v32_points_global_mae": 11.566605392134132,
+      "v32_points_top1_regret": 19.703387649397165,
+      "v32_local_pair_accuracy": 0.8084757724077709,
+      "v32_global_pair_accuracy": 0.9427694376733244,
+      "v32_local_mae": 6.259628652136454,
+      "v32_global_mae": 4.68319420884545,
+      "v32_top1_regret": 0.2517947424401427,
+      "mae": 4.683282133688579,
+      "rmse": 7.167408714897343,
+      "r2": 0.7933560267789778,
+      "spearman": 0.907945091541804,
+      "top50_recall": 0.6,
+      "mean_predicted_std": 5.6085238508183695,
+      "std_coverage": 0.702392578125
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-reference-2028",
+      "created": "2026-11-01T22:35:38",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2028.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 118.5809459250222
+  },
+  "corrected-2028": {
+    "run": "20261101-223826-evaluate-selection-study-corrected-2028",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "evaluate",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2028.toml",
+      "--name",
+      "selection-study-corrected-2028"
+    ],
+    "seconds": 226.2578840830829,
+    "metrics": {
+      "v32_score": 76.92659140239823,
+      "v32_score_std": 6.314605442760222,
+      "v32_points_local_order": 21.55927745674842,
+      "v32_points_local_mae": 10.810666117065576,
+      "v32_points_global_order": 13.284755476148726,
+      "v32_points_global_mae": 11.568504703038348,
+      "v32_points_top1_regret": 19.703387649397165,
+      "v32_local_pair_accuracy": 0.8079896779535488,
+      "v32_global_pair_accuracy": 0.942825182538291,
+      "v32_local_mae": 6.138636558787241,
+      "v32_global_mae": 4.679786771199858,
+      "v32_top1_regret": 0.2517947424401427,
+      "mae": 4.67986694960826,
+      "rmse": 7.161612919577641,
+      "r2": 0.7936917716500805,
+      "spearman": 0.9079616094829256,
+      "top50_recall": 0.59,
+      "mean_predicted_std": 5.699074825882477,
+      "std_coverage": 0.710693359375
+    },
+    "meta": {
+      "kind": "evaluate",
+      "name": "selection-study-corrected-2028",
+      "created": "2026-11-01T22:38:26",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2028.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "9290fc20513643d83d14d3a9c40575af130f1d17",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "selected_actual_R": 118.5809459250222
+  },
+  "reference-fit": {
+    "run": "20261101-224249-train-selection-study-reference-fit",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "train",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2026.toml",
+      "--name",
+      "selection-study-reference-fit"
+    ],
+    "seconds": 18.00667183403857,
+    "metrics": {
+      "weight_xgboost": 0.2920246172436632,
+      "weight_catboost": 0.4437867721586836,
+      "weight_histgb": 0.2641886105976533,
+      "training_rows": 2048,
+      "conformal_edge_0": 0.28071179443397104,
+      "conformal_edge_1": 0.3864120294023049,
+      "conformal_edge_2": 0.5111152157156711,
+      "conformal_std_0": 3.44203188566413,
+      "conformal_std_1": 4.486825335322294,
+      "conformal_std_2": 5.836513848814625,
+      "conformal_std_3": 8.494855197313855,
+      "honest_conformal_edge_0": 0.28071179443397104,
+      "honest_conformal_edge_1": 0.3864120294023049,
+      "honest_conformal_edge_2": 0.5111152157156711,
+      "honest_conformal_std_0": 3.563396749277048,
+      "honest_conformal_std_1": 4.559805339935082,
+      "honest_conformal_std_2": 5.688141294855135,
+      "honest_conformal_std_3": 8.34144383246123,
+      "nested_calibration_mae": 4.894861618748909,
+      "mean_recipe_unchanged": true,
+      "error_scale_is_heuristic": true,
+      "calibration_labels_excluded_from_predictive_fit": true
+    },
+    "meta": {
+      "kind": "train",
+      "name": "selection-study-reference-fit",
+      "created": "2026-11-01T22:42:49",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-reference-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "5a912fd482384d19d28514e37d554d30ce9c8f69",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "corrected-fit": {
+    "run": "20261101-224249-train-selection-study-corrected-fit",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "train",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2026.toml",
+      "--name",
+      "selection-study-corrected-fit"
+    ],
+    "seconds": 25.840512958122417,
+    "metrics": {
+      "weight_xgboost": 0.2920246172436632,
+      "weight_catboost": 0.4437867721586836,
+      "weight_histgb": 0.2641886105976533,
+      "training_rows": 2048,
+      "conformal_edge_0": 0.28071179443397104,
+      "conformal_edge_1": 0.3864120294023049,
+      "conformal_edge_2": 0.5111152157156711,
+      "conformal_std_0": 3.44203188566413,
+      "conformal_std_1": 4.486825335322294,
+      "conformal_std_2": 5.836513848814625,
+      "conformal_std_3": 8.494855197313855,
+      "selected_correction_strength": 0.0,
+      "internal_selection_tuning": [
+        {
+          "strength": 0.0,
+          "mae": 4.903456172771186,
+          "pool_regret": 2.1297458089954944,
+          "selected_actual_R": 124.73102225551035,
+          "selected_signed_optimism": -4.028414341326015,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 0.25,
+          "mae": 4.894983508633133,
+          "pool_regret": 2.858245204744056,
+          "selected_actual_R": 125.45952165125891,
+          "selected_signed_optimism": -2.654616469048442,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 0.5,
+          "mae": 4.911618115551496,
+          "pool_regret": 2.6646644654499596,
+          "selected_actual_R": 125.26594091196482,
+          "selected_signed_optimism": -2.2009142664949675,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 1.0,
+          "mae": 4.986136343485168,
+          "pool_regret": 3.01384264280667,
+          "selected_actual_R": 125.61511908932152,
+          "selected_signed_optimism": -0.532419838716447,
+          "pools": 24,
+          "mae_eligible": true
+        }
+      ],
+      "nested_raw_calibration_mae": 4.894861618748909,
+      "error_scale_is_heuristic": true,
+      "internal_selection_is_not_independent_validation": true,
+      "raw_calibration_labels_excluded_from_predictive_fit": true
+    },
+    "meta": {
+      "kind": "train",
+      "name": "selection-study-corrected-fit",
+      "created": "2026-11-01T22:42:49",
+      "options": {},
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-corrected-2026.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "5a912fd482384d19d28514e37d554d30ce9c8f69",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "reference-search-2040": {
+    "run": "20261101-224443-optimize-selection-study-reference-search-2040",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "optimize",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2040.toml",
+      "--name",
+      "selection-study-reference-search-2040",
+      "-n",
+      "50",
+      "--model-run",
+      "20261101-224249-train-selection-study-reference-fit"
+    ],
+    "seconds": 2.6539725000038743,
+    "metrics": {
+      "predicted_mean": 110.61311552406909,
+      "predicted_std": 3.563396749277048,
+      "nearest_train_distance": 0.25619773651365124,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 9458,
+      "optimizer_best_objective": 117.45515484324785,
+      "optimizer_best_mean": 110.61311552406909,
+      "optimizer_best_std": 3.563396749277048,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "optimizer_best_central_objective": 114.17651227334613,
+      "optimizer_screened_candidates": 64,
+      "optimizer_model_input_evaluations_upper_bound": 11714,
+      "model_weight_xgboost": 0.2920246172436632,
+      "model_weight_catboost": 0.4437867721586836,
+      "model_weight_histgb": 0.2641886105976533,
+      "model_training_rows": 2048,
+      "model_conformal_edge_0": 0.28071179443397104,
+      "model_conformal_edge_1": 0.3864120294023049,
+      "model_conformal_edge_2": 0.5111152157156711,
+      "model_conformal_std_0": 3.44203188566413,
+      "model_conformal_std_1": 4.486825335322294,
+      "model_conformal_std_2": 5.836513848814625,
+      "model_conformal_std_3": 8.494855197313855,
+      "model_honest_conformal_edge_0": 0.28071179443397104,
+      "model_honest_conformal_edge_1": 0.3864120294023049,
+      "model_honest_conformal_edge_2": 0.5111152157156711,
+      "model_honest_conformal_std_0": 3.563396749277048,
+      "model_honest_conformal_std_1": 4.559805339935082,
+      "model_honest_conformal_std_2": 5.688141294855135,
+      "model_honest_conformal_std_3": 8.34144383246123,
+      "model_nested_calibration_mae": 4.894861618748909,
+      "model_mean_recipe_unchanged": true,
+      "model_error_scale_is_heuristic": true,
+      "model_calibration_labels_excluded_from_predictive_fit": true
+    },
+    "meta": {
+      "kind": "optimize",
+      "name": "selection-study-reference-search-2040",
+      "created": "2026-11-01T22:44:43",
+      "options": {
+        "n": 50,
+        "model_run": "20261101-224249-train-selection-study-reference-fit"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2040.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "6fd6857be84ce7218597ea45dc7967f5d9d91dd2",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "reference-search-2041": {
+    "run": "20261101-224443-optimize-selection-study-reference-search-2041",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "optimize",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2041.toml",
+      "--name",
+      "selection-study-reference-search-2041",
+      "-n",
+      "50",
+      "--model-run",
+      "20261101-224249-train-selection-study-reference-fit"
+    ],
+    "seconds": 2.65382399992086,
+    "metrics": {
+      "predicted_mean": 109.16920585402218,
+      "predicted_std": 3.563396749277048,
+      "nearest_train_distance": 0.2586101904400231,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 9440,
+      "optimizer_best_objective": 117.54357415726909,
+      "optimizer_best_mean": 109.16920585402218,
+      "optimizer_best_std": 3.563396749277048,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "optimizer_best_central_objective": 112.73260260329923,
+      "optimizer_screened_candidates": 64,
+      "optimizer_model_input_evaluations_upper_bound": 11714,
+      "model_weight_xgboost": 0.2920246172436632,
+      "model_weight_catboost": 0.4437867721586836,
+      "model_weight_histgb": 0.2641886105976533,
+      "model_training_rows": 2048,
+      "model_conformal_edge_0": 0.28071179443397104,
+      "model_conformal_edge_1": 0.3864120294023049,
+      "model_conformal_edge_2": 0.5111152157156711,
+      "model_conformal_std_0": 3.44203188566413,
+      "model_conformal_std_1": 4.486825335322294,
+      "model_conformal_std_2": 5.836513848814625,
+      "model_conformal_std_3": 8.494855197313855,
+      "model_honest_conformal_edge_0": 0.28071179443397104,
+      "model_honest_conformal_edge_1": 0.3864120294023049,
+      "model_honest_conformal_edge_2": 0.5111152157156711,
+      "model_honest_conformal_std_0": 3.563396749277048,
+      "model_honest_conformal_std_1": 4.559805339935082,
+      "model_honest_conformal_std_2": 5.688141294855135,
+      "model_honest_conformal_std_3": 8.34144383246123,
+      "model_nested_calibration_mae": 4.894861618748909,
+      "model_mean_recipe_unchanged": true,
+      "model_error_scale_is_heuristic": true,
+      "model_calibration_labels_excluded_from_predictive_fit": true
+    },
+    "meta": {
+      "kind": "optimize",
+      "name": "selection-study-reference-search-2041",
+      "created": "2026-11-01T22:44:43",
+      "options": {
+        "n": 50,
+        "model_run": "20261101-224249-train-selection-study-reference-fit"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2041.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "6fd6857be84ce7218597ea45dc7967f5d9d91dd2",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "corrected-search-2040": {
+    "run": "20261101-224445-optimize-selection-study-corrected-search-2040",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "optimize",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2040.toml",
+      "--name",
+      "selection-study-corrected-search-2040",
+      "-n",
+      "50",
+      "--model-run",
+      "20261101-224249-train-selection-study-corrected-fit"
+    ],
+    "seconds": 2.2667016671039164,
+    "metrics": {
+      "predicted_mean": 110.61311552406909,
+      "predicted_std": 3.563396749277048,
+      "nearest_train_distance": 0.25619773651365124,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 9458,
+      "optimizer_best_objective": 117.45515484324785,
+      "optimizer_best_mean": 110.61311552406909,
+      "optimizer_best_std": 3.563396749277048,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "optimizer_best_central_objective": 114.17651227334613,
+      "optimizer_screened_candidates": 64,
+      "optimizer_model_input_evaluations_upper_bound": 11714,
+      "model_weight_xgboost": 0.2920246172436632,
+      "model_weight_catboost": 0.4437867721586836,
+      "model_weight_histgb": 0.2641886105976533,
+      "model_training_rows": 2048,
+      "model_conformal_edge_0": 0.28071179443397104,
+      "model_conformal_edge_1": 0.3864120294023049,
+      "model_conformal_edge_2": 0.5111152157156711,
+      "model_conformal_std_0": 3.44203188566413,
+      "model_conformal_std_1": 4.486825335322294,
+      "model_conformal_std_2": 5.836513848814625,
+      "model_conformal_std_3": 8.494855197313855,
+      "model_selected_correction_strength": 0.0,
+      "model_internal_selection_tuning": [
+        {
+          "strength": 0.0,
+          "mae": 4.903456172771186,
+          "pool_regret": 2.1297458089954944,
+          "selected_actual_R": 124.73102225551035,
+          "selected_signed_optimism": -4.028414341326015,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 0.25,
+          "mae": 4.894983508633133,
+          "pool_regret": 2.858245204744056,
+          "selected_actual_R": 125.45952165125891,
+          "selected_signed_optimism": -2.654616469048442,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 0.5,
+          "mae": 4.911618115551496,
+          "pool_regret": 2.6646644654499596,
+          "selected_actual_R": 125.26594091196482,
+          "selected_signed_optimism": -2.2009142664949675,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 1.0,
+          "mae": 4.986136343485168,
+          "pool_regret": 3.01384264280667,
+          "selected_actual_R": 125.61511908932152,
+          "selected_signed_optimism": -0.532419838716447,
+          "pools": 24,
+          "mae_eligible": true
+        }
+      ],
+      "model_nested_raw_calibration_mae": 4.894861618748909,
+      "model_error_scale_is_heuristic": true,
+      "model_internal_selection_is_not_independent_validation": true,
+      "model_raw_calibration_labels_excluded_from_predictive_fit": true
+    },
+    "meta": {
+      "kind": "optimize",
+      "name": "selection-study-corrected-search-2040",
+      "created": "2026-11-01T22:44:45",
+      "options": {
+        "n": 50,
+        "model_run": "20261101-224249-train-selection-study-corrected-fit"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2040.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "6fd6857be84ce7218597ea45dc7967f5d9d91dd2",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "corrected-search-2041": {
+    "run": "20261101-224445-optimize-selection-study-corrected-search-2041",
+    "command": [
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+      "optimize",
+      "-c",
+      "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2041.toml",
+      "--name",
+      "selection-study-corrected-search-2041",
+      "-n",
+      "50",
+      "--model-run",
+      "20261101-224249-train-selection-study-corrected-fit"
+    ],
+    "seconds": 2.2682559590321034,
+    "metrics": {
+      "predicted_mean": 109.16920585402218,
+      "predicted_std": 3.563396749277048,
+      "nearest_train_distance": 0.2586101904400231,
+      "train_median_nn_distance": 0.37711307211776746,
+      "best_observed": 115.76481925917324,
+      "optimizer_candidates_evaluated": 9440,
+      "optimizer_best_objective": 117.54357415726909,
+      "optimizer_best_mean": 109.16920585402218,
+      "optimizer_best_std": 3.563396749277048,
+      "optimizer_separation": 0.09427826802944186,
+      "optimizer_spacing": 0.37711307211776746,
+      "optimizer_best_central_objective": 112.73260260329923,
+      "optimizer_screened_candidates": 64,
+      "optimizer_model_input_evaluations_upper_bound": 11714,
+      "model_weight_xgboost": 0.2920246172436632,
+      "model_weight_catboost": 0.4437867721586836,
+      "model_weight_histgb": 0.2641886105976533,
+      "model_training_rows": 2048,
+      "model_conformal_edge_0": 0.28071179443397104,
+      "model_conformal_edge_1": 0.3864120294023049,
+      "model_conformal_edge_2": 0.5111152157156711,
+      "model_conformal_std_0": 3.44203188566413,
+      "model_conformal_std_1": 4.486825335322294,
+      "model_conformal_std_2": 5.836513848814625,
+      "model_conformal_std_3": 8.494855197313855,
+      "model_selected_correction_strength": 0.0,
+      "model_internal_selection_tuning": [
+        {
+          "strength": 0.0,
+          "mae": 4.903456172771186,
+          "pool_regret": 2.1297458089954944,
+          "selected_actual_R": 124.73102225551035,
+          "selected_signed_optimism": -4.028414341326015,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 0.25,
+          "mae": 4.894983508633133,
+          "pool_regret": 2.858245204744056,
+          "selected_actual_R": 125.45952165125891,
+          "selected_signed_optimism": -2.654616469048442,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 0.5,
+          "mae": 4.911618115551496,
+          "pool_regret": 2.6646644654499596,
+          "selected_actual_R": 125.26594091196482,
+          "selected_signed_optimism": -2.2009142664949675,
+          "pools": 24,
+          "mae_eligible": true
+        },
+        {
+          "strength": 1.0,
+          "mae": 4.986136343485168,
+          "pool_regret": 3.01384264280667,
+          "selected_actual_R": 125.61511908932152,
+          "selected_signed_optimism": -0.532419838716447,
+          "pools": 24,
+          "mae_eligible": true
+        }
+      ],
+      "model_nested_raw_calibration_mae": 4.894861618748909,
+      "model_error_scale_is_heuristic": true,
+      "model_internal_selection_is_not_independent_validation": true,
+      "model_raw_calibration_labels_excluded_from_predictive_fit": true
+    },
+    "meta": {
+      "kind": "optimize",
+      "name": "selection-study-corrected-search-2041",
+      "created": "2026-11-01T22:44:45",
+      "options": {
+        "n": 50,
+        "model_run": "20261101-224249-train-selection-study-corrected-fit"
+      },
+      "source_config": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/experiments/selection-search-2041.toml",
+      "dataset": {
+        "path": "/Users/aiziqi/Desktop/\u6625/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+        "version": "same8.20261020",
+        "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+      },
+      "git": {
+        "commit": "6fd6857be84ce7218597ea45dc7967f5d9d91dd2",
+        "dirty": false
+      },
+      "python": "3.11.9",
+      "packages": {
+        "numpy": "1.24.4",
+        "pandas": "1.5.3",
+        "scipy": "1.10.1",
+        "scikit-learn": "1.2.2",
+        "xgboost": "3.2.0"
+      }
+    },
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  }
+}

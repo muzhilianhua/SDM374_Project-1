@@ -1,5 +1,10 @@
 # Online round1: 50 feasible weights, prepared for later real testing
 
+> SUPERSEDED: this is a historical idea pool. The current format is at most 20 sequential
+> single-point calls. Do not resubmit P1 (119.71206678869203), baseline W* (119.0916) or p01969.
+> See [current package status](../../../SUBMISSION_READY/05_ONLINE_ROUND1_50/README.md).
+
+
 This packet contains **exactly50 distinct controller weight sets**, with stable IDs r01-001..r01-050.
 Each W is3x7: buildings1/2/3, then cost/carbon/peak/discomfort/degradation/ramping/resilience.
 **No real evaluator has been called and no official submission has been made.** Every result row is
