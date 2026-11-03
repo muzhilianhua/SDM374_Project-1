@@ -1,0 +1,13 @@
+{
+  "working_model": "calibrated_reference",
+  "predictive_score_improvement": false,
+  "regularized_recipe_replacement_gate_passed": false,
+  "first_real_test_candidate": "original_consensus_challenger",
+  "first_real_test_weights": "first_test_weights.json",
+  "first_test_priority_changed": false,
+  "operational_W_changed": false,
+  "new_search_weights_exploratory_only": true,
+  "region_generalization_solved": false,
+  "official_submissions": 0,
+  "simulator_calls": 0
+}

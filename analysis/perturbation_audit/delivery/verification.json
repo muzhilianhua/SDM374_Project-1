@@ -1,0 +1,14 @@
+{
+  "all_input_hashes_match": true,
+  "feasible_neighbor_count": 93728,
+  "max_exact_radius_abs_error": 1.1379786002407855e-14,
+  "all_prediction_archives_match_sample_tables": true,
+  "all_success_flags_match_three_judge_reference_rule": true,
+  "stack_cli_replay_count": 65,
+  "stack_cli_replay_max_abs_error": 1.4210854715202004e-14,
+  "tests": {
+    "passed": 115,
+    "xfailed": 1
+  },
+  "simulator_calls": 0
+}

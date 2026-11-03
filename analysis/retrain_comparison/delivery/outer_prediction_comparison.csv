@@ -1,0 +1,7 @@
+model,column,rows,max_abs_difference
+ridge_eval,predicted_mean,4096,0.0
+ridge_eval,predicted_std,4096,0.0
+xgb_eval,predicted_mean,4096,0.0
+xgb_eval,predicted_std,4096,0.0
+stack_eval,predicted_mean,4096,0.0
+stack_eval,predicted_std,4096,0.0

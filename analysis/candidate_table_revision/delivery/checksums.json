@@ -1,0 +1,17 @@
+{
+  "README.md": "f010bd2c0ea717c9cea5c9423985c23223b8061533a2259932e526095cb3b723",
+  "candidate_plan.csv": "85e67c4fabd351dba97c5eeee85075545e51f057b5b6f0273112ba42d92158ed",
+  "candidate_table.html": "bc85856b209eb56544eb7ecc6dc3465acbeb3dfb1b5163ef6839f916868ba158",
+  "decision_manifest.json": "e79e425776e7a12d1c26b6231913c435f3fe5a570da851393652650be8dfc435",
+  "provenance.json": "2b4cd68783b259d98625e1e29276030c144dd6464eb9f6dfdac39730498064e1",
+  "verification.json": "d29f4ea234241893c0298fe947c093bdbaccd6337b6b1483aad085fb2e3e7fff",
+  "weights/alt-fixed-r2-s2027.json": "b815e05d604f0eb44b4fa3a35f7699335dda761f0dd89c02816b3fce73800e70",
+  "weights/alt-stack-r2-s2027.json": "7f83f1c6c238f43e2bd9e448de4dc842a2e19b10574481e568fe6b151fe78046",
+  "weights/control-baseline.json": "551f4b9510587f1e3a5a1d617929d9df85d870a9275bb1cb852da9497fdb045c",
+  "weights/control-p01969.json": "c7c703e008bb5a5d2fc4e0a412104a7d7450d4728355087dd9fca6353c054dc6",
+  "weights/explore-fixed-r1-s2027.json": "73d0d9af6cec6ad957d37b95eff72ac71681635be50e74b36a363a8050c1557f",
+  "weights/first-challenger.json": "98ce57bb5224551712a56c6269a86e4aa801d5d784dcdbb8758688817591b1f2",
+  "weights/incumbent.json": "be2e4cfb95dedd4dc36e48791d0896f1ab1c71fa6446ddb12f14e63a6068955a",
+  "weights/legacy-fixed-r1-s2026.json": "47adcde097856a4528197039a200c216db74975439d79d5dd285c79c15ef9ef8",
+  "weights/probe-cat-r4-s2026.json": "4bb040794dbcc37bb20fd9788bd22883cd52589ef22de384d0d3a69a785f0ac0"
+}

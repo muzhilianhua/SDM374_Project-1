@@ -1,5 +1,7 @@
 # SDM374 Project 1 — Data-driven Tuning of Building Energy Controllers
 
+Member C's [submission handoff](SUBMISSION_READY/README.md); current scores and rules: [team decisions](docs/decisions.md).
+
 Find 21 controller weights (3 buildings × 7 objectives) that minimize the district's mean ramping
 over weeks 1–8. Surrogate models and optimizers are plugins behind fixed interfaces; every
 experiment runs from a TOML config through the `sdm` CLI and is recorded under `runs/` so it can be
@@ -65,7 +67,7 @@ The frozen data splits ([`frozen_data/`](frozen_data/README.md)) and the v3.2 sc
 | [`analysis/method_expansion/delivery/README.md`](analysis/method_expansion/delivery/README.md) | Fifteen alternative methods, matched seed audit, recommended OOF ensemble and exploratory weights |
 | [`analysis/common_judge/delivery/README.md`](analysis/common_judge/delivery/README.md) | All 1500 method candidates versus course baseline W, scored by one fixed ensemble judge |
 | [`artifacts/best_model/README.md`](artifacts/best_model/README.md) | Downloadable trained ensemble model, configuration, provenance and loading command |
-| [`analysis/online_round1/delivery/README.md`](analysis/online_round1/delivery/README.md) | First online round: 50 feasible weights, JSON/CSV/individual files and pending-result worksheet |
+| [`analysis/online_round1/delivery/README.md`](analysis/online_round1/delivery/README.md) | Superseded 50-point idea pool; current online format is 20 sequential single-point calls |
 | [`docs/roles/`](docs/roles/) | Per-member mission, owned files, backlog and acceptance criteria |
 | `src/sdm/models/_template.py`, `src/sdm/optimizers/_template.py`, `experiments/_template.toml` | Starting points for new plugins and experiments |
 

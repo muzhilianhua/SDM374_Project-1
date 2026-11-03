@@ -1,0 +1,13 @@
+{
+  "weight_xgboost": 0.2920246172436632,
+  "weight_catboost": 0.4437867721586836,
+  "weight_histgb": 0.2641886105976533,
+  "training_rows": 2048,
+  "conformal_edge_0": 0.28071179443397104,
+  "conformal_edge_1": 0.3864120294023049,
+  "conformal_edge_2": 0.5111152157156711,
+  "conformal_std_0": 3.44203188566413,
+  "conformal_std_1": 4.486825335322294,
+  "conformal_std_2": 5.836513848814625,
+  "conformal_std_3": 8.494855197313855
+}

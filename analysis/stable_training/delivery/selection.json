@@ -1,0 +1,31 @@
+{
+  "profile": "mild",
+  "discovery_eligible": false,
+  "candidates": [
+    {
+      "profile": "mild",
+      "score": 73.64508661709161,
+      "gates": {
+        "score": false,
+        "mae": true,
+        "local_mae": true,
+        "regret": false,
+        "coverage": true
+      },
+      "eligible": false
+    },
+    {
+      "profile": "strong",
+      "score": 73.14911245278493,
+      "gates": {
+        "score": false,
+        "mae": false,
+        "local_mae": false,
+        "regret": false,
+        "coverage": true
+      },
+      "eligible": false
+    }
+  ],
+  "post_audit_reselection_allowed": false
+}

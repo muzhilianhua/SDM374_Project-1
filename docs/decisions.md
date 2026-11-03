@@ -56,6 +56,31 @@ and record the new decision here with a date.
   model's own prediction for `p01969`, not by raw predicted R.
   *Qualified 2026-11-02: accurate at baseline W\* is not accurate where the trees were searched; submission 1
   (above) missed by 8–12 on stack and the boosted trees.*
+- **Member C stable training and honest calibration (historical study, reviewed 2026-11-03)**:
+  [completed study](../analysis/stable_training/delivery/README.md). The mild regularized recipe
+  averaged v3.2 73.7974 across `20261101-182343-evaluate-stable-study-mild-2026`,
+  `20261101-183234-evaluate-stable-study-mild-2027` and
+  `20261101-183234-evaluate-stable-study-mild-2028`. The reference averaged 75.3591 across
+  `20261101-182343-evaluate-stable-study-reference-2026`,
+  `20261101-183141-evaluate-stable-study-reference-2027` and
+  `20261101-183141-evaluate-stable-study-reference-2028`, so the replacement gate failed.
+  The calibration-only follow-up preserved outer mean predictions in
+  `20261101-183914-evaluate-stable-study-honest-2026`,
+  `20261101-183914-evaluate-stable-study-honest-2027` and
+  `20261101-184157-evaluate-stable-study-honest-2028`, while excluding calibration labels from
+  predictive fitting. This establishes no predictive gain or guaranteed interval coverage.
+  Auxiliary regional and candidate diagnostics are recorded with provenance in the study archive;
+  regional generalization remains unresolved. The challenger was subsequently submitted as offline
+  submission 1 and failed (see the measured finding above). The former first-test recommendation
+  is superseded; preserved historical weights are not selected for submission 2.
+- **Member C candidate-table proposal (historical, superseded after real feedback)**:
+  [archived decision page](../analysis/candidate_table_revision/delivery/candidate_table.html).
+  It proposed `20261029-132648-optimize-consensus-r075-2026`, rank 1, for the first real test.
+  That exact controller became offline submission 1 and measured 119.71206678869203 (failed).
+  Baseline W* 119.0916 is TA-confirmed (decision 17). Input-perturbation stability and
+  training-subsample stability are different surrogate diagnostics; neither guaranteed real gain.
+  Same-data retraining reproduced the old outputs. The historical alternate rankings are not a
+  new submission decision. Offline submission 2 follows decision 23 and the updated real feedback.
 - **Model–optimizer coupling** (`analysis/coupling/README.md`, 5 seeds): which W* an optimizer finds is
   decided mostly by the surrogate's shape, not by the optimizer. On ridge2, pgd and trust-dirichlet land in
   the same extrapolated region (semi-synthetic regret differs by ≤ 0.25); switching the surrogate changes

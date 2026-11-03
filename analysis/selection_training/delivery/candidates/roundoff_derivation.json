@@ -1,0 +1,10 @@
+{
+  "git": {
+    "commit": "3b71c8b763d92ad218706eae602229df344f94e2",
+    "dirty": false
+  },
+  "original_sha256": "378faff85408f42fc768f9d443ac28de8f69cb92d0df9466409c7244af1b8155",
+  "derived_sha256": "145815d964c069fee4e8d287f3ae277bc8c2a5ce79ab43df0fc9dd4297731140",
+  "source_sha256": "fa7f9da6e20b816b8849d1fb43e429ed9fea8bc582aea6c5a21ae2ce512bb933",
+  "operation": "Subtract stored risks directly; comparisons require improvement >1e-9. Corrects self-comparison cancellation only; no model refit or changed predictions."
+}

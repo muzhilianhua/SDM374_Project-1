@@ -37,7 +37,7 @@ and [complete second-round report](../analysis/robust_search/delivery/README.md)
 Added projected differential evolution (`simplex-de`) with trust-region constraints, distinct
 proposals and deterministic seeds. Compared it with `trust-dirichlet` on HistGB and XGBoost at
 optimizer seeds 2026/2027, holding model settings fixed. Both use risk coefficient 1 and distance
-limit 0.75. DE generates 11,904 trials and Dirichlet 12,000 samples; rejected infeasible proposals
+limit 0.75. DE generates 11, 904 trials and Dirichlet 12, 000 samples; rejected infeasible proposals
 mean actual prediction-query counts differ. This is approximately budget-matched evidence.
 
 Select the lowest worst-member mean-plus-error-proxy score among eligible novel candidates.
@@ -133,9 +133,9 @@ raw/Hellinger kernel ridge and fixed/OOF-learned convex ensembles. Sixty discove
 clean source commit `076b75f`; four matched seed-audit runs have clean `8c39898` (model code unchanged).
 This task-required model work extends outside role C's usual paths without changing shared interfaces.
 
-The discovery-selected OOF stack scores 75.1137 at seed2026; weighted CatBoost is close at75.0766.
-Freeze the stack before auditing it and the step-XGBoost reference at seeds2027/2028. Its three-seed
-mean is75.3591 versus73.1322; MAE improves at all three seeds and average first-choice regret falls
+The discovery-selected OOF stack scores 75.1137 at seed 2026; weighted CatBoost is close at 75.0766.
+Freeze the stack before auditing it and the step-XGBoost reference at seeds 2027/2028. Its three-seed
+mean is75.3591 versus 73.1322; MAE improves at all three seeds and average first-choice regret falls
 to1.1078 from1.7181. The prespecified model-replacement guard passes. Recommend the stacking recipe
 in `experiments/method-blend-stack.toml`, not a retrospectively selected seed. Full-data blend weights
 are .2920246/.4437868/.2641886 for XGBoost/CatBoost/HistGB; each outer fit relearns them.
@@ -145,47 +145,72 @@ The expanded candidate panel prefers CatBoost-search proposal6 from
 versus incumbent119.9333 within that same panel. This W is exploratory: no separate candidate audit
 or real-evaluator call exists, and ExtraTrees remains pessimistic. Preserve the old operational W.
 Kernel models and tested pairwise losses underperform; retain their negative results in the report.
-The suite has109 passing tests and1 known xfail; selected model evaluation and source search reproduce.
+The suite has109 passing tests and 1 known xfail; selected model evaluation and source search reproduce.
 Reused frozen scores and sensitivity seeds do not establish independent SOTA or measured improvement.
 
-## Round 5: one fixed judge for all15 controller generators
+## Round 5: one fixed judge for all 15 controller generators
 
 The user requested an intuitive R comparison with baseline W and deferred the real simulator.
-The [controlled comparison](../analysis/common_judge/delivery/README.md) scores all1500 existing
+The [controlled comparison](../analysis/common_judge/delivery/README.md) scores all 1500 existing
 proposals, root baseline W, current operational W and best measured row using the unchanged full-data
 stack judge `20261029-171251-train-method-blend-stack`. The comparison script and primary endpoint
-(seed2026/rank1) were committed at `fe7f882` before the CLI batch. No additional search or fitting occurs.
+(seed 2026/rank 1) were committed at `fe7f882` before the CLI batch. No additional search or fitting occurs.
 
 Under this same judge, baseline W predicts118.7316, not Ridge's75.8957. Thirteen original top choices
-predict lower R. The leading original top choice is fixed-blend search seed2026/rank1 at109.3303
-(-7.9181%); OOF-stack top1 is109.5113. Fixed-blend seed2027/rank1 is109.1711 and is the best common-judge
-point among all1500, but is explicitly a secondary post-hoc choice. The existing operational W
+predict lower R. The leading original top choice is fixed-blend search seed 2026/rank 1 at 109.3303
+(-7.9181%); OOF-stack top1 is109.5113. Fixed-blend seed 2027/rank 1 is109.1711 and is the best common-judge
+point among all 1500, but is explicitly a secondary post-hoc choice. The existing operational W
 predicts112.0811. Exact primary/post-hoc weights for every method and unchanged baseline weights
 are archived for later simulation. No operational recommendation was automatically replaced.
 
 This controls the scoring model and baseline but not surrogate error. The judge shares models with
 the candidate generators, and baseline is further from the data (ratio1.7484 versus<=.75); these
-limitations preclude a measured-improvement claim. Replaying one CLI batch matches all1503 mean/proxy
-predictions within1e-9. Full suite:109 passed,1 known expected failure. No real evaluation budget used.
+limitations preclude a measured-improvement claim. Replaying one CLI batch matches all 1503 mean/proxy
+predictions within1e-9. Full suite: 109 passed, 1 known expected failure. No real evaluation budget used.
 
-## Online handoff: first50-point packet
+## Online handoff: first 50-point packet
 
 The user requested50 feasible weights for later online testing. The supplied course PDF was checked
-on pages3 and7: each building's weights must be nonnegative with positive mass, with at most20 rounds
-and50 evaluated points per round. The [prepared packet](../analysis/online_round1/delivery/README.md)
+on pages3 and 7: each building's weights must be nonnegative with positive mass, with at most20 rounds
+and 50 evaluated points per round. The [prepared packet](../analysis/online_round1/delivery/README.md)
 uses the repository's sum-one representation and a30 exploit /15 explore /5 control heuristic.
 This initial split is not a replay-selected optimum. Source generation/scoring used clean1309a05.
 
 Preserve the fixed-blend primary and post-hoc points, existing operational W and consensus challenger;
 fill the exploitation subset using strong-model conservative risk and spatial separation. Exploration
 targets committee disagreement with a bounded stack prediction. Baseline, p01969, uniform, pure ramping
-and50/50 ramping/resilience provide controls. One known offline row is deliberately remeasured; the
-remaining49 are novel, and all50 are distinct, finite, nonnegative and feasible. Minimum pair distance
+and 50/50 ramping/resilience provide controls. One known offline row is deliberately remeasured; the
+remaining49 are novel, and all 50 are distinct, finite, nonnegative and feasible. Minimum pair distance
 is .09482. Archive JSON, PPT-order CSV, individual W files, plan, source pool and a pending results sheet.
 All fresh measured_R fields remain blank. There were zero simulator calls or official submissions.
-The112-test suite passes with1 known xfail; final payload predictions reproduce through the packaged model.
+The112-test suite passes with 1 known xfail; final payload predictions reproduce through the packaged model.
 
-## Next work
+## Subsequent HTML perturbation audit (2026-11-01)
+
+The user supplied an offline-candidate HTML recommending the consensus challenger based on
+input-neighborhood stability. Its original scripts/sample CSVs and Nov1 fitted models were absent
+from this checkout. The [independent audit](../analysis/perturbation_audit/delivery/README.md)
+uses archived judges whose predictions match all 15 displayed shortlist differences. Protocol
+and source were committed at `3707550` before scoring; no retraining or simulator call occurs.
+
+The29-candidate panel includes all proposals with worst-judge single-point difference below-6
+versus p01969, the five HTML choices, and original fixed-blend seed 2026/rank 1. Two40-direction
+nominal-step alternatives and three new seeds x512 directions at each exact radius yield93, 728
+feasible neighbors. The main primary endpoint is the fraction for which stack, HistGB and XGBoost
+all predict more than3 units improvement over their own p01969 prediction.
+
+Challenger is first by success fraction at both radii in each seed: pooled81.90% at actual.02
+and 46.55% at actual.05, with worst-judge medians-4.1698/-2.8265. The HTML's62% at.05 is not
+reproduced. At.05 the runner-up is fixed-blend seed 2027/rank 2 at 45.05%, with paired directional
+uncertainty allowing either ordering; it also has a slightly better median. This supports a
+priority real test for challenger, not dominance over every candidate or metric. The old
+training-subsample replacement gate remains distinct and unchanged. All results are conditional
+on correlated predictors and the sampled perturbation distribution. No real-R margin is inferred.
+
+Current full-suite verification: 115 passed, 1 known xfailed. The audit delivery archives model/data
+hashes, CLI commands, exact panel weights, neighbor weights/predictions and paired summaries.
+
+## Next work after the audit
 
 Use real-evaluator results to compare the default and challenger if the course submission budget
 permits. Record exact weights, evaluator version and measured R before changing the recommendation.

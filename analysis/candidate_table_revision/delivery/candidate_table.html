@@ -1,0 +1,211 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>离线候选表 · 复核修订版</title><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+
+/* Layout: editorial reading column + margin rail, same tokens as offline-progress.html; shortlist table spans full width. */
+:root {
+  --paper: #faf8f5;
+  --paper-2: #f2eee7;
+  --ink: #23201c;
+  --ink-soft: #5e574e;
+  --rule: #e2dcd2;
+  --accent: #1f5c63;
+  --accent-wash: #e6efee;
+  --ochre: #b0782a;
+  --ochre-wash: #f5ebdc;
+  --bad: #a3442f;
+  --bad-wash: #f6e4df;
+  --s1: #008a9e;
+  --s2: #b8761e;
+  --serif: "Noto Serif SC", Georgia, "Songti SC", serif;
+  --sans: "Noto Sans SC", -apple-system, "PingFang SC", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1b1a18; --paper-2: #24221f; --ink: #ece6dc; --ink-soft: #a89f92; --rule: #37332e;
+    --accent: #7fb7bc; --accent-wash: #233436; --ochre: #d9a35a; --ochre-wash: #33291c;
+    --bad: #e08a76; --bad-wash: #3a2520; --s1: #00a3b4; --s2: #b98226;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1b1a18; --paper-2: #24221f; --ink: #ece6dc; --ink-soft: #a89f92; --rule: #37332e;
+  --accent: #7fb7bc; --accent-wash: #233436; --ochre: #d9a35a; --ochre-wash: #33291c;
+  --bad: #e08a76; --bad-wash: #3a2520; --s1: #00a3b4; --s2: #b98226;
+  color-scheme: dark;
+}
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--serif); font-size: 16px; line-height: 1.8;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 48px 72px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 60px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 1.2em; }
+li + li { margin-top: 4px; }
+code { font-family: var(--mono); font-size: .84em; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+.eyebrow { font-family: var(--sans); font-size: 12px; letter-spacing: .14em; color: var(--ochre); font-weight: 500; }
+.num { font-variant-numeric: tabular-nums; }
+
+header { display: grid; gap: 18px; border-bottom: 2px solid var(--ink); padding-bottom: 28px; }
+header h1 { font-size: clamp(32px, 5.6vw, 50px); font-weight: 900; line-height: 1.2; }
+header .dek { font-size: 18px; color: var(--ink-soft); max-width: 42em; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font-family: var(--sans); font-size: 13px; color: var(--ink-soft); }
+.meta b { color: var(--ink); font-weight: 500; }
+
+.section { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 20px 40px; }
+.section > .head { grid-column: 1 / -1; display: grid; gap: 6px; }
+.section h2 { font-size: 26px; font-weight: 700; }
+.section h3 { font-size: 18px; font-weight: 700; }
+.main { min-width: 0; display: grid; gap: 20px; align-content: start; }
+.full { grid-column: 1 / -1; }
+.aside { font-family: var(--sans); font-size: 13px; line-height: 1.7; color: var(--ink-soft); border-left: 1px solid var(--rule); padding-left: 16px; align-self: start; display: grid; gap: 14px; min-width: 0; }
+.aside b { color: var(--ink); font-weight: 500; }
+.aside code { font-size: 11.5px; }
+.lede { font-size: 17.5px; max-width: 40em; }
+.lede::first-letter { float: left; font-size: 3.4em; line-height: .9; font-weight: 900; color: var(--accent); padding: 6px 10px 0 0; }
+.pull { border-left: 3px solid var(--bad); padding: 4px 0 4px 18px; font-size: 18px; font-weight: 600; max-width: 38em; }
+.pull.good { border-left-color: var(--accent); }
+
+.chip { display: inline-block; font-family: var(--sans); font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; letter-spacing: .04em; }
+.chip.first { background: var(--accent); color: var(--paper); }
+.chip.alt { background: var(--accent-wash); color: var(--accent); }
+.chip.ref { background: var(--paper-2); color: var(--ink-soft); }
+.chip.back { background: var(--ochre-wash); color: var(--ochre); }
+
+/* Tables */
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+th, td { text-align: left; vertical-align: top; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--rule); }
+thead th { font-size: 12px; letter-spacing: .04em; color: var(--ink-soft); font-weight: 500; border-bottom: 1px solid var(--ink); vertical-align: bottom; }
+td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.lead td { background: var(--accent-wash); }
+tr.lead td:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 10px; }
+td .sub { display: block; font-size: 12px; color: var(--ink-soft); }
+td.good { color: var(--accent); font-weight: 700; }
+td.warn { color: var(--bad); }
+.grp { text-align: center; border-bottom: 1px solid var(--rule); }
+
+/* Weight matrix */
+.wm td, .wm th { padding: 6px 10px 6px 0; }
+.wm td.r .d { display: block; font-size: 11.5px; color: var(--ink-soft); }
+.wm td.up { color: var(--accent); font-weight: 700; }
+.wm td.dn { color: var(--ochre); }
+
+/* Chart */
+figure { margin: 0; display: grid; gap: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font-family: var(--sans); font-size: 13px; color: var(--ink-soft); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 18px; height: 2px; display: inline-block; }
+.chart { overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.chart text { font-family: var(--sans); fill: var(--ink-soft); font-size: 12px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .zero { stroke: var(--ink-soft); stroke-width: 1; }
+.chart .l1 { stroke: var(--s1); fill: none; stroke-width: 2; }
+.chart .l2 { stroke: var(--s2); fill: none; stroke-width: 2; }
+.chart .m1 { fill: var(--s1); stroke: var(--paper); stroke-width: 2; }
+.chart .m2 { fill: var(--s2); stroke: var(--paper); stroke-width: 2; }
+.chart circle:hover { r: 6; }
+.chart .lab { fill: var(--ink); font-weight: 500; }
+figcaption { font-family: var(--sans); font-size: 13px; color: var(--ink-soft); }
+details { font-family: var(--sans); font-size: 13px; color: var(--ink-soft); }
+details summary { cursor: pointer; }
+details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Decision tree */
+.tree { display: grid; border-top: 1px solid var(--ink); }
+.branch { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 6px 26px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.branch .if { font-family: var(--sans); font-size: 13.5px; font-weight: 700; color: var(--accent); }
+.branch .if span { display: block; font-weight: 400; color: var(--ink-soft); font-size: 12.5px; }
+.branch p { font-size: 15px; }
+.branch.first .if { color: var(--ochre); }
+
+.files { display: grid; gap: 6px; font-family: var(--sans); font-size: 13.5px; }
+.files div { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 4px 16px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+
+footer { border-top: 1px solid var(--ink); padding-top: 18px; font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); display: grid; gap: 6px; }
+
+@media (max-width: 900px) {
+  .section { grid-template-columns: minmax(0, 1fr); }
+  .aside { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 14px; }
+  .branch { grid-template-columns: minmax(0, 1fr); }
+  .files div { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+a{color:var(--ink);text-underline-offset:3px}.revision-note{border-left:4px solid var(--ochre);padding:14px 18px;background:var(--ochre-wash)}
+.tbl{overflow-x:auto}.tbl table{min-width:850px}.links{display:flex;gap:18px;flex-wrap:wrap}
+</style></head><body><aside style="margin:20px;padding:20px;background:#fff0d5;color:#532b00;border:2px solid #b8791d"><strong>历史报告：首次提交建议已失效。</strong> 共识挑战者 P1 已实测 R = 119.71206678869203，未达标，请勿重复提交。Baseline W* = 119.0916 已获助教确认。当前在线规则为最多 20 次顺序单点调用。下文保留原实验结论供追溯；当前状态请查看 <a href="../../../SUBMISSION_READY/README.md">交付说明</a>。</aside><div class="wrap">
+<header><div class="eyebrow">SDM374 · MEMBER C · 2026-11-01 · AUDITED REVISION</div>
+<h1>先验证共识挑战者，第二次由实测决定</h1>
+<p class="dek">候选表已按独立扰动复核与重训对照更新。当前证据支持优先实测挑战者；小扰动优势较强，大扰动下与近邻备选接近。</p>
+<div class="revision-note">本页是成员 C 的提交建议，尚未提交真实评测。保留原操作默认 W 与原审计门槛，最终提交由团队确认。</div></header>
+
+<section class="section"><div class="head"><span class="eyebrow">WHAT CHANGED</span><h2>修正证据，调整备选顺序</h2></div>
+<div class="main"><p>首选仍是 <b>共识挑战者</b>。实际距离为 0.02 和 0.05 时，三个裁判都预测比 p01969 改善超过 3 的邻点比例分别为 <b>81.9% / 46.5%</b>。</p>
+<p>原页的 82% / 62% 来自缺失脚本的 40 方向实验，不能与本次检查当作同一次实验。固定融合 2027 的<b>第 2 名</b>升为稳健备选；原第 1 名仅保留为探索候选。</p>
+<p>删除“真实余量约为 3”的推断。所有新候选都只有预测值，扰动后的中位数也不能换算为实际收益。</p></div>
+<aside class="aside"><b>复核范围</b><div>29 个重点候选；主检查每个步长共 1,536 个共享方向，来自三个新随机种子。</div><div>比较最终可行权重的实际欧氏距离，避免投影后步长缩小造成假稳定。</div></aside></section>
+
+<section class="section"><div class="head"><span class="eyebrow">SHORTLIST</span><h2>按复核结果修订候选表</h2></div>
+<div class="main full"><div class="tbl"><table><thead><tr><th>角色 / 候选</th><th class="r">堆叠预测 R</th><th class="r">0.02 成功比例</th><th class="r">0.05 成功比例</th><th class="r">0.02 中位差</th><th class="r">0.05 中位差</th><th class="r">ExtraTrees 差值</th><th>权重</th></tr></thead>
+<tbody class="num"><tr><td><b>优先实测</b><span class="sub">共识挑战者</span></td>
+<td class="r">111.4190</td><td class="r">81.9%</td>
+<td class="r">46.5%</td><td class="r">-4.17</td>
+<td class="r">-2.83</td><td class="r">+4.93</td>
+<td><a href="weights/first-challenger.json" download>JSON</a></td></tr><tr><td><b>稳健备选 A</b><span class="sub">固定融合 2027 · 第 2 名</span></td>
+<td class="r">110.0416</td><td class="r">68.4%</td>
+<td class="r">45.1%</td><td class="r">-3.61</td>
+<td class="r">-2.86</td><td class="r">+4.45</td>
+<td><a href="weights/alt-fixed-r2-s2027.json" download>JSON</a></td></tr><tr><td><b>稳健备选 B</b><span class="sub">堆叠融合 2027 · 第 2 名</span></td>
+<td class="r">110.3082</td><td class="r">68.7%</td>
+<td class="r">42.2%</td><td class="r">-3.62</td>
+<td class="r">-2.73</td><td class="r">+3.43</td>
+<td><a href="weights/alt-stack-r2-s2027.json" download>JSON</a></td></tr><tr><td><b>探索候选</b><span class="sub">固定融合 2027 · 第 1 名</span></td>
+<td class="r">109.1711</td><td class="r">53.3%</td>
+<td class="r">31.1%</td><td class="r">-3.15</td>
+<td class="r">-2.13</td><td class="r">+4.33</td>
+<td><a href="weights/explore-fixed-r1-s2027.json" download>JSON</a></td></tr><tr><td><b>保留原默认</b><span class="sub">原推荐 W</span></td>
+<td class="r">112.0811</td><td class="r">58.6%</td>
+<td class="r">35.3%</td><td class="r">-3.26</td>
+<td class="r">-2.44</td><td class="r">+4.08</td>
+<td><a href="weights/incumbent.json" download>JSON</a></td></tr><tr><td><b>历史首选</b><span class="sub">固定融合 2026 · 第 1 名</span></td>
+<td class="r">109.3303</td><td class="r">53.0%</td>
+<td class="r">36.7%</td><td class="r">-3.11</td>
+<td class="r">-2.49</td><td class="r">+4.37</td>
+<td><a href="weights/legacy-fixed-r1-s2026.json" download>JSON</a></td></tr><tr><td><b>方向探针</b><span class="sub">CatBoost RMSE 2026 · 第 4 名</span></td>
+<td class="r">112.7603</td><td class="r">13.3%</td>
+<td class="r">5.6%</td><td class="r">-1.44</td>
+<td class="r">-0.55</td><td class="r">+5.44</td>
+<td><a href="weights/probe-cat-r4-s2026.json" download>JSON</a></td></tr></tbody></table></div>
+<p>成功＝堆叠、HistGB、XGBoost 均预测比各自对 p01969 的预测低超过 3。中位差取三个差值中最保守者，负值更好；ExtraTrees 差值也相对于它自己的 p01969 预测。它仍反对这些候选。</p>
+<p>0.05 下挑战者为 46.5%，固定融合第 2 名为 45.1%，只差约 1.5 个百分点。后者减前者的配对方向抽样区间为 [-3.80, +0.80] 个百分点，且其中位差略好，因此没有一个候选在所有指标上占优。</p></div>
+<aside class="aside full"><b>不把比例当保证</b><div>在另一种“截断后归一化”的 40 方向实验中，0.05 下挑战者为 35%，两组备选为 40%，排名会改变。</div><div>裁判有关联：堆叠包含 XGBoost、HistGB 类成员；同向候选也不等于风险分散。</div></aside></section>
+
+<section class="section"><div class="head"><span class="eyebrow">TWO CHECKS</span><h2>保留两条稳定性证据</h2></div>
+<div class="main"><p><b>训练数据稳定性：</b>原审计在五组不同的 90% 训练子样本上重拟合，挑战者仅 3/5 组改善，未通过原替换门槛。</p>
+<p><b>输入邻域稳定性：</b>固定模型、扰动控制权重，本次主指标中挑战者在两个步长、三个种子下都排名第一。这支持优先实测，不覆盖原审计，也不证明真实最优。</p>
+<p><b>重训对照：</b>相同 2,048 条数据、参数与种子下，融合模型仍是 75.1137 分、MAE 4.6933；1,554 个输入预测及 50 组共识提案均与旧结果一致。已有证据不足以期待反复同数据重训带来收益。</p></div>
+<aside class="aside"><b>模型不替换</b><div>保留最佳 OOF 融合；新训练文件与旧模型预测一致。下一次训练更新应由可核实的新实测驱动。</div></aside></section>
+
+<section class="section"><div class="head"><span class="eyebrow">SUBMISSION POLICY</span><h2>第二次不再自动提交原备选 A</h2></div>
+<div class="main"><div class="tree">
+<div class="branch first"><div class="if">首次建议<span>团队确认格式与预算后</span></div><p>提交 <a href="weights/first-challenger.json">共识挑战者</a>，记录确切文件、评测器版本、场景与实测 R。</p></div>
+<div class="branch"><div class="if">结果达到目标<span>先确认对照口径</span></div><p>保留已验证的好点，再用新观测更新模型并比较稳健备选。固定融合第 2 名可作为备选；若希望测试更激进的第 1 名，应明确这是探索选择，而非更稳的保证。</p></div>
+<div class="branch"><div class="if">结果低于预期<span>检查预测与实测偏差</span></div><p>先核对评测口径，再用新观测重训。在已有实测支持的区域缩小搜索范围、重新筛选；不自动换到同一区域的另一候选。</p></div>
+<div class="branch"><div class="if">偏差很大或口径不符<span>暂停固定第二次候选</span></div><p>先排查场景与模型失准。CatBoost 第 4 名只作为方向探针，不作为未经验证的保底；一个坏结果也不足以证明整片区域无效。</p></div>
+</div><p>现有共识封装的风险系数保持 1。若要调高风险，需要明确采用各成员“均值＋风险系数×误差代理”的最大值，不能直接把封装后的风险项当作独立标准差。</p></div>
+<aside class="aside"><b>两个参照需区分</b><div>p01969 的历史实测 R＝115.7648，是训练表最优值。</div><div>原页所述 baseline 实测 119.0916 尚缺评测记录，暂不作为已核实门槛或新增训练标签。</div><div>是否超过课程 baseline，需使用同版本评测器的可核实 baseline 结果。</div></aside></section>
+
+<section class="section"><div class="head"><span class="eyebrow">EVIDENCE & FILES</span><h2>可追溯文件</h2></div>
+<div class="main"><div class="links"><a href="candidate_plan.csv">候选与来源 CSV</a><a href="decision_manifest.json">策略与证据清单</a><a href="../../perturbation_audit/delivery/README.md">独立扰动报告</a><a href="../../retrain_comparison/delivery/README.md">重训对照报告</a></div>
+<p>权重 JSON 为 3×7：楼宇为行，列依次为 cost、carbon、peak、discomfort、degradation、ramping、resilience。所有权重非负、每行和为 1；导出后用新旧融合模型再次校验预测一致。</p>
+<p><a href="weights/control-baseline.json">baseline 权重参照</a> · <a href="weights/control-p01969.json">p01969 权重参照</a>。参照文件不等于已授权提交；训练表点能否用于正式提交需遵循课程规则。</p></div>
+<aside class="aside"><b>版本边界</b><div>本页修订保存在项目内部，原始 HTML 保留不动。未新增模型探索、未查询模拟器、未提交官方评测。</div></aside></section>
+<footer><div>结论：优先实测挑战者；升级稳健备选；按首次真实反馈决定后续。</div><div>本页比例仅描述固定模型与指定扰动分布，不是实际成功概率。</div></footer>
+</div></body></html>

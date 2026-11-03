@@ -1,0 +1,66 @@
+{
+  "exported_weight_count": 9,
+  "all_feasible": true,
+  "old_and_new_cli_checks": [
+    {
+      "command": [
+        "/Users/aiziqi/Desktop/春/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+        "predict",
+        "--model-run",
+        "artifacts/best_model",
+        "--weights",
+        "-"
+      ],
+      "predicted_mean": [
+        111.41899786921587,
+        110.04159929641716,
+        110.30821309068807,
+        109.17106890261147,
+        112.0811462999705,
+        109.33033716924012,
+        112.76032668697705,
+        118.73160774401767,
+        118.17768368712012
+      ],
+      "max_abs_difference": 1.4210854715202004e-14
+    },
+    {
+      "command": [
+        "/Users/aiziqi/Desktop/春/SDM374/Lab6/SDM374_Project-1/.venv/bin/sdm",
+        "predict",
+        "--model-run",
+        "analysis/retrain_comparison/delivery/retrained_stack",
+        "--weights",
+        "-"
+      ],
+      "predicted_mean": [
+        111.41899786921587,
+        110.04159929641716,
+        110.30821309068807,
+        109.17106890261147,
+        112.0811462999705,
+        109.33033716924012,
+        112.76032668697705,
+        118.73160774401767,
+        118.17768368712012
+      ],
+      "max_abs_difference": 1.4210854715202004e-14
+    }
+  ],
+  "first_challenger_byte_identical": true,
+  "source_hashes_verified": 10,
+  "local_links_verified": 14,
+  "all_actual_candidate_scores_pending": true,
+  "full_test_suite": {
+    "passed": 115,
+    "xfailed": 1
+  },
+  "visual_review": {
+    "viewport_width": 1280,
+    "passed": true,
+    "checks": [
+      "Complete stylesheet preserved",
+      "All eight candidate-table columns readable without clipping"
+    ]
+  }
+}

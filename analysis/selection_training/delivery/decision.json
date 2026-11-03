@@ -1,0 +1,16 @@
+{
+  "gates": {
+    "mean_v32_improves": false,
+    "mae_each_seed": true,
+    "local_mae_each_seed": true,
+    "mean_regret_not_worse": true,
+    "mean_selected_actual_R_not_worse": true
+  },
+  "replacement_gate_passed": false,
+  "reference_mean_score": 75.35905138114855,
+  "corrected_mean_score": 75.29204828854922,
+  "working_recipe": "reference",
+  "operational_W_changed": false,
+  "first_test_priority_changed": false,
+  "simulator_calls": 0
+}

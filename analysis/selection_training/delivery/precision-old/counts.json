@@ -1,0 +1,37 @@
+{
+  "raw": {
+    "points": 21,
+    "distinct_9dp": 21,
+    "within_trust": 20,
+    "tiny_positive_values": 58,
+    "min_positive": 9.225830344130207e-112
+  },
+  "d8": {
+    "points": 21,
+    "distinct_9dp": 21,
+    "within_trust": 20,
+    "tiny_positive_values": 9,
+    "min_positive": 1e-08
+  },
+  "d6": {
+    "points": 21,
+    "distinct_9dp": 21,
+    "within_trust": 20,
+    "tiny_positive_values": 0,
+    "min_positive": 1e-06
+  },
+  "d4": {
+    "points": 21,
+    "distinct_9dp": 21,
+    "within_trust": 20,
+    "tiny_positive_values": 0,
+    "min_positive": 0.0001
+  },
+  "clean1e-6-d8": {
+    "points": 21,
+    "distinct_9dp": 21,
+    "within_trust": 20,
+    "tiny_positive_values": 0,
+    "min_positive": 1.03e-06
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "train",
+  "name": "retrain-fit-stack-20261101",
+  "created": "2026-11-01T17:24:48",
+  "options": {},
+  "source_config": "experiments/method-blend-stack.toml",
+  "dataset": {
+    "path": "/Users/aiziqi/Desktop/春/SDM374/Lab6/SDM374_Project-1/dataset_same8",
+    "version": "same8.20261020",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "git": {
+    "commit": "d902bcc3443f0ca155309704c5547ae84f737f6e",
+    "dirty": false
+  },
+  "python": "3.11.9",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  }
+}
