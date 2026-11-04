@@ -1,0 +1,282 @@
+{
+  "package": "SDM374_backup_models_v1",
+  "purpose": "四个可直接预测的代理模型（不含 A1），加载即预测，无需重训",
+  "models": [
+    "gp-ard",
+    "tail5opt",
+    "hp_wlearn",
+    "blend_xgb_w20x3"
+  ],
+  "excluded": {
+    "A1_linear_trend_gp": "趋势项无界、属于参数假设，只能生成待实测候选，不作为可交付预测模型"
+  },
+  "feature_contract": {
+    "n_features": 21,
+    "order": [
+      "b1_cost",
+      "b1_carbon",
+      "b1_peak",
+      "b1_discomfort",
+      "b1_degradation",
+      "b1_ramping",
+      "b1_resilience",
+      "b2_cost",
+      "b2_carbon",
+      "b2_peak",
+      "b2_discomfort",
+      "b2_degradation",
+      "b2_ramping",
+      "b2_resilience",
+      "b3_cost",
+      "b3_carbon",
+      "b3_peak",
+      "b3_discomfort",
+      "b3_degradation",
+      "b3_ramping",
+      "b3_resilience"
+    ],
+    "readable": "建筑1→建筑3；每栋 cost→carbon→peak→discomfort→degradation→ramping→resilience"
+  },
+  "target": "ramping",
+  "protocol": {
+    "oof": "sdm374.same8.splits.2x5x3.frozen.v1",
+    "scoring": "sdm374.surrogate.tolerance.v3.2"
+  },
+  "external_dependencies": {
+    "scoring_dir": "../SDM374_scoring_v3_2（仓库根，未拷入包）",
+    "dataset": "../dataset_same8/train.csv（仅复算 OOF 评分与自检时需要）",
+    "split_manifest": "../外推方案/趋势与尾部/frozen/split_manifest.json（仅复算时需要）"
+  },
+  "files": [
+    {
+      "path": "compute_scores.py",
+      "bytes": 7480,
+      "sha256": "8a9a27532f014335433bd22440b3057183e4c2c037e6888a93c2fa6dbc5ac891"
+    },
+    {
+      "path": "load_and_predict.py",
+      "bytes": 11190,
+      "sha256": "dbbea45311f8d87e1f7cb2b912344a4209f540bda367c4bb0afeba453aacf3ec"
+    },
+    {
+      "path": "modellib.py",
+      "bytes": 10592,
+      "sha256": "a1cb2d903cca223c673df3f0b212cb835403fadba20bf1a1d5fa150650c9633d"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/CHECKSUMS.json",
+      "bytes": 536,
+      "sha256": "4b96d7e29d1f319c5e31cdd3ed715b66fa7cdf6099ddb3086d9e0b2707d08a59"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/config.json",
+      "bytes": 2231,
+      "sha256": "819b77cb83a0c6143751990b5509fa3eefa73e2762e6c2059f6f9865e242cd6c"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/meta.json",
+      "bytes": 1754,
+      "sha256": "ddf978c1aba73acf449e21b7ee145162bf28900e283d84030c08082060fcc276"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/metrics.json",
+      "bytes": 1999,
+      "sha256": "9a048d7ef964b5d2ec3a123da947140085d4a7557cc321bcc84c53b9778b39ba"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/model.pkl",
+      "bytes": 378268,
+      "sha256": "733d60530893acbca52d7c9cea7c301b6a41041fa4be54d87be7efa1b1e7a6c0"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/train_predictions.csv",
+      "bytes": 131558,
+      "sha256": "2978cf68d87087149cfa9bbc54448d4b1521015cf6a51f8fe43c235e0f8e73a8"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/xgb_w20x3_full.joblib",
+      "bytes": 709041,
+      "sha256": "62a928b19c497123ae40734cbe12b23025d7fa4469dca26319928364ef38583f"
+    },
+    {
+      "path": "models/gp-ard/CHECKSUMS.json",
+      "bytes": 440,
+      "sha256": "6b26d2171618012fe1999f4384d7a673b7baa7c4f3be0bb42b8cb31035ef7a73"
+    },
+    {
+      "path": "models/gp-ard/config.json",
+      "bytes": 1801,
+      "sha256": "57823bc5e2a0c9fefd3dd9b0185808e0c8e4dfe2566532ad2fa751f6abd62ca1"
+    },
+    {
+      "path": "models/gp-ard/meta.json",
+      "bytes": 1982,
+      "sha256": "7d74adf6d5ec2a120419fda9f18226316bec5def125693c237c3d3400976b846"
+    },
+    {
+      "path": "models/gp-ard/metrics.json",
+      "bytes": 1766,
+      "sha256": "4fc6a5bd1f68222930ddc00fbe9f8cbbac7b1331d278a36473f9e8ea2b5988b4"
+    },
+    {
+      "path": "models/gp-ard/model.pkl",
+      "bytes": 377683,
+      "sha256": "4531dde83ecdef64dfb1323767c4707eddeb1e661e901205a5f93b670498e583"
+    },
+    {
+      "path": "models/gp-ard/train_predictions.csv",
+      "bytes": 131600,
+      "sha256": "dabc219590eeb529aee22c33a38dfda40074c3df3ba9451309e82b8f710a5731"
+    },
+    {
+      "path": "models/hp_wlearn/CHECKSUMS.json",
+      "bytes": 440,
+      "sha256": "d255828e4ca33be3328ecf74517795e29f9700a965fb7f3f2a2cc2a53ab3a113"
+    },
+    {
+      "path": "models/hp_wlearn/config.json",
+      "bytes": 1874,
+      "sha256": "7473b097872f53a1257f77ecf06a90f5cecb03f82ec8a8aa00e23ac2cf69af41"
+    },
+    {
+      "path": "models/hp_wlearn/meta.json",
+      "bytes": 3506,
+      "sha256": "5aab2b8f135b7bc8e2668a7605831b6e0d05a942756e4c7b2d359e0ddde94279"
+    },
+    {
+      "path": "models/hp_wlearn/metrics.json",
+      "bytes": 1986,
+      "sha256": "3296584b7676f49d32da96a0a700a495c931265a44bccf3bf6a09530823e6bad"
+    },
+    {
+      "path": "models/hp_wlearn/model.pkl",
+      "bytes": 377683,
+      "sha256": "a95973cfb5faa6d49b1346d28f9a0c98a7f2a2a4cd76e761a2e2c5be22f9f4a2"
+    },
+    {
+      "path": "models/hp_wlearn/train_predictions.csv",
+      "bytes": 131294,
+      "sha256": "cca39220482e015ecfbdddad7474d2a6c49133b0ff4288249889cad074c56c21"
+    },
+    {
+      "path": "models/registry.csv",
+      "bytes": 434,
+      "sha256": "f4e3cdec9dd70943f56d22df45e33676ac2f15d0ed3f1e6ba44854983d44dfaa"
+    },
+    {
+      "path": "models/tail5opt/CHECKSUMS.json",
+      "bytes": 440,
+      "sha256": "0da4bcbd0dcd96d790ca852fb3e3409f5ccb7b015aa4429248c8a3476cdba21d"
+    },
+    {
+      "path": "models/tail5opt/config.json",
+      "bytes": 1846,
+      "sha256": "d52c492213f97f28e3cf9d7af03490bf181089b250a8ba1904ca4b1dc9e0a479"
+    },
+    {
+      "path": "models/tail5opt/meta.json",
+      "bytes": 2954,
+      "sha256": "7d4655f3ba504f23c660d2ef310b74d9c843a9e9e7e247c82357c7542c25bd79"
+    },
+    {
+      "path": "models/tail5opt/metrics.json",
+      "bytes": 1989,
+      "sha256": "a100bbcaa8a0d30b4567468b93b09edd86cab43539cabbd68e77a9a2177e83e9"
+    },
+    {
+      "path": "models/tail5opt/model.pkl",
+      "bytes": 377683,
+      "sha256": "30a82c60bc56df173a3b1381f5f63d9d1c6f953a16d166a6e64b38d14a1a95e6"
+    },
+    {
+      "path": "models/tail5opt/train_predictions.csv",
+      "bytes": 131549,
+      "sha256": "29483327115a4bfef2a53ab0eb594e3c45802b0da8289dc21c83c27fad3e3df5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6844,
+      "sha256": "67b024a35c8ab102f6d01d354a710af74ed20d40ae4d64338939ad2a714b87b5"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 154,
+      "sha256": "07da3f1784eb2af9f59286027a211286086f7c335435187d06a08a154738f22d"
+    },
+    {
+      "path": "run_oof_and_score.py",
+      "bytes": 9742,
+      "sha256": "ff653afb5f6d8476363725a3173e0e567697b1db58387c7ad439babca155446b"
+    },
+    {
+      "path": "scores/fold_scores_all.csv",
+      "bytes": 861,
+      "sha256": "9cdc0d48ffd343145c664aa97ef240a5dedd4b4b7462f0f392f8665955429a9b"
+    },
+    {
+      "path": "scores/model_scores_oof.csv",
+      "bytes": 1199,
+      "sha256": "9277e04de5b587405d3760ffe339a999af0f08029faa176b7596d6583f51a8b8"
+    },
+    {
+      "path": "scores/oof_pred_blend_xgb_w20x3.csv.gz",
+      "bytes": 123247,
+      "sha256": "b88da27194dd5c754a0c116c7a6977fd530809280ce381a6c63207a726bb4b71"
+    },
+    {
+      "path": "scores/oof_pred_gp-ard.csv.gz",
+      "bytes": 123275,
+      "sha256": "f5ca26ed78442c125f68381f008c734a8ff51929133ca0ce274d5874fb42a159"
+    },
+    {
+      "path": "scores/oof_pred_hp_wlearn.csv.gz",
+      "bytes": 123060,
+      "sha256": "1bfe42f05a7ea6f0b221956575194d2350430d9de8bfbb2d1c92d0b1ee1ddb36"
+    },
+    {
+      "path": "scores/oof_pred_tail5opt.csv.gz",
+      "bytes": 123314,
+      "sha256": "2f47052d61617c8ad0bfbda552ee013c8084f3430417e2e25c8bdad2a8afcede"
+    },
+    {
+      "path": "scores/paired_delta_vs_gp-ard.csv",
+      "bytes": 536,
+      "sha256": "aa2f4db1e6439425db2f6faf84bf6a099ca107ef0e53c9820fefce880c48fc75"
+    },
+    {
+      "path": "scores/scores_blend_xgb_w20x3.csv",
+      "bytes": 3436,
+      "sha256": "5fa64bb82ef52a7e2765c9ea1a457e61ece641fd2dee5c52ec0886a1d503bef5"
+    },
+    {
+      "path": "scores/scores_gp-ard.csv",
+      "bytes": 3437,
+      "sha256": "f99875642ca59eefd5679fb81bcbdc9d94de2bf71d0150cc7a36f7746a8f9e42"
+    },
+    {
+      "path": "scores/scores_hp_wlearn.csv",
+      "bytes": 3439,
+      "sha256": "807cc9e8190d3f5292599522c241672b0f1d82963d72290653ea8f36367fc06e"
+    },
+    {
+      "path": "scores/scores_tail5opt.csv",
+      "bytes": 3457,
+      "sha256": "9b2363f518136465f66796249b3b105d3719e05a78885a6b5de62edd70fbd6f8"
+    },
+    {
+      "path": "self_check.json",
+      "bytes": 3972,
+      "sha256": "bed967223304c78f3139956b727318d8842f963e564759746670d833796270df"
+    },
+    {
+      "path": "train_four_models.py",
+      "bytes": 18623,
+      "sha256": "38cc7520b2d210382c5dfb69dd75e9787bff7c06772f46805b45c50d1b9e57b0"
+    },
+    {
+      "path": "四个模型说明.md",
+      "bytes": 13227,
+      "sha256": "c94e013f77d6cc862015f56da4a3cef48d1c65aa274fce77d97241f7a70bfb73"
+    }
+  ]
+}

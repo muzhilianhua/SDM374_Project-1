@@ -1,0 +1,6 @@
+# 推理最小依赖（GP 模型只需 numpy/scipy；blend 另需 sklearn + joblib）
+numpy>=1.26
+scipy>=1.10
+pandas>=2.0
+joblib>=1.2
+scikit-learn==1.6.1
