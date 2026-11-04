@@ -23,3 +23,30 @@ Additional earlier review findings are also addressed:
 Validation:156 passed,1 skipped (GUI dependency absent),1 known frozen-PGD xfailed. The15 targeted Bayesian tests include all reproduced configuration/layout/start bugs. The fresh full-data GP matches all64 historical candidate/control predictions at rtol1e-9, maximum mean difference1.42e-14. Eighteen protected files match main byte for byte. Fresh configuration/source Git states are clean. Full test log and current run evidence are under delivery/current/.
 
 No new frozen-v3.2 score is claimed:83.1496 remains the original complete historical evaluation. No course solver was called and no official submission was made. Model-owner B confirmation remains pending; the draft PR must be reviewed before merge. The prior reviewer's independent macOS refit is credited as separate evidence, not a new test performed here.
+
+## Re-review 5768870836 (head311adf)
+
+The reviewer confirmed the original five findings were resolved and identified two remaining
+reproducibility failures. Both are addressed in source/config commit54c161d:
+
+| Remaining finding | Resolution | Verification |
+|---|---|---|
+| Eleven shipped TOMLs request unsupported EI | Set all eleven to pessimistic; retain native raw-GP EI recipes | A parameterized test executes actual optimizer proposal logic for all26 shipped Bayesian TOMLs, including both trust-dirichlet audits; all37 review regression cases pass |
+| Published non-editable commands cannot locate repository data | Use uv sync --locked and uv run --locked --no-sync with the supported editable layout; update generator, both generated guides and artifact regeneration instructions | Fresh ASCII-path Git worktree, new virtualenv, PYTHONPATH unset, verified editable distribution/root/data checksum; actual GP train and previously failing SVR optimize complete |
+
+`analysis/bayesian_search/check_editable_replay.py` reproduces the isolated check with Git and uv
+on PATH. On Windows/Python3.11, the checkout must use an ASCII path because locale decoding of
+editable .pth files can fail with Chinese paths. This is documented; no shared root resolver was
+changed. The temporary worktree is removed after text evidence is copied, without archiving binaries.
+
+Clean-environment runs (both source54c161d, dirty=false):
+
+- `20261104-220925-train-bayes-study-gp-ard`
+- `20261104-221206-optimize-bayes-study-svr` (one feasible 3x7 proposal)
+
+Command logs, editable/root probe, configs, metadata, metrics and SVR weights are archived in
+`delivery/current/editable_replay/`. Latest full-suite counts are in `delivery/current/validation.json`;
+the earlier156-test result above is retained as previous-round evidence. These smoke runs establish
+CLI reproducibility for the two reported failures, not a new complete model evaluation or real R.
+All18 protected files and PR7's existing framework/model implementations remain unchanged.
+No solver calls, official submissions or merge; model-owner B confirmation remains pending.

@@ -1,6 +1,6 @@
-........................................................................ [ 45%]
-.....................................x.................................. [ 91%]
-.............                                                            [100%]
+........................................................................ [ 39%]
+...............................................................x........ [ 78%]
+.......................................                                  [100%]
 ============================== warnings summary ===============================
 tests/test_bayes_review.py::test_ard_reports_fitted_values_and_termination
   C:\Users\dell\Desktop\机器学习系统设计\SDM374_Project-1-bayesian-study\.venv\Lib\site-packages\sklearn\gaussian_process\kernels.py:430: ConvergenceWarning: The optimal value found for dimension 2 of parameter k1__length_scale is close to the specified upper bound 3.0. Increasing the bound and calling fit again may find a better value.
@@ -11,4 +11,4 @@ tests/test_bayes_review.py::test_ard_reports_fitted_values_and_termination
     warnings.warn(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-156 passed, 1 skipped, 1 xfailed, 2 warnings in 398.70s (0:06:38)
+182 passed, 1 skipped, 1 xfailed, 2 warnings in 443.78s (0:07:23)

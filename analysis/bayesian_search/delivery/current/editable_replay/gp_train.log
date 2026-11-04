@@ -1,0 +1,28 @@
+C:\Users\dell\AppData\Local\Temp\sdm374-editable-edtjri7c\checkout\.venv\Lib\site-packages\sklearn\gaussian_process\kernels.py:430: ConvergenceWarning: The optimal value found for dimension 3 of parameter k1__length_scale is close to the specified upper bound 3.0. Increasing the bound and calling fit again may find a better value.
+  warnings.warn(
+C:\Users\dell\AppData\Local\Temp\sdm374-editable-edtjri7c\checkout\.venv\Lib\site-packages\sklearn\gaussian_process\kernels.py:430: ConvergenceWarning: The optimal value found for dimension 6 of parameter k1__length_scale is close to the specified upper bound 3.0. Increasing the bound and calling fit again may find a better value.
+  warnings.warn(
+C:\Users\dell\AppData\Local\Temp\sdm374-editable-edtjri7c\checkout\.venv\Lib\site-packages\sklearn\gaussian_process\kernels.py:420: ConvergenceWarning: The optimal value found for dimension 0 of parameter k2__noise_level is close to the specified lower bound 0.001. Decreasing the bound and calling fit again may find a better value.
+  warnings.warn(
+run: C:\Users\dell\AppData\Local\Temp\sdm374-editable-edtjri7c\checkout\runs\20261104-220925-train-bayes-study-gp-ard
+{
+  "initial_length": 0.5,
+  "initial_noise": 0.03,
+  "noise": 0.0010000000000000002,
+  "log_marginal_likelihood": -585.6161037970032,
+  "gp_seed_affects_fit": false,
+  "length_0": 0.27450903517071346,
+  "length_1": 0.23631491266157142,
+  "length_2": 1.0965793334730336,
+  "length_3": 3.0000000000000004,
+  "length_4": 0.17549677123482726,
+  "length_5": 0.17979489460570833,
+  "length_6": 3.0000000000000004,
+  "optimizer_nit": 17,
+  "optimizer_success": true,
+  "optimizer_status": 0,
+  "optimizer_nfev": 19,
+  "optimizer_gradient_inf_norm": 3.8981390291986555,
+  "kernel_fits": 1,
+  "train_rows": 2048.0
+}

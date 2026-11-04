@@ -34,6 +34,11 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
   acquisition. Read committed acquisition configs and validate modes before executing.
 - Honor and deduplicate ARD starts; record learned kernel values and optimizer termination diagnostics.
   GP seed is a no-op; the old seed comparison varies only the tree half.
+- [x] Repair all eleven unsupported EI TOMLs; exercise actual proposal compatibility for all26
+  shipped Bayesian configs, including the two trust-dirichlet audits.
+- [x] Replace wheel-layout replay instructions with the supported editable workflow in the generator,
+  generated guides and artifact instructions. Add an isolated ASCII-path worktree replay check with
+  PYTHONPATH unset; verification records are in delivery/current/editable_replay/.
 - Current records use submission1=119.71206678869203 and baseline W*=119.0916. The bar remains
   R<115.76. Preserve old evidence as historical; decision23 forbids solver screening of submission2.
 - Use ExtraTrees only as a separate eligibility veto, not a generator or ranking model. Its two-point
