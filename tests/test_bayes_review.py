@@ -4,14 +4,35 @@ from pathlib import Path
 import shutil
 import subprocess
 import json
+from dataclasses import replace
 import numpy as np
 import pytest
 from sdm.models.bayes_search import BayesianSearchModel, LimitedOptimizer
 from sdm.models.gp_tree_blend import GPTreeBlend
 from sdm.optimizers.bayes_pool import BayesianPool
 from sdm import runs
+from sdm import registry
+from sdm.config import load_config
 
 ROOT=Path(__file__).resolve().parents[1]
+
+
+@pytest.mark.parametrize('path',sorted((ROOT/'experiments').glob('bayes-*.toml')),ids=lambda p:p.stem)
+def test_every_shipped_bayes_acquisition_is_accepted(path,dataset):
+    """Exercise the real capability guard, without fitting every alternative model."""
+    config=load_config(path)
+    model=registry.build_model(config.model.name,config.model.params)
+    optimizer=registry.build_optimizer(config.optimizer.name,config.optimizer.params)
+    if config.optimizer.name=='bayes-pool':
+        optimizer.params=replace(optimizer.params,samples=120)
+    elif config.optimizer.name=='trust-dirichlet':
+        optimizer.params=replace(optimizer.params,iterations=1,samples_per_center=4)
+    else:
+        raise AssertionError(f'Uncovered optimizer: {config.optimizer.name}')
+    model.predict=lambda X:(np.full(len(X),110.),np.full(len(X),2.))
+    proposed=optimizer.propose(model,dataset.X[:60],dataset.y[:60],n=1)
+    from sdm.simplex import check_weights
+    assert check_weights(proposed).shape==(1,21)
 
 
 def module(name):
@@ -112,6 +133,8 @@ def test_generated_guidance_uses_confirmed_results_and_decision23(tmp_path,monke
     rows=[dict(model=name,v32_score=80,mae=4,v32_top1_regret=2) for name in ['method-blend-stack','gp-ard','gp-tree-blend']]
     (out/'evaluation.json').write_text(json.dumps(rows));(out/'extension/evaluation.json').write_text('[]')
     monkeypatch.setattr(script,'OUT',out);monkeypatch.setattr(script,'CURRENT',out/'current')
+    root=tmp_path/'checkout';root.mkdir()
+    monkeypatch.setattr(script,'ROOT',root)
     monkeypatch.setattr(script,'git_state',lambda:dict(commit='test',dirty=False))
     script.main();text=(out/'README.md').read_text()
     assert '119.71206678869203' in text and '119.0916' in text and 'R < 115.76' in text
@@ -119,3 +142,9 @@ def test_generated_guidance_uses_confirmed_results_and_decision23(tmp_path,monke
     assert 'No official submission2 is selected here' in text
     assert 'There was no remote push' not in text
     assert (out/'historical/README_2026-11-02.md').read_text().startswith('Historical')
+    assert 'uv sync --locked' in text
+    assert 'uv run --locked --no-sync sdm train' in text
+    assert 'uv run --no-editable' not in text
+    artifact=(root/'artifacts/bayesian_gp/README.md').read_text()
+    assert 'uv run --locked --no-sync sdm train' in artifact
+    assert 'uv run --no-editable' not in artifact

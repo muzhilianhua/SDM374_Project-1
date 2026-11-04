@@ -64,12 +64,21 @@ submission guidance. The old r06 alias is archived in `historical/2026-11-02_r06
 ## Reproduce
 
 ```sh
-uv run --no-editable sdm train -c experiments/bayes-study-gp-ard.toml
-uv run --no-editable sdm evaluate -c experiments/bayes-study-gp-ard.toml
-uv run --no-editable python analysis/bayesian_search/candidates.py
-uv run --no-editable python analysis/bayesian_search/finalize.py
-uv run --no-editable pytest -q
+uv sync --locked
+uv run --locked --no-sync sdm train -c experiments/bayes-study-gp-ard.toml
+uv run --locked --no-sync sdm evaluate -c experiments/bayes-study-gp-ard.toml
+uv run --locked --no-sync python analysis/bayesian_search/candidates.py
+uv run --locked --no-sync python analysis/bayesian_search/finalize.py
+uv run --locked --no-sync pytest -q
 ```
+
+Run these from the repository root. `uv sync --locked` installs this project in its supported
+editable src layout; `--no-sync` then preserves that inspected installation. Wheel/non-editable
+installs are not supported by the existing repository-root resolver. Do not substitute a wheel or
+the previous non-editable option. On Windows/Python3.11, use an ASCII-only checkout path: the locale's
+decoding of editable .pth files can fail for Chinese paths. An ASCII-path Git worktree is sufficient;
+there is no need to move the existing working copy. Clear PYTHONPATH when checking the installation.
+The historical archived README retains its original commands as evidence, not current instructions.
 
 Python3.11 and unchanged uv.lock are required. Commit source/configs before evidence runs. Git
 provenance uses `sdm.runs.git_state`, which invokes Git and supports regular checkouts, packed refs and
@@ -91,6 +100,24 @@ models is not represented as owner approval. No merge, solver call or official s
  if not old.exists():shutil.copy2(OUT/'README.md',old)
  (OUT/'README.md').write_text(text,encoding='utf-8')
  (CURRENT/'README.md').write_text(text,encoding='utf-8')
+ artifact=ROOT/'artifacts/bayesian_gp'
+ artifact.mkdir(parents=True,exist_ok=True)
+ (artifact/'README.md').write_text('''# Regenerate the untracked GP
+
+Use the supported editable installation, from the repository root:
+
+```sh
+uv sync --locked
+uv run --locked --no-sync sdm train -c experiments/bayes-study-gp-ard.toml
+```
+
+Use Python3.11 and the unchanged uv.lock. On Windows/Python3.11, use an ASCII-only checkout path
+to avoid locale decoding of editable .pth paths. Clear PYTHONPATH for an installation check.
+Wheel/non-editable installs do not support the current repository-root resolver.
+The tracked metadata describes the reviewed refit; historical metrics are archived under
+analysis/bayesian_search/delivery/historical/. The binary is deliberately untracked.
+Kernel starts and optimizer diagnostics are in metrics.json. Do not load untrusted pickles.
+''',encoding='utf-8')
  summary=f'''PR #9 已按评审意见修复，基于当前 main，保留 PR #7 已审核的修改。
 
 已确认：第一次提交 R={submission}，baseline 权重 R={baseline}。课程过线要求是 R<{bar}。

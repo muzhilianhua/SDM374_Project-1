@@ -44,12 +44,21 @@ submission guidance. The old r06 alias is archived in `historical/2026-11-02_r06
 ## Reproduce
 
 ```sh
-uv run --no-editable sdm train -c experiments/bayes-study-gp-ard.toml
-uv run --no-editable sdm evaluate -c experiments/bayes-study-gp-ard.toml
-uv run --no-editable python analysis/bayesian_search/candidates.py
-uv run --no-editable python analysis/bayesian_search/finalize.py
-uv run --no-editable pytest -q
+uv sync --locked
+uv run --locked --no-sync sdm train -c experiments/bayes-study-gp-ard.toml
+uv run --locked --no-sync sdm evaluate -c experiments/bayes-study-gp-ard.toml
+uv run --locked --no-sync python analysis/bayesian_search/candidates.py
+uv run --locked --no-sync python analysis/bayesian_search/finalize.py
+uv run --locked --no-sync pytest -q
 ```
+
+Run these from the repository root. `uv sync --locked` installs this project in its supported
+editable src layout; `--no-sync` then preserves that inspected installation. Wheel/non-editable
+installs are not supported by the existing repository-root resolver. Do not substitute a wheel or
+the previous non-editable option. On Windows/Python3.11, use an ASCII-only checkout path: the locale's
+decoding of editable .pth files can fail for Chinese paths. An ASCII-path Git worktree is sufficient;
+there is no need to move the existing working copy. Clear PYTHONPATH when checking the installation.
+The historical archived README retains its original commands as evidence, not current instructions.
 
 Python3.11 and unchanged uv.lock are required. Commit source/configs before evidence runs. Git
 provenance uses `sdm.runs.git_state`, which invokes Git and supports regular checkouts, packed refs and
