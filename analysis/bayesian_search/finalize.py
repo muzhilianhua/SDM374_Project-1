@@ -91,5 +91,22 @@ models is not represented as owner approval. No merge, solver call or official s
  if not old.exists():shutil.copy2(OUT/'README.md',old)
  (OUT/'README.md').write_text(text,encoding='utf-8')
  (CURRENT/'README.md').write_text(text,encoding='utf-8')
+ summary=f'''PR #9 已按评审意见修复，基于当前 main，保留 PR #7 已审核的修改。
+
+已确认：第一次提交 R={submission}，baseline 权重 R={baseline}。课程过线要求是 R<{bar}。
+83.1496仍是原版GP在完整冻结协议上的历史成绩，未冒充修复版新测成绩。
+修复版重新训练后，原64个候选/参照点的预测最大差约1.4e-14。
+
+撤回旧r06首选推荐。EI仅用于原生GP后验；混合模型只能使用均值或保守采集。
+候选采用未参与生成的ExtraTrees作否决检查，加入距训练表最佳点0.02至0.15的方向分析。
+当前研究候选为{lead or '尚未生成'}，不是正式第二次提交的决定，真实R未知。
+遵守团队决定23：不调用RampingSolver.exe筛选第二次离线提交，没有消耗测评或提交机会。
+
+工程修复包括：静态读取并验证已提交TOML、通过Git接口读取版本、修复ARD起点重复，
+记录实际拟合的七个长度尺度/噪声与优化器终止状态，明确GP种子不改变拟合结果。
+33.9MB模型不再进入新版Git历史，日志已转为UTF-8。原始历史数据和18个受保护文件保留。
+全套测试结果见仓库current/validation.json；模型负责人B仍需确认，PR不自动合并。
+'''
+ (ROOT.parent/'贝叶斯模型探索_结果与测评建议.md').write_text(summary,encoding='utf-8')
  print('Current guidance regenerated; confirmed results and decision23 applied')
 if __name__=='__main__':main()

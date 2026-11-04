@@ -1,0 +1,13 @@
+{
+  "research_lead": "line-gp-tree-blend-ei-r06-d0.08",
+  "official_submission2_selected": false,
+  "simulator_calls": 0,
+  "independent_veto": "ExtraTrees, not used in generation or ranking",
+  "veto_threshold": 4.9,
+  "actual_R": null,
+  "known_results": {
+    "submission_1": 119.71206678869203,
+    "baseline_weights": 119.0916
+  },
+  "limitation": "Veto informed by only two real points; no real improvement guarantee"
+}

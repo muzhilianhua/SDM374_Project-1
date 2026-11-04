@@ -1,0 +1,7 @@
+{
+  "gp_weight": 0.5,
+  "tree_weight": 0.5,
+  "uncertainty_is_heuristic": true,
+  "gp_seed_affects_fit": false,
+  "seed_varies_tree_only": true
+}

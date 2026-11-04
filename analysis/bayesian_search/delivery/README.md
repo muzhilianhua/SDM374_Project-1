@@ -38,7 +38,7 @@ submission guidance. The old r06 alias is archived in `historical/2026-11-02_r06
   by only two real measurements. GP/tree disagreement or passing this veto does not guarantee real gain.
   The ray audit uses Euclidean distances.02 through.15 towards old ei-r10, r05 and r06; any projection
   and actual distance are recorded. It is offline research, not a solver-screened submission choice.
-- Current research lead: **not generated**. Actual R is unknown and it is not official submission2.
+- Current research lead: **line-gp-tree-blend-ei-r06-d0.08**. Actual R is unknown and it is not official submission2.
   Current records are in `current/`. The historical r06 recommendation must not be used automatically.
 
 ## Reproduce

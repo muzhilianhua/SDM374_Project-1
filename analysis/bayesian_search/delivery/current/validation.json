@@ -1,0 +1,17 @@
+{
+  "tests": {
+    "passed": 156,
+    "skipped": 1,
+    "known_xfailed": 1,
+    "seconds": 398.7
+  },
+  "targeted_tests": 15,
+  "protected_files_match_main": 18,
+  "source_commit": "2a63eabdb61d7ee8f11866818206fcde18d080d6",
+  "all_current_cli_runs_dirty": false,
+  "historical_prediction_regression": true,
+  "new_frozen_v32_evaluation": false,
+  "solver_calls": 0,
+  "official_submissions": 0,
+  "model_owner_B_confirmation": "pending"
+}
