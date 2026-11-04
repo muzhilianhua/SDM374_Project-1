@@ -10,6 +10,7 @@ from .method_study import MethodStudy
 @register_model('gp-tree-blend')
 class GPTreeBlend(Surrogate):
     """Equal GP/tree mean; uncertainty is a disagreement envelope, not calibrated confidence."""
+    uncertainty_kind = 'heuristic'
     @dataclass(frozen=True)
     class Params:
         seed: int = 2026
@@ -22,7 +23,8 @@ class GPTreeBlend(Surrogate):
             seed=self.params.seed)).fit(X,y)
         self.tree = MethodStudy(MethodStudy.Params(family='ensemble',ensemble_mode='stack',
                                 seed=self.params.seed)).fit(X,y)
-        self.metrics = {'gp_weight':.5,'tree_weight':.5,'uncertainty_is_heuristic':True}
+        self.metrics = {'gp_weight':.5,'tree_weight':.5,'uncertainty_is_heuristic':True,
+                        'gp_seed_affects_fit':False, 'seed_varies_tree_only':True}
         return self
 
     def predict(self, X):

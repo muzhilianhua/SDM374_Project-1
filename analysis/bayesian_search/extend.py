@@ -32,10 +32,12 @@ def main():
         caveat='Reused outer folds; exploratory discovery, not independent confirmation',simulator_calls=0)
     (OUT/'plan.json').write_text(json.dumps(plan,indent=2),encoding='utf-8')
     for name,block in configs.items():
+        acquisition='pessimistic' if name=='gp-tree-blend' else 'ei'
         text=('[data]\ndataset="dataset_same8"\n[model]\n'+block+'seed=2026\n'
-              '[optimizer]\nname="bayes-pool"\n[optimizer.params]\nacquisition="ei"\nsamples=6000\nmax_distance_ratio=0.5\nseed=2026\n'
+              f'[optimizer]\nname="bayes-pool"\n[optimizer.params]\nacquisition="{acquisition}"\nsamples=6000\nmax_distance_ratio=0.5\nseed=2026\n'
               '[evaluate]\nprotocol="frozen-v32"\ntop_k=50\n')
-        (ROOT/f'experiments/bayes-study-{name}.toml').write_text(text,encoding='utf-8')
+        if os.environ.get('PREPARE_ONLY')=='1':
+            (ROOT/f'experiments/bayes-study-{name}.toml').write_text(text,encoding='utf-8')
     if os.environ.get('PREPARE_ONLY')=='1':
         return
     rows=[]

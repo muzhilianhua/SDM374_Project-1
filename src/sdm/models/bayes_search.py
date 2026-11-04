@@ -67,10 +67,24 @@ class BuildingARDKernel(Kernel):
         return True
 
 
+class LimitedOptimizer:
+    """Keep the historical optimization budget and report termination honestly."""
+    def __init__(self):
+        self.diagnostics = {}
+
+    def __call__(self, objective, theta, bounds):
+        result = minimize(objective, theta, method='L-BFGS-B', jac=True, bounds=bounds,
+                          options={'maxiter': 18, 'ftol': 1e-5, 'maxls': 10})
+        self.diagnostics = {'optimizer_nit': int(result.nit),
+            'optimizer_success': bool(result.success), 'optimizer_status': int(result.status),
+            'optimizer_nfev': int(result.nfev),
+            'optimizer_gradient_inf_norm': float(np.max(np.abs(result.jac)))}
+        return result.x, result.fun
+
+
 def limited_optimizer(objective, theta, bounds):
-    result = minimize(objective, theta, method='L-BFGS-B', jac=True, bounds=bounds,
-                      options={'maxiter': 18, 'ftol': 1e-5, 'maxls': 10})
-    return result.x, result.fun
+    """Compatibility with historical locally produced fitted models."""
+    return LimitedOptimizer()(objective, theta, bounds)
 
 
 @register_model("bayes-search")
@@ -91,6 +105,12 @@ class BayesianSearchModel(Surrogate):
         X = as_batch(X)
         return np.sqrt(np.maximum(X, 0)) if self.params.transform == "sqrt" else X
 
+    @property
+    def uncertainty_kind(self):
+        p = self.params
+        return ('gaussian-posterior' if p.family == 'gp' and p.target == 'raw' and not p.trend
+                else 'heuristic')
+
     def fit(self, X, y):
         p = self.params
         X, y = self._features(X), np.asarray(y, dtype=float)
@@ -108,9 +128,17 @@ class BayesianSearchModel(Surrogate):
             z = z-self.trend_.predict(X)
         if p.family == "gp":
             best = -np.inf
-            for length in p.lengths:
+            lengths = tuple(dict.fromkeys(float(v) for v in p.lengths))
+            noises = tuple(dict.fromkeys(float(v) for v in p.noises))
+            if not lengths or not noises or any(not np.isfinite(v) or v <= 0 for v in lengths+noises):
+                raise ValueError('lengths and noises must contain finite positive values')
+            if p.kernel == 'additive-ard' and (any(not .03 <= v <= 3 for v in lengths)
+                                               or any(not .001 <= v <= .3 for v in noises)):
+                raise ValueError('ARD starts must lie within length/noise bounds')
+            fits = 0
+            for length in lengths:
                 if p.kernel == "additive-ard":
-                    signal = BuildingARDKernel()
+                    signal = BuildingARDKernel((length,)*7)
                 elif p.kernel == "additive":
                     signal = BuildingKernel(length)
                 elif p.kernel == "rbf":
@@ -119,15 +147,25 @@ class BayesianSearchModel(Surrogate):
                     signal = RationalQuadratic(length, alpha=1.0, length_scale_bounds="fixed", alpha_bounds="fixed")
                 else:
                     signal = Matern(length, length_scale_bounds="fixed", nu=2.5)
-                for noise in p.noises:
+                for noise in noises:
                     ard = p.kernel == "additive-ard"
                     kernel = signal+WhiteKernel(noise, noise_level_bounds=(.001,.3) if ard else "fixed")
-                    model = GaussianProcessRegressor(kernel=kernel, optimizer=limited_optimizer if ard else None, normalize_y=False,
-                                                     alpha=1e-8, random_state=p.seed).fit(X, z)
+                    optimizer = LimitedOptimizer() if ard else None
+                    # No random restarts: seed does not vary this GP's fitted predictions.
+                    model = GaussianProcessRegressor(kernel=kernel, optimizer=optimizer, normalize_y=False,
+                                                     alpha=1e-8, n_restarts_optimizer=0).fit(X, z)
+                    fits += 1
                     value = model.log_marginal_likelihood_value_
                     if value > best:
                         best, self.estimator_ = value, model
-                        self.metrics = {"length": float(length), "noise": float(noise), "log_marginal_likelihood": float(value)}
+                        learned = np.atleast_1d(model.kernel_.k1.length_scale)
+                        self.metrics = {'initial_length': length, 'initial_noise': noise,
+                            'noise': float(model.kernel_.k2.noise_level),
+                            'log_marginal_likelihood': float(value), 'gp_seed_affects_fit': False,
+                            **{f'length_{i}': float(v) for i,v in enumerate(learned)}}
+                        if optimizer is not None:
+                            self.metrics.update(optimizer.diagnostics)
+            self.metrics['kernel_fits'] = fits
         elif p.family in ("bayesian-ridge", "ard"):
             estimator = BayesianRidge() if p.family == "bayesian-ridge" else ARDRegression(n_iter=150)
             self.estimator_ = make_pipeline(PolynomialFeatures(2, include_bias=False), StandardScaler(), estimator)

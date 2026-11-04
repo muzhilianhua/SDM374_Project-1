@@ -1,110 +1,82 @@
-"""Fit trusted local models, search Bayesian acquisitions and export an explicitly unmeasured shortlist."""
+"""Reviewed offline research pool; no solver screening and no official submission2 selection."""
 import os
-for key in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS','MKL_NUM_THREADS'):
-    os.environ[key]='1'
-from concurrent.futures import ProcessPoolExecutor
+for key in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS','MKL_NUM_THREADS'):os.environ[key]='1'
 import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
 from sdm.cli import execute
+from sdm.config import load_config
 from sdm.data import load_dataset
-from sdm.evaluate import median_spacing, nearest_distances
-from sdm.runs import resolve_run
-from sdm.simplex import check_weights
-
+from sdm.evaluate import median_spacing,nearest_distances
+from sdm.runs import resolve_run,git_state
+from sdm.simplex import check_weights,project
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'analysis/bayesian_search/delivery'
-
-
+HISTORY=ROOT/'analysis/bayesian_search/delivery'
+OUT=HISTORY/'current'
+SEARCHES=[('gp-ard','ei'),('gp-ard','mean'),('gp-ard','pessimistic'),('gp-tree-blend','mean'),('gp-tree-blend','pessimistic')]
+_records=json.loads((ROOT/'analysis/bayesian_search/team_records.json').read_text())
+REAL_RESULTS={key:float(_records[key]['R_decimal']) for key in ['submission_1','baseline_weights']}
 def write(path,value):
-    path.write_text(json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
-
-
-def train(name):
-    run=execute('train',ROOT/f'experiments/bayes-study-{name}.toml')
-    print('TRAIN',name,run.id,flush=True)
-    return name,run.id
-
-
+ path.parent.mkdir(parents=True,exist_ok=True)
+ path.write_text(json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
+def validate_search_config(path,name,acquisition):
+ config=load_config(path)
+ training=load_config(ROOT/f'experiments/bayes-study-{name}.toml')
+ if config.model!=training.model:raise ValueError('Search model differs from committed training recipe')
+ if config.optimizer is None or config.optimizer.name!='bayes-pool':raise ValueError('Expected bayes-pool')
+ actual=config.optimizer.params.get('acquisition','pessimistic')
+ if actual!=acquisition:raise ValueError(f'Acquisition mismatch: expected {acquisition}, got {actual}')
+ if acquisition=='ei' and name!='gp-ard':raise ValueError('EI is reserved for the raw ARD GP posterior')
+ return config
+def line_pool(anchor,targets,radii=np.arange(.02,.151,.01)):
+ rows=[]
+ for label,target in targets.items():
+  direction=target-anchor;norm=np.linalg.norm(direction)
+  if norm<=1e-12:raise ValueError('Line target equals anchor')
+  for radius in radii:
+   raw=anchor+radius*direction/norm;point=project(raw)
+   rows.append((f'line-{label}-d{radius:.2f}',point,float(radius),float(np.linalg.norm(point-anchor)),bool(np.min(raw)<0)))
+ return rows
+def eligible_by_veto(gain,threshold):return np.asarray(gain)<=threshold
 def main():
-    os.chdir(ROOT)
-    # Fixed shortlist policy before inspecting any newly generated candidate predictions.
-    write(OUT/'candidate_plan.json',dict(models=['gp-tree-blend','gp-ard'],
-        acquisitions=['ei','mean','pessimistic'],points_per_search=10,seed=2026,
-        rule='minimize worst panel mean delta relative to best observed anchor; spread five choices',
-        caveat='Panel members are dependent; agreement and GP posterior spread are not real guarantees',
-        real_measurements_added=0,simulator_calls=0))
-    with ProcessPoolExecutor(max_workers=2) as pool:
-        trained=dict(pool.map(train,['gp-tree-blend','gp-ard']))
-    write(OUT/'training_runs.json',trained)
-    search_records=[]
-    points=[]; labels=[]
-    for name,run_id in trained.items():
-        original=(ROOT/f'experiments/bayes-study-{name}.toml').read_text(encoding='utf-8')
-        for acquisition in ['ei','mean','pessimistic']:
-            config=ROOT/f'experiments/bayes-search-{name}-{acquisition}.toml'
-            config.write_text(original.replace('acquisition="ei"',f'acquisition="{acquisition}"'),encoding='utf-8')
-            run=execute('optimize',config,n=10,model_run=run_id)
-            batch=check_weights(json.loads((run.path/'weights.json').read_text()))
-            for rank,w in enumerate(batch,1):
-                points.append(w);labels.append(f'{name}-{acquisition}-r{rank:02d}')
-            search_records.append(dict(model=name,acquisition=acquisition,run_id=run.id))
-            print('SEARCH',name,acquisition,run.id,flush=True)
-    write(OUT/'search_runs.json',search_records)
-    data=load_dataset(ROOT/'dataset_same8')
-    best=int(np.argmin(data.y)); anchor=data.X[best]
-    controls={'best-observed':anchor,
-              'course-baseline':check_weights(json.loads((ROOT/'weights.json').read_text()))[0],
-              'submitted-119-approx':check_weights(json.loads((OUT/'submitted_weights.json').read_text()))[0],
-              'old-operational':check_weights(json.loads((ROOT/'analysis/offline_submission/submission/weights.json').read_text()))[0]}
-    for name,point in controls.items():
-        points.append(point);labels.append(name)
-    points=check_weights(np.array(points))
-    # These are only our own freshly created models; no external pickle is deserialized.
-    blend=resolve_run(trained['gp-tree-blend']).load_model()
-    ard=resolve_run(trained['gp-ard']).load_model()
-    panel={'gp-additive':blend.gp,'tree-stack':blend.tree,'gp-tree-blend':blend,'gp-ard':ard}
-    frame=pd.DataFrame({'candidate':labels})
-    all_deltas=[]
-    for name,model in panel.items():
-        means=[];stds=[]
-        for start in range(0,len(points),64):
-            m,s=model.predict(points[start:start+64]);means.extend(m);stds.extend(s)
-        frame[name+'_mean']=means;frame[name+'_spread']=stds
-        am,astd=model.predict(anchor[None])
-        delta=np.array(means)-am[0]
-        frame[name+'_delta_best_observed']=delta
-        all_deltas.append(delta)
-    frame['worst_mean_delta_best_observed']=np.max(all_deltas,axis=0)
-    spacing=median_spacing(data.X)
-    frame['distance_ratio']=nearest_distances(points,data.X)/spacing
-    frame['distance_from_best_observed']=np.linalg.norm(points-anchor,axis=1)
-    frame['measured_R']=np.nan
-    frame.loc[frame.candidate=='best-observed','measured_R']=data.y[best]
-    frame['reported_approximate_R']=np.nan
-    frame.loc[frame.candidate=='submitted-119-approx','reported_approximate_R']=119
-    frame.to_csv(OUT/'candidate_comparison.csv',index=False)
-    selected=[]
-    for index in np.argsort(frame.worst_mean_delta_best_observed.to_numpy()[:60],kind='stable'):
-        if all(np.linalg.norm(points[index]-points[other])>=.15*spacing for other in selected):
-            selected.append(int(index))
-        if len(selected)==5:
-            break
-    write(OUT/'all_candidate_weights.json',dict(zip(labels,points.reshape(-1,3,7).tolist())))
-    folder=OUT/'shortlist';folder.mkdir(exist_ok=True)
-    for rank,index in enumerate(selected,1):
-        write(folder/f'{rank:02d}_{labels[index]}.json',points[index].reshape(3,7).tolist())
-    write(folder/'weights.json',points[selected].reshape(-1,3,7).tolist())
-    frame.iloc[selected].to_csv(folder/'comparison.csv',index=False)
-    write(OUT/'best_observed_115.7648.json',anchor.reshape(3,7).tolist())
-    write(OUT/'candidate_decision.json',dict(selected=[labels[i] for i in selected],
-        primary=labels[selected[0]],primary_actual_R=None,
-        measured_fallback=dict(candidate_id=data.ids[best],historical_R=float(data.y[best]),
-            caveat='Eligibility and consistency with current evaluator must be verified; not a new measured result'),
-        measured_improvement_established=False,simulator_calls=0))
-    print(frame.iloc[selected][['candidate','worst_mean_delta_best_observed','distance_ratio']].to_string(index=False),flush=True)
-
-
-if __name__=='__main__':
-    main()
+ os.chdir(ROOT);OUT.mkdir(exist_ok=True)
+ for name,mode in SEARCHES:validate_search_config(ROOT/f'experiments/bayes-search-{name}-{mode}.toml',name,mode)
+ state=git_state()
+ if state['dirty'] is not False:raise RuntimeError('Evidence requires available Git and committed source/configs')
+ write(OUT/'plan.json',dict(git=state,searches=SEARCHES,seed=2026,decision=23,actual_results=REAL_RESULTS,offline_bar=115.76,simulator_calls=0,eligibility='ExtraTrees gain <= min(4.9, its submission1 gain)',ranking='ARD mean gain + 0.5 posterior SD',historical_r06_recommendation_withdrawn=True,official_submission2_selected=False))
+ trained={}
+ for name in ['gp-ard','gp-tree-blend']:
+  run=execute('train',ROOT/f'experiments/bayes-study-{name}.toml');trained[name]=run.id;print('TRAIN',name,run.id,flush=True)
+ veto_run=execute('train',ROOT/'experiments/extratrees-v32.toml');write(OUT/'training_runs.json',dict(trained,extratrees=veto_run.id))
+ points=[];labels=[];sources=[]
+ for name,mode in SEARCHES:
+  path=ROOT/f'experiments/bayes-search-{name}-{mode}.toml';validate_search_config(path,name,mode)
+  run=execute('optimize',path,n=10,model_run=trained[name]);batch=check_weights(run.read_json('weights.json'))
+  for rank,point in enumerate(batch,1):points.append(point);labels.append(f'{name}-{mode}-r{rank:02d}')
+  sources.append(dict(model=name,acquisition=mode,run_id=run.id))
+ data=load_dataset(ROOT/'dataset_same8');best=int(np.argmin(data.y));anchor=data.X[best]
+ old=json.loads((HISTORY/'all_candidate_weights.json').read_text())
+ targets={name:np.array(old[name]).ravel() for name in ['gp-tree-blend-ei-r10','gp-tree-blend-ei-r05','gp-tree-blend-ei-r06']}
+ rays=line_pool(anchor,targets)
+ for label,point,_,_,_ in rays:labels.append(label);points.append(point)
+ candidate_count=len(points)
+ controls={'best-observed':anchor,'course-baseline':check_weights(json.loads((ROOT/'weights.json').read_text()))[0],'submission-1':check_weights(json.loads((HISTORY/'submitted_weights.json').read_text()))[0]}
+ for label,point in controls.items():labels.append(label);points.append(point)
+ points=check_weights(points);gp=resolve_run(trained['gp-ard']).load_model();veto=resolve_run(veto_run.id).load_model()
+ frame=pd.DataFrame({'candidate':labels})
+ for name,model in [('gp-ard',gp),('extratrees',veto)]:
+  mean,std=model.predict(points);frame[name+'_mean']=mean;frame[name+'_spread']=std;frame[name+'_gain']=mean-mean[labels.index('best-observed')]
+ threshold=min(4.9,float(frame.loc[frame.candidate=='submission-1','extratrees_gain'].iloc[0]))
+ frame['veto_threshold']=threshold;frame['veto_eligible']=eligible_by_veto(frame.extratrees_gain,threshold)
+ frame['ranking_objective']=frame['gp-ard_gain']+.5*frame['gp-ard_spread']
+ frame['distance_ratio']=nearest_distances(points,data.X)/median_spacing(data.X);frame['distance_from_best_observed']=np.linalg.norm(points-anchor,axis=1);frame['measured_R']=np.nan
+ for label,value in [('best-observed',float(data.y[best])),('submission-1',REAL_RESULTS['submission_1']),('course-baseline',REAL_RESULTS['baseline_weights'])]:frame.loc[frame.candidate==label,'measured_R']=value
+ frame.to_csv(OUT/'candidate_comparison.csv',index=False);write(OUT/'all_candidate_weights.json',dict(zip(labels,points.reshape(-1,3,7).tolist())))
+ pd.DataFrame([dict(candidate=a,nominal_radius=c,actual_radius=d,projected=e) for a,b,c,d,e in rays]).to_csv(OUT/'line_geometry.csv',index=False)
+ eligible=frame.iloc[:candidate_count].query('veto_eligible and distance_ratio > 0.000001')
+ lead=None if eligible.empty else str(eligible.sort_values(['ranking_objective','candidate']).iloc[0].candidate)
+ write(OUT/'decision.json',dict(research_lead=lead,official_submission2_selected=False,simulator_calls=0,independent_veto='ExtraTrees, not used in generation or ranking',veto_threshold=threshold,actual_R=None,known_results=REAL_RESULTS,limitation='Veto informed by only two real points; no real improvement guarantee'))
+ if lead is not None:write(OUT/'RESEARCH_LEAD_NOT_OFFICIAL_SUBMISSION.json',points[labels.index(lead)].reshape(3,7).tolist())
+ write(OUT/'search_runs.json',sources);print('RESEARCH LEAD',lead,'official submission2 remains unselected',flush=True)
+if __name__=='__main__':main()

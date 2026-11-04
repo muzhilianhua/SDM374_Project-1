@@ -2,11 +2,12 @@
 
 ## Bayesian exploration after the first reported measurement
 
-See [the Bayesian study and five unmeasured candidates](analysis/bayesian_search/delivery/README.md)
+See [the reviewed Bayesian study](analysis/bayesian_search/delivery/README.md)
 for the new additive ARD Gaussian process (frozen-v3.2 score **83.1496** versus the same-machine
 tree-stack reference **74.3862**), fitted model, acquisition experiments and reproducibility evidence.
-Prediction accuracy improves, while top1 regret does not consistently improve. These are exploratory
-results: the original handoff below is preserved, and the new candidate weights still need real validation.
+These scores are historical; top1 regret does not consistently improve. The old r06 recommendation
+is withdrawn. Current research uses GP-only EI and a separate ExtraTrees veto. Offline submission2
+follows decision23 without solver screening; no second official controller is selected here.
 
 Member C's [submission handoff](SUBMISSION_READY/README.md); current scores and rules: [team decisions](docs/decisions.md).
 

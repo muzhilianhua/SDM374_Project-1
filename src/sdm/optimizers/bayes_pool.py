@@ -14,7 +14,7 @@ class BayesianPool(Optimizer):
     """Expected improvement or conservative posterior acquisition, with locality and batch diversity."""
     @dataclass(frozen=True)
     class Params:
-        acquisition: str = "ei"
+        acquisition: str = "pessimistic"
         risk: float = 1.0
         samples: int = 6000
         max_distance_ratio: float = 0.5
@@ -24,6 +24,8 @@ class BayesianPool(Optimizer):
     def propose(self, model, X, y, n=1):
         X, y = as_batch(X), np.asarray(y)
         p, rng = self.params, np.random.default_rng(self.params.seed)
+        if p.acquisition == 'ei' and getattr(model, 'uncertainty_kind', None) != 'gaussian-posterior':
+            raise ValueError('EI requires a native Gaussian posterior; use mean or pessimistic for heuristic spreads')
         spacing = median_spacing(X)
         anchors = X[np.argsort(y, kind="stable")[:32]]
         center = anchors[rng.integers(len(anchors), size=p.samples)].reshape(-1, 3, 7)

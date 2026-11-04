@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from sdm.data import load_dataset
 from sdm.models.gp_tree_blend import GPTreeBlend
-from sdm.runs import resolve_run
+from sdm.runs import resolve_run, git_state
 from sdm.simplex import check_weights, project
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -42,9 +42,8 @@ def main():
         perturbation_radii=[.01,.03],directions_per_radius=128,seed=2064,
         caveat='Overlapping subsets and local surrogate stability are not independent simulator validation',
         simulator_calls=0),indent=2),encoding='utf-8')
-    head=(ROOT/'.git/HEAD').read_text().strip()
-    commit=(ROOT/'.git'/head.removeprefix('ref: ')).read_text().strip()
-    (OUT/'audit_provenance.json').write_text(json.dumps(dict(commit=commit,branch=head,
+    state=git_state()
+    (OUT/'audit_provenance.json').write_text(json.dumps(dict(commit=state['commit'],git=state,
         dataset_sha256=load_dataset(ROOT/'dataset_same8').sha256,
         script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         source_model_sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest()

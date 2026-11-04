@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import platform
 import time
+from sdm.runs import git_state
 
 # Set these before importing numpy/sklearn or spawning workers.
 for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
@@ -43,8 +44,10 @@ def prepare():
         text = '[data]\ndataset = "dataset_same8"\n\n[model]\nname = "bayes-search"\n[model.params]\nseed = 2026\n'
         for key, value in params.items():
             text += f'{key} = {json.dumps(value)}\n'
+        acquisition = ('ei' if params['family']=='gp' and params.get('target','raw')=='raw'
+                       and not params.get('trend',False) else 'pessimistic')
         text += ('\n[optimizer]\nname = "bayes-pool"\n[optimizer.params]\n'
-                 'acquisition = "ei"\nsamples = 6000\nmax_distance_ratio = 0.5\nseed = 2026\n'
+                 f'acquisition = "{acquisition}"\nsamples = 6000\nmax_distance_ratio = 0.5\nseed = 2026\n'
                  '\n[evaluate]\nprotocol = "frozen-v32"\ntop_k = 50\n')
         (ROOT/f'experiments/bayes-study-{name}.toml').write_text(text, encoding="utf-8")
     write_json(OUT/'plan.json', dict(recipes=RECIPES, seed=2026,
@@ -52,17 +55,17 @@ def prepare():
         gp_selection='training-only marginal likelihood over 3 lengths x 2 noises',
         svr_selection='3-fold training-only low-weighted MAE; inner training-only scaling',
         promotion='discovery only; use matched folds, regret and low-region error; no measured improvement claim',
-        reported_measurement=dict(source='user', approximate_R=119, approximate_baseline_R=118,
-                                  exact_R=None, used_as_training_label=False),
+        confirmed_team_records=json.loads((ROOT/'analysis/bayesian_search/team_records.json').read_text()),
+        gp_seed_note='No random restarts; seed does not vary the GP fit',
         simulator_calls=0))
 
 
 def provenance():
     from sdm.data import load_dataset
-    head = (ROOT/'.git/HEAD').read_text().strip()
-    commit = (ROOT/'.git'/head.removeprefix('ref: ')).read_text().strip() if head.startswith('ref: ') else head
+    state = git_state()
+    commit = state['commit']
     files = [ROOT/'src/sdm/models/bayes_search.py', ROOT/'src/sdm/optimizers/bayes_pool.py', Path(__file__)]
-    write_json(OUT/'provenance.json', dict(commit=commit, branch=head, python=platform.python_version(),
+    write_json(OUT/'provenance.json', dict(commit=commit, git=state, python=platform.python_version(),
         packages={k:version(k) for k in ['numpy','pandas','scipy','scikit-learn','xgboost','catboost']},
         dataset_sha256=load_dataset(ROOT/'dataset_same8').sha256, seed=2026,
         files={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files},

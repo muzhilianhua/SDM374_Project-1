@@ -121,3 +121,4 @@ analysis/**/results/
 /analysis/selection_training/delivery/candidates/neighbors-0.05-2043.npz
 /analysis/selection_training/delivery/candidates/neighbors-0.05-2044.npz
 /analysis/selection_training/delivery/candidates/neighbors-0.05-2045.npz
+/artifacts/bayesian_gp/model.pkl

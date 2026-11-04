@@ -15,9 +15,10 @@ OUT=ROOT/'analysis/bayesian_search/delivery/seed_audit'
 def evaluate(item):
     name,seed=item
     source=ROOT/('experiments/bayes-study-gp-tree-blend.toml' if name=='gp-tree-blend' else 'experiments/method-blend-stack.toml')
-    text=source.read_text().replace('seed = 2026',f'seed = {seed}').replace('seed=2026',f'seed={seed}')
     config=ROOT/f'experiments/bayes-audit-{name}-{seed}.toml'
-    config.write_text(text,encoding='utf-8')
+    from sdm.config import load_config
+    if load_config(config).model.params.get('seed') != seed:
+        raise ValueError('Committed seed-audit config does not match the requested seed')
     start=time.monotonic()
     run=execute('evaluate',config)
     return dict(model=name,seed=seed,run_id=run.id,seconds=time.monotonic()-start,**run.read_json('metrics.json'))
