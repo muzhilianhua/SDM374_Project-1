@@ -1,0 +1,22 @@
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "bayes-search"
+[model.params]
+seed = 2026
+family = "gp"
+kernel = "matern"
+target = "log"
+
+[optimizer]
+name = "bayes-pool"
+[optimizer.params]
+acquisition = "ei"
+samples = 6000
+max_distance_ratio = 0.5
+seed = 2026
+
+[evaluate]
+protocol = "frozen-v32"
+top_k = 50

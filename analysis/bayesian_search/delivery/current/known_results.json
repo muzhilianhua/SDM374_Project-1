@@ -1,0 +1,17 @@
+{
+  "submission_1": {
+    "R_decimal": "119.71206678869203",
+    "source": "docs/roles/C.md; PR9 review5752918577"
+  },
+  "baseline_weights": {
+    "R_decimal": "119.0916",
+    "source": "docs/decisions.md decisions17 and Findings"
+  },
+  "offline_bar_decimal": "115.76",
+  "offline_submission2": {
+    "selected": false,
+    "decision": 23,
+    "solver_screening_allowed": false
+  },
+  "source_main": "6dd38eb65a3e104ea5a4ec46f87764bdb90b2176"
+}

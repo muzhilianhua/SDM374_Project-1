@@ -1,0 +1,43 @@
+{
+  "base_azq": "651c310905348859fba3aa4f6caed052cac222e1",
+  "branch": "ref: refs/heads/feat/c-bayesian-study",
+  "source_head_at_packaging": "990ad03c0caafb6dc98cb0f61378e76e03966c74",
+  "discovery_source_commit": "5b76ab22faffeddae142a8cd1747ddd24b6feb50",
+  "extension_source_commit": "57573fc97f5ff65ad316642073e4f1c8664d9a58",
+  "candidate_code_commit": "990ad03c0caafb6dc98cb0f61378e76e03966c74",
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0",
+    "catboost": "1.2.8"
+  },
+  "source_sha256": {
+    "src\\sdm\\models\\bayes_search.py": "558978435139841b6fec5a2c113d3c781f7986d7ab8f24048166bdba01667493",
+    "src\\sdm\\models\\boosted_consensus.py": "f8dd84e6d92159fb0df43617a21b402a6ad825c79fc0cdac8d792c75f738b76d",
+    "src\\sdm\\models\\extratrees.py": "0d5f0c0086b9198dc750600a75e99e953fecc80faa511698e2a180bd59acac33",
+    "src\\sdm\\models\\gp_tree_blend.py": "6f1d9a0b0082e4bf6b19b746bddbfc58e694b4172c90a010fb96c3f6e5e42e69",
+    "src\\sdm\\models\\histgb.py": "4a7f620fb60010460f3b694289f56d43c488ee4f4d9967c1657c1a1d1964d703",
+    "src\\sdm\\models\\honest_stack.py": "afe27d313d3683e402b37bb3926f5e546793deb40bb9267fc38e9aecb950f704",
+    "src\\sdm\\models\\lowramp.py": "71f41eed5a54f90e753778b7348fc26a9641ab209e89def650b65a45783e9402",
+    "src\\sdm\\models\\method_study.py": "25758afdb1fe66733bf9543b203cb86a1bec6c446c8bf105237c002da2562db8",
+    "src\\sdm\\models\\ridge2.py": "cb789db8bdbbed3f614f9f7ea9669ff95fedb8644125540e11aecb01c996f11c",
+    "src\\sdm\\models\\selection_stack.py": "c14172fc945be1ba25cff76730ed78506d24978f05cc79f7bc02aaca38436b6b",
+    "src\\sdm\\models\\stable_stack.py": "5f78b47a008631b2c6ccf9ac14687f43e8551ced5e80d25659901b58f3d42c9c",
+    "src\\sdm\\models\\xgb.py": "16ffa7f6192c75bd989aa61fbc931342878dc48198e49293c5b2c8f371acf95d",
+    "src\\sdm\\models\\_gbdt.py": "270aa3b10e9652d5a535a42b57e31ff90244c9eb898771d91529f5833c5721e6",
+    "src\\sdm\\models\\_template.py": "ca1f69803411ce2832203b28167a879bdee3ec895a2ffc6d10c5d9c16a0b377b",
+    "src\\sdm\\models\\__init__.py": "b9e7c5a3f225238a4584064c23b0e7c16258da67f6c51cc8eac9331435cfdd1d",
+    "src\\sdm\\optimizers\\bayes_pool.py": "57d1db2ec0077ad620017c2281b515c4dadc6a590ccf0ebbc0d5facd828765aa",
+    "analysis\\bayesian_search\\audit.py": "87887f5e0071a8a75c34202df4d0cb24660f73dced8296322d3116327fb528eb",
+    "analysis\\bayesian_search\\candidates.py": "4998d577d482aeaed9b3e984a02b764923abcbdb90504d364d085c0df229b6e4",
+    "analysis\\bayesian_search\\extend.py": "22687c27288336bebb9db4b75a18a29dd7d55b920246608398961364da1a00d7",
+    "analysis\\bayesian_search\\finalize.py": "4eebf4eadbe9e682c3ae705cd043be22da30d3e805e937513f87273c7d662b89",
+    "analysis\\bayesian_search\\run.py": "ebdd1e3cf021aa47c6bbcef5a0989af59a8d0b4a925bb21a0eb8c91900727f09",
+    "analysis\\bayesian_search\\seed_audit.py": "eaf60420ac9e5b6a8b6b480e821f5919cc16ae4f21338f05a0cb4a192708c8b5"
+  },
+  "note": "Git cloned and locally committed via Dulwich. System git unavailable, so canonical run git fields are null. Supplemental commits and hashes above provide provenance. Generated audit configs were uncommitted when run.",
+  "simulator_calls": 0
+}

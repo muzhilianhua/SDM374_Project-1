@@ -1,0 +1,16 @@
+{
+  "predicted_mean": 115.1233984169496,
+  "predicted_std": 7.970265954489045,
+  "nearest_train_distance": 0.12104880755877193,
+  "train_median_nn_distance": 0.37711307211776746,
+  "best_observed": 115.76481925917324,
+  "optimizer_pool_size": 5877,
+  "optimizer_spacing": 0.37711307211776746,
+  "optimizer_best_acquisition_objective": 115.1233984169496,
+  "optimizer_separation": 0.03771130721177675,
+  "model_gp_weight": 0.5,
+  "model_tree_weight": 0.5,
+  "model_uncertainty_is_heuristic": true,
+  "model_gp_seed_affects_fit": false,
+  "model_seed_varies_tree_only": true
+}

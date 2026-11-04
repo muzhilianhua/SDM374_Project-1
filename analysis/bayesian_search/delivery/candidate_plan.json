@@ -1,0 +1,17 @@
+{
+  "models": [
+    "gp-tree-blend",
+    "gp-ard"
+  ],
+  "acquisitions": [
+    "ei",
+    "mean",
+    "pessimistic"
+  ],
+  "points_per_search": 10,
+  "seed": 2026,
+  "rule": "minimize worst panel mean delta relative to best observed anchor; spread five choices",
+  "caveat": "Panel members are dependent; agreement and GP posterior spread are not real guarantees",
+  "real_measurements_added": 0,
+  "simulator_calls": 0
+}

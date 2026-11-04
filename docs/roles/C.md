@@ -25,6 +25,26 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 - [x] Move large regenerable artifacts to checksummed release assets while preserving source history.
 - [ ] Choose offline submission 2 using decision 23; no selection is made by this PR.
 
+## Bayesian study — PR #9 revision
+
+- Preserve main6dd38eb and PR7's reviewed fixes; replay only the five Bayesian commits.
+- Historical additive ARD GP frozen-v3.2 score83.1496 exceeds the same-machine stack74.3862;
+  top1 regret2.0014 versus1.8202 does not improve. The original r06 submission recommendation is withdrawn.
+- EI now requires a native GP posterior; the blend retains a heuristic spread for mean/pessimistic
+  acquisition. Read committed acquisition configs and validate modes before executing.
+- Honor and deduplicate ARD starts; record learned kernel values and optimizer termination diagnostics.
+  GP seed is a no-op; the old seed comparison varies only the tree half.
+- [x] Repair all eleven unsupported EI TOMLs; exercise actual proposal compatibility for all26
+  shipped Bayesian configs, including the two trust-dirichlet audits.
+- [x] Replace wheel-layout replay instructions with the supported editable workflow in the generator,
+  generated guides and artifact instructions. Add an isolated ASCII-path worktree replay check with
+  PYTHONPATH unset; verification records are in delivery/current/editable_replay/.
+- Current records use submission1=119.71206678869203 and baseline W*=119.0916. The bar remains
+  R<115.76. Preserve old evidence as historical; decision23 forbids solver screening of submission2.
+- Use ExtraTrees only as a separate eligibility veto, not a generator or ranking model. Its two-point
+  motivation is limited evidence, not a guarantee. Ray and candidate audits remain offline research.
+- Role B's model-owner review remains pending before merge. No solver call, official submission or merge.
+
 ## Backlog — offline (historical completed work)
 
 - [x] Publish the labelled handoff and reproducible builder in `analysis/submission_handoff/`.

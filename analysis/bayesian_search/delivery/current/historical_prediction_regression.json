@@ -1,0 +1,9 @@
+{
+  "rows": 64,
+  "max_mean_difference": 1.4210854715202004e-14,
+  "rtol": 1e-09,
+  "passed": true,
+  "source_model_run": "20261104-203533-train-bayes-study-gp-ard",
+  "historical_predictions": "candidate_comparison.csv",
+  "new_frozen_v32_evaluation": false
+}

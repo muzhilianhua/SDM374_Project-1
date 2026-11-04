@@ -1,0 +1,21 @@
+{
+  "v32_score": 67.13212802179294,
+  "v32_score_std": 6.78119181813435,
+  "v32_points_local_order": 17.917413235274196,
+  "v32_points_local_mae": 10.133064355165484,
+  "v32_points_global_order": 12.407080022290895,
+  "v32_points_global_mae": 10.929490565976053,
+  "v32_points_top1_regret": 15.745079843086312,
+  "v32_local_pair_accuracy": 0.7559630462182028,
+  "v32_global_pair_accuracy": 0.9135693340763631,
+  "v32_local_mae": 7.61809430611076,
+  "v32_global_mae": 5.874298183588878,
+  "v32_top1_regret": 5.088650003458679,
+  "mae": 5.874232974860098,
+  "rmse": 8.573739223289293,
+  "r2": 0.7043159233749415,
+  "spearman": 0.8588033896905071,
+  "top50_recall": 0.55,
+  "mean_predicted_std": 6.69202316315144,
+  "std_coverage": 0.635009765625
+}

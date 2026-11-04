@@ -1,0 +1,21 @@
+.venv\Scripts\python.exe : C:\Users\dell\Desktop\机器学习系统设计\SDM374_Project-1-bayesian-study\.venv\Lib\site-packages\sklea
+rn\gaussian_process\kernels.py:430: ConvergenceWarning: The optimal value found for dimension 3 of parameter k1__length
+_scale is close to the specified upper bound 3.0. Increasing the bound and calling fit again may find a better value.
+所在位置 行:8 字符: 6
++ '@ | .venv\Scripts\python.exe -X utf8 - *> analysis/bayesian_search/r ...
++      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\dell\D...a better value.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warnings.warn(
+C:\Users\dell\Desktop\机器学习系统设计\SDM374_Project-1-bayesian-study\.venv\Lib\site-packages\sklearn\gaussian_process\kernels
+.py:430: ConvergenceWarning: The optimal value found for dimension 6 of parameter k1__length_scale is close to the spec
+ified upper bound 3.0. Increasing the bound and calling fit again may find a better value.
+  warnings.warn(
+C:\Users\dell\Desktop\机器学习系统设计\SDM374_Project-1-bayesian-study\.venv\Lib\site-packages\sklearn\gaussian_process\kernels
+.py:420: ConvergenceWarning: The optimal value found for dimension 0 of parameter k2__noise_level is close to the speci
+fied lower bound 0.001. Decreasing the bound and calling fit again may find a better value.
+  warnings.warn(
+original: C:\Users\dell\Desktop\机器学习系统设计\SDM374_Project-1-bayesian-study\runs\20261102-195535-train-bayes-study-gp-ard
+rerun:    C:\Users\dell\Desktop\机器学习系统设计\SDM374_Project-1-bayesian-study\runs\20261102-200619-train-bayes-study-gp-ard
+reproduced: outputs match within rtol=1e-09

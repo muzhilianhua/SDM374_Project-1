@@ -1,0 +1,24 @@
+{
+  "kind": "evaluate",
+  "name": "bayes-study-gp-rbf",
+  "created": "2026-11-02T19:47:08",
+  "options": {},
+  "source_config": "C:\\Users\\dell\\Desktop\\机器学习系统设计\\SDM374_Project-1-bayesian-study\\experiments\\bayes-study-gp-rbf.toml",
+  "dataset": {
+    "path": "C:\\Users\\dell\\Desktop\\机器学习系统设计\\SDM374_Project-1-bayesian-study\\dataset_same8",
+    "version": "same8.20261020",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "git": {
+    "commit": null,
+    "dirty": null
+  },
+  "python": "3.11.18",
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  }
+}

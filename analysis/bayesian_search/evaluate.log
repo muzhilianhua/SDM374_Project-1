@@ -1,0 +1,17 @@
+gp-matern 20261102-194617-evaluate-bayes-study-gp-matern score 65.4272 regret 4.0437 seconds 25.3
+gp-sqrt 20261102-194617-evaluate-bayes-study-gp-sqrt score 58.1566 regret 7.2082 seconds 25.5
+gp-matern-log 20261102-194617-evaluate-bayes-study-gp-matern-log score 65.1989 regret 5.0887 seconds 25.5
+gp-sqrt-log 20261102-194642-evaluate-bayes-study-gp-sqrt-log score 58.209 regret 7.2082 seconds 26.0
+gp-rbf 20261102-194708-evaluate-bayes-study-gp-rbf score 63.4707 regret 4.5892 seconds 23.4
+gp-additive 20261102-194642-evaluate-bayes-study-gp-additive score 75.12 regret 2.1175 seconds 49.4
+gp-additive-log 20261102-194642-evaluate-bayes-study-gp-additive-log score 75.0714 regret 2.4537 seconds 49.7
+bayes-quadratic 20261102-194732-evaluate-bayes-study-bayes-quadratic score 66.9273 regret 4.5095 seconds 1.0
+ard-quadratic 20261102-194733-evaluate-bayes-study-ard-quadratic score 64.2149 regret 6.5468 seconds 2.1
+gp-rq-log 20261102-194731-evaluate-bayes-study-gp-rq-log score 67.1321 regret 5.0887 seconds 22.3
+gp-trend 20261102-194731-evaluate-bayes-study-gp-trend score 68.2126 regret 4.9868 seconds 24.8
+svr 20261102-194735-evaluate-bayes-study-svr score 60.7079 regret 5.7978 seconds 62.1
+baseline-v32 20261102-194837-evaluate-baseline-v32 score 66.4508 regret 4.5095 seconds 3.3
+svr-sqrt-log 20261102-194756-evaluate-bayes-study-svr-sqrt-log score 65.9146 regret 7.1537 seconds 53.1
+svr-log 20261102-194753-evaluate-bayes-study-svr-log score 62.2752 regret 5.5959 seconds 61.0
+xgboost-v32 20261102-194840-evaluate-xgboost-v32 score 72.0289 regret 2.7568 seconds 28.5
+method-blend-stack 20261102-194849-evaluate-method-blend-stack score 74.3862 regret 1.8202 seconds 106.8
