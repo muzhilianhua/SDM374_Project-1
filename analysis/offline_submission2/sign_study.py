@@ -6,9 +6,9 @@ Passing needs only R(w) < R(p01969) = 115.7648, so the target is P(gain < 0), no
               MAX_PAIR_DISTANCE as candidates. For each pair the ARD GP (fit on the split's training rows)
               and a local GP (800 training rows nearest the anchor) predict the gain with its joint posterior,
               then logistic calibration maps the judges' z-scores to an observed improvement rate. Each
-              calibration fold holds out one outer split and drops every training record that shares an
-              anchor or candidate with it: the two CV repeats contain the same rows, so a plain split holdout
-              would reuse labels. The features are not nested, so the purge reduces but does not remove leakage.
+              calibration fold holds out one outer split and drops every training record involving one of its
+              candidates: the two CV repeats contain the same rows, so a plain split holdout would reuse their
+              labels. The features are not nested, so the purge reduces but does not remove leakage.
 2. scan:      full-data judges score steps 0.01-0.10 along the 19,483 simplex directions of study.py that
               avoid the two measured failures; the calibrated model ranks those whose z-scores lie inside the
               range the backtest observed. The finalists are re-ranked by their worst calibrated probability over
@@ -126,10 +126,11 @@ def backtest_split(index):
 
 
 def purged_training(pairs, split):
-    """Calibration-training rows for held-out `split`: the other splits minus every row that shares an
-    anchor or a candidate with it, so no held-out outcome label is reused through the second CV repeat."""
+    """Calibration-training rows for held-out `split`: the other splits minus every row that involves one of
+    its candidates, as candidate or anchor, so no held-out candidate label is reused through the second CV
+    repeat. Anchor labels stay shared: anchors are known reference rows, as p01969 is for the real step."""
     held = (pairs.split == split).to_numpy()
-    ids = set(pairs.anchor[held]) | set(pairs.candidate[held])
+    ids = set(pairs.candidate[held])
     return ~held & ~pairs.anchor.isin(ids).to_numpy() & ~pairs.candidate.isin(ids).to_numpy()
 
 
@@ -308,8 +309,8 @@ def main():
                   "max_p": {"step": float(top.step), "direction": int(top.direction),
                             "p_both": float(top.p_both), "ball_min_p_both": float(top.ball_min_p_both),
                             "purged_bin_observed": float(top.purged_bin_observed)},
-                  "calibration_holdout": "leave one outer split out; training rows sharing an anchor or candidate "
-                                         "with it are purged; z features are not nested"}
+                  "calibration_holdout": "leave one outer split out; training rows involving its candidates "
+                                         "(as candidate or anchor) are purged; z features are not nested"}
     (OUT / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
     pd.set_option("display.width", 250)

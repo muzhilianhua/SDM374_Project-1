@@ -49,6 +49,6 @@ def test_purged_training_never_reuses_a_held_out_row():
     held = pairs[pairs.split == "r01_f01"]
     kept = pairs[train]
     assert not (kept.split == "r01_f01").any()
-    assert not kept.anchor.isin(set(held.anchor) | set(held.candidate)).any()
-    assert not kept.candidate.isin(set(held.anchor) | set(held.candidate)).any()
-    assert kept.index.tolist() == [1, 4]
+    assert not kept.candidate.isin(set(held.candidate)).any()
+    assert not kept.anchor.isin(set(held.candidate)).any()
+    assert kept.index.tolist() == [1, 3, 4]
