@@ -68,5 +68,5 @@
     }
   },
   "r2_direction": "higher is better (R2 is goodness of fit, not an error; only RMSE/MAE/bias in each block are 'raw error, lower is better')",
-  "low_q01_definition": "actual <= q01 (=123.1244, numpy linear quantile) of the 2048 unique labels; 42 prediction rows = 21 unique x 2 repeats. Note: 122.875 is the truncation of the 21st smallest label 122.8752 and would keep only 20 unique / 40 rows, so it is NOT the q01 threshold used here"
+  "low_q01_definition": "actual <= q01 (=123.1244, numpy linear quantile) of the 2048 unique labels; 42 prediction rows = 21 unique x 2 repeats. Note: 122.875 is not q01: it is the 21st smallest label (exact 122.87519074) truncated to 3 decimals; {actual <= 122.875} has 20 unique rows / 40 prediction rows, while {actual <= q01=123.1244} has 21 unique / 42 rows"
 }

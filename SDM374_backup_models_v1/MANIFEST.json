@@ -81,7 +81,7 @@
     {
       "path": "models/blend_xgb_w20x3/CHECKSUMS.json",
       "bytes": 615,
-      "sha256": "24f0c98c4eed63242b197dde7bd8e39d75b55da19c1a15615cde4422b2fc2bfd"
+      "sha256": "58dff52d0e575e2c0919cef61487e7faf97b3bed6acd377276088a03b38a6449"
     },
     {
       "path": "models/blend_xgb_w20x3/config.json",
@@ -95,8 +95,8 @@
     },
     {
       "path": "models/blend_xgb_w20x3/metrics.json",
-      "bytes": 2968,
-      "sha256": "040c08ef07a98b948208437978ae06faa0feba0a0caac2cbc998a96aae3ea2a5"
+      "bytes": 3036,
+      "sha256": "3e76475ceb4ad43af463b2190625745e627aa871cc14171f354b8e1d48d9b4d8"
     },
     {
       "path": "models/blend_xgb_w20x3/model.npz",
@@ -121,7 +121,7 @@
     {
       "path": "models/gp-ard/CHECKSUMS.json",
       "bytes": 520,
-      "sha256": "8840ec117a03fe384bfca70ddf39baed0bc26569b51240a9f5fca7c8b3e9c078"
+      "sha256": "02e75a6874b4c78c7ab5750669a1d7b14a69cdd05a270a6e5b4de4d9eb814807"
     },
     {
       "path": "models/gp-ard/config.json",
@@ -135,8 +135,8 @@
     },
     {
       "path": "models/gp-ard/metrics.json",
-      "bytes": 2740,
-      "sha256": "e0ee5abd5a33a3ec50b44a4a5498e1d3e8dab243666fa53338060fc2fde528b4"
+      "bytes": 2808,
+      "sha256": "c4de32d650b0079a366d642c5c70c33c1357b2a6c12405494166f03bb3f74a14"
     },
     {
       "path": "models/gp-ard/model.npz",
@@ -156,7 +156,7 @@
     {
       "path": "models/hp_wlearn/CHECKSUMS.json",
       "bytes": 520,
-      "sha256": "0f476c211871b61536f61cca5aff3d77f4d029760eb1ae284e992289d50e30b3"
+      "sha256": "c3400707e6b7c6971dc33036aa3b0016e99c8ee22cac4ecb38735da12a79e833"
     },
     {
       "path": "models/hp_wlearn/config.json",
@@ -170,8 +170,8 @@
     },
     {
       "path": "models/hp_wlearn/metrics.json",
-      "bytes": 2955,
-      "sha256": "d87ebcc158d9c4cc06a1738520356ccf21f9fc21d2c72198b929f043910db04b"
+      "bytes": 3023,
+      "sha256": "03de7bc46a701bd2b889a28324555508d6e8e34c819c282be505e39a3dff915a"
     },
     {
       "path": "models/hp_wlearn/model.npz",
@@ -196,7 +196,7 @@
     {
       "path": "models/tail5opt/CHECKSUMS.json",
       "bytes": 520,
-      "sha256": "2ee30359a0899d6e9df0e9868020f3518cadbb8f07c42558932dd34fc3d234f5"
+      "sha256": "3406243bbf4deff0d889218f885908cfa8c00734c4067e72f0a843ee2ca43268"
     },
     {
       "path": "models/tail5opt/config.json",
@@ -210,8 +210,8 @@
     },
     {
       "path": "models/tail5opt/metrics.json",
-      "bytes": 2958,
-      "sha256": "12efdc31a218ea897bd26a2c2507924d7bd11a0fe5ff6e52a4cc67189526c059"
+      "bytes": 3026,
+      "sha256": "80895afbfe95df7c9d709f7b2d3a08aa098383d033154c64f1990a10197bf73f"
     },
     {
       "path": "models/tail5opt/model.npz",
