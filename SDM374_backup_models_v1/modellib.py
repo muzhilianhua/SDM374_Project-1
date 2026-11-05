@@ -36,6 +36,10 @@ N_METRICS = 7
 CN_METRIC = {"电费": "cost", "碳排": "carbon", "峰值": "peak", "舒适": "discomfort",
              "损耗": "degradation", "波动": "ramping", "韧性": "resilience"}
 CN_BUILDING = {"第 1 栋": 1, "第1栋": 1, "第 2 栋": 2, "第2栋": 2, "第 3 栋": 3, "第3栋": 3}
+CN_BUILDING.update({f"楼{b}": b for b in (1, 2, 3)})
+CN_BUILDING.update({f"楼 {b}": b for b in (1, 2, 3)})
+CN_BUILDING.update({f"楼栋{b}": b for b in (1, 2, 3)})
+CN_BUILDING.update({f"建筑{b}": b for b in (1, 2, 3)})
 
 # 英文列名 → 规范指标名（大小写/空白/连字符已归一）
 EN_METRIC = {m: m for m in METRICS}

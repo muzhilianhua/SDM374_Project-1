@@ -323,15 +323,31 @@ def save_payload(payload, out_dir):
 
 
 def probe_seed(seed, n_starts=4):
-    """用 hp_ms 配置真实地触发一次多起点生成，返回实际生效的种子与各起点向量。"""
+    """用 hp_ms 配置真实触发一次多起点生成（参数空间与训练完全一致）。
+
+    起点直接取自 `build_kernel(...)` 返回核的 `theta` / `bounds`（sklearn 的 log 空间），
+    不再手写 raw 边界；同时输出 log 向量与 exp 还原后的原始值（长度尺度、噪声），
+    并自检每个还原值都落在真实边界内。
+    """
     kernel, _ = build_kernel(CONFIGS["blend_xgb_w20x3"], n_features=M.N_FEATURES)
+    theta = np.asarray(kernel.theta, float)          # log(length_scale ×7, noise)
+    bounds = np.asarray(kernel.bounds, float)        # 同维度的 log 边界
     opt = make_optimizer(maxiter=1, n_starts=n_starts, seed=seed)
-    bounds = np.r_[np.tile([0.03, 6.0], (7, 1)), [[0.001, 0.3]]]
-    initial = np.r_[np.log(np.full(7, 0.5)), 0.0]        # 7 个长度尺度 + 1 个交互权重（logit）
-    opt(lambda t: (0.0, np.zeros_like(t)), initial, bounds)
+    opt(lambda t: (0.0, np.zeros_like(t)), theta, bounds)
+    starts_log = np.asarray(opt.starts, float)
+    starts_raw = np.exp(starts_log)
+    lo, hi = np.exp(bounds[:, 0]), np.exp(bounds[:, 1])
+    within = np.all((starts_raw >= lo) & (starts_raw <= hi), axis=1)
     return {"seed_argument": int(seed), "seed_effective": int(opt.seed),
             "n_starts": int(n_starts),
-            "starts_log": [np.asarray(s, float).tolist() for s in opt.starts]}
+            "parameter_space": "log(theta) = [log(length_scale) ×7, log(noise)]",
+            "bounds_log": bounds.tolist(),
+            "bounds_raw": {"length_scale": [float(lo[0]), float(hi[0])],
+                           "noise": [float(lo[-1]), float(hi[-1])]},
+            "starts_log": starts_log.tolist(),
+            "starts_raw": [{"length_scale": np.round(s[:-1], 6).tolist(),
+                            "noise": float(round(s[-1], 6))} for s in starts_raw],
+            "all_starts_within_bounds": bool(within.all())}
 
 
 # ─────────────────────────── 训练入口 ───────────────────────────

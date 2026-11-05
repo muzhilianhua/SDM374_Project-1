@@ -70,13 +70,13 @@
     },
     {
       "path": "load_and_predict.py",
-      "bytes": 11273,
-      "sha256": "04ef0ee2066d816b12c0f39233a2551974a84fc4bb17a051cca8c10be302e0ae"
+      "bytes": 15552,
+      "sha256": "193335400cb9bf0f26a3750dfee32306197172e87cdee5a57f2c97a21a0fc3b7"
     },
     {
       "path": "modellib.py",
-      "bytes": 15933,
-      "sha256": "7ca61618b1e8edc5dbd981c1a59d8f1b160b010b90723bce5a1ed7465625014a"
+      "bytes": 16156,
+      "sha256": "1b08c55966bc9ad7f5676262e5df47719ee789eb20faf3644eff233f690e6dab"
     },
     {
       "path": "models/blend_xgb_w20x3/CHECKSUMS.json",
@@ -230,8 +230,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 9743,
-      "sha256": "d8dcd28ab66f0fab11a014717969d5ba641cd490c52595356e9d7ac3d1c5b945"
+      "bytes": 11520,
+      "sha256": "c8357f45f012e4efce88a475092d2da5a7183e22158757d99d5bb0fd1ee961a0"
     },
     {
       "path": "requirements.txt",
@@ -304,9 +304,19 @@
       "sha256": "74673c27ea8be7a724eff12e7046d00320f4f9ac282a84317e0713d80c511c3c"
     },
     {
+      "path": "tests/test_entry.py",
+      "bytes": 11038,
+      "sha256": "84a84552d680b106cd9af236138a5033899a1b44a08bf4e52cd86eabd2d9f7be"
+    },
+    {
+      "path": "tests/test_probe_seed.py",
+      "bytes": 4217,
+      "sha256": "0f53dd28dacbab96a1cbab9c44c35c2e1c8e54ff0b713762796f33b829d34a45"
+    },
+    {
       "path": "train_four_models.py",
-      "bytes": 21537,
-      "sha256": "687135087a30250fc8a15513cea441c7daa8901514c90b84883e35561d74d84f"
+      "bytes": 22455,
+      "sha256": "430c59cb311b3f3ad74904548ac679e73712e5cedc8b06d0639d5c97630335e9"
     },
     {
       "path": "verify_hashes.py",

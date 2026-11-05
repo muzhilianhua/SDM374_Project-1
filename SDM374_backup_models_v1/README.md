@@ -39,11 +39,20 @@ b3_cost b3_carbon b3_peak b3_discomfort b3_degradation b3_ramping b3_resilience
 - **有标签路径（`csv` / DataFrame 的 3×7 表或 21 列宽表）**：**一律按标签重排**，行列顺序完全无关。
   列名支持中文（`电费/碳排/峰值/舒适/损耗/波动/韧性`）与英文（`cost/carbon/peak/discomfort/
   degradation/ramping/resilience` 及 `electricity/peak_load/ramp` 等同义词，大小写与空白归一）；
-  行名支持 `第 1 栋/第1栋` 与 `building_1/building1/bldg1/b1/Bldg_1` 等写法。
+  行名支持 `第 1 栋/第1栋/楼1/楼栋1/建筑1` 与 `building_1/building1/bldg1/b1/Bldg_1/1` 等写法。
+- **CSV 先判布局，再决定是否取索引**（不再无条件把第 0 列当索引，判定只看**列名集合**）：
+  - **无索引 21 列宽表**（1 行 × 21 列，列名恰好是 21 个规范特征，顺序任意）→ 保留全部 21 列；
+  - **21 列 + 1 个附加列**（如 `df.to_csv()` 写出的 `Unnamed: 0` 索引列或楼栋列）→ 丢弃附加列，仍保留 21 个特征；
+  - **3×7 + 建筑列/建筑索引**（第 0 列或任意一列是 `1/2/3`、`b1/b2/b3`、`building_1`、`楼1`、`第 1 栋`）→
+    按建筑标签重排；7 个指标列同样按标签重排；
+  - 判不清（如 3×7 只有 `0/1/2` 自动索引、21 列里混入楼栋列而少一个特征、列数既非 7 也非 21）
+    一律抛 `ContractError`，消息写明**识别到的行×列、列名与期望布局**。
 - **严格报错**：未知标签、重复标签、缺指标/缺楼栋、行数≠3、21 列宽表列名与规范不符，
   一律抛 `ContractError` 并写明"得到什么、要求什么"；不再有"按位置静默当数组"的路径。
-- 回归测试见 `tests/test_contract.py`（p01969 的行逆序/列逆序/行列同时逆序/打乱四种都得到同一预测
-  115.7941456944；标签写错/重复/缺失必须报错）。
+- 回归测试见 `tests/test_contract.py`（DataFrame 入口：行列逆序/打乱四种都得到同一预测 115.7941456944；
+  标签写错/重复/缺失必须报错）与 `tests/test_entry.py`（**真实文件入口**：无索引 21 列 CSV、列序打乱、
+  带索引 21 列、21 列+楼栋列、中文表头 3×7、建筑索引 3×7、3×7+楼栋列，以及 6 种坏表；另含
+  `.json` / `.npy` / `.txt` 各入口与 CLI `--weights-file`）。
   `python load_and_predict.py --self-check` 也会验证 21 维向量与 3×7 中文表头结果一致。
 
 ## 目录结构
@@ -65,7 +74,9 @@ SDM374_backup_models_v1/
 ├── （以下两项是仓库根资产，不在包内，脚本直接引用）
 │   ├── ../evaluation_v3_2/            仓库根评分器（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）
 │   └── ../frozen_data/               仓库根冻结划分归档 SDM374_data_splits_frozen_v1.zip（内含 split_manifest.json）
-├── tests/test_contract.py           标签顺序回归测试
+├── tests/test_contract.py           标签顺序回归测试（DataFrame 入口）
+├── tests/test_entry.py              CSV/JSON/NPY/TXT 文件入口与 6 种坏表
+├── tests/test_probe_seed.py         --probe-seed 落在真实 log 参数空间
 ├── models/
 │   ├── registry.csv
 │   ├── gp-ard/            {model.npz, params.json, config.json, meta.json, metrics.json, CHECKSUMS.json, train_predictions.csv}
@@ -127,7 +138,12 @@ python run_oof_and_score.py --model blend_xgb_w20x3 --tree-oof "..\SDM374_final_
 
 `--seed`（默认 2026）会一路传到多起点优化器与 `GaussianProcessRegressor.random_state`，
 并写入输出的 `seed_used`。`python train_four_models.py --probe-seed 2027` 可直接打印该种子
-实际生成的多起点向量（不训练），用来复核种子确实生效。
+实际生成的多起点向量（不训练）：起点与边界都直接取自 `build_kernel(...)` 返回核的
+`theta` / `bounds`（即 `make_optimizer` 真正消费的 **log 空间**），输出同时给出
+`starts_log` 与 `starts_raw`（长度尺度 ×7 + 噪声），并自检还原值全部落在真实边界内
+（长度尺度 ∈ [0.03, 6]、噪声 ∈ [0.001, 0.3]，以 `kernel.bounds` 为准）。
+回归测试见 `tests/test_probe_seed.py`（seed 2026/2027/2028 的每个起点都合法，
+且 2027 的第二起点与 2026 不同）。
 
 ## 环境
 
