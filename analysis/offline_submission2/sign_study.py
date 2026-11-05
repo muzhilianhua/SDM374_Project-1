@@ -5,8 +5,10 @@ Passing needs only R(w) < R(p01969) = 115.7648, so the target is P(gain < 0), no
 1. backtest:  on the 10 frozen outer splits, low-R training rows act as anchors and test rows within
               MAX_PAIR_DISTANCE as candidates. For each pair the ARD GP (fit on the split's training rows)
               and a local GP (800 training rows nearest the anchor) predict the gain with its joint posterior,
-              then logistic calibration maps the judges' z-scores to an observed improvement rate. Folds of the
-              calibration are whole outer splits, so every reported probability is out of sample.
+              then logistic calibration maps the judges' z-scores to an observed improvement rate. Each
+              calibration fold holds out one outer split and drops every training record that shares an
+              anchor or candidate with it: the two CV repeats contain the same rows, so a plain split holdout
+              would reuse labels. The features are not nested, so the purge reduces but does not remove leakage.
 2. scan:      full-data judges score steps 0.01-0.10 along the 19,483 simplex directions of study.py that
               avoid the two measured failures; the calibrated model ranks those whose z-scores lie inside the
               range the backtest observed. The finalists are re-ranked by their worst calibrated probability over
@@ -123,16 +125,29 @@ def backtest_split(index):
     return pd.concat(rows, ignore_index=True)
 
 
+def purged_training(pairs, split):
+    """Calibration-training rows for held-out `split`: the other splits minus every row that shares an
+    anchor or a candidate with it, so no held-out outcome label is reused through the second CV repeat."""
+    held = (pairs.split == split).to_numpy()
+    ids = set(pairs.anchor[held]) | set(pairs.candidate[held])
+    return ~held & ~pairs.anchor.isin(ids).to_numpy() & ~pairs.candidate.isin(ids).to_numpy()
+
+
+def unique_pairs(pairs):
+    """One record per (anchor, candidate); the second CV repeat re-creates most pairs."""
+    return pairs.drop_duplicates(["anchor", "candidate"])
+
+
 def calibrate(pairs):
-    """Leave-one-split-out logistic calibration of improvement on the judges' z-scores."""
+    """Purged leave-one-split-out logistic calibration of improvement on the judges' z-scores."""
     y = (pairs.candidate_y < pairs.anchor_y).astype(int).to_numpy()
     variants = {"ard": ["z_ard"], "lgp": ["z_lgp"], "both": list(FEATURES)}
     oof = pd.DataFrame(index=pairs.index)
     for name, columns in variants.items():
         oof[name] = np.nan
         for split in pairs.split.unique():
-            test = (pairs.split == split).to_numpy()
-            model = LogisticRegression(C=1.0).fit(pairs.loc[~test, columns], y[~test])
+            test, train = (pairs.split == split).to_numpy(), purged_training(pairs, split)
+            model = LogisticRegression(C=1.0).fit(pairs.loc[train, columns], y[train])
             oof.loc[test, name] = model.predict_proba(pairs.loc[test, columns])[:, 1]
     raw = {"ard_p_gain": norm.cdf(pairs.z_ard), "lgp_p_gain": norm.cdf(pairs.z_lgp),
            "ard_p_abs": pairs.ard_p_abs, "lgp_p_abs": pairs.lgp_p_abs}
@@ -141,13 +156,18 @@ def calibrate(pairs):
         p = np.clip(np.asarray(p, dtype=float), 1e-6, 1 - 1e-6)
         scores.append({"probability": name, "log_loss": log_loss(y, p), "brier": brier_score_loss(y, p),
                        "mean_predicted": p.mean(), "observed_rate": y.mean()})
-    final = {k: LogisticRegression(C=1.0).fit(pairs[c], y) for k, c in variants.items()}
+    once = unique_pairs(pairs)
+    y_once = (once.candidate_y < once.anchor_y).astype(int)
+    final = {k: LogisticRegression(C=1.0).fit(once[c], y_once) for k, c in variants.items()}
     return oof, pd.DataFrame(scores), final
+
+
+RELIABILITY_BINS = [0, .05, .1, .2, .3, .5, .7, 1.0]
 
 
 def reliability(pairs, oof):
     y = (pairs.candidate_y < pairs.anchor_y).astype(int)
-    bins = pd.cut(oof["both"], [0, .05, .1, .2, .3, .5, .7, 1.0], include_lowest=True)
+    bins = pd.cut(oof["both"], RELIABILITY_BINS, include_lowest=True)
     table = pd.DataFrame({"y": y, "p": oof["both"], "bin": bins}).groupby("bin", observed=True)
     return table.agg(pairs=("y", "size"), mean_predicted=("p", "mean"), observed=("y", "mean")).reset_index()
 
@@ -166,6 +186,7 @@ def selection_backtest(pairs, oof):
 
 def agreement(pairs):
     """Observed improvement rate when the judges agree or disagree that the candidate is better."""
+    pairs = unique_pairs(pairs)
     frame = pairs.assign(better=pairs.candidate_y < pairs.anchor_y,
                          ard_says=np.where(pairs.z_ard > 0.3, "better", np.where(pairs.z_ard <= 0, "worse", "unsure")),
                          lgp_says=np.where(pairs.z_lgp > 0.3, "better", np.where(pairs.z_lgp <= 0, "worse", "unsure")))
@@ -258,6 +279,11 @@ def main():
     best.to_csv(OUT / "scan_top.csv", index=False)
     by_step = table[table.inside_backtest_range].groupby("step").p_both.max().rename("max_p_both").reset_index()
     by_step.to_csv(OUT / "scan_by_step.csv", index=False)
+    # The calibrated model is fitted on all pairs; read each finalist's probability through the purged
+    # out-of-split reliability of its bin, which is the observed rate the backtest supports.
+    observed = rel.set_index(rel.bin.astype(str)).observed
+    finalists["purged_bin_observed"] = (pd.cut(finalists.p_both, RELIABILITY_BINS, include_lowest=True)
+                                        .astype(str).map(observed))
     finalists.to_csv(OUT / "finalists.csv", index=False)
     top = finalists.iloc[0]
     assert top.eligible, "no finalist passes the agreement and veto rules"
@@ -280,7 +306,10 @@ def main():
                   "scan": {"seed": SEED, "directions": DIRECTIONS, "steps": list(STEPS),
                            "max_cos_to_failure": MAX_COS_TO_FAILURE, "et_veto": ET_VETO},
                   "max_p": {"step": float(top.step), "direction": int(top.direction),
-                            "p_both": float(top.p_both), "ball_min_p_both": float(top.ball_min_p_both)}}
+                            "p_both": float(top.p_both), "ball_min_p_both": float(top.ball_min_p_both),
+                            "purged_bin_observed": float(top.purged_bin_observed)},
+                  "calibration_holdout": "leave one outer split out; training rows sharing an anchor or candidate "
+                                         "with it are purged; z features are not nested"}
     (OUT / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
     pd.set_option("display.width", 250)

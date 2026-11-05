@@ -38,3 +38,17 @@ def test_pair_stats_match_each_judges_own_prediction(dataset):
         np.testing.assert_allclose(stats["sd"], sd, rtol=1e-6)
         np.testing.assert_allclose(stats.gain, mean - model.predict(X[:1])[0][0], rtol=1e-8, atol=1e-8)
         assert (stats.gain_sd >= 0).all()
+
+
+def test_purged_training_never_reuses_a_held_out_row():
+    import pandas as pd
+    pairs = pd.DataFrame({"split": ["r01_f01", "r01_f02", "r02_f01", "r02_f02", "r02_f02"],
+                          "anchor": ["a", "b", "b", "a", "c"],
+                          "candidate": ["x", "y", "x", "y", "z"]})
+    train = sign.purged_training(pairs, "r01_f01")
+    held = pairs[pairs.split == "r01_f01"]
+    kept = pairs[train]
+    assert not (kept.split == "r01_f01").any()
+    assert not kept.anchor.isin(set(held.anchor) | set(held.candidate)).any()
+    assert not kept.candidate.isin(set(held.anchor) | set(held.candidate)).any()
+    assert kept.index.tolist() == [1, 4]
