@@ -116,7 +116,7 @@
     }
   ],
   "hash_verification": {
-    "mode": "working-tree",
+    "mode": "git:HEAD",
     "manifest_files": 72,
     "checked_hashes": 97,
     "mismatched": 0,
