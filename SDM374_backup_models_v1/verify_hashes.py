@@ -40,7 +40,8 @@ def _git(*args, cwd=None):
 def load_from_head(rev):
     repo = Path(_git("rev-parse", "--show-toplevel").strip())
     rel = HERE.relative_to(repo).as_posix()
-    names = [n for n in _git("ls-tree", "-r", "--name-only", rev, "--", rel, cwd=repo).splitlines() if n]
+    names = [n for n in _git("-c", "core.quotepath=false", "ls-tree", "-r", "--name-only",
+                             rev, "--", rel, cwd=repo).splitlines() if n]
     out = {}
     for n in names:
         b = subprocess.run(["git", "cat-file", "blob", f"{rev}:{n}"], cwd=str(repo),
