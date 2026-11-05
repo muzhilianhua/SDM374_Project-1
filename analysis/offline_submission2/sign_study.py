@@ -11,8 +11,10 @@ Passing needs only R(w) < R(p01969) = 115.7648, so the target is P(gain < 0), no
               labels. The features are not nested, so the purge reduces but does not remove leakage.
 2. scan:      full-data judges score steps 0.01-0.10 along the 19,483 simplex directions of study.py that
               avoid the two measured failures; the calibrated model ranks those whose z-scores lie inside the
-              range the backtest observed. The finalists are re-ranked by their worst calibrated probability over
-              a radius-0.01 ball, so the choice does not rest on one exact point.
+              range the backtest observed. Eligible steps are at most MAX_STEP long and both judges must say
+              "better" (z > AGREE); eligible finalists are re-ranked by their worst calibrated probability over a
+              radius-0.01 ball, so the choice does not rest on one exact point. ExtraTrees gain is reported only:
+              it predicts every step from p01969 as worse, so it measures step length, not improvement.
 
 Usage (repository root): uv run python analysis/offline_submission2/sign_study.py [--reuse-backtest]
 """
@@ -46,11 +48,14 @@ OUT = REPO_ROOT / "analysis/offline_submission2/delivery/sign"
 BAR = 115.7648
 ARD = {"family": "gp", "kernel": "additive-ard", "lengths": [0.5], "noises": [0.03], "seed": 2026}
 ANCHORS_PER_SPLIT, MAX_PAIR_DISTANCE, LOCAL_ROWS = 12, 0.45, 800
-SEED, DIRECTIONS, MAX_COS_TO_FAILURE, ET_VETO = 2026, 20000, 0.5, 4.9
+SEED, DIRECTIONS, MAX_COS_TO_FAILURE = 2026, 20000, 0.5
 STEPS = (0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10)
 FEATURES = ("z_ard", "z_lgp")
 FINALISTS, BALL_RADIUS, BALL_POINTS = 10, 0.01, 64
-AGREE = 0.3
+# The calibrated probability stops rising at step 0.04 and the GPs' known failures lie 0.3 or more from any
+# training row, so the shortest steps on the plateau are kept. Where only one judge was clearly confident the
+# backtest's unique pairs improved about 67 % of the time, against 79 % when both were.
+MAX_STEP, AGREE = 0.05, 0.5
 
 
 def pair_stats(model, anchor, Q, chunk=4000):
@@ -229,14 +234,14 @@ def scan(final, pairs):
             frame[f"p_{name}"] = model.predict_proba(frame[list(model.feature_names_in_)])[:, 1]
         frames.append(frame)
     table = pd.concat(frames, ignore_index=True)
-    table = table[table.et_gain <= ET_VETO]
     lo, hi = pairs[list(FEATURES)].min(), pairs[list(FEATURES)].max()
     table["inside_backtest_range"] = ((table[list(FEATURES)] >= lo) & (table[list(FEATURES)] <= hi)).all(axis=1)
 
     # Finalists: the best directions overall plus the consensus direction of study.py, judged on a ball.
     inside = table[table.inside_backtest_range]
-    finalists = pd.concat([inside.nlargest(FINALISTS, "p_both"),
-                           inside[(inside.direction == 14840) & inside.step.between(0.03, 0.07)]])
+    pool = inside[(inside.step <= MAX_STEP) & (inside.z_ard > AGREE) & (inside.z_lgp > AGREE)]
+    finalists = pd.concat([pool.nlargest(FINALISTS, "p_both"),
+                           inside[(inside.direction == 14840) & inside.step.between(0.03, 0.08)]])
     finalists = finalists.drop_duplicates(["step", "direction"]).reset_index(drop=True)
     ball = study.simplex_directions(BALL_POINTS, np.random.default_rng(7))
     worst = []
@@ -250,10 +255,8 @@ def scan(final, pairs):
                       "cos_submission1": float(u[row.direction] @ failure[1]),
                       "cos_baseline": float(u[row.direction] @ failure[0])})
     finalists = pd.concat([finalists, pd.DataFrame(worst)], axis=1)
-    # Eligible: both judges say "better" (z > AGREE, where the backtest's agreeing pairs improved 82 % of
-    # the time against about 36 % when they disagreed) and the whole ball stays inside the ExtraTrees veto.
-    finalists["eligible"] = ((finalists.z_ard > AGREE) & (finalists.z_lgp > AGREE)
-                             & (finalists.ball_max_et_gain <= ET_VETO))
+    finalists["eligible"] = ((finalists.step <= MAX_STEP) & (finalists.z_ard > AGREE)
+                             & (finalists.z_lgp > AGREE))
     return table, finalists.sort_values(["eligible", "ball_min_p_both"], ascending=False), p, u
 
 
@@ -287,7 +290,7 @@ def main():
                                         .astype(str).map(observed))
     finalists.to_csv(OUT / "finalists.csv", index=False)
     top = finalists.iloc[0]
-    assert top.eligible, "no finalist passes the agreement and veto rules"
+    assert top.eligible, "no finalist passes the step and agreement rules"
     w = (p + top.step * u[int(top.direction)]).reshape(3, 7)
     check_weights(w.reshape(1, 21))
     (OUT / "max-p.json").write_text(json.dumps(w.tolist(), indent=2) + "\n")
@@ -305,7 +308,8 @@ def main():
                                "improvement_rate": float((pairs.candidate_y < pairs.anchor_y).mean())},
                   "calibration": coefficients,
                   "scan": {"seed": SEED, "directions": DIRECTIONS, "steps": list(STEPS),
-                           "max_cos_to_failure": MAX_COS_TO_FAILURE, "et_veto": ET_VETO},
+                           "max_cos_to_failure": MAX_COS_TO_FAILURE, "max_step": MAX_STEP,
+                           "agree_z": AGREE, "extratrees": "reported only, not a veto"},
                   "max_p": {"step": float(top.step), "direction": int(top.direction),
                             "p_both": float(top.p_both), "ball_min_p_both": float(top.ball_min_p_both),
                             "purged_bin_observed": float(top.purged_bin_observed)},
