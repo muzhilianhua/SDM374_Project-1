@@ -1,0 +1,18 @@
+{
+  "command": ".tools/uv/uv.exe run --locked --no-sync --group gui pytest -q",
+  "environment": {
+    "PYTHONUTF8": "1",
+    "PYTHONPATH": "repository src directory",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "passed": 225,
+  "expected_failures": 1,
+  "warnings": 2,
+  "warning_detail": "Existing Gaussian-process length-scale upper-bound convergence warnings in test_bayes_review.py",
+  "elapsed_seconds": 236.83,
+  "exit_code": 0,
+  "release_validation": "Validated frozen v3.3.1",
+  "protected_files": "No diff in dataset_same8, frozen_data, evaluation_v3_2, uv.lock or pyproject.toml"
+}

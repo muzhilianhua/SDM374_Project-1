@@ -1,0 +1,19 @@
+{
+  "command": ".tools/uv/uv.exe run --locked --no-sync --group gui pytest -q",
+  "environment": {
+    "PYTHONUTF8": "1",
+    "PYTHONPATH": "repository src directory",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "passed": 237,
+  "expected_failures": 1,
+  "warnings": 2,
+  "warning_detail": "Existing Gaussian-process length-scale upper-bound convergence warnings",
+  "elapsed_seconds": 235.35,
+  "exit_code": 0,
+  "dedicated_v332_tests_passed": 12,
+  "v331_and_v332_release_validation": "passed",
+  "protected_files": "No changes to original dataset, frozen-v32 release, v3.2 scorer, uv.lock or pyproject.toml"
+}

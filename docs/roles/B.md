@@ -12,6 +12,33 @@ tests for your models under `tests/`.
 Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protocol.
 
 ## Backlog — offline (until the week 8 lab)
+
+- [x] User-authorized v3.3 experimental protocol implementation (2026-11-05): isolated
+      `analysis/v33_protocol/` freezes nine optimizer-independent elite/region tasks, a proposed
+      normalized breakthrough-utility score and diagnostics, plus provenance-bearing refit/scoring
+      entry points. Original frozen-v32 releases, CLI and leaderboard remain unchanged. Sixteen
+      dependency-free contract tests pass; this is not a model-quality or R<115 result.
+- [x] Freeze user-approved v3.3.1 35/30/30/5 scoring and the nine tasks before evidence;
+      implement primary P1 holdout and separate feedback fits under `analysis/v33_protocol/release_v1/`.
+      Provision project-local Python3.11/uv using unchanged uv.lock, then retrain Runze's three
+      historical lineages with original trimming/weighting and published fixed modal parameters.
+      Three runs `20261105-154005-evaluate-v331-runze_{low90_xgb,low80_histgb,low60_histgb}`
+      contain 54 task fits and six final fits; primary scores are 47.2122/54.1146/59.8650.
+      Recompute all 22194 prediction rows and verify actual fit IDs/output hashes for delivery.
+      Source is uncommitted (Git identity absent); content hashes and Git status are disclosed.
+      Full GUI-inclusive suite: 225 passed, 1 known xfail; v3.2/data/lock unchanged.
+- [ ] Review v3.3.1 sensitivity and task dependence before making it an official team standard;
+      all tasks reuse p01969, and final-fit P1 optimism remains despite better outer task scores.
+- [x] User-requested rotating elite participation: freeze isolated v3.3.2 under
+      `analysis/v33_protocol/release_v2/`; preserve nine old stress tasks and add five neighbor-supported
+      low-value tasks. Each top20 point tests once/trains four times in the new family; every new task
+      has four top5 rows in training. New family weight 50%, old families 25% each; within-test regret
+      replaces the impossible breakthrough requirement for supported tasks. Accuracy and P1 rules stay.
+      Refit three fixed recipes (84 task fits + six final fits); primary scores 52.2761/55.2837/60.5120.
+      Verify all 22194 old-pressure predictions unchanged. Geometry diagnoses only 9/20 elite cases
+      as inside each actual training convex hull; call the family interpolation-oriented, not purely interpolation.
+      Full GUI-inclusive regression suite: 237 passed, 1 known xfail; 12 dedicated v3.3.2 tests pass.
+
 - [x] Saved-prediction release evidence on `feat/surrogate-release` (2026-10-28): 11 historical
       groups plus 3 full-data configurations, without fitting. Rescoring and score-lock tests use
       main's `sdm.frozen_v32` after PR #3 merged at `c9272ad`. All 14 scores reproduce; the complete

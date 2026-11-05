@@ -1,0 +1,9 @@
+{
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.2",
+  "release_directory": "release_v2",
+  "training_entrypoint": "release_v2/study.py",
+  "policy": "release_v2/POLICY.json",
+  "manifest": "release_v2/split_manifest.json",
+  "report": "release_v2/delivery/REPORT.md",
+  "root_files": "Root files are the initial experimental version; release_v1 is archived v3.3.1; use release_v2"
+}

@@ -1,0 +1,31 @@
+{
+  "diagnostic_cutoff": 132.8,
+  "family_weights": {
+    "hidden_elite": 0.5,
+    "local_region": 0.5
+  },
+  "inner_folds": 3,
+  "inner_seed": 3303,
+  "p1_usage": "external known failure only; excluded from all frozen fits and scores",
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.experimental.1",
+  "region_anchor_ranks": [
+    1,
+    3,
+    5
+  ],
+  "region_mandatory_hidden_ranks": 5,
+  "score": "100 * (train_best - selected_actual) / (train_best - test_best)",
+  "score_clipping": "none: losses remain negative; attainable maximum 100",
+  "selection": "minimum predicted_mean, exact ties by candidate_id",
+  "status": "EXPERIMENTAL_NOT_A_REPLACEMENT_FOR_V32",
+  "tail_hidden_ranks": [
+    5,
+    10,
+    20
+  ],
+  "tail_seeds": [
+    3301,
+    3302
+  ],
+  "test_n": 410
+}
