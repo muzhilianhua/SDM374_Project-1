@@ -1,0 +1,4 @@
+set,pairs,observed
+"unique pairs, ExtraTrees predicts improvement",2,0.0
+agreeing GP pairs (z > 0.3),28,0.7857142857142857
+agreeing GP pairs the +4.9 veto removes,19,0.7368421052631579
