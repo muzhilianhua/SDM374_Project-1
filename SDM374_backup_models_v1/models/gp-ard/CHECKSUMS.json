@@ -1,7 +1,8 @@
 {
-  "config.json": "57823bc5e2a0c9fefd3dd9b0185808e0c8e4dfe2566532ad2fa751f6abd62ca1",
-  "meta.json": "7d74adf6d5ec2a120419fda9f18226316bec5def125693c237c3d3400976b846",
-  "metrics.json": "4fc6a5bd1f68222930ddc00fbe9f8cbbac7b1331d278a36473f9e8ea2b5988b4",
-  "model.pkl": "4531dde83ecdef64dfb1323767c4707eddeb1e661e901205a5f93b670498e583",
-  "train_predictions.csv": "dabc219590eeb529aee22c33a38dfda40074c3df3ba9451309e82b8f710a5731"
+  "config.json": "273590dcc3a9e90873603b40a42dc47254d0012d4f67d5f3d7b068bc47b429cd",
+  "meta.json": "ac5e3b27ee6368de49bde49160dbc5554214e040d600062a251b4ec349eca57c",
+  "metrics.json": "eb98b9fd9d08fab95718818c6bec362401b964bc33b0ebd7a4058b426dda3798",
+  "model.npz": "c8d359c2ae266f57616cd69de7d1a9c46bcd046c032e69a84511c10075809f9b",
+  "params.json": "d1dbe92efebfbff6243626a85a3a8a7befad51f7f22ebd05fe5e2f7458297cbd",
+  "train_predictions.csv": "99217f32e18053cb1f2fded575a7ece4a319c33a8f24ca0ebe4d8f1f2e499bed"
 }

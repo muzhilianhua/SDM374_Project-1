@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""产生 OOF 留出预测并用外部 v3.2 评分器逐折打分（四个配置对应的入口）。
+"""产生 OOF 留出预测并用 v3.2 评分器逐折打分（四个配置对应的入口）。
 
-本脚本**不复制评分器**：它把 `--scoring-dir` 指向仓库根的 `SDM374_scoring_v3_2/` 目录，
-从那里 import `surrogate_scoring_v3_2.evaluate / load_final_policy / make_context`。
-冻结划分依赖仓库根的 `外推方案/趋势与尾部/frozen/split_manifest.json`（协议
-`sdm374.same8.splits.2x5x3.frozen.v1`）。
+评分器与冻结划分都已随包提供（干净检出即可运行）：
+  - `--scoring-dir` 默认 scoring/，从那里 import
+    `surrogate_scoring_v3_2.evaluate / load_final_policy / make_context`；
+  - `--manifest` 默认 frozen/split_manifest.json（协议 `sdm374.same8.splits.2x5x3.frozen.v1`）。
 
 入口命令（在包根目录执行）：
     python run_oof_and_score.py --model gp-ard
@@ -16,7 +16,7 @@
 产物写到 --outdir（默认 scores/regen）：
     pred_<model>.csv     逐折留出预测（split_id, candidate_id, y_true, y_pred, sd）
     scores_<model>.csv   逐折 v3.2 五分量与原始量
-    summary_<model>.json 汇总（10 折均值/标准差、逐折分数、逐折配对 Δ 与 p 值）
+    summary_<model>.json 汇总（10 折均值/标准差、逐折分数、逐折配对 Δ 与 p 值、seed_used）
 
 注意：
 1) 逐折重拟合很慢（gp-ard 单折约 1 分钟，tail5opt / hp_wlearn 3 起点×80–100 iter 更久）。
@@ -86,12 +86,12 @@ def block_metrics(y, mu, q01, q90):
     return {"overall": blk(y, mu), "low_q01": blk(y[lo], mu[lo]), "high_q90": blk(y[hi], mu[hi])}
 
 
-def fit_fold(name, Xtr, ytr, Xte):
+def fit_fold(name, Xtr, ytr, Xte, seed=T.SEED):
     cfg = T.CONFIGS[name]
     if name == "tail5opt":
         sw = T.tail_weights(ytr, cfg)
         model = T.fit_gp_weighted_opt(Xtr, ytr, cfg, sw, maxiter=cfg.get("maxiter", 80),
-                                      n_starts=cfg.get("n_starts", 3), seed=T.SEED,
+                                      n_starts=cfg.get("n_starts", 3), seed=seed,
                                       noise_bounds=cfg.get("noise_bounds", (0.001, 0.3)))
         from scipy.linalg import solve_triangular
         Ks = model["block"](model["X"], Xte)
@@ -100,8 +100,8 @@ def fit_fold(name, Xtr, ytr, Xte):
         sd = model["scale"] * np.sqrt(np.maximum(v, 1e-12) + model["noise"])
         return mu, sd
     kernel, _ = T.build_kernel(cfg, n_features=Xtr.shape[1])
-    opt = T.make_optimizer(maxiter=cfg.get("maxiter", 100), n_starts=cfg.get("n_starts", 4), seed=T.SEED)
-    gp, loc, scale = T.fit_gp(Xtr, ytr, kernel, optimizer=opt, seed=T.SEED)
+    opt = T.make_optimizer(maxiter=cfg.get("maxiter", 100), n_starts=cfg.get("n_starts", 4), seed=seed)
+    gp, loc, scale = T.fit_gp(Xtr, ytr, kernel, optimizer=opt, seed=seed)
     mu, sd = gp.predict(Xte, return_std=True)
     return loc + scale * mu, scale * np.maximum(sd, 1e-9)
 
@@ -110,14 +110,21 @@ def main():
     ap = argparse.ArgumentParser(description="OOF 生成 + v3.2 逐折评分")
     ap.add_argument("--model", required=True, choices=list(T.CONFIGS))
     ap.add_argument("--data", default=str(HERE.parent / "dataset_same8" / "train.csv"))
-    ap.add_argument("--manifest", default=str(HERE.parent / "外推方案" / "趋势与尾部" / "frozen" / "split_manifest.json"))
-    ap.add_argument("--scoring-dir", default=str(HERE.parent / "SDM374_scoring_v3_2"),
-                    help="外部评分器目录（仓库根的 SDM374_scoring_v3_2/）")
+    ap.add_argument("--manifest", default=str(HERE / "frozen" / "split_manifest.json"))
+    ap.add_argument("--scoring-dir", default=str(HERE / "scoring"),
+                    help="评分器目录（包内默认为 scoring/）")
     ap.add_argument("--outdir", default=str(HERE / "scores" / "regen"))
     ap.add_argument("--tree-oof", default=None, help="blend 必需的逐折树模型预测 CSV")
     ap.add_argument("--seed", type=int, default=T.SEED)
     ap.add_argument("--folds", nargs="*", default=None)
     a = ap.parse_args()
+
+    for label, path, hint in (
+            ("评分器目录", Path(a.scoring_dir), "要求包含 surrogate_scoring_v3_2.py 与 EVALUATION_POLICY_V3_2.json"),
+            ("冻结划分", Path(a.manifest), "要求 sdm374.same8.splits.2x5x3.frozen.v1 的 split_manifest.json"),
+            ("数据集", Path(a.data), "要求 dataset_same8/train.csv（2048 行）")):
+        if not path.exists():
+            raise SystemExit(f"[前置检查失败] {label}不存在：{path}\n  {hint}")
 
     evaluate, policy, make_context = load_scoring(Path(a.scoring_dir))
     df = pd.read_csv(a.data, encoding="utf-8-sig").sort_values("candidate_id").reset_index(drop=True)
@@ -141,13 +148,13 @@ def main():
     for p in parts:
         tr, te = p["train"], p["test"]
         if a.model == "blend_xgb_w20x3":
-            mu_gp, sd = fit_fold("blend_xgb_w20x3", X[tr], y[tr], X[te])
+            mu_gp, sd = fit_fold("blend_xgb_w20x3", X[tr], y[tr], X[te], seed=a.seed)
             sub = tree[tree.split_id == p["split_id"]].set_index("candidate_id")
             mu_tree = sub.loc[p["test_ids"], "y_pred"].to_numpy(float)
             mu = (1.0 - T.BLEND_ALPHA) * mu_gp + T.BLEND_ALPHA * mu_tree
             sd = (1.0 - T.BLEND_ALPHA) * sd
         else:
-            mu, sd = fit_fold(a.model, X[tr], y[tr], X[te])
+            mu, sd = fit_fold(a.model, X[tr], y[tr], X[te], seed=a.seed)
         ctx = make_context(y[tr], policy)
         res = evaluate(y[te], mu, ctx, policy, np.asarray(p["test_ids"]))
         rows.append(fold_score_row(res, p["split_id"]))
@@ -161,7 +168,7 @@ def main():
     tab.to_csv(outdir / f"scores_{a.model}.csv", index=False, encoding="utf-8-sig")
     blocks = block_metrics(pred.y_true.to_numpy(), pred.y_pred.to_numpy(), q01, q90)
     summary = {"model": a.model, "protocol": "sdm374.same8.splits.2x5x3.frozen.v1", "n": int(len(pred)),
-               "seed": a.seed, "q01": q01, "q90": q90, "pooled": blocks,
+               "seed_used": int(a.seed), "q01": q01, "q90": q90, "pooled": blocks,
                "v32": {"score_mean": float(tab.score.mean()),
                        "score_std": float(tab.score.std(ddof=0))},
                "fold_scores": tab.score.tolist(), "fold_ids": tab.split_id.tolist()}

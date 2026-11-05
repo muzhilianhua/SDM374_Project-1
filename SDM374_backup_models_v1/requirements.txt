@@ -1,6 +1,9 @@
-# 推理最小依赖（GP 模型只需 numpy/scipy；blend 另需 sklearn + joblib）
-numpy>=1.26
+# 推理最小依赖：GP 模型只需 numpy/scipy；blend 另需 scikit-learn + joblib + xgboost
+# 兼容性：numpy 1.24.x（仓库锁定）与 numpy 2.x 均可加载本包载荷（npz，不使用 pickle）
+numpy>=1.24.4
 scipy>=1.10
-pandas>=2.0
+pandas>=1.5.3
 joblib>=1.2
 scikit-learn==1.6.1
+# 仅 blend_xgb_w20x3 需要；已验证 xgboost 3.2.0（评审环境）与 3.4.x（本机），合理区间 2.1–3.x
+xgboost>=2.1,<4

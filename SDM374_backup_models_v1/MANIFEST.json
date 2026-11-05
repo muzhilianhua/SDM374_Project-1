@@ -43,55 +43,80 @@
     "scoring": "sdm374.surrogate.tolerance.v3.2"
   },
   "external_dependencies": {
-    "scoring_dir": "../SDM374_scoring_v3_2（仓库根，未拷入包）",
-    "dataset": "../dataset_same8/train.csv（仅复算 OOF 评分与自检时需要）",
-    "split_manifest": "../外推方案/趋势与尾部/frozen/split_manifest.json（仅复算时需要）"
+    "dataset": "../dataset_same8/train.csv（仅复算 OOF 评分 / 自检时需要；仓库内已跟踪）",
+    "scoring_dir": "scoring/（包内自带 surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）",
+    "split_manifest": "frozen/split_manifest.json（包内只读副本，sdm374.same8.splits.2x5x3.frozen.v1）"
   },
   "files": [
     {
+      "path": ".gitattributes",
+      "bytes": 212,
+      "sha256": "c9134cef9353150b5a186c6f7c264b365e456c5de14c0c07e098a1d922ec9da9"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 46,
+      "sha256": "d1cf8f933d42d8cb3bf81d3fef8eb84c8ce91d6bfbe20a98cff74377806977d7"
+    },
+    {
+      "path": "build_manifest.py",
+      "bytes": 3013,
+      "sha256": "f79cdf1c2b003709cc45179916c8c5e0e574a30e5632cc0c41da60d51349e315"
+    },
+    {
       "path": "compute_scores.py",
-      "bytes": 7480,
-      "sha256": "8a9a27532f014335433bd22440b3057183e4c2c037e6888a93c2fa6dbc5ac891"
+      "bytes": 8185,
+      "sha256": "29437ffd1ea5753a4b47438fbe60ca25171be8de586a3c9e43a3e63cee6beec2"
+    },
+    {
+      "path": "frozen/split_manifest.json",
+      "bytes": 1486744,
+      "sha256": "42d0d5826d626f8dd75689d29602e059d22358e2d7af09fbf290a2d078f00044"
     },
     {
       "path": "load_and_predict.py",
-      "bytes": 11190,
-      "sha256": "dbbea45311f8d87e1f7cb2b912344a4209f540bda367c4bb0afeba453aacf3ec"
+      "bytes": 11273,
+      "sha256": "04ef0ee2066d816b12c0f39233a2551974a84fc4bb17a051cca8c10be302e0ae"
     },
     {
       "path": "modellib.py",
-      "bytes": 10592,
-      "sha256": "a1cb2d903cca223c673df3f0b212cb835403fadba20bf1a1d5fa150650c9633d"
+      "bytes": 15933,
+      "sha256": "7ca61618b1e8edc5dbd981c1a59d8f1b160b010b90723bce5a1ed7465625014a"
     },
     {
       "path": "models/blend_xgb_w20x3/CHECKSUMS.json",
-      "bytes": 536,
-      "sha256": "4b96d7e29d1f319c5e31cdd3ed715b66fa7cdf6099ddb3086d9e0b2707d08a59"
+      "bytes": 615,
+      "sha256": "c164ab666fe98976382b1cbcedd71eda2f7d63dd2cdc0fc6c4d91ed3f802f594"
     },
     {
       "path": "models/blend_xgb_w20x3/config.json",
-      "bytes": 2231,
-      "sha256": "819b77cb83a0c6143751990b5509fa3eefa73e2762e6c2059f6f9865e242cd6c"
+      "bytes": 2135,
+      "sha256": "7203c223d5558de6957d05d3e3f3149f3f1a23a5acd500020efe34d10186899e"
     },
     {
       "path": "models/blend_xgb_w20x3/meta.json",
-      "bytes": 1754,
-      "sha256": "ddf978c1aba73acf449e21b7ee145162bf28900e283d84030c08082060fcc276"
+      "bytes": 1815,
+      "sha256": "75a36f3c88551518dd66e944041d02b55dfa391453a33f7061d1fab2faa2eec6"
     },
     {
       "path": "models/blend_xgb_w20x3/metrics.json",
-      "bytes": 1999,
-      "sha256": "9a048d7ef964b5d2ec3a123da947140085d4a7557cc321bcc84c53b9778b39ba"
+      "bytes": 1932,
+      "sha256": "a3e39c94256e98e6a72d6402d69413ec043566e81f14b9fb2695098c423c81de"
     },
     {
-      "path": "models/blend_xgb_w20x3/model.pkl",
-      "bytes": 378268,
-      "sha256": "733d60530893acbca52d7c9cea7c301b6a41041fa4be54d87be7efa1b1e7a6c0"
+      "path": "models/blend_xgb_w20x3/model.npz",
+      "bytes": 342713,
+      "sha256": "daa395e981a2c7d337448d7b79e6a7dab479c100fb2039a24642e925c3cb9d9d"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/params.json",
+      "bytes": 1475,
+      "sha256": "e66bce40b53be4c3558448e74ad47a9708adc78e307b1a3750126a1610baf0d6"
     },
     {
       "path": "models/blend_xgb_w20x3/train_predictions.csv",
-      "bytes": 131558,
-      "sha256": "2978cf68d87087149cfa9bbc54448d4b1521015cf6a51f8fe43c235e0f8e73a8"
+      "bytes": 129509,
+      "sha256": "f6a0ea6bbeae9859be3cb77ab0fbe83ee8b8c7fa63819499637f9a6c4bac3dc9"
     },
     {
       "path": "models/blend_xgb_w20x3/xgb_w20x3_full.joblib",
@@ -100,123 +125,138 @@
     },
     {
       "path": "models/gp-ard/CHECKSUMS.json",
-      "bytes": 440,
-      "sha256": "6b26d2171618012fe1999f4384d7a673b7baa7c4f3be0bb42b8cb31035ef7a73"
+      "bytes": 520,
+      "sha256": "7431ebee91ad9db9d1f1ec67994140ee586ddc5f9645b7b2907da4ee06ca7b6d"
     },
     {
       "path": "models/gp-ard/config.json",
-      "bytes": 1801,
-      "sha256": "57823bc5e2a0c9fefd3dd9b0185808e0c8e4dfe2566532ad2fa751f6abd62ca1"
+      "bytes": 1720,
+      "sha256": "273590dcc3a9e90873603b40a42dc47254d0012d4f67d5f3d7b068bc47b429cd"
     },
     {
       "path": "models/gp-ard/meta.json",
-      "bytes": 1982,
-      "sha256": "7d74adf6d5ec2a120419fda9f18226316bec5def125693c237c3d3400976b846"
+      "bytes": 2040,
+      "sha256": "ac5e3b27ee6368de49bde49160dbc5554214e040d600062a251b4ec349eca57c"
     },
     {
       "path": "models/gp-ard/metrics.json",
-      "bytes": 1766,
-      "sha256": "4fc6a5bd1f68222930ddc00fbe9f8cbbac7b1331d278a36473f9e8ea2b5988b4"
+      "bytes": 1704,
+      "sha256": "eb98b9fd9d08fab95718818c6bec362401b964bc33b0ebd7a4058b426dda3798"
     },
     {
-      "path": "models/gp-ard/model.pkl",
-      "bytes": 377683,
-      "sha256": "4531dde83ecdef64dfb1323767c4707eddeb1e661e901205a5f93b670498e583"
+      "path": "models/gp-ard/model.npz",
+      "bytes": 342679,
+      "sha256": "c8d359c2ae266f57616cd69de7d1a9c46bcd046c032e69a84511c10075809f9b"
+    },
+    {
+      "path": "models/gp-ard/params.json",
+      "bytes": 667,
+      "sha256": "d1dbe92efebfbff6243626a85a3a8a7befad51f7f22ebd05fe5e2f7458297cbd"
     },
     {
       "path": "models/gp-ard/train_predictions.csv",
-      "bytes": 131600,
-      "sha256": "dabc219590eeb529aee22c33a38dfda40074c3df3ba9451309e82b8f710a5731"
+      "bytes": 129551,
+      "sha256": "99217f32e18053cb1f2fded575a7ece4a319c33a8f24ca0ebe4d8f1f2e499bed"
     },
     {
       "path": "models/hp_wlearn/CHECKSUMS.json",
-      "bytes": 440,
-      "sha256": "d255828e4ca33be3328ecf74517795e29f9700a965fb7f3f2a2cc2a53ab3a113"
+      "bytes": 520,
+      "sha256": "579999b7f4422891fba87f335cd4aeba5e5d4709a396136af5012991088edd42"
     },
     {
       "path": "models/hp_wlearn/config.json",
-      "bytes": 1874,
-      "sha256": "7473b097872f53a1257f77ecf06a90f5cecb03f82ec8a8aa00e23ac2cf69af41"
+      "bytes": 1791,
+      "sha256": "67c504dab73ab30726934cf79ab7f8dfa635133734300758a51aa85d8f7e05c0"
     },
     {
       "path": "models/hp_wlearn/meta.json",
-      "bytes": 3506,
-      "sha256": "5aab2b8f135b7bc8e2668a7605831b6e0d05a942756e4c7b2d359e0ddde94279"
+      "bytes": 3511,
+      "sha256": "cc83a24446497f59a8d1a38b34c48b287d2685f33bb4174cfad1f42f87043cab"
     },
     {
       "path": "models/hp_wlearn/metrics.json",
-      "bytes": 1986,
-      "sha256": "3296584b7676f49d32da96a0a700a495c931265a44bccf3bf6a09530823e6bad"
+      "bytes": 1919,
+      "sha256": "a823e935dce917fc0337b7afe14bbf8b1d1fc0b4e66eafc1b4118421670f749e"
     },
     {
-      "path": "models/hp_wlearn/model.pkl",
-      "bytes": 377683,
-      "sha256": "a95973cfb5faa6d49b1346d28f9a0c98a7f2a2a4cd76e761a2e2c5be22f9f4a2"
+      "path": "models/hp_wlearn/model.npz",
+      "bytes": 342694,
+      "sha256": "79183ec72eb010f38189ea2190c979c749f7d5c425a68bc6b149e750ab50dd69"
+    },
+    {
+      "path": "models/hp_wlearn/params.json",
+      "bytes": 683,
+      "sha256": "3f39130001c3fedd8ff4ae5b074981459665c76095b852c65f711a927578d836"
     },
     {
       "path": "models/hp_wlearn/train_predictions.csv",
-      "bytes": 131294,
-      "sha256": "cca39220482e015ecfbdddad7474d2a6c49133b0ff4288249889cad074c56c21"
+      "bytes": 129245,
+      "sha256": "921bbc6f88e5cec3014e1e5993dcde5f3928a5093cefc72a56e940891247461b"
     },
     {
       "path": "models/registry.csv",
-      "bytes": 434,
-      "sha256": "f4e3cdec9dd70943f56d22df45e33676ac2f15d0ed3f1e6ba44854983d44dfaa"
+      "bytes": 426,
+      "sha256": "6e1632548ac2356bd9e7a0093f824799733133f4275eba224d13c013cdb1094a"
     },
     {
       "path": "models/tail5opt/CHECKSUMS.json",
-      "bytes": 440,
-      "sha256": "0da4bcbd0dcd96d790ca852fb3e3409f5ccb7b015aa4429248c8a3476cdba21d"
+      "bytes": 520,
+      "sha256": "bd2c5c18ef41774ba92e01eb8913bfb83495c8723edde11f3677f5d2215780a2"
     },
     {
       "path": "models/tail5opt/config.json",
-      "bytes": 1846,
-      "sha256": "d52c492213f97f28e3cf9d7af03490bf181089b250a8ba1904ca4b1dc9e0a479"
+      "bytes": 1761,
+      "sha256": "817f465b0d6287ec64fa0495319c282d8b9be95f6dddad907e8906a0bcb4db43"
     },
     {
       "path": "models/tail5opt/meta.json",
-      "bytes": 2954,
-      "sha256": "7d4655f3ba504f23c660d2ef310b74d9c843a9e9e7e247c82357c7542c25bd79"
+      "bytes": 2978,
+      "sha256": "9ebc6cd0bf7463b72961239962e96e6a25d22bb17b2d6f2b79ffa9104ca366d6"
     },
     {
       "path": "models/tail5opt/metrics.json",
-      "bytes": 1989,
-      "sha256": "a100bbcaa8a0d30b4567468b93b09edd86cab43539cabbd68e77a9a2177e83e9"
+      "bytes": 1922,
+      "sha256": "2018f62a16cf9bf709732c2cc8f4e99d69f04e721af0ff78010db80a1b5b5bb5"
     },
     {
-      "path": "models/tail5opt/model.pkl",
-      "bytes": 377683,
-      "sha256": "30a82c60bc56df173a3b1381f5f63d9d1c6f953a16d166a6e64b38d14a1a95e6"
+      "path": "models/tail5opt/model.npz",
+      "bytes": 342899,
+      "sha256": "12ef1bffa9f319e99c009b9f6cefcafbfabea2b58089ae9d33e2cd3adcc62bd1"
+    },
+    {
+      "path": "models/tail5opt/params.json",
+      "bytes": 666,
+      "sha256": "12651a1344e0a9a7d4780a2c41d6e66ff4b1184ad7d51746aa21c44e6cf2d6df"
     },
     {
       "path": "models/tail5opt/train_predictions.csv",
-      "bytes": 131549,
-      "sha256": "29483327115a4bfef2a53ab0eb594e3c45802b0da8289dc21c83c27fad3e3df5"
+      "bytes": 129500,
+      "sha256": "72c0ad238109e5ef6143da0945a7b5871084d681c2d15b9a68e20ab3f48a909c"
     },
     {
       "path": "README.md",
-      "bytes": 6844,
-      "sha256": "67b024a35c8ab102f6d01d354a710af74ed20d40ae4d64338939ad2a714b87b5"
+      "bytes": 9181,
+      "sha256": "f61520e6ba16aa85d1b33e14f9d86ac8b316ec38abf6fb2dead844042eac593b"
     },
     {
       "path": "requirements.txt",
-      "bytes": 154,
-      "sha256": "07da3f1784eb2af9f59286027a211286086f7c335435187d06a08a154738f22d"
+      "bytes": 416,
+      "sha256": "f745aa040db9ed611d6058402199507944d42bd97a03c0be8cc1c4b7037d46e2"
     },
     {
       "path": "run_oof_and_score.py",
-      "bytes": 9742,
-      "sha256": "ff653afb5f6d8476363725a3173e0e567697b1db58387c7ad439babca155446b"
+      "bytes": 10172,
+      "sha256": "4049ff67dcf459103b542fbf27fac672c601a6e24c5b394dbb83596e8c6388d3"
     },
     {
       "path": "scores/fold_scores_all.csv",
-      "bytes": 861,
-      "sha256": "9cdc0d48ffd343145c664aa97ef240a5dedd4b4b7462f0f392f8665955429a9b"
+      "bytes": 850,
+      "sha256": "d853939515688462d44f577e765303fd92cf966e48631829c7a94e700707c054"
     },
     {
       "path": "scores/model_scores_oof.csv",
-      "bytes": 1199,
-      "sha256": "9277e04de5b587405d3760ffe339a999af0f08029faa176b7596d6583f51a8b8"
+      "bytes": 1194,
+      "sha256": "0f5a055bc8f178c82a8998df225e9c85aa22783ab00187712bacb66c571779ef"
     },
     {
       "path": "scores/oof_pred_blend_xgb_w20x3.csv.gz",
@@ -240,43 +280,134 @@
     },
     {
       "path": "scores/paired_delta_vs_gp-ard.csv",
-      "bytes": 536,
-      "sha256": "aa2f4db1e6439425db2f6faf84bf6a099ca107ef0e53c9820fefce880c48fc75"
+      "bytes": 531,
+      "sha256": "e72f913030fc439042e1c62c7eae85b1b7c81e149b692768dd3ad4fc4b22ec1d"
     },
     {
       "path": "scores/scores_blend_xgb_w20x3.csv",
-      "bytes": 3436,
-      "sha256": "5fa64bb82ef52a7e2765c9ea1a457e61ece641fd2dee5c52ec0886a1d503bef5"
+      "bytes": 3425,
+      "sha256": "d0c5062d7ce431ddaa9e248beef1fdae6e8e4ed3b4ef7db0fe77b0ea643c7f96"
     },
     {
       "path": "scores/scores_gp-ard.csv",
-      "bytes": 3437,
-      "sha256": "f99875642ca59eefd5679fb81bcbdc9d94de2bf71d0150cc7a36f7746a8f9e42"
+      "bytes": 3426,
+      "sha256": "e03c1241faf23a72ec71018e0a3f2c81ad1bc177618efcce0d9bbf1ec480489e"
     },
     {
       "path": "scores/scores_hp_wlearn.csv",
-      "bytes": 3439,
-      "sha256": "807cc9e8190d3f5292599522c241672b0f1d82963d72290653ea8f36367fc06e"
+      "bytes": 3428,
+      "sha256": "f08bb422dd9eaa882d37d80f1954e3717968b498a18f7405996dbad8e3523d2e"
     },
     {
       "path": "scores/scores_tail5opt.csv",
-      "bytes": 3457,
-      "sha256": "9b2363f518136465f66796249b3b105d3719e05a78885a6b5de62edd70fbd6f8"
+      "bytes": 3446,
+      "sha256": "b6d05a561dcbbca6c5a766fabab35856f73c18abd5c13fe1bea927beef99e40c"
     },
     {
-      "path": "self_check.json",
-      "bytes": 3972,
-      "sha256": "bed967223304c78f3139956b727318d8842f963e564759746670d833796270df"
+      "path": "scoring/EVALUATION_POLICY_V3_2.json",
+      "bytes": 1434,
+      "sha256": "0bfb32636c746335250a8d2ae4743c07250bbaa8c369297b05e5aceb46db5d59"
+    },
+    {
+      "path": "scoring/EVALUATION_PROTOCOL_V3_2.md",
+      "bytes": 3213,
+      "sha256": "ae1a9b726f2dd1149e3b9dcd405a0b1858c236b365de2b6683a1f8543c17ee9c"
+    },
+    {
+      "path": "scoring/surrogate_scoring_v3_2.py",
+      "bytes": 5625,
+      "sha256": "ae2f17917cfaeb3efae615fbfd15bb5cfbdd92913de20773a3b6d594353c1aa8"
+    },
+    {
+      "path": "tests/test_contract.py",
+      "bytes": 4847,
+      "sha256": "74673c27ea8be7a724eff12e7046d00320f4f9ac282a84317e0713d80c511c3c"
     },
     {
       "path": "train_four_models.py",
-      "bytes": 18623,
-      "sha256": "38cc7520b2d210382c5dfb69dd75e9787bff7c06772f46805b45c50d1b9e57b0"
+      "bytes": 21537,
+      "sha256": "687135087a30250fc8a15513cea441c7daa8901514c90b84883e35561d74d84f"
+    },
+    {
+      "path": "verify_hashes.py",
+      "bytes": 5044,
+      "sha256": "d97571681831ef467983c46b61c22d0012d443e5c0c2ca957f097951799cd76d"
     },
     {
       "path": "四个模型说明.md",
-      "bytes": 13227,
-      "sha256": "c94e013f77d6cc862015f56da4a3cef48d1c65aa274fce77d97241f7a70bfb73"
+      "bytes": 13407,
+      "sha256": "095a635c2a232e3d5457c6c2c0816d22332b1cdd7edc750755376e0167372077"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig01_权重分布_楼x指标.png",
+      "bytes": 112223,
+      "sha256": "b8bd44fd7aac69c3bf72592cc1b4930fd3d889bfc3a45f25856e81bd661bbfce"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig02_R分布_低尾标记.png",
+      "bytes": 93186,
+      "sha256": "5d8dd04217eac744646c85370623701632548e84d6936279101431af59f7ebf2"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig03_近邻对dR分解.png",
+      "bytes": 647058,
+      "sha256": "e9c2338a9dbdd5c5616b9fce0641c3fe67dc377c75f6a0ad97ab48f534e55d64"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig04_按楼置换重要性.png",
+      "bytes": 100477,
+      "sha256": "5a0ae355add156c256d92985653a8e8ccb351445be954af5c1a745e887d1c3ae"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig05_单栋极端vs三栋极端.png",
+      "bytes": 179224,
+      "sha256": "daf9603489180ba372ffc4a6371e538b5191ebbdef199bcc0e421dbc1a97924f"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig06_敏感性热图_3x7.png",
+      "bytes": 172715,
+      "sha256": "8716bfa9d82559a9186e039a432d0af3198ea34d0cd5d13fc5c28d215941dea6"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig07_指标聚合敏感性.png",
+      "bytes": 193679,
+      "sha256": "961993ba3329d2b5ec510c81adcefef9c6079da21c5000336fb79aa4b7f76d0c"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig08_敏感性可估性.png",
+      "bytes": 219000,
+      "sha256": "a9d6f385c95650785b5c5280fa8e2b0774566b6577f58d563d0ddf2bcaa17402"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig09_长度尺度vs敏感性.png",
+      "bytes": 140033,
+      "sha256": "d1039e080e4acfde32dfe3099444c623dbfd026ae0c1adbc6b94e3198833c904"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig10_跨楼项贡献分解.png",
+      "bytes": 226878,
+      "sha256": "3a8e675be76ea2efbeacd19cfc21007e96e0fa4055fb9d95d10bbb1c1f11c175"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig11_跨楼系数分布.png",
+      "bytes": 173245,
+      "sha256": "5bb6f6454452a777505bbf93e5bdcf71891a2a894d2ac814fab1ce17bba635e1"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig12_跨楼耦合分层.png",
+      "bytes": 147503,
+      "sha256": "7b69610a4bf3707979abf00dbb49e675fef32bf860d566b50ea30d49a90549a9"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/附录_完整分析.md",
+      "bytes": 24347,
+      "sha256": "e1f12721878ec71da5c75ad2b2e3ca4bf39b8125b215c1c25b0006522ec29b18"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/高斯核拆分的数据层验证.md",
+      "bytes": 3820,
+      "sha256": "c2ff15ab6908fba86149dce389050d65726891cbcacb8e2e50abeb7e21ff4b82"
     }
-  ]
+  ],
+  "line_ending": "所有文本按 LF 规范化后计算（见 .gitattributes）；校验请用 verify_hashes.py"
 }

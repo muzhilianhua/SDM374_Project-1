@@ -97,7 +97,8 @@
     }
   },
   "artifacts": {
-    "model.pkl": "纯 numpy 数组字典（pickle protocol 4）；加载见 modellib.py"
+    "model.npz": "纯数组载荷（np.savez_compressed，allow_pickle=False），numpy 1.24.x / 2.x 通用",
+    "params.json": "超参与元数据（schema/kind/feature_order/loc/scale/noise/global_weight 等）"
   },
   "notes": "变体 3b：加权对数边际似然下重优化；低值样本权重见 hyperparameters.weight_k。"
 }

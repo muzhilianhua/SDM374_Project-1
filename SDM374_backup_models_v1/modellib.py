@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
-"""SDM374 备用代理模型包推理内核（只依赖 numpy + scipy；混合模型额外依赖 joblib）。
+"""SDM374 备用代理模型包推理内核（只依赖 numpy + scipy；混合模型额外依赖 joblib + xgboost）。
 
 为什么要自己实现核函数：训练时用的是 scikit-learn 1.6.1 的自定义 Kernel 子类，
 如果把 sklearn 估计器直接 pickle，加载端必须能 import 训练时的包路径与 sklearn 版本，
 跨环境很容易失败。这里把预测所需的全部状态（训练集、alpha 向量、长度尺度、噪声、权重）
-压成一个"纯 numpy 数组字典"再 pickle，加载端不 import sklearn，因此稳定。
+拆成"纯 numpy 数组 + JSON 元数据"：数组存 `model.npz`（`np.savez_compressed`，
+`allow_pickle=False`），其余存 `params.json`。**不使用 pickle**，因此 numpy 1.24.x
+（`numpy.core`）与 numpy 2.x（`numpy._core`）都能直接加载，加载端也不 import sklearn。
 
-本文件与 `外推方案/模型库/modellib.py` 的数学内核完全相同，仅把路径常量改为**包内相对路径**：
+输入契约有两种，区别只在"有没有标签"：
+  - 21 维向量 / (n,21) 数组：**只能按位置**，顺序写死为 FEATURES。
+  - DataFrame / CSV（3×7 或 21 列宽表）：**一律按标签重排**，行列物理顺序无关；
+    未知/重复/缺失标签或行数≠3 一律抛 ContractError，绝不静默按位置解释。
+
+路径常量（全部包内相对路径）：
     PKG_ROOT = 本文件所在目录
-    models/<模型名>/model.pkl
+    models/<模型名>/model.npz + params.json
     models/blend_xgb_w20x3/xgb_w20x3_full.joblib
 """
 from __future__ import annotations
 
 import json
-import pickle
 from pathlib import Path
 
 import numpy as np
@@ -31,6 +37,25 @@ CN_METRIC = {"电费": "cost", "碳排": "carbon", "峰值": "peak", "舒适": "
              "损耗": "degradation", "波动": "ramping", "韧性": "resilience"}
 CN_BUILDING = {"第 1 栋": 1, "第1栋": 1, "第 2 栋": 2, "第2栋": 2, "第 3 栋": 3, "第3栋": 3}
 
+# 英文列名 → 规范指标名（大小写/空白/连字符已归一）
+EN_METRIC = {m: m for m in METRICS}
+EN_METRIC.update({
+    "electricity": "cost", "electricity_cost": "cost", "energy_cost": "cost",
+    "carbon_emission": "carbon", "co2": "carbon", "carbon_emissions": "carbon",
+    "peak_load": "peak", "peak_demand": "peak",
+    "thermal_discomfort": "discomfort", "comfort": "discomfort",
+    "degradation_cost": "degradation", "battery_degradation": "degradation",
+    "ramping_cost": "ramping", "ramp": "ramping",
+    "resilience_penalty": "resilience", "resiliency": "resilience",
+})
+# 英文楼栋标识 → 1/2/3（覆盖 building_1 / building1 / bldg1 / b1 等常见写法）
+EN_BUILDING = {}
+for _b in (1, 2, 3):
+    for _name in (f"building_{_b}", f"building{_b}", f"building_{_b:02d}", f"building{_b:02d}",
+                  f"bldg_{_b}", f"bldg{_b}", f"b{_b}", f"b_{_b}", f"bat_{_b}", f"battery_{_b}",
+                  str(_b)):
+        EN_BUILDING[_name] = _b
+
 SCHEMA = "sdm374.model_library.v1"
 PKG_ROOT = Path(__file__).resolve().parent          # 交付包根目录
 PROJECT = PKG_ROOT.parent                           # 仓库根（仅作数据/树模型的只读回退）
@@ -40,24 +65,86 @@ class ContractError(ValueError):
     """输入权重不满足 3×7 / 21 维硬契约。"""
 
 
+def _norm_label(x) -> str:
+    """标签归一：去空白、转小写、空格/连字符/点统一成下划线，并压缩连续下划线。"""
+    s = str(x).strip().lower()
+    for ch in (" ", "-", "."):
+        s = s.replace(ch, "_")
+    while "__" in s:
+        s = s.replace("__", "_")
+    return s.strip("_")
+
+
+def _metric_label(x):
+    key = _norm_label(x)
+    for k, v in CN_METRIC.items():
+        if _norm_label(k) == key:
+            return v
+    return EN_METRIC.get(key)
+
+
+def _building_label(x):
+    key = _norm_label(x)
+    for k, v in CN_BUILDING.items():
+        if _norm_label(k) == key:
+            return v
+    return EN_BUILDING.get(key)
+
+
 def _from_dataframe(df):
-    """把带表头/索引的 DataFrame 按**列名/行名**映射到规范顺序，而不是按位置。"""
+    """把带表头/索引的 DataFrame 按**标签**映射到规范顺序，绝不按位置猜。
+
+    规则（有标签就按标签，无标签才按位置 —— 位置路径只存在于 21 维向量/数组）：
+      - 7 列 × 3 行：列必须是可识别的指标标签，行必须是可识别的建筑标签；
+      - 21 列：列名必须是规范 FEATURES（顺序任意，按名重排）；
+      - 其他情况、未知标签、重复标签、缺失标签、行数≠3 一律抛 ContractError。
+    """
     cols = [str(c).strip() for c in df.columns]
     idx = [str(i).strip() for i in df.index]
-    if all(c in CN_METRIC for c in cols):
-        metric_order = [CN_METRIC[c] for c in cols]
-        if tuple(metric_order) != METRICS:
-            raise ContractError(f"列顺序/列名不符：得到 {cols}，要求 cost→…→resilience")
-        if len(idx) == 3 and all(i in CN_BUILDING for i in idx):
-            df = df.loc[[i for i in idx if CN_BUILDING[i] == 1]
-                       + [i for i in idx if CN_BUILDING[i] == 2]
-                       + [i for i in idx if CN_BUILDING[i] == 3]]
-        elif len(idx) != 3:
-            raise ContractError(f"需要 3 行建筑，得到 {len(idx)} 行")
-        arr = df.to_numpy(float)
-    else:
-        arr = df.to_numpy(float)
-    return arr
+
+    # 扁平 21 列（规范特征名，允许任意顺序）
+    if len(cols) == N_FEATURES:
+        norm = [_norm_label(c) for c in cols]
+        if set(norm) == {_norm_label(f) for f in FEATURES}:
+            order = [norm.index(_norm_label(f)) for f in FEATURES]
+            return df.iloc[:, order].to_numpy(float)
+        raise ContractError(
+            f"21 列表格无法按名对齐：得到 {cols}，要求恰好是 {list(FEATURES)} 这 21 个列名")
+
+    if len(cols) != N_METRICS:
+        raise ContractError(
+            f"二维表格应为 3×7（建筑×指标）或 n×21（规范特征），得到 {len(idx)}×{len(cols)}")
+
+    metrics = [_metric_label(c) for c in cols]
+    unknown = [c for c, m in zip(cols, metrics) if m is None]
+    if unknown:
+        raise ContractError(
+            f"未知列标签 {unknown}；要求 7 个指标标签（中文 电费/碳排/峰值/舒适/损耗/波动/韧性，"
+            f"或英文 {'/'.join(METRICS)} 及常见同义词）")
+    dup = sorted({m for m in metrics if metrics.count(m) > 1})
+    if dup:
+        raise ContractError(f"指标标签重复 {dup}；每个指标只能出现一次")
+    if set(metrics) != set(METRICS):
+        raise ContractError(f"指标标签缺失：得到 {sorted(set(metrics))}，要求 {sorted(METRICS)}")
+
+    if len(idx) != N_BUILDINGS:
+        raise ContractError(f"需要 3 行建筑，得到 {len(idx)} 行")
+    buildings = [_building_label(i) for i in idx]
+    unknown_b = [i for i, b in zip(idx, buildings) if b is None]
+    if unknown_b:
+        raise ContractError(
+            f"未知行标签 {unknown_b}；要求 3 个建筑标签（中文 第 1 栋/第1栋，"
+            "或英文 building_1/b1/bldg1 等）")
+    dup_b = sorted({b for b in buildings if buildings.count(b) > 1})
+    if dup_b:
+        raise ContractError(f"建筑标签重复（规范编号 {dup_b}）；每栋只能出现一次")
+    if set(buildings) != {1, 2, 3}:
+        raise ContractError(f"建筑标签缺失：得到 {buildings}，要求 1/2/3 各一行")
+
+    row_order = [buildings.index(b) for b in (1, 2, 3)]
+    col_order = [metrics.index(m) for m in METRICS]
+    arr = df.iloc[row_order, col_order].to_numpy(float)
+    return arr.reshape(1, N_FEATURES)
 
 
 def pack_weights(obj):
@@ -187,7 +274,7 @@ class ModelBundle:
             import joblib
             info = self.payload["tree"]
             raw = Path(info["path"])
-            name = self.path.parent.name if self.path is not None else "blend_xgb_w20x3"
+            name = self.path.name if self.path is not None else "blend_xgb_w20x3"
             candidates = [
                 PKG_ROOT / raw,                                    # 包内显式相对路径
                 PKG_ROOT / "models" / name / raw.name,             # 包内同目录
@@ -229,15 +316,46 @@ class ModelBundle:
         return mean, self._gp_std(g, Xq, Ks, mz)
 
 
+GP_ARRAY_KEYS = ("X_train", "alpha", "length_scale", "weights")
+MODEL_ARRAYS = "model.npz"
+MODEL_PARAMS = "params.json"
+
+
+def _load_payload(model_dir: Path):
+    """读取版本无关载荷：数组在 model.npz（np.load，allow_pickle=False），元数据在 params.json。
+
+    不使用 pickle：numpy 1.24.x 与 2.x 的 pickle 模块路径不同（`numpy._core` vs `numpy.core`），
+    存数组的 pickle 会跨版本失败。npz 是纯二进制格式，两代 numpy 都能读。
+    """
+    npz_path = model_dir / MODEL_ARRAYS
+    params_path = model_dir / MODEL_PARAMS
+    if not npz_path.exists() or not params_path.exists():
+        raise FileNotFoundError(
+            f"缺少 {npz_path.name} 或 {params_path.name}（在 {model_dir}）；"
+            "本包不再使用 pickle 载荷，请从 train_four_models.py 重新生成")
+    params = json.loads(params_path.read_text(encoding="utf-8-sig"))
+    with np.load(npz_path, allow_pickle=False) as z:
+        arrays = {k: z[k] for k in z.files}
+
+    if params.get("kind") == "blend":
+        gp_meta = params.pop("gp")
+        gp = dict(gp_meta)
+        for k in GP_ARRAY_KEYS:
+            gp[k] = arrays[f"gp_{k}"]
+        params["gp"] = gp
+        return params
+
+    payload = dict(params)
+    for k in GP_ARRAY_KEYS:
+        payload[k] = arrays[k]
+    return payload
+
+
 def load_model(model_dir):
-    """加载 `<模型库>/<模型名>/model.pkl`。"""
+    """加载 `<模型库>/<模型名>/`（model.npz + params.json + 可选的树模型）。"""
     model_dir = Path(model_dir)
-    pkl = model_dir / "model.pkl"
-    if not pkl.exists():
-        raise FileNotFoundError(pkl)
-    with open(pkl, "rb") as f:
-        payload = pickle.load(f)
-    return ModelBundle(payload, path=pkl)
+    payload = _load_payload(model_dir)
+    return ModelBundle(payload, path=model_dir)
 
 
 def load_registry(lib_root=None):

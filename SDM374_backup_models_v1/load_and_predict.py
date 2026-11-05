@@ -8,10 +8,10 @@
     python load_and_predict.py --model blend_xgb_w20x3 --weights-file 第一组离线提交.csv
     python load_and_predict.py --self-check
 
-特征顺序是硬契约（写死在 modellib.FEATURES）：
-    建筑1→建筑3，每栋 cost→carbon→peak→discomfort→degradation→ramping→resilience
-3×7 表格（中英文表头均可）会按**列名/行名**映射；21 维向量按上面的顺序直接使用；
-形状不合法直接抛 ContractError，绝不做"猜顺序"。
+特征顺序有两种路径：
+  - 21 维向量 / (n,21) 数组：只能按位置，顺序写死为 FEATURES（建筑1→3，每栋 cost→…→resilience）；
+  - 3×7 表格 / CSV（中英文标签均可）：一律按**标签**重排，行列物理顺序无关。
+未知/重复/缺失标签、行数≠3、形状不合法一律抛 ContractError，绝不做"猜顺序"。
 """
 from __future__ import annotations
 
@@ -68,7 +68,8 @@ def weights_from_string(s: str):
 
 
 def model_names():
-    return sorted(p.name for p in MODELS.iterdir() if p.is_dir() and (p / "model.pkl").exists())
+    return sorted(p.name for p in MODELS.iterdir()
+                  if p.is_dir() and (p / "model.npz").exists() and (p / "params.json").exists())
 
 
 # ─────────────────────────── 预测 ───────────────────────────

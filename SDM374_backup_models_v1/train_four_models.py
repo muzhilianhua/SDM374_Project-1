@@ -3,17 +3,21 @@
 
 本文件是 `外推方案/模型库/build_library.py` 与 `外推方案/gp提分/common.py` 的精简可移植版本，
 只保留这四个配置需要的代码：分块 ARD Matérn-5/2 核、全区域交互项、可学习交互权重、
-加权对数边际似然（低尾加权）、与树模型的固定权重混合。产物为纯 numpy 载荷 model.pkl。
+加权对数边际似然（低尾加权）、与树模型的固定权重混合。产物为版本无关的纯数组载荷
+model.npz + params.json（不含 pickle 的 numpy 数组，numpy 1.24.x / 2.x 均可直接加载）。
 
-入口命令（在包根目录执行；需要 numpy/scipy/scikit-learn/pandas/joblib）：
+入口命令（在包根目录执行；需要 numpy/scipy/scikit-learn/pandas/joblib，混合模型另需 xgboost）：
     python train_four_models.py --list
     python train_four_models.py --model gp-ard
     python train_four_models.py --model tail5opt
     python train_four_models.py --model hp_wlearn
     python train_four_models.py --model blend_xgb_w20x3
     python train_four_models.py --model all
+    python train_four_models.py --probe-seed 2027        # 只打印实际生效的多起点种子
 
-默认读取 仓库根/dataset_same8/train.csv；产物写到 models/<模型名>/model.pkl（可用 --out 改）。
+默认读取 仓库根/dataset_same8/train.csv；产物写到 models/<模型名>/model.npz（可用 --out 改）。
+--seed（默认 2026）会一路传给多起点优化器与 GaussianProcessRegressor.random_state，
+并写入 fit_report.json 的 seed_used（实际生效值）。
 注意：四个模型都在**全部 2048 行**上 refit（交付用），这与 OOF 的"逐折重拟合"是两回事；
 OOF 与 v3.2 评分见 run_oof_and_score.py。
 """
@@ -27,7 +31,6 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 import argparse
 import hashlib
 import json
-import pickle
 import sys
 import time
 from pathlib import Path
@@ -150,12 +153,14 @@ def make_optimizer(maxiter=100, n_starts=4, seed=SEED, prior=None):
         lo, hi = bounds[:, 0], bounds[:, 1]
         ok = np.isfinite(lo) & np.isfinite(hi)
         rng = np.random.default_rng(seed)
+        optimizer.seed = int(seed)
         starts = [np.asarray(initial_theta, float)]
         for _ in range(max(n_starts - 1, 0)):
             s = lo.copy()
             span = hi - lo
             s[ok] = rng.uniform(lo[ok] + 0.02 * span[ok], hi[ok] - 0.02 * span[ok])
             starts.append(s)
+        optimizer.starts = [np.asarray(s, float).copy() for s in starts]
 
         def obj(theta):
             f, g = obj_func(theta)
@@ -177,6 +182,8 @@ def make_optimizer(maxiter=100, n_starts=4, seed=SEED, prior=None):
         return best["theta_log"], best["fun"]
 
     optimizer.record = []
+    optimizer.starts = []
+    optimizer.seed = int(seed)
     return optimizer
 
 
@@ -253,7 +260,8 @@ def fit_gp_weighted_opt(X, y, config, sample_weight, alpha=1e-8, maxiter=80,
     L = cholesky(K, lower=True)
     a = cho_solve((L, True), z)
     return dict(block=block, X=X, L=L, a=a, loc=loc, scale=scale, noise=noise, w=w,
-                theta=theta, nll=float(best["fun"]), trials=trials)
+                theta=theta, nll=float(best["fun"]), trials=trials, seed=int(seed),
+                start_seeds=[np.asarray(s, float).tolist() for s in starts])
 
 
 def tail_weights(y, cfg):
@@ -294,16 +302,49 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+ARRAY_FIELDS = ("X_train", "alpha", "length_scale", "weights")
+
+
+def save_payload(payload, out_dir):
+    """版本无关落盘：数组 → model.npz，其余（超参/元数据/树路径）→ params.json。"""
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if payload["kind"] == "blend":
+        gp = payload["gp"]
+        meta = {k: v for k, v in payload.items() if k != "gp"}
+        meta["gp"] = {k: v for k, v in gp.items() if k not in ARRAY_FIELDS}
+        arrays = {f"gp_{k}": np.asarray(gp[k], float) for k in ARRAY_FIELDS}
+    else:
+        meta = {k: v for k, v in payload.items() if k not in ARRAY_FIELDS}
+        arrays = {k: np.asarray(payload[k], float) for k in ARRAY_FIELDS}
+    np.savez_compressed(out_dir / "model.npz", **arrays)
+    (out_dir / "params.json").write_text(
+        json.dumps(meta, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+
+
+def probe_seed(seed, n_starts=4):
+    """用 hp_ms 配置真实地触发一次多起点生成，返回实际生效的种子与各起点向量。"""
+    kernel, _ = build_kernel(CONFIGS["blend_xgb_w20x3"], n_features=M.N_FEATURES)
+    opt = make_optimizer(maxiter=1, n_starts=n_starts, seed=seed)
+    bounds = np.r_[np.tile([0.03, 6.0], (7, 1)), [[0.001, 0.3]]]
+    initial = np.r_[np.log(np.full(7, 0.5)), 0.0]        # 7 个长度尺度 + 1 个交互权重（logit）
+    opt(lambda t: (0.0, np.zeros_like(t)), initial, bounds)
+    return {"seed_argument": int(seed), "seed_effective": int(opt.seed),
+            "n_starts": int(n_starts),
+            "starts_log": [np.asarray(s, float).tolist() for s in opt.starts]}
+
+
 # ─────────────────────────── 训练入口 ───────────────────────────
-def train(name, X, y, tree_path):
+def train(name, X, y, tree_path, seed=SEED):
     t0 = time.perf_counter()
     cfg = CONFIGS[name]
     if name in ("gp-ard", "hp_wlearn"):
         kernel, _ = build_kernel(cfg, n_features=X.shape[1])
-        opt = make_optimizer(maxiter=cfg.get("maxiter", 100), n_starts=cfg.get("n_starts", 4), seed=SEED)
-        gp, loc, scale = fit_gp(X, y, kernel, optimizer=opt, seed=SEED)
+        opt = make_optimizer(maxiter=cfg.get("maxiter", 100), n_starts=cfg.get("n_starts", 4), seed=seed)
+        gp, loc, scale = fit_gp(X, y, kernel, optimizer=opt, seed=seed)
         payload = payload_gp(gp, loc, scale, None)
         info = {"method": "sklearn GPR + L-BFGS-B 多起点",
+                "seed_used": int(opt.seed), "n_starts": int(cfg.get("n_starts", 4)),
                 "log_marginal_likelihood": float(gp.log_marginal_likelihood_value_),
                 "theta_log": np.asarray(gp.kernel_.theta, float).tolist(),
                 "trials": [{"theta_log": np.asarray(t["theta_log"], float).tolist(), "fun": float(t["fun"]),
@@ -312,10 +353,11 @@ def train(name, X, y, tree_path):
     elif name == "tail5opt":
         sw = tail_weights(y, cfg)
         model = fit_gp_weighted_opt(X, y, cfg, sw, maxiter=cfg.get("maxiter", 80),
-                                    n_starts=cfg.get("n_starts", 3), seed=SEED,
+                                    n_starts=cfg.get("n_starts", 3), seed=seed,
                                     noise_bounds=cfg.get("noise_bounds", (0.001, 0.3)))
         payload = payload_weighted(model)
         info = {"method": "加权对数边际似然重优化",
+                "seed_used": int(model["seed"]), "n_starts": int(cfg.get("n_starts", 3)),
                 "weighted_neg_log_marginal_likelihood": float(model["nll"]),
                 "theta_log": np.asarray(model["theta"], float).tolist(),
                 "n_weighted": int(np.sum(sw > 1)), "weight_sum": float(np.sum(sw)),
@@ -324,8 +366,8 @@ def train(name, X, y, tree_path):
                            for t in model["trials"]]}
     elif name == "blend_xgb_w20x3":
         kernel, _ = build_kernel(cfg, n_features=X.shape[1])
-        opt = make_optimizer(maxiter=cfg.get("maxiter", 100), n_starts=cfg.get("n_starts", 4), seed=SEED)
-        gp, loc, scale = fit_gp(X, y, kernel, optimizer=opt, seed=SEED)
+        opt = make_optimizer(maxiter=cfg.get("maxiter", 100), n_starts=cfg.get("n_starts", 4), seed=seed)
+        gp, loc, scale = fit_gp(X, y, kernel, optimizer=opt, seed=seed)
         base = payload_gp(gp, loc, scale, None)
         if not Path(tree_path).exists():
             raise FileNotFoundError(f"混合模型需要树模型文件: {tree_path}")
@@ -334,6 +376,7 @@ def train(name, X, y, tree_path):
                              "sha256": sha256(Path(tree_path))},
                        feature_order=list(M.FEATURES), n_features=M.N_FEATURES, train_rows=int(len(y)))
         info = {"method": "固定权重混合 p=(1-α)·gp(hp_ms)+α·tree", "alpha": float(BLEND_ALPHA),
+                "seed_used": int(opt.seed), "n_starts": int(cfg.get("n_starts", 4)),
                 "tree": BLEND_TREE, "theta_log": np.asarray(gp.kernel_.theta, float).tolist(),
                 "gp_hyperparameters": cfg}
     else:
@@ -349,10 +392,16 @@ def main():
     ap.add_argument("--data", default=str(HERE.parent / "dataset_same8" / "train.csv"))
     ap.add_argument("--out", default=str(HERE / "models"))
     ap.add_argument("--tree", default=str(HERE / "models" / "blend_xgb_w20x3" / f"{BLEND_TREE}.joblib"))
+    ap.add_argument("--seed", type=int, default=SEED, help="多起点与 GPR 的随机种子（默认 2026）")
+    ap.add_argument("--probe-seed", type=int, default=None,
+                    help="只演示：打印该种子实际生成的多起点向量，不做训练")
     a = ap.parse_args()
 
     if a.list:
         print(json.dumps({k: v for k, v in CONFIGS.items()}, ensure_ascii=False, indent=2, default=str))
+        return
+    if a.probe_seed is not None:
+        print(json.dumps(probe_seed(a.probe_seed), ensure_ascii=False, indent=2, default=str))
         return
     if not a.model:
         ap.error("需要 --model 或 --list")
@@ -364,11 +413,9 @@ def main():
 
     names = list(CONFIGS) if a.model == "all" else [a.model]
     for name in names:
-        payload, info = train(name, X, y, a.tree)
+        payload, info = train(name, X, y, a.tree, seed=a.seed)
         out = Path(a.out) / name
-        out.mkdir(parents=True, exist_ok=True)
-        with open(out / "model.pkl", "wb") as f:
-            pickle.dump(payload, f, protocol=4)
+        save_payload(payload, out)
         bundle = M.load_model(out)                     # 回读确认可加载
         mean = bundle.predict(X, return_std=False)
         rmse = float(np.sqrt(np.mean((mean - y) ** 2)))
@@ -376,7 +423,8 @@ def main():
             {"model": name, "config": {k: v for k, v in CONFIGS[name].items()},
              **info, "in_sample_rmse_not_generalization": rmse}, ensure_ascii=False, indent=2, default=str),
             encoding="utf-8")
-        print(f"[{name}] OK  in-sample RMSE={rmse:.4f}（仅插值，不是泛化）  {info['seconds']:.0f}s -> {out}")
+        print(f"[{name}] OK  seed={info.get('seed_used')}  in-sample RMSE={rmse:.4f}"
+              f"（仅插值，不是泛化）  {info['seconds']:.0f}s -> {out}")
 
 
 if __name__ == "__main__":

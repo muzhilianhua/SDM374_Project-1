@@ -17,17 +17,18 @@
 ## 三条命令跑起来
 
 ```bash
-pip install numpy scipy pandas joblib "scikit-learn==1.6.1"
+pip install -r requirements.txt          # 含 blend 需要的 xgboost
 python load_and_predict.py --list
 python load_and_predict.py --model gp-ard --weights "w1,w2,...,w21"
 ```
 
 （第三行的 21 个数按下面"特征契约"的顺序给出；也可以 `--weights-file 第一组离线提交.csv`。）
 
-## 特征契约（硬契约，顺序错会直接抛错）
+## 特征契约（两种路径，**有标签就按标签，无标签才按位置**）
 
-21 维向量，**建筑1 → 建筑2 → 建筑3**，每栋内部 **cost → carbon → peak → discomfort →
-degradation → ramping → resilience**：
+- **无标签路径（21 维向量 / `(n,21)` 数组）**：只能按位置，顺序写死为
+  **建筑1 → 建筑2 → 建筑3**，每栋内部 **cost → carbon → peak → discomfort →
+  degradation → ramping → resilience**：
 
 ```text
 b1_cost b1_carbon b1_peak b1_discomfort b1_degradation b1_ramping b1_resilience
@@ -35,10 +36,15 @@ b2_cost b2_carbon b2_peak b2_discomfort b2_degradation b2_ramping b2_resilience
 b3_cost b3_carbon b3_peak b3_discomfort b3_degradation b3_ramping b3_resilience
 ```
 
-- 也支持 3×7 表格（`csv` 带表头，中英文列名/行名均可），按**列名/行名**映射，不按位置。
-- 形状不是 21 维 / 3×7 / (n,21) 一律抛 `ContractError`；7×3（指标×建筑）会被明确拒绝。
-- `python load_and_predict.py --self-check` 会验证"21 维向量"与"3×7 中文表头"结果完全一致，
-  并验证反转顺序一定会改变预测。
+- **有标签路径（`csv` / DataFrame 的 3×7 表或 21 列宽表）**：**一律按标签重排**，行列顺序完全无关。
+  列名支持中文（`电费/碳排/峰值/舒适/损耗/波动/韧性`）与英文（`cost/carbon/peak/discomfort/
+  degradation/ramping/resilience` 及 `electricity/peak_load/ramp` 等同义词，大小写与空白归一）；
+  行名支持 `第 1 栋/第1栋` 与 `building_1/building1/bldg1/b1/Bldg_1` 等写法。
+- **严格报错**：未知标签、重复标签、缺指标/缺楼栋、行数≠3、21 列宽表列名与规范不符，
+  一律抛 `ContractError` 并写明"得到什么、要求什么"；不再有"按位置静默当数组"的路径。
+- 回归测试见 `tests/test_contract.py`（p01969 的行逆序/列逆序/行列同时逆序/打乱四种都得到同一预测
+  115.7941456944；标签写错/重复/缺失必须报错）。
+  `python load_and_predict.py --self-check` 也会验证 21 维向量与 3×7 中文表头结果一致。
 
 ## 目录结构
 
@@ -51,12 +57,17 @@ SDM374_backup_models_v1/
 ├── modellib.py                      推理内核（纯 numpy；混合模型用 joblib 读树）
 ├── load_and_predict.py              统一加载/预测/--list/--self-check
 ├── train_four_models.py             四个配置的拟合源代码（核、加权似然、可学习交互权重、混合公式）
-├── run_oof_and_score.py             逐折重拟合 → OOF → 外部 v3.2 评分
+├── run_oof_and_score.py             逐折重拟合 → OOF → v3.2 评分（评分器取自包内 scoring/）
 ├── compute_scores.py                用包内已存 OOF 预测复算 v3.2（不重训）
+├── verify_hashes.py                 校验 MANIFEST/CHECKSUMS（默认对 HEAD blob，支持 --working-tree）
 ├── self_check.json                  最近一次自检结果
+├── .gitattributes                   文本统一 LF（保证哈希与提交字节一致）
+├── scoring/                         评分器（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json + 协议）
+├── frozen/split_manifest.json       冻结划分只读副本（sdm374.same8.splits.2x5x3.frozen.v1）
+├── tests/test_contract.py           标签顺序回归测试
 ├── models/
 │   ├── registry.csv
-│   ├── gp-ard/            {model.pkl, config.json, meta.json, metrics.json, CHECKSUMS.json, train_predictions.csv}
+│   ├── gp-ard/            {model.npz, params.json, config.json, meta.json, metrics.json, CHECKSUMS.json, train_predictions.csv}
 │   ├── tail5opt/          同上
 │   ├── hp_wlearn/         同上
 │   └── blend_xgb_w20x3/   同上 + xgb_w20x3_full.joblib（树模型）
@@ -68,25 +79,27 @@ SDM374_backup_models_v1/
     └── oof_pred_<model>.csv.gz       逐折留出预测（供 compute_scores.py 复算）
 ```
 
-## 评分复算：依赖的外部路径（评分器**没有**拷进包）
+## 评分复算：评分器与冻结划分**已在包内**，干净检出即可跑
 
 包内 `scores_*.csv` 是原始逐折结果；需要自己复算时，`compute_scores.py` 只读包内 OOF 预测，
-并从**仓库根**的下列路径 import / 读取：
+并使用下列**包内路径**（全部随 `git clone` 一起检出）：
 
 | 依赖 | 默认路径（相对包目录） | 用途 |
 | --- | --- | --- |
-| 评分器目录 | `../SDM374_scoring_v3_2/` | `surrogate_scoring_v3_2.py`：evaluate / policy / context |
-| 数据集 | `../dataset_same8/train.csv` | 每折训练标签、候选 id |
-| 冻结划分 | `../外推方案/趋势与尾部/frozen/split_manifest.json` | 2×5×3 外层折的成员 |
+| 评分器目录 | `scoring/` | `surrogate_scoring_v3_2.py` + `EVALUATION_POLICY_V3_2.json`：evaluate / policy / context |
+| 数据集 | `../dataset_same8/train.csv` | 每折训练标签、候选 id（`--data` 可覆盖） |
+| 冻结划分 | `frozen/split_manifest.json` | 2×5×3 外层折的成员（只读副本，`--manifest` 可覆盖） |
 
 ```bash
-python compute_scores.py            # 默认使用上面的相对路径
-python compute_scores.py --scoring-dir "..\SDM374_scoring_v3_2"
+python compute_scores.py            # 包内默认路径
+python compute_scores.py --data ..\dataset_same8\train.csv --scoring-dir scoring
 ```
 
-复算已核对：四模型总分与包内 `metrics.json` 完全一致（83.1496 / 83.0766 / 82.5547 / 83.5477）。
-`blend_xgb_w20x3` 的 `scores_*.csv` 由 `pred_blend_xgb_w20x3_full.csv` 用同一评分器逐折重算，
-与历史 `summary_blend_xgb_w20x3_full.json` 的逐折分数差 < 2e-14。
+两个脚本都会在开始时做**前置存在性检查**：路径缺失立刻报 `[前置检查失败]` 并写明该改指哪里，
+不会再跑到中途才崩。
+
+复算已核对：四模型总分与包内 `metrics.json` 完全一致（83.1496 / 83.0766 / 82.5547 / 83.5477，
+逐折最大差 ≤ 2.8e-14）。
 
 ## 训练源代码与入口命令
 
@@ -102,7 +115,7 @@ python train_four_models.py --model blend_xgb_w20x3
 python train_four_models.py --model all
 ```
 
-`run_oof_and_score.py` 做逐折重拟合并调用外部评分器（很慢；`blend` 必须提供逐折留出的树预测）：
+`run_oof_and_score.py` 做逐折重拟合并调用**包内**评分器（很慢；`blend` 必须提供逐折留出的树预测）：
 
 ```bash
 python run_oof_and_score.py --model gp-ard
@@ -111,12 +124,26 @@ python run_oof_and_score.py --model hp_wlearn
 python run_oof_and_score.py --model blend_xgb_w20x3 --tree-oof "..\SDM374_final_models_v1\evaluation\eval_predictions.csv"
 ```
 
+`--seed`（默认 2026）会一路传到多起点优化器与 `GaussianProcessRegressor.random_state`，
+并写入输出的 `seed_used`。`python train_four_models.py --probe-seed 2027` 可直接打印该种子
+实际生成的多起点向量（不训练），用来复核种子确实生效。
+
 ## 环境
 
 - `gp-ard` / `tail5opt` / `hp_wlearn`：**推理只用 numpy + scipy**，不依赖 scikit-learn 版本。
-- `blend_xgb_w20x3`：混合分支需要 **scikit-learn 1.6.1 + joblib** 反序列化 `xgb_w20x3_full.joblib`。
+- `blend_xgb_w20x3`：混合分支需要 **scikit-learn 1.6.1 + joblib + xgboost**（joblib 读树模型）。
 - 训练脚本需要 scikit-learn 1.6.1（历史拟合环境：Python 3.13.5 / numpy 2.1.3 / scipy 1.15.3 /
   pandas 2.2.3 / joblib 1.4.2 / win32）。
+
+### 兼容性矩阵（本包**不要求**升级项目环境）
+
+| numpy | 状态 | 验证方式 |
+| --- | --- | --- |
+| **1.24.4（仓库锁定）** | ✅ 通过 | 独立 venv（Python 3.11 + numpy 1.24.4 / scipy 1.10.1 / pandas 1.5.3）下跑 `--list`、`--self-check`、四模型预测与 `compute_scores.py`，逐折分数差 ≤ 2.8e-14 |
+| **2.x（2.1.3 / 2.2.x）** | ✅ 通过 | 本机主环境（Python 3.13.5 / numpy 2.1.3）跑同一套命令，结果一致 |
+
+载荷是 `model.npz`（`np.savez_compressed`，`allow_pickle=False`）+ `params.json`，**不再 pickle
+numpy 数组**，因此不受 `numpy._core` / `numpy.core` 模块路径差异影响。
 
 ## 自检
 

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-"""复算 v3.2 评分 —— 只用包内已保存的 OOF 留出预测 + 外部评分器，不重新训练。
+"""复算 v3.2 评分 —— 只用包内已保存的 OOF 留出预测 + 包内评分器，不重新训练。
 
-依赖的**外部路径**（不在包内，也不应拷进包）：
-    1) 评分器目录：仓库根/SDM374_scoring_v3_2/
-       通过 --scoring-dir 指定；脚本只从该目录 import surrogate_scoring_v3_2.py，
-       评分规则与协议见该目录的 EVALUATION_PROTOCOL_V3_2.md / EVALUATION_POLICY_V3_2.json。
+依赖路径（评分器与冻结划分已随包提供，干净检出即可运行）：
+    1) 评分器：包内 scoring/（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）
+       默认 --scoring-dir scoring；协议说明见 scoring/EVALUATION_PROTOCOL_V3_2.md。
     2) 数据集：仓库根/dataset_same8/train.csv（提供每折训练标签与候选 id）
-       通过 --data 指定。
-    3) 冻结划分：仓库根/外推方案/趋势与尾部/frozen/split_manifest.json
-       协议 id: sdm374.same8.splits.2x5x3.frozen.v1；通过 --manifest 指定。
+       默认 --data 指向仓库根；可通过 --data 覆盖。
+    3) 冻结划分：包内 frozen/split_manifest.json
+       协议 id: sdm374.same8.splits.2x5x3.frozen.v1；可通过 --manifest 覆盖。
 
 入口命令（在包根目录执行）：
     python compute_scores.py
-    python compute_scores.py --scoring-dir ..\\SDM374_scoring_v3_2
+    python compute_scores.py --data ..\\dataset_same8\\train.csv
 
 产物（默认写到 scores/）：
     scores_<model>.csv          逐折五分量与原始量（覆盖同名文件前请确认）
@@ -62,11 +61,23 @@ def fold_row(res, split_id):
 def main():
     ap = argparse.ArgumentParser(description="基于包内 OOF 预测复算 v3.2 评分")
     ap.add_argument("--data", default=str(HERE.parent / "dataset_same8" / "train.csv"))
-    ap.add_argument("--manifest", default=str(HERE.parent / "外推方案" / "趋势与尾部" / "frozen" / "split_manifest.json"))
-    ap.add_argument("--scoring-dir", default=str(HERE.parent / "SDM374_scoring_v3_2"))
+    ap.add_argument("--manifest", default=str(HERE / "frozen" / "split_manifest.json"))
+    ap.add_argument("--scoring-dir", default=str(HERE / "scoring"))
     ap.add_argument("--outdir", default=str(HERE / "scores" / "recomputed"))
     ap.add_argument("--models", nargs="*", default=list(MODELS))
     a = ap.parse_args()
+
+    for label, path, hint in (
+            ("评分器目录", Path(a.scoring_dir),
+             "要求包含 surrogate_scoring_v3_2.py 与 EVALUATION_POLICY_V3_2.json；包内默认为 scoring/"),
+            ("冻结划分", Path(a.manifest),
+             "要求 sdm374.same8.splits.2x5x3.frozen.v1 的 split_manifest.json；包内默认为 frozen/split_manifest.json"),
+            ("数据集", Path(a.data),
+             "要求 dataset_same8/train.csv（2048 行，含 candidate_id/ramping/21 维权重）")):
+        if not path.exists():
+            raise SystemExit(f"[前置检查失败] {label}不存在：{path}\n  {hint}")
+    if not (Path(a.scoring_dir) / "surrogate_scoring_v3_2.py").exists():
+        raise SystemExit(f"[前置检查失败] {a.scoring_dir} 缺少 surrogate_scoring_v3_2.py")
 
     evaluate, policy, make_context = load_scoring(Path(a.scoring_dir))
     df = pd.read_csv(a.data, encoding="utf-8-sig").sort_values("candidate_id").reset_index(drop=True)
