@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 
 PKG = Path(__file__).resolve().parents[1]
-PROJECT = PKG.parent
 sys.path.insert(0, str(PKG))
 import modellib as M  # noqa: E402
 import load_and_predict as L  # noqa: E402
@@ -31,6 +30,24 @@ W21 = np.array([
     0.0292558054701189, 0.0445871805653544, 0.0695964909613512,
     0.1134199167822772, 0.3471329386268938, 0.2334181488262795,
 ])
+# C01（最终提交候选）/ C02（非树模型候选）/ C03（第一组离线提交）的 3×7 权重，
+# 内联进测试，保证在**干净检出**（包外无仓库根文件）里也能跑。
+C01 = np.array([
+    [0.1882019242, 0.0636046642, 0.2153047216, 0.2143194241, 0.0140685166, 0.2389930866, 0.0655076627],
+    [0.2693460725, 0.1410031076, 0.0669880384, 0.0703746670, 0.0962782960, 0.2875770325, 0.0684327860],
+    [0.1625895188, 0.0292558055, 0.0445871806, 0.0998617411, 0.1134199168, 0.3471329386, 0.2031528986],
+])
+C02 = np.array([
+    [0.1882019242, 0.0545654587, 0.2021881202, 0.2143194241, 0.0332489294, 0.2288518793, 0.0786242641],
+    [0.2358813110, 0.1261442373, 0.0820577008, 0.0553050046, 0.1297430576, 0.3024359028, 0.0684327860],
+    [0.1740236314, 0.0292558055, 0.0445871806, 0.0695964910, 0.1019858041, 0.3706271675, 0.2099239200],
+])
+C03 = np.array([
+    [0.0669105903, 3.694524401e-59, 0.0628613854, 0.3267870193, 0.0173857488, 0.5178950113, 0.0081602449],
+    [0.1584423481, 0.0015068326, 0.1819948397, 0.0000314801, 0.0, 0.5172659787, 0.1407585208],
+    [0.0000000005, 0.0105767965, 0.1064174031, 0.2395106988, 0.0000000001, 0.3124662746, 0.3310288264],
+])
+LEGAL = {"C01": C01, "C02": C02, "C03": C03}
 MODELS = ("gp-ard", "tail5opt", "hp_wlearn", "blend_xgb_w20x3")
 P01969_MEAN = {"gp-ard": 115.7941456944, "tail5opt": 115.7742110860,
                "hp_wlearn": 115.9229831019, "blend_xgb_w20x3": 115.9729637043}
@@ -85,13 +102,12 @@ class SimplexContractTest(unittest.TestCase):
                 self.assertAlmostEqual(float(mean[0]), P01969_MEAN[name], delta=TOL)
 
     def test_legal_candidates_pass(self):
-        files = [PROJECT / "最终提交候选.json", PROJECT / "最终提交候选_非树模型.json",
-                 PROJECT / "第一组离线提交.csv"]
-        loaded = [(p.name, L.read_weights(p)) for p in files if p.exists()]
-        self.assertTrue(loaded, "未找到 C01–C03 的权重文件")
-        for label, w in loaded:
+        candidates = {"p01969": W21.reshape(1, -1)}
+        candidates.update({name: w.reshape(1, -1) for name, w in LEGAL.items()})
+        for label, w in candidates.items():
             with self.subTest(candidate=label):
                 self.assertEqual(w.shape, (1, M.N_FEATURES))
+                M.pack_weights(w)                    # 合法性：非负、每栋和 = 1
                 for name in MODELS:
                     mean = self.bundles[name].predict(w, return_std=False)
                     self.assertTrue(np.all(np.isfinite(mean)))

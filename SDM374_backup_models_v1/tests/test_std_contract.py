@@ -14,10 +14,8 @@ import unittest
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 PKG = Path(__file__).resolve().parents[1]
-PROJECT = PKG.parent
 sys.path.insert(0, str(PKG))
 import modellib as M  # noqa: E402
 
@@ -34,6 +32,13 @@ W21 = np.array([
 GP_MODELS = ("gp-ard", "tail5opt", "hp_wlearn")
 BLEND = "blend_xgb_w20x3"
 
+# C03（第一组离线提交）的 3×7 权重，内联进测试，避免干净检出时依赖仓库根文件。
+W_SUB = np.array([
+    [0.0669105903, 3.694524401e-59, 0.0628613854, 0.3267870193, 0.0173857488, 0.5178950113, 0.0081602449],
+    [0.1584423481, 0.0015068326, 0.1819948397, 0.0000314801, 0.0, 0.5172659787, 0.1407585208],
+    [0.0000000005, 0.0105767965, 0.1064174031, 0.2395106988, 0.0000000001, 0.3124662746, 0.3310288264],
+])
+
 # 修复前的纯均值预测（改动只动 std 语义，这两个数必须逐位不变）
 P01969_MEAN = 115.972963704331
 SUBMISSION_MEAN = 119.577258208507
@@ -46,9 +51,7 @@ class StdContractTest(unittest.TestCase):
         cls.bundles = {name: M.load_model(PKG / "models" / name)
                        for name in (*GP_MODELS, BLEND)}
         cls.x = W21.reshape(1, -1)
-        sub_path = PROJECT / "第一组离线提交.csv"
-        cls.x_sub = (M.pack_weights(pd.read_csv(sub_path, encoding="utf-8-sig", index_col=0))
-                     if sub_path.exists() else None)
+        cls.x_sub = W_SUB.reshape(1, -1)
 
     # 1) 默认行为：GP 模型正常，blend 拒绝
     def test_default_std_behavior(self):
@@ -72,9 +75,8 @@ class StdContractTest(unittest.TestCase):
         mean = blend.predict(self.x, return_std=False)
         self.assertAlmostEqual(float(mean[0]), P01969_MEAN, delta=TOL)
         self.assertEqual(mean.shape, (1,))
-        if self.x_sub is not None:
-            mean_sub = blend.predict(self.x_sub, return_std=False)
-            self.assertAlmostEqual(float(mean_sub[0]), SUBMISSION_MEAN, delta=TOL)
+        mean_sub = blend.predict(self.x_sub, return_std=False)
+        self.assertAlmostEqual(float(mean_sub[0]), SUBMISSION_MEAN, delta=TOL)
         # heuristic 入口返回的均值必须与纯均值逐位相同
         mean_h, _ = blend.predict(self.x, return_std_heuristic=True)
         np.testing.assert_array_equal(mean_h, mean)

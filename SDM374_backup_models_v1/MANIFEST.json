@@ -230,8 +230,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 13872,
-      "sha256": "659a641df613b03738adf1ec909b568c8d450a4ba6decde14fea0b3acf8ef56b"
+      "bytes": 14465,
+      "sha256": "7de82945e4fe7128c292bbe299db265a6e498977d5c0c79d9d2981e2f6ee6296"
     },
     {
       "path": "requirements.txt",
@@ -315,13 +315,13 @@
     },
     {
       "path": "tests/test_simplex.py",
-      "bytes": 5706,
-      "sha256": "06a8e54ad4cebf56ea6ff833e6d9d29754966a4cd267f037b0b5bf891e5ad128"
+      "bytes": 6848,
+      "sha256": "b1982274cae1754ed34d819b8057b49043aaac84c3264d71f34c219fc98f3d81"
     },
     {
       "path": "tests/test_std_contract.py",
-      "bytes": 4986,
-      "sha256": "26a1c695026f116d4eea56321759d2d11a125447a38f538beca75eeb48964159"
+      "bytes": 5182,
+      "sha256": "c9c5557e6412fbcd8206602da8687e17a2d11784f187040a6ea30af3b3165f8a"
     },
     {
       "path": "train_four_models.py",

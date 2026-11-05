@@ -64,6 +64,11 @@ b3_cost b3_carbon b3_peak b3_discomfort b3_degradation b3_ramping b3_resilience
   `tests/test_simplex.py`（**单纯形契约**：负权重 / 每栋和≠1 / NaN·inf 一律 `ContractError`；
   合法候选 p01969、C01–C03 仍通过且预测逐位不变）。
   `python load_and_predict.py --self-check` 也会验证 21 维向量与 3×7 中文表头结果一致。
+- **包内测试不依赖仓库根任何文件**：p01969 与 C01 / C02 / C03 的权重样本已全部内联进 `tests/`
+  （此前 `test_legal_candidates_pass` 读取仓库根 `最终提交候选.json`，在 `git archive` 干净检出里
+  会因文件缺失而 fail，已移除该依赖；`test_std_contract.py` 的 C03 样本同样改为内联）。
+  当前 **56 项测试、0 skipped**（numpy 2.1.3 与 numpy 1.24.4 两个环境一致，无任何 skip 条件）。
+  干净检出复核：`git archive HEAD | tar -x -C <临时目录>`，在该目录执行 `python -m pytest tests -q`。
 
 ## 标准差接口（谁能给可信 σ）
 
