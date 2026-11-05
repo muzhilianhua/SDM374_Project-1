@@ -9,7 +9,7 @@
   "protocol": {
     "id": "sdm374.same8.splits.2x5x3.frozen.v1",
     "status": "FROZEN",
-    "manifest": "外推方案\\趋势与尾部\\frozen\\split_manifest.json"
+    "manifest": "frozen_data\\SDM374_data_splits_frozen_v1.zip#SDM374_data_splits_frozen_v1/split_manifest.json"
   },
   "environment": {
     "python": "3.13.5",

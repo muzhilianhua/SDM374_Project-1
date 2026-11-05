@@ -53,7 +53,12 @@ def load_from_head(rev):
 def load_from_worktree():
     out = {}
     for p in sorted(HERE.rglob("*")):
-        if not p.is_file() or any(s in p.relative_to(HERE).parts for s in ("__pycache__", ".git", ".venv")):
+        if not p.is_file():
+            continue
+        parts = p.relative_to(HERE).parts
+        if any(s in parts for s in ("__pycache__", ".git", ".venv")):
+            continue
+        if parts[:2] in (("scores", "recomputed"), ("scores", "regen")):   # .gitignore 内的复算输出
             continue
         out[p.relative_to(HERE).as_posix()] = p.read_bytes()
     return out

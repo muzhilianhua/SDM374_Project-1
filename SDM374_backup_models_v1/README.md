@@ -57,13 +57,14 @@ SDM374_backup_models_v1/
 ├── modellib.py                      推理内核（纯 numpy；混合模型用 joblib 读树）
 ├── load_and_predict.py              统一加载/预测/--list/--self-check
 ├── train_four_models.py             四个配置的拟合源代码（核、加权似然、可学习交互权重、混合公式）
-├── run_oof_and_score.py             逐折重拟合 → OOF → v3.2 评分（评分器取自包内 scoring/）
+├── run_oof_and_score.py             逐折重拟合 → OOF → v3.2 评分（评分器取自仓库根 evaluation_v3_2/）
 ├── compute_scores.py                用包内已存 OOF 预测复算 v3.2（不重训）
 ├── verify_hashes.py                 校验 MANIFEST/CHECKSUMS（默认对 HEAD blob，支持 --working-tree）
 ├── self_check.json                  最近一次自检结果
 ├── .gitattributes                   文本统一 LF（保证哈希与提交字节一致）
-├── scoring/                         评分器（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json + 协议）
-├── frozen/split_manifest.json       冻结划分只读副本（sdm374.same8.splits.2x5x3.frozen.v1）
+├── （以下两项是仓库根资产，不在包内，脚本直接引用）
+│   ├── ../evaluation_v3_2/            仓库根评分器（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）
+│   └── ../frozen_data/               仓库根冻结划分归档 SDM374_data_splits_frozen_v1.zip（内含 split_manifest.json）
 ├── tests/test_contract.py           标签顺序回归测试
 ├── models/
 │   ├── registry.csv
@@ -79,20 +80,20 @@ SDM374_backup_models_v1/
     └── oof_pred_<model>.csv.gz       逐折留出预测（供 compute_scores.py 复算）
 ```
 
-## 评分复算：评分器与冻结划分**已在包内**，干净检出即可跑
+## 评分复算：引用仓库根 `evaluation_v3_2/` 与 `frozen_data/`（不复制进包）
 
 包内 `scores_*.csv` 是原始逐折结果；需要自己复算时，`compute_scores.py` 只读包内 OOF 预测，
-并使用下列**包内路径**（全部随 `git clone` 一起检出）：
+并使用仓库里**已跟踪的真实路径**（包按 `仓库根/SDM374_backup_models_v1` 常规检出，默认值据此解析）：
 
-| 依赖 | 默认路径（相对包目录） | 用途 |
+| 依赖 | 默认路径（相对仓库根） | 用途 |
 | --- | --- | --- |
-| 评分器目录 | `scoring/` | `surrogate_scoring_v3_2.py` + `EVALUATION_POLICY_V3_2.json`：evaluate / policy / context |
-| 数据集 | `../dataset_same8/train.csv` | 每折训练标签、候选 id（`--data` 可覆盖） |
-| 冻结划分 | `frozen/split_manifest.json` | 2×5×3 外层折的成员（只读副本，`--manifest` 可覆盖） |
+| 评分器目录 | `evaluation_v3_2/` | `surrogate_scoring_v3_2.py` + `EVALUATION_POLICY_V3_2.json`：evaluate / policy / context |
+| 数据集 | `dataset_same8/train.csv` | 每折训练标签、候选 id（`--data` 可覆盖） |
+| 冻结划分 | `frozen_data/SDM374_data_splits_frozen_v1.zip` | 2×5×3 外层折成员；脚本直接读 zip 内的 `split_manifest.json`，也接受解压后的 `.json`（`--manifest` 可覆盖） |
 
 ```bash
-python compute_scores.py            # 包内默认路径
-python compute_scores.py --data ..\dataset_same8\train.csv --scoring-dir scoring
+python compute_scores.py            # 默认即指向仓库根 evaluation_v3_2/ 与 frozen_data/
+python compute_scores.py --scoring-dir ..\evaluation_v3_2 --manifest ..\frozen_data\SDM374_data_splits_frozen_v1.zip
 ```
 
 两个脚本都会在开始时做**前置存在性检查**：路径缺失立刻报 `[前置检查失败]` 并写明该改指哪里，
@@ -115,7 +116,7 @@ python train_four_models.py --model blend_xgb_w20x3
 python train_four_models.py --model all
 ```
 
-`run_oof_and_score.py` 做逐折重拟合并调用**包内**评分器（很慢；`blend` 必须提供逐折留出的树预测）：
+`run_oof_and_score.py` 做逐折重拟合并调用**仓库根 `evaluation_v3_2/`** 评分器（很慢；`blend` 必须提供逐折留出的树预测）：
 
 ```bash
 python run_oof_and_score.py --model gp-ard
@@ -134,6 +135,8 @@ python run_oof_and_score.py --model blend_xgb_w20x3 --tree-oof "..\SDM374_final_
 - `blend_xgb_w20x3`：混合分支需要 **scikit-learn 1.6.1 + joblib + xgboost**（joblib 读树模型）。
 - 训练脚本需要 scikit-learn 1.6.1（历史拟合环境：Python 3.13.5 / numpy 2.1.3 / scipy 1.15.3 /
   pandas 2.2.3 / joblib 1.4.2 / win32）。
+- OOF 复算需要仓库根 `evaluation_v3_2/` 与 `frozen_data/SDM374_data_splits_frozen_v1.zip`
+  （二者均已在 origin/main 上跟踪，本包只引用、不复制）。
 
 ### 兼容性矩阵（本包**不要求**升级项目环境）
 

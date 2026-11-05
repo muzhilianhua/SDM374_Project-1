@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-"""复算 v3.2 评分 —— 只用包内已保存的 OOF 留出预测 + 包内评分器，不重新训练。
+"""复算 v3.2 评分 —— 只用包内已保存的 OOF 留出预测 + 仓库内官方评分器，不重新训练。
 
-依赖路径（评分器与冻结划分已随包提供，干净检出即可运行）：
-    1) 评分器：包内 scoring/（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）
-       默认 --scoring-dir scoring；协议说明见 scoring/EVALUATION_PROTOCOL_V3_2.md。
+依赖路径（评分器与冻结划分是**仓库资产**，不在本包内；本包只引用，不复制）：
+    1) 评分器：仓库根/evaluation_v3_2/（surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）
+       默认 --scoring-dir 指向仓库根；协议说明见 evaluation_v3_2/README.md。
     2) 数据集：仓库根/dataset_same8/train.csv（提供每折训练标签与候选 id）
        默认 --data 指向仓库根；可通过 --data 覆盖。
-    3) 冻结划分：包内 frozen/split_manifest.json
-       协议 id: sdm374.same8.splits.2x5x3.frozen.v1；可通过 --manifest 覆盖。
+    3) 冻结划分：仓库根/frozen_data/SDM374_data_splits_frozen_v1.zip
+       内含 SDM374_data_splits_frozen_v1/split_manifest.json；
+       协议 id: sdm374.same8.splits.2x5x3.frozen.v1；可通过 --manifest 覆盖（也接受已解压的 .json）。
 
 入口命令（在包根目录执行）：
     python compute_scores.py
@@ -27,6 +28,7 @@ import argparse
 import gzip
 import json
 import sys
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -34,9 +36,30 @@ import pandas as pd
 from scipy import stats
 
 HERE = Path(__file__).resolve().parent
+REPO = HERE.parent                      # 仓库根：包按"仓库根/SDM374_backup_models_v1"常规检出
+SPLIT_ZIP = REPO / "frozen_data" / "SDM374_data_splits_frozen_v1.zip"
+SPLIT_MEMBER = "SDM374_data_splits_frozen_v1/split_manifest.json"
+SPLIT_PROTOCOL = "sdm374.same8.splits.2x5x3.frozen.v1"
 POINTS = ("local_order", "local_mae", "global_order", "global_mae", "top1_regret")
 MODELS = ("gp-ard", "tail5opt", "hp_wlearn", "blend_xgb_w20x3")
 TARGET = "ramping"
+
+
+def load_manifest(path: Path):
+    """读冻结划分：官方 zip 归档（默认）或已解压的 split_manifest.json。"""
+    if path.suffix.lower() == ".zip":
+        with zipfile.ZipFile(path) as archive:
+            try:
+                raw = archive.read(SPLIT_MEMBER)
+            except KeyError:
+                raise SystemExit(f"[前置检查失败] {path} 内缺少 {SPLIT_MEMBER}；"
+                                 f"要求冻结包 SDM374_data_splits_frozen_v1.zip")
+    else:
+        raw = path.read_bytes()
+    data = json.loads(raw.decode("utf-8-sig"))
+    if data.get("protocol_id") != SPLIT_PROTOCOL:
+        raise SystemExit(f"[前置检查失败] 冻结划分协议不符：{data.get('protocol_id')}；要求 {SPLIT_PROTOCOL}")
+    return data
 
 
 def load_scoring(scoring_dir: Path):
@@ -60,20 +83,22 @@ def fold_row(res, split_id):
 
 def main():
     ap = argparse.ArgumentParser(description="基于包内 OOF 预测复算 v3.2 评分")
-    ap.add_argument("--data", default=str(HERE.parent / "dataset_same8" / "train.csv"))
-    ap.add_argument("--manifest", default=str(HERE / "frozen" / "split_manifest.json"))
-    ap.add_argument("--scoring-dir", default=str(HERE / "scoring"))
+    ap.add_argument("--data", default=str(REPO / "dataset_same8" / "train.csv"))
+    ap.add_argument("--manifest", default=str(SPLIT_ZIP),
+                    help="冻结划分：仓库 frozen_data/SDM374_data_splits_frozen_v1.zip（默认）或解压后的 .json")
+    ap.add_argument("--scoring-dir", default=str(REPO / "evaluation_v3_2"),
+                    help="评分器目录：仓库根 evaluation_v3_2/（默认）")
     ap.add_argument("--outdir", default=str(HERE / "scores" / "recomputed"))
     ap.add_argument("--models", nargs="*", default=list(MODELS))
     a = ap.parse_args()
 
     for label, path, hint in (
             ("评分器目录", Path(a.scoring_dir),
-             "要求包含 surrogate_scoring_v3_2.py 与 EVALUATION_POLICY_V3_2.json；包内默认为 scoring/"),
+             "需要仓库根下 evaluation_v3_2/（含 surrogate_scoring_v3_2.py 与 EVALUATION_POLICY_V3_2.json）"),
             ("冻结划分", Path(a.manifest),
-             "要求 sdm374.same8.splits.2x5x3.frozen.v1 的 split_manifest.json；包内默认为 frozen/split_manifest.json"),
+             "需要仓库根下 frozen_data/SDM374_data_splits_frozen_v1.zip（内含 split_manifest.json）"),
             ("数据集", Path(a.data),
-             "要求 dataset_same8/train.csv（2048 行，含 candidate_id/ramping/21 维权重）")):
+             "需要仓库根下 dataset_same8/train.csv（2048 行，含 candidate_id/ramping/21 维权重）")):
         if not path.exists():
             raise SystemExit(f"[前置检查失败] {label}不存在：{path}\n  {hint}")
     if not (Path(a.scoring_dir) / "surrogate_scoring_v3_2.py").exists():
@@ -84,7 +109,7 @@ def main():
     y = df[TARGET].to_numpy(float)
     ids = df["candidate_id"].to_numpy()
     pos = {c: i for i, c in enumerate(ids)}
-    manifest = json.loads(Path(a.manifest).read_text(encoding="utf-8"))
+    manifest = load_manifest(Path(a.manifest))
     outdir = Path(a.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
 

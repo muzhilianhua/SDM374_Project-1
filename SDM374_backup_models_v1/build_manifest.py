@@ -61,8 +61,8 @@ def main():
         files.append({"path": rel, "bytes": len(b), "sha256": sha256(b)})
     meta["external_dependencies"] = {
         "dataset": "../dataset_same8/train.csv（仅复算 OOF 评分 / 自检时需要；仓库内已跟踪）",
-        "scoring_dir": "scoring/（包内自带 surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）",
-        "split_manifest": "frozen/split_manifest.json（包内只读副本，sdm374.same8.splits.2x5x3.frozen.v1）",
+        "scoring_dir": "../evaluation_v3_2/（仓库根真实路径，含 surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json；包内不复制）",
+        "split_manifest": "../frozen_data/SDM374_data_splits_frozen_v1.zip（仓库根真实路径；脚本直接读 zip 内 SDM374_data_splits_frozen_v1/split_manifest.json，协议 sdm374.same8.splits.2x5x3.frozen.v1）",
     }
     meta["line_ending"] = "所有文本按 LF 规范化后计算（见 .gitattributes）；校验请用 verify_hashes.py"
     meta["files"] = files

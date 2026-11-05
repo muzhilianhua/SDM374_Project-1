@@ -44,8 +44,8 @@
   },
   "external_dependencies": {
     "dataset": "../dataset_same8/train.csv（仅复算 OOF 评分 / 自检时需要；仓库内已跟踪）",
-    "scoring_dir": "scoring/（包内自带 surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json）",
-    "split_manifest": "frozen/split_manifest.json（包内只读副本，sdm374.same8.splits.2x5x3.frozen.v1）"
+    "scoring_dir": "../evaluation_v3_2/（仓库根真实路径，含 surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json；包内不复制）",
+    "split_manifest": "../frozen_data/SDM374_data_splits_frozen_v1.zip（仓库根真实路径；脚本直接读 zip 内 SDM374_data_splits_frozen_v1/split_manifest.json，协议 sdm374.same8.splits.2x5x3.frozen.v1）"
   },
   "files": [
     {
@@ -60,18 +60,13 @@
     },
     {
       "path": "build_manifest.py",
-      "bytes": 3013,
-      "sha256": "f79cdf1c2b003709cc45179916c8c5e0e574a30e5632cc0c41da60d51349e315"
+      "bytes": 3163,
+      "sha256": "ef19ee85ca15df67e474f3bf4ca6664d4c8c59e7d8bd69bd0cf7b4f7edcf1be8"
     },
     {
       "path": "compute_scores.py",
-      "bytes": 8185,
-      "sha256": "29437ffd1ea5753a4b47438fbe60ca25171be8de586a3c9e43a3e63cee6beec2"
-    },
-    {
-      "path": "frozen/split_manifest.json",
-      "bytes": 1486744,
-      "sha256": "42d0d5826d626f8dd75689d29602e059d22358e2d7af09fbf290a2d078f00044"
+      "bytes": 9593,
+      "sha256": "c3a926633899878c65491da970edbd82101a7fa658c94d42b75472e70d34b434"
     },
     {
       "path": "load_and_predict.py",
@@ -86,7 +81,7 @@
     {
       "path": "models/blend_xgb_w20x3/CHECKSUMS.json",
       "bytes": 615,
-      "sha256": "c164ab666fe98976382b1cbcedd71eda2f7d63dd2cdc0fc6c4d91ed3f802f594"
+      "sha256": "d798003b4bfcc348b99b983a969de413328b83c065c4e35f7baaea70ccd7b33e"
     },
     {
       "path": "models/blend_xgb_w20x3/config.json",
@@ -95,8 +90,8 @@
     },
     {
       "path": "models/blend_xgb_w20x3/meta.json",
-      "bytes": 1815,
-      "sha256": "75a36f3c88551518dd66e944041d02b55dfa391453a33f7061d1fab2faa2eec6"
+      "bytes": 1851,
+      "sha256": "58c1a2bb642d96dfe7c22171d9dfe2a4e93920760bfc85c95778547c17a436f5"
     },
     {
       "path": "models/blend_xgb_w20x3/metrics.json",
@@ -126,7 +121,7 @@
     {
       "path": "models/gp-ard/CHECKSUMS.json",
       "bytes": 520,
-      "sha256": "7431ebee91ad9db9d1f1ec67994140ee586ddc5f9645b7b2907da4ee06ca7b6d"
+      "sha256": "acbb915d4c803f90845a0e9f52d3c3d9e846ccc6fc33d95702803513db778a08"
     },
     {
       "path": "models/gp-ard/config.json",
@@ -135,8 +130,8 @@
     },
     {
       "path": "models/gp-ard/meta.json",
-      "bytes": 2040,
-      "sha256": "ac5e3b27ee6368de49bde49160dbc5554214e040d600062a251b4ec349eca57c"
+      "bytes": 2076,
+      "sha256": "ea310b121fdd8706e9c080bd9173fe688ae3d472838ffa860f9da920ac812a59"
     },
     {
       "path": "models/gp-ard/metrics.json",
@@ -161,7 +156,7 @@
     {
       "path": "models/hp_wlearn/CHECKSUMS.json",
       "bytes": 520,
-      "sha256": "579999b7f4422891fba87f335cd4aeba5e5d4709a396136af5012991088edd42"
+      "sha256": "f40e80ab21aa11a99dcd883e558535132ff5d59b116dd3735548b5b79954b186"
     },
     {
       "path": "models/hp_wlearn/config.json",
@@ -170,8 +165,8 @@
     },
     {
       "path": "models/hp_wlearn/meta.json",
-      "bytes": 3511,
-      "sha256": "cc83a24446497f59a8d1a38b34c48b287d2685f33bb4174cfad1f42f87043cab"
+      "bytes": 3547,
+      "sha256": "50206679ffe7bd0eb245b543913865c90997e8733af3bbbab6e5d7f850783633"
     },
     {
       "path": "models/hp_wlearn/metrics.json",
@@ -201,7 +196,7 @@
     {
       "path": "models/tail5opt/CHECKSUMS.json",
       "bytes": 520,
-      "sha256": "bd2c5c18ef41774ba92e01eb8913bfb83495c8723edde11f3677f5d2215780a2"
+      "sha256": "d233f04449685924e7829383156ee2db8b9529232877a428f1f65980b585575b"
     },
     {
       "path": "models/tail5opt/config.json",
@@ -210,8 +205,8 @@
     },
     {
       "path": "models/tail5opt/meta.json",
-      "bytes": 2978,
-      "sha256": "9ebc6cd0bf7463b72961239962e96e6a25d22bb17b2d6f2b79ffa9104ca366d6"
+      "bytes": 3014,
+      "sha256": "8cc86335718905160cb26fa3d95baaa80c2ea2858041d348dec3621a66567ea3"
     },
     {
       "path": "models/tail5opt/metrics.json",
@@ -235,8 +230,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 9181,
-      "sha256": "f61520e6ba16aa85d1b33e14f9d86ac8b316ec38abf6fb2dead844042eac593b"
+      "bytes": 9743,
+      "sha256": "d8dcd28ab66f0fab11a014717969d5ba641cd490c52595356e9d7ac3d1c5b945"
     },
     {
       "path": "requirements.txt",
@@ -245,8 +240,8 @@
     },
     {
       "path": "run_oof_and_score.py",
-      "bytes": 10172,
-      "sha256": "4049ff67dcf459103b542fbf27fac672c601a6e24c5b394dbb83596e8c6388d3"
+      "bytes": 11474,
+      "sha256": "c1d4c6b393bc579d83aecde54bd8640b154067b36dcf5501621674153ffd3e1c"
     },
     {
       "path": "scores/fold_scores_all.csv",
@@ -304,21 +299,6 @@
       "sha256": "b6d05a561dcbbca6c5a766fabab35856f73c18abd5c13fe1bea927beef99e40c"
     },
     {
-      "path": "scoring/EVALUATION_POLICY_V3_2.json",
-      "bytes": 1434,
-      "sha256": "0bfb32636c746335250a8d2ae4743c07250bbaa8c369297b05e5aceb46db5d59"
-    },
-    {
-      "path": "scoring/EVALUATION_PROTOCOL_V3_2.md",
-      "bytes": 3213,
-      "sha256": "ae1a9b726f2dd1149e3b9dcd405a0b1858c236b365de2b6683a1f8543c17ee9c"
-    },
-    {
-      "path": "scoring/surrogate_scoring_v3_2.py",
-      "bytes": 5625,
-      "sha256": "ae2f17917cfaeb3efae615fbfd15bb5cfbdd92913de20773a3b6d594353c1aa8"
-    },
-    {
       "path": "tests/test_contract.py",
       "bytes": 4847,
       "sha256": "74673c27ea8be7a724eff12e7046d00320f4f9ac282a84317e0713d80c511c3c"
@@ -330,13 +310,13 @@
     },
     {
       "path": "verify_hashes.py",
-      "bytes": 5103,
-      "sha256": "61f2c5921166dedd8360e275c4b3f3129de1d74f754c7620fd3aa1c5e1688aff"
+      "bytes": 5283,
+      "sha256": "5b4d2f2c78eb70076d6727979940e258d8b7ee56e3be3b5acd18afe13c704068"
     },
     {
       "path": "四个模型说明.md",
-      "bytes": 13407,
-      "sha256": "095a635c2a232e3d5457c6c2c0816d22332b1cdd7edc750755376e0167372077"
+      "bytes": 13471,
+      "sha256": "f595c650da845bd4dab3b0be081c4a661b5a81eb94883cb083a7ae447fa2861e"
     },
     {
       "path": "高斯核拆分的数据层验证/figures/fig01_权重分布_楼x指标.png",

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """产生 OOF 留出预测并用 v3.2 评分器逐折打分（四个配置对应的入口）。
 
-评分器与冻结划分都已随包提供（干净检出即可运行）：
-  - `--scoring-dir` 默认 scoring/，从那里 import
+评分器与冻结划分都是**仓库资产**（不在本包内，本包只引用）：
+  - `--scoring-dir` 默认 `../evaluation_v3_2/`，从那里 import
     `surrogate_scoring_v3_2.evaluate / load_final_policy / make_context`；
-  - `--manifest` 默认 frozen/split_manifest.json（协议 `sdm374.same8.splits.2x5x3.frozen.v1`）。
+  - `--manifest` 默认 `../frozen_data/SDM374_data_splits_frozen_v1.zip`
+    （读取其中的 `SDM374_data_splits_frozen_v1/split_manifest.json`，
+      协议 `sdm374.same8.splits.2x5x3.frozen.v1`；也接受解压后的 .json）。
 
 入口命令（在包根目录执行）：
     python run_oof_and_score.py --model gp-ard
@@ -33,6 +35,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 import argparse
 import json
 import sys
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -40,12 +43,33 @@ import pandas as pd
 from scipy import stats
 
 HERE = Path(__file__).resolve().parent
+REPO = HERE.parent
+SPLIT_ZIP = REPO / "frozen_data" / "SDM374_data_splits_frozen_v1.zip"
+SPLIT_MEMBER = "SDM374_data_splits_frozen_v1/split_manifest.json"
+SPLIT_PROTOCOL = "sdm374.same8.splits.2x5x3.frozen.v1"
 sys.path.insert(0, str(HERE))
 import modellib as M  # noqa: E402
 import train_four_models as T  # noqa: E402
 
 TARGET = "ramping"
 POINTS = ("local_order", "local_mae", "global_order", "global_mae", "top1_regret")
+
+
+def load_manifest(path: Path):
+    """读冻结划分：官方 zip 归档（默认）或已解压的 split_manifest.json。"""
+    if path.suffix.lower() == ".zip":
+        with zipfile.ZipFile(path) as archive:
+            try:
+                raw = archive.read(SPLIT_MEMBER)
+            except KeyError:
+                raise SystemExit(f"[前置检查失败] {path} 内缺少 {SPLIT_MEMBER}；"
+                                 f"要求冻结包 SDM374_data_splits_frozen_v1.zip")
+    else:
+        raw = path.read_bytes()
+    data = json.loads(raw.decode("utf-8-sig"))
+    if data.get("protocol_id") != SPLIT_PROTOCOL:
+        raise SystemExit(f"[前置检查失败] 冻结划分协议不符：{data.get('protocol_id')}；要求 {SPLIT_PROTOCOL}")
+    return data
 
 
 def load_scoring(scoring_dir: Path):
@@ -109,10 +133,11 @@ def fit_fold(name, Xtr, ytr, Xte, seed=T.SEED):
 def main():
     ap = argparse.ArgumentParser(description="OOF 生成 + v3.2 逐折评分")
     ap.add_argument("--model", required=True, choices=list(T.CONFIGS))
-    ap.add_argument("--data", default=str(HERE.parent / "dataset_same8" / "train.csv"))
-    ap.add_argument("--manifest", default=str(HERE / "frozen" / "split_manifest.json"))
-    ap.add_argument("--scoring-dir", default=str(HERE / "scoring"),
-                    help="评分器目录（包内默认为 scoring/）")
+    ap.add_argument("--data", default=str(REPO / "dataset_same8" / "train.csv"))
+    ap.add_argument("--manifest", default=str(SPLIT_ZIP),
+                    help="冻结划分：仓库 frozen_data/SDM374_data_splits_frozen_v1.zip（默认）或解压后的 .json")
+    ap.add_argument("--scoring-dir", default=str(REPO / "evaluation_v3_2"),
+                    help="评分器目录：仓库根 evaluation_v3_2/（默认）")
     ap.add_argument("--outdir", default=str(HERE / "scores" / "regen"))
     ap.add_argument("--tree-oof", default=None, help="blend 必需的逐折树模型预测 CSV")
     ap.add_argument("--seed", type=int, default=T.SEED)
@@ -120,8 +145,8 @@ def main():
     a = ap.parse_args()
 
     for label, path, hint in (
-            ("评分器目录", Path(a.scoring_dir), "要求包含 surrogate_scoring_v3_2.py 与 EVALUATION_POLICY_V3_2.json"),
-            ("冻结划分", Path(a.manifest), "要求 sdm374.same8.splits.2x5x3.frozen.v1 的 split_manifest.json"),
+            ("评分器目录", Path(a.scoring_dir), "需要仓库根下 evaluation_v3_2/（含 surrogate_scoring_v3_2.py 与 EVALUATION_POLICY_V3_2.json）"),
+            ("冻结划分", Path(a.manifest), "需要仓库根下 frozen_data/SDM374_data_splits_frozen_v1.zip（内含 split_manifest.json）"),
             ("数据集", Path(a.data), "要求 dataset_same8/train.csv（2048 行）")):
         if not path.exists():
             raise SystemExit(f"[前置检查失败] {label}不存在：{path}\n  {hint}")
@@ -132,7 +157,7 @@ def main():
     y = df[TARGET].to_numpy(float)
     ids = df["candidate_id"].to_numpy()
     q01, q90 = float(np.quantile(y, 0.01)), float(np.quantile(y, 0.90))
-    manifest = json.loads(Path(a.manifest).read_text(encoding="utf-8"))
+    manifest = load_manifest(Path(a.manifest))
 
     tree = None
     if a.model == "blend_xgb_w20x3":
