@@ -1,0 +1,86 @@
+{
+  "model": "tail5opt",
+  "schema": "sdm374.model_library.v1",
+  "feature_order": [
+    "b1_cost",
+    "b1_carbon",
+    "b1_peak",
+    "b1_discomfort",
+    "b1_degradation",
+    "b1_ramping",
+    "b1_resilience",
+    "b2_cost",
+    "b2_carbon",
+    "b2_peak",
+    "b2_discomfort",
+    "b2_degradation",
+    "b2_ramping",
+    "b2_resilience",
+    "b3_cost",
+    "b3_carbon",
+    "b3_peak",
+    "b3_discomfort",
+    "b3_degradation",
+    "b3_ramping",
+    "b3_resilience"
+  ],
+  "feature_contract": "建筑1→建筑3；每栋 cost→carbon→peak→discomfort→degradation→ramping→resilience",
+  "target": "ramping",
+  "target_transform": "raw",
+  "seed": 2026,
+  "hyperparameters": {
+    "transform": "raw",
+    "bounds": [
+      0.03,
+      6.0
+    ],
+    "weighted_opt": true,
+    "weight_k": 5.0,
+    "n_starts": 3,
+    "maxiter": 80,
+    "noise": 0.03,
+    "noise_bounds": [
+      0.001,
+      0.3
+    ]
+  },
+  "kernel": {
+    "type": "BlockARD(Matern-5/2, ARD, 3 blocks) + 全区域交互 + WhiteKernel",
+    "n_blocks": 3,
+    "per_block": 7,
+    "nu": 2.5,
+    "ls_bounds": [
+      0.03,
+      6.0
+    ],
+    "learn_global_weight": false
+  },
+  "fitted": {
+    "length_scale": [
+      0.31392173427185927,
+      0.27425905678730417,
+      1.2270314188492517,
+      6.0,
+      0.20419918900052064,
+      0.20790474109035664,
+      6.0
+    ],
+    "global_weight": 0.1,
+    "noise_level": 0.0012183778200141008,
+    "loc": 154.85604409705368,
+    "scale": 19.11925806844816,
+    "theta_log": [
+      -1.1586115780540789,
+      -1.2936821565350471,
+      0.20459777163504933,
+      1.791759469228055,
+      -1.588659344853383,
+      -1.5706752797107721,
+      1.791759469228055,
+      -6.71023496073968
+    ]
+  },
+  "extra": {
+    "weight_k": 5.0
+  }
+}

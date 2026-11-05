@@ -1,0 +1,77 @@
+{
+  "model": "tail5opt",
+  "oof": {
+    "protocol": "sdm374.same8.splits.2x5x3.frozen.v1",
+    "n": 4096,
+    "source": "外推方案\\gp提分\\results\\pred_tail5opt.csv",
+    "overall": {
+      "kind": "raw error (lower is better)",
+      "n": 4096,
+      "rmse": 5.331952607249219,
+      "mae": 3.4244376392831968,
+      "r2": 0.8856442570145091,
+      "bias": -0.014178699714152226
+    },
+    "low_q01": {
+      "kind": "raw error (lower is better); set = actual <= q01; n=42 prediction rows = 21 unique x 2 repeats",
+      "n": 42,
+      "rmse": 4.338222370794611,
+      "mae": 3.5829916466786704,
+      "r2": -4.624722674151734,
+      "bias": 2.607880516118118
+    },
+    "high_q90": {
+      "kind": "raw error (lower is better); set = actual > q90",
+      "n": 410,
+      "rmse": 11.395400875132191,
+      "mae": 7.553393022302445,
+      "r2": 0.2868643407469976,
+      "bias": -3.9262545689379005
+    },
+    "v32": {
+      "kind": "score (higher is better); v3.2 full marks: local_order 35 / local_mae 15 / global_order 15 / global_mae 15 / top1_regret 20",
+      "score_mean": 83.07663171333436,
+      "score_std": 4.712086249554305,
+      "p_local_order_mean": 27.05347779101721,
+      "p_local_order_std": 3.6078860664687653,
+      "p_local_mae_mean": 12.089355685737777,
+      "p_local_mae_std": 0.3066538488032087,
+      "p_global_order_mean": 14.126592060647443,
+      "p_global_order_std": 0.1604981619779113,
+      "p_global_mae_mean": 12.323805791667695,
+      "p_global_mae_std": 0.09023532625058683,
+      "p_top1_regret_mean": 17.483400384264222,
+      "p_top1_regret_std": 2.361322998502388
+    }
+  },
+  "in_sample": {
+    "note": "全量 2048 行上的拟合值（in-sample，乐观，不能当泛化指标）",
+    "n": 2048,
+    "overall": {
+      "kind": "raw error (lower is better) (in-sample interpolation, NOT generalization)",
+      "n": 2048,
+      "rmse": 0.14538936602048932,
+      "mae": 0.09450936139719684,
+      "r2": 0.9999149742044041,
+      "bias": -0.002655247529581531
+    },
+    "low_q01": {
+      "kind": "raw error (lower is better) (in-sample interpolation)",
+      "n": 21,
+      "rmse": 0.02161298333451227,
+      "mae": 0.018083115368951786,
+      "r2": 0.9998603930842462,
+      "bias": 0.010907196154983282
+    },
+    "high_q90": {
+      "kind": "raw error (lower is better) (in-sample interpolation)",
+      "n": 205,
+      "rmse": 0.16728470098135262,
+      "mae": 0.11022175265683384,
+      "r2": 0.9998463171567844,
+      "bias": -0.05910135719945085
+    }
+  },
+  "r2_direction": "higher is better (R2 is goodness of fit, not an error; only RMSE/MAE/bias in each block are 'raw error, lower is better')",
+  "low_q01_definition": "actual <= q01 (=123.1244, numpy linear quantile) of the 2048 unique labels; 42 prediction rows = 21 unique x 2 repeats. Note: 122.875 is not q01: it is the 21st smallest label (exact 122.87519074) truncated to 3 decimals; {actual <= 122.875} has 20 unique rows / 40 prediction rows, while {actual <= q01=123.1244} has 21 unique / 42 rows"
+}

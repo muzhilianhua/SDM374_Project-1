@@ -1,0 +1,127 @@
+{
+  "model": "hp_wlearn",
+  "created_local": "2026-11-04T11:37:39",
+  "train_rows": 2048,
+  "data": {
+    "path": "dataset_same8\\train.csv",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "protocol": {
+    "id": "sdm374.same8.splits.2x5x3.frozen.v1",
+    "status": "FROZEN",
+    "manifest": "frozen_data\\SDM374_data_splits_frozen_v1.zip#SDM374_data_splits_frozen_v1/split_manifest.json"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.1.3",
+    "scipy": "1.15.3",
+    "scikit-learn": "1.6.1",
+    "joblib": "1.4.2",
+    "pandas": "2.2.3",
+    "platform": "win32"
+  },
+  "fit": {
+    "method": "sklearn GPR (custom BlockARD kernel) + L-BFGS-B 多起点",
+    "log_marginal_likelihood": -550.3797488011317,
+    "theta_log": [
+      -3.1475137201551053,
+      -1.4277269894375133,
+      -1.580674811322015,
+      -0.016504769850130458,
+      1.7257234415595715,
+      -1.854525099979646,
+      -1.8616013996813872,
+      1.3205248844917359,
+      -5.66560796763465
+    ],
+    "trials": [
+      {
+        "theta_log": [
+          -3.1475592079096035,
+          -1.4276993034872199,
+          -1.5807203043168039,
+          -0.016506585984178215,
+          1.725671288328606,
+          -1.8545675930128265,
+          -1.8616420307683033,
+          1.3215359141531162,
+          -5.665626837110755
+        ],
+        "fun": 550.3797513063009,
+        "nit": 41,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      },
+      {
+        "theta_log": [
+          -3.1475137201551053,
+          -1.4277269894375133,
+          -1.580674811322015,
+          -0.016504769850130455,
+          1.7257234415595715,
+          -1.854525099979646,
+          -1.8616013996813872,
+          1.3205248844917359,
+          -5.66560796763465
+        ],
+        "fun": 550.3797488011317,
+        "nit": 52,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      },
+      {
+        "theta_log": [
+          -3.1469083055249247,
+          -1.4275282955899327,
+          -1.580760926850439,
+          -0.01645892069102335,
+          1.662571254696784,
+          -1.8545488853152639,
+          -1.8616610912994795,
+          1.3598987838923773,
+          -5.666580230628017
+        ],
+        "fun": 550.3806128874241,
+        "nit": 35,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      },
+      {
+        "theta_log": [
+          -3.1473968744161134,
+          -1.4277190629412904,
+          -1.5806585568145262,
+          -0.016526112152403356,
+          1.7261266254691503,
+          -1.8545146636008747,
+          -1.861612720342919,
+          1.3202791382185932,
+          -5.665878892642633
+        ],
+        "fun": 550.379748907757,
+        "nit": 43,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      }
+    ],
+    "seconds": 1946.2583894999998,
+    "length_scale_bound_report": {
+      "cost": "free",
+      "carbon": "free",
+      "peak": "free",
+      "discomfort": "free",
+      "degradation": "free",
+      "ramping": "free",
+      "resilience": "free"
+    }
+  },
+  "artifacts": {
+    "model.npz": "纯数组载荷（np.savez_compressed，allow_pickle=False），numpy 1.24.x / 2.x 通用",
+    "params.json": "超参与元数据（schema/kind/feature_order/loc/scale/noise/global_weight 等）"
+  },
+  "notes": "变体 1a/1b/1c/1d：多起点 + 更多迭代 + 上界 6；参数级差异见 config.json。",
+  "uncertainty": {
+    "kind": "gp_posterior",
+    "interface": "predict(x, return_std=True)"
+  }
+}

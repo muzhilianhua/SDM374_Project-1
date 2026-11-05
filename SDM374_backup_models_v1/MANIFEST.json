@@ -1,0 +1,413 @@
+{
+  "package": "SDM374_backup_models_v1",
+  "purpose": "四个可直接预测的代理模型（不含 A1），加载即预测，无需重训",
+  "models": [
+    "gp-ard",
+    "tail5opt",
+    "hp_wlearn",
+    "blend_xgb_w20x3"
+  ],
+  "excluded": {
+    "A1_linear_trend_gp": "趋势项无界、属于参数假设，只能生成待实测候选，不作为可交付预测模型"
+  },
+  "feature_contract": {
+    "n_features": 21,
+    "order": [
+      "b1_cost",
+      "b1_carbon",
+      "b1_peak",
+      "b1_discomfort",
+      "b1_degradation",
+      "b1_ramping",
+      "b1_resilience",
+      "b2_cost",
+      "b2_carbon",
+      "b2_peak",
+      "b2_discomfort",
+      "b2_degradation",
+      "b2_ramping",
+      "b2_resilience",
+      "b3_cost",
+      "b3_carbon",
+      "b3_peak",
+      "b3_discomfort",
+      "b3_degradation",
+      "b3_ramping",
+      "b3_resilience"
+    ],
+    "readable": "建筑1→建筑3；每栋 cost→carbon→peak→discomfort→degradation→ramping→resilience"
+  },
+  "target": "ramping",
+  "protocol": {
+    "oof": "sdm374.same8.splits.2x5x3.frozen.v1",
+    "scoring": "sdm374.surrogate.tolerance.v3.2"
+  },
+  "external_dependencies": {
+    "dataset": "../dataset_same8/train.csv（仅复算 OOF 评分 / 自检时需要；仓库内已跟踪）",
+    "scoring_dir": "../evaluation_v3_2/（仓库根真实路径，含 surrogate_scoring_v3_2.py + EVALUATION_POLICY_V3_2.json；包内不复制）",
+    "split_manifest": "../frozen_data/SDM374_data_splits_frozen_v1.zip（仓库根真实路径；脚本直接读 zip 内 SDM374_data_splits_frozen_v1/split_manifest.json，协议 sdm374.same8.splits.2x5x3.frozen.v1）"
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 212,
+      "sha256": "c9134cef9353150b5a186c6f7c264b365e456c5de14c0c07e098a1d922ec9da9"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 46,
+      "sha256": "d1cf8f933d42d8cb3bf81d3fef8eb84c8ce91d6bfbe20a98cff74377806977d7"
+    },
+    {
+      "path": "build_manifest.py",
+      "bytes": 3163,
+      "sha256": "ef19ee85ca15df67e474f3bf4ca6664d4c8c59e7d8bd69bd0cf7b4f7edcf1be8"
+    },
+    {
+      "path": "compute_scores.py",
+      "bytes": 9593,
+      "sha256": "c3a926633899878c65491da970edbd82101a7fa658c94d42b75472e70d34b434"
+    },
+    {
+      "path": "load_and_predict.py",
+      "bytes": 18043,
+      "sha256": "bbe9d22b4b234744ed6fc83a72b28298fe8377fc49913f42d799a463fc2505e9"
+    },
+    {
+      "path": "modellib.py",
+      "bytes": 19546,
+      "sha256": "613b90ff995e95e62bcd1e3d90c37e1592680954d5138f02c3c18e908cb71409"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/CHECKSUMS.json",
+      "bytes": 615,
+      "sha256": "58dff52d0e575e2c0919cef61487e7faf97b3bed6acd377276088a03b38a6449"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/config.json",
+      "bytes": 2135,
+      "sha256": "7203c223d5558de6957d05d3e3f3149f3f1a23a5acd500020efe34d10186899e"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/meta.json",
+      "bytes": 2165,
+      "sha256": "474d089fbb55550f650477594e686388ce167e311526ad11c82f6b0fc582abef"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/metrics.json",
+      "bytes": 3036,
+      "sha256": "3e76475ceb4ad43af463b2190625745e627aa871cc14171f354b8e1d48d9b4d8"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/model.npz",
+      "bytes": 342713,
+      "sha256": "daa395e981a2c7d337448d7b79e6a7dab479c100fb2039a24642e925c3cb9d9d"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/params.json",
+      "bytes": 1475,
+      "sha256": "e66bce40b53be4c3558448e74ad47a9708adc78e307b1a3750126a1610baf0d6"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/train_predictions.csv",
+      "bytes": 129509,
+      "sha256": "f6a0ea6bbeae9859be3cb77ab0fbe83ee8b8c7fa63819499637f9a6c4bac3dc9"
+    },
+    {
+      "path": "models/blend_xgb_w20x3/xgb_w20x3_full.joblib",
+      "bytes": 709041,
+      "sha256": "62a928b19c497123ae40734cbe12b23025d7fa4469dca26319928364ef38583f"
+    },
+    {
+      "path": "models/gp-ard/CHECKSUMS.json",
+      "bytes": 520,
+      "sha256": "02e75a6874b4c78c7ab5750669a1d7b14a69cdd05a270a6e5b4de4d9eb814807"
+    },
+    {
+      "path": "models/gp-ard/config.json",
+      "bytes": 1720,
+      "sha256": "273590dcc3a9e90873603b40a42dc47254d0012d4f67d5f3d7b068bc47b429cd"
+    },
+    {
+      "path": "models/gp-ard/meta.json",
+      "bytes": 2175,
+      "sha256": "71a48ef6b335b8c54748395de94b493ec2bdba512c7ff3eeac4764ba3e5810b5"
+    },
+    {
+      "path": "models/gp-ard/metrics.json",
+      "bytes": 2808,
+      "sha256": "c4de32d650b0079a366d642c5c70c33c1357b2a6c12405494166f03bb3f74a14"
+    },
+    {
+      "path": "models/gp-ard/model.npz",
+      "bytes": 342679,
+      "sha256": "c8d359c2ae266f57616cd69de7d1a9c46bcd046c032e69a84511c10075809f9b"
+    },
+    {
+      "path": "models/gp-ard/params.json",
+      "bytes": 667,
+      "sha256": "d1dbe92efebfbff6243626a85a3a8a7befad51f7f22ebd05fe5e2f7458297cbd"
+    },
+    {
+      "path": "models/gp-ard/train_predictions.csv",
+      "bytes": 129551,
+      "sha256": "99217f32e18053cb1f2fded575a7ece4a319c33a8f24ca0ebe4d8f1f2e499bed"
+    },
+    {
+      "path": "models/hp_wlearn/CHECKSUMS.json",
+      "bytes": 520,
+      "sha256": "c3400707e6b7c6971dc33036aa3b0016e99c8ee22cac4ecb38735da12a79e833"
+    },
+    {
+      "path": "models/hp_wlearn/config.json",
+      "bytes": 1791,
+      "sha256": "67c504dab73ab30726934cf79ab7f8dfa635133734300758a51aa85d8f7e05c0"
+    },
+    {
+      "path": "models/hp_wlearn/meta.json",
+      "bytes": 3646,
+      "sha256": "aed20ba3695e86693c79a9de8c389f01d9341f01b5d2638fd328a53de9fdb673"
+    },
+    {
+      "path": "models/hp_wlearn/metrics.json",
+      "bytes": 3023,
+      "sha256": "03de7bc46a701bd2b889a28324555508d6e8e34c819c282be505e39a3dff915a"
+    },
+    {
+      "path": "models/hp_wlearn/model.npz",
+      "bytes": 342694,
+      "sha256": "79183ec72eb010f38189ea2190c979c749f7d5c425a68bc6b149e750ab50dd69"
+    },
+    {
+      "path": "models/hp_wlearn/params.json",
+      "bytes": 683,
+      "sha256": "3f39130001c3fedd8ff4ae5b074981459665c76095b852c65f711a927578d836"
+    },
+    {
+      "path": "models/hp_wlearn/train_predictions.csv",
+      "bytes": 129245,
+      "sha256": "921bbc6f88e5cec3014e1e5993dcde5f3928a5093cefc72a56e940891247461b"
+    },
+    {
+      "path": "models/registry.csv",
+      "bytes": 472,
+      "sha256": "fa49e594e511005ff0218fc71eca705bb006e7e61e85123e33bc151cf641f8d6"
+    },
+    {
+      "path": "models/tail5opt/CHECKSUMS.json",
+      "bytes": 520,
+      "sha256": "3406243bbf4deff0d889218f885908cfa8c00734c4067e72f0a843ee2ca43268"
+    },
+    {
+      "path": "models/tail5opt/config.json",
+      "bytes": 1761,
+      "sha256": "817f465b0d6287ec64fa0495319c282d8b9be95f6dddad907e8906a0bcb4db43"
+    },
+    {
+      "path": "models/tail5opt/meta.json",
+      "bytes": 3113,
+      "sha256": "ed785b9a33530088a6a287a4894d3221823fbe0927593464d0ef1c11810b668f"
+    },
+    {
+      "path": "models/tail5opt/metrics.json",
+      "bytes": 3026,
+      "sha256": "80895afbfe95df7c9d709f7b2d3a08aa098383d033154c64f1990a10197bf73f"
+    },
+    {
+      "path": "models/tail5opt/model.npz",
+      "bytes": 342899,
+      "sha256": "12ef1bffa9f319e99c009b9f6cefcafbfabea2b58089ae9d33e2cd3adcc62bd1"
+    },
+    {
+      "path": "models/tail5opt/params.json",
+      "bytes": 666,
+      "sha256": "12651a1344e0a9a7d4780a2c41d6e66ff4b1184ad7d51746aa21c44e6cf2d6df"
+    },
+    {
+      "path": "models/tail5opt/train_predictions.csv",
+      "bytes": 129500,
+      "sha256": "72c0ad238109e5ef6143da0945a7b5871084d681c2d15b9a68e20ab3f48a909c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 14465,
+      "sha256": "7de82945e4fe7128c292bbe299db265a6e498977d5c0c79d9d2981e2f6ee6296"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 416,
+      "sha256": "f745aa040db9ed611d6058402199507944d42bd97a03c0be8cc1c4b7037d46e2"
+    },
+    {
+      "path": "run_oof_and_score.py",
+      "bytes": 11474,
+      "sha256": "c1d4c6b393bc579d83aecde54bd8640b154067b36dcf5501621674153ffd3e1c"
+    },
+    {
+      "path": "scores/fold_scores_all.csv",
+      "bytes": 850,
+      "sha256": "d853939515688462d44f577e765303fd92cf966e48631829c7a94e700707c054"
+    },
+    {
+      "path": "scores/model_scores_oof.csv",
+      "bytes": 1194,
+      "sha256": "0f5a055bc8f178c82a8998df225e9c85aa22783ab00187712bacb66c571779ef"
+    },
+    {
+      "path": "scores/oof_pred_blend_xgb_w20x3.csv.gz",
+      "bytes": 123247,
+      "sha256": "b88da27194dd5c754a0c116c7a6977fd530809280ce381a6c63207a726bb4b71"
+    },
+    {
+      "path": "scores/oof_pred_gp-ard.csv.gz",
+      "bytes": 123275,
+      "sha256": "f5ca26ed78442c125f68381f008c734a8ff51929133ca0ce274d5874fb42a159"
+    },
+    {
+      "path": "scores/oof_pred_hp_wlearn.csv.gz",
+      "bytes": 123060,
+      "sha256": "1bfe42f05a7ea6f0b221956575194d2350430d9de8bfbb2d1c92d0b1ee1ddb36"
+    },
+    {
+      "path": "scores/oof_pred_tail5opt.csv.gz",
+      "bytes": 123314,
+      "sha256": "2f47052d61617c8ad0bfbda552ee013c8084f3430417e2e25c8bdad2a8afcede"
+    },
+    {
+      "path": "scores/paired_delta_vs_gp-ard.csv",
+      "bytes": 531,
+      "sha256": "e72f913030fc439042e1c62c7eae85b1b7c81e149b692768dd3ad4fc4b22ec1d"
+    },
+    {
+      "path": "scores/scores_blend_xgb_w20x3.csv",
+      "bytes": 3425,
+      "sha256": "d0c5062d7ce431ddaa9e248beef1fdae6e8e4ed3b4ef7db0fe77b0ea643c7f96"
+    },
+    {
+      "path": "scores/scores_gp-ard.csv",
+      "bytes": 3426,
+      "sha256": "e03c1241faf23a72ec71018e0a3f2c81ad1bc177618efcce0d9bbf1ec480489e"
+    },
+    {
+      "path": "scores/scores_hp_wlearn.csv",
+      "bytes": 3428,
+      "sha256": "f08bb422dd9eaa882d37d80f1954e3717968b498a18f7405996dbad8e3523d2e"
+    },
+    {
+      "path": "scores/scores_tail5opt.csv",
+      "bytes": 3446,
+      "sha256": "b6d05a561dcbbca6c5a766fabab35856f73c18abd5c13fe1bea927beef99e40c"
+    },
+    {
+      "path": "tests/test_contract.py",
+      "bytes": 4847,
+      "sha256": "74673c27ea8be7a724eff12e7046d00320f4f9ac282a84317e0713d80c511c3c"
+    },
+    {
+      "path": "tests/test_entry.py",
+      "bytes": 11519,
+      "sha256": "1511d6d519a001653ffb892f5a6cb011ab335759c7223407e0102ebbc6882d56"
+    },
+    {
+      "path": "tests/test_probe_seed.py",
+      "bytes": 4217,
+      "sha256": "0f53dd28dacbab96a1cbab9c44c35c2e1c8e54ff0b713762796f33b829d34a45"
+    },
+    {
+      "path": "tests/test_simplex.py",
+      "bytes": 6848,
+      "sha256": "b1982274cae1754ed34d819b8057b49043aaac84c3264d71f34c219fc98f3d81"
+    },
+    {
+      "path": "tests/test_std_contract.py",
+      "bytes": 5182,
+      "sha256": "c9c5557e6412fbcd8206602da8687e17a2d11784f187040a6ea30af3b3165f8a"
+    },
+    {
+      "path": "train_four_models.py",
+      "bytes": 22455,
+      "sha256": "430c59cb311b3f3ad74904548ac679e73712e5cedc8b06d0639d5c97630335e9"
+    },
+    {
+      "path": "verify_hashes.py",
+      "bytes": 5283,
+      "sha256": "5b4d2f2c78eb70076d6727979940e258d8b7ee56e3be3b5acd18afe13c704068"
+    },
+    {
+      "path": "四个模型说明.md",
+      "bytes": 18002,
+      "sha256": "1c3ba4f705bf78cdb0cf7c2eccf36de579c47967fde42ca7131be37b11e49bcc"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig01_权重分布_楼x指标.png",
+      "bytes": 112223,
+      "sha256": "b8bd44fd7aac69c3bf72592cc1b4930fd3d889bfc3a45f25856e81bd661bbfce"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig02_R分布_低尾标记.png",
+      "bytes": 93186,
+      "sha256": "5d8dd04217eac744646c85370623701632548e84d6936279101431af59f7ebf2"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig03_近邻对dR分解.png",
+      "bytes": 647058,
+      "sha256": "e9c2338a9dbdd5c5616b9fce0641c3fe67dc377c75f6a0ad97ab48f534e55d64"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig04_按楼置换重要性.png",
+      "bytes": 100477,
+      "sha256": "5a0ae355add156c256d92985653a8e8ccb351445be954af5c1a745e887d1c3ae"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig05_单栋极端vs三栋极端.png",
+      "bytes": 179224,
+      "sha256": "daf9603489180ba372ffc4a6371e538b5191ebbdef199bcc0e421dbc1a97924f"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig06_敏感性热图_3x7.png",
+      "bytes": 172715,
+      "sha256": "8716bfa9d82559a9186e039a432d0af3198ea34d0cd5d13fc5c28d215941dea6"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig07_指标聚合敏感性.png",
+      "bytes": 193679,
+      "sha256": "961993ba3329d2b5ec510c81adcefef9c6079da21c5000336fb79aa4b7f76d0c"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig08_敏感性可估性.png",
+      "bytes": 219000,
+      "sha256": "a9d6f385c95650785b5c5280fa8e2b0774566b6577f58d563d0ddf2bcaa17402"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig09_长度尺度vs敏感性.png",
+      "bytes": 140033,
+      "sha256": "d1039e080e4acfde32dfe3099444c623dbfd026ae0c1adbc6b94e3198833c904"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig10_跨楼项贡献分解.png",
+      "bytes": 226878,
+      "sha256": "3a8e675be76ea2efbeacd19cfc21007e96e0fa4055fb9d95d10bbb1c1f11c175"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig11_跨楼系数分布.png",
+      "bytes": 173245,
+      "sha256": "5bb6f6454452a777505bbf93e5bdcf71891a2a894d2ac814fab1ce17bba635e1"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/figures/fig12_跨楼耦合分层.png",
+      "bytes": 147503,
+      "sha256": "7b69610a4bf3707979abf00dbb49e675fef32bf860d566b50ea30d49a90549a9"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/附录_完整分析.md",
+      "bytes": 24347,
+      "sha256": "e1f12721878ec71da5c75ad2b2e3ca4bf39b8125b215c1c25b0006522ec29b18"
+    },
+    {
+      "path": "高斯核拆分的数据层验证/高斯核拆分的数据层验证.md",
+      "bytes": 4967,
+      "sha256": "94876e6b3d5b3c92e352313929c0aec0007b7d6c9229a444b8258410a19718e6"
+    }
+  ],
+  "line_ending": "所有文本按 LF 规范化后计算（见 .gitattributes）；校验请用 verify_hashes.py"
+}
