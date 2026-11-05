@@ -49,7 +49,7 @@ and record the new decision here with a date.
   pairs of the frozen outer splits and calibrates P(improvement) per held-out split. On unique pairs,
   agreeing GPs were right 79 % of the time against about 29 % when they disagreed; ExtraTrees adds nothing.
   The calibrated P(R < R(`p01969`)) is flat for steps 0.04–0.10 along direction 14840.
-  Recommended W: `analysis/offline_submission2/delivery/sign/max-p.json` (step 0.08).
+  Recommended W at the time: `analysis/offline_submission2/delivery/sign/max-p.json` (then step 0.08).
   *Corrected after the PR #11 review*: the two CV repeats re-created most pairs, so the split holdout
   reused labels. With held-out candidates purged (commit `228dcae`), the top calibration bin is 0.83
   predicted against 0.63 observed. Unique agreeing pairs improved 79 % of the time. A defensible but
@@ -59,7 +59,11 @@ and record the new decision here with a date.
   accuracy (true-low MAE 3.59 vs 6.5–7.2) and the closest full-fit P1 (121.49 vs 113.0–115.2). Both GPs fail
   all three region-holdout tasks with false breakthroughs (predicted 111–118, measured 120.6–124.6), so
   their low predictions far from data can be several points optimistic. With `p01969` in training they
-  claimed no test row below it. This argues for weighing the shorter d0.05 step more seriously.
+  claimed no test row below it. Their failing picks lay 0.31–0.39 from any training row.
+  *Final rule* (`ab6cbf0`): ExtraTrees predicts every step from `p01969` as worse, so its veto only capped
+  step length and is replaced by an explicit cap: steps ≤ 0.05, where the calibrated probability has
+  already plateaued (from 0.04), and both GPs at z > 0.5. Recommended W: `delivery/sign/max-p.json`,
+  direction 14840 at step 0.05, identical to `consensus-d0.05.json`. Defensible, unvalidated reading 0.6–0.8.
 - **Offline submission 1 failed the bar** (2026-11-02). Submitted C's consensus challenger
   (`20261029-132648-optimize-consensus-r075-2026` rank 1, identical to `SUBMISSION_READY/01_FIRST_REAL_TEST`);
   real R = **119.7121**, 3.95 above `p01969` and 0.62 above baseline W\*. Predictions for the same W: stack

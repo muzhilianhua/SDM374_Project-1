@@ -1,7 +1,7 @@
 {
-  "created": "2026-11-05T16:51:19",
+  "created": "2026-11-05T18:02:20",
   "git": {
-    "commit": "228dcaed80617431b28f510d856198cf430ebc00",
+    "commit": "4e06606cdf194ac0c7fd07ea57dcc19a7d5bc4d4",
     "dirty": false
   },
   "packages": {
@@ -53,13 +53,15 @@
       0.1
     ],
     "max_cos_to_failure": 0.5,
-    "et_veto": 4.9
+    "max_step": 0.05,
+    "agree_z": 0.5,
+    "extratrees": "reported only, not a veto"
   },
   "max_p": {
-    "step": 0.08,
+    "step": 0.05,
     "direction": 14840,
-    "p_both": 0.8555765961061785,
-    "ball_min_p_both": 0.8354072363403053,
+    "p_both": 0.8444094926855585,
+    "ball_min_p_both": 0.8084795546344667,
     "purged_bin_observed": 0.631578947368421
   },
   "calibration_holdout": "leave one outer split out; training rows involving its candidates (as candidate or anchor) are purged; z features are not nested"

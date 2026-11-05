@@ -5,13 +5,12 @@ results: training row `p01969` 115.7648 (the bar, decision 17), baseline W\* 119
 submission 1 119.71206678869203. Nothing here is a measured score; every number below is a surrogate
 prediction.
 
-**Recommended W: [`delivery/sign/max-p.json`](delivery/sign/max-p.json)**, a step of 0.08 from `p01969`
-along consensus direction 14840, chosen by the sign study below as the step with the highest calibrated
-probability of beating `p01969`. It passes `check_weights` (minimum weight 0.038). Its probability is not
-independently validated: the purged backtest observed 0.63 in the calibration bin it falls in, and the most
-similar backtest pairs improved 82–88 % of the time (see "What the probability means"). It supersedes
-the first recommendation, `delivery/consensus-d0.05.json` (same direction, a shorter step). The submission
-itself and its real R are recorded in `docs/decisions.md` when made.
+**Recommended W: [`delivery/sign/max-p.json`](delivery/sign/max-p.json)**, a step of 0.05 from `p01969`
+along consensus direction 14840. It is chosen by the sign study's final rule: steps of at most 0.05, both
+GP judges clearly saying "better" (z > 0.5), ranked by the worst calibrated probability on a radius-0.01
+ball. The file is identical to `delivery/consensus-d0.05.json` and passes `check_weights` (minimum weight
+0.035). Its probability is not independently validated (see "What the probability means"); a defensible
+reading is 0.6–0.8. The submission itself and its real R are recorded in `docs/decisions.md` when made.
 
 Reproduce from the repository root (about 4 minutes; all evidence below comes from commit `e4fa38f`,
 clean):
@@ -30,7 +29,7 @@ cancels part of each model's level bias.
 |---|---|---|
 | Additive ARD GP (`ard`) | `bayes-search`, `additive-ard`, as `experiments/bayes-study-gp-ard.toml` | Best v3.2, 83.15 (`20261102-195112-evaluate-bayes-study-gp-ard`). Right sign at both real points: baseline +5.23 (real +3.33), submission 1 +5.70 (real +3.95). Where it predicts below 120, the real value is 1.49 higher on average (`delivery/ard_oof_calibration.csv`). |
 | Local GP (`lgp`) | `local-gp`, new in this study: Matern 5/2 ARD over all 21 weights, fitted on the 800 rows nearest the best row | Different structure from `ard` (no additive-by-building assumption). Predicted submission 1 at 120.12 (real 119.71). Poor global ranker: v3.2 64.50 (`20261105-145418-evaluate-local-gp-v32`) because rows far from the anchor fall back to its local mean; std_coverage 0.70. Where it predicts below 120, the real value is 1.14 higher on average. |
-| ExtraTrees (`et`) | `extratrees` defaults | Veto only. Right sign at both real points but overstates harm by 1–2.7, and cannot represent the `p01969` dip (predicts 121.17 there). A candidate is ineligible when its gain exceeds +4.9, its gain at submission 1. |
+| ExtraTrees (`et`) | `extratrees` defaults | Reported only. It cannot represent the `p01969` dip (predicts 121.17 there) and predicts every step from it as worse (0 % of 19,483 directions at any step, median gain +0.64 at 0.01 rising to +4.96 at 0.08; `delivery/sign/scan_by_step.csv`), so its gain measures step length, not improvement. Its "right sign" at both real points carries no information because both were worse than `p01969`. Checks 1–3 below used its +4.9 gain at submission 1 as a veto; the final rule replaces that with an explicit step cap. |
 | Variants | `*_real`: fitted with the two real points added; `*_loo`: fitted without `p01969`; `lgp400` / `lgp1200`: 400 / 1200 neighbours | Not used to search, so they check the search's choices out of sample. |
 
 Boosted trees (stack, histgb, xgboost) are not judges: they predicted 107–111 for submission 1, which
@@ -102,7 +101,7 @@ uv run python analysis/offline_submission2/sign_study.py --reuse-backtest   # sc
 ```
 
 The backtest pairs come from the full run at commit `6e3954d`; calibration, scan and finalists from
-`--reuse-backtest` at `228dcae`. The backtest code did not change in between. Both commits are clean.
+`--reuse-backtest` at `4e06606`. The backtest code did not change in between. Both commits are clean.
 
 **Joint-posterior z-score.** For each judge, z = −gain / √(SD(gain)² + noise²). SD(gain) is the latent
 posterior SD of f(w) − f(anchor), including their covariance; noise is the judge's fitted white noise,
@@ -131,8 +130,9 @@ standing for roughness the data cannot resolve. Positive z means the judge expec
   The pairs closest to the recommended point (z_ard > 1.3 and z_lgp > 0.6, unique) improved 9 of 11 times.
 
 - Adding ExtraTrees gain or distance to the calibration did not improve its split-holdout log loss
-  (0.0345 → 0.0344 / 0.0345, before the purge). The +4.9 ExtraTrees veto is kept only as the guard learned from
-  submission 1.
+  (0.0345 → 0.0344 / 0.0345, before the purge). ExtraTrees predicted an improvement for only 2 of 2,682
+  unique pairs, both wrong (`extratrees_backtest.csv`). Of the 28 agreeing pairs, the 19 its +4.9 veto would have rejected improved
+  74 % of the time.
 - Selection check (`selection_backtest.csv`, purged): when each anchor submits its neighbour with the
   highest calibrated probability, 0.45 is observed against 0.44 predicted overall, and 0.69 against 0.74
   for picks above 0.5.
@@ -141,16 +141,27 @@ standing for roughness the data cannot resolve. Positive z means the judge expec
 - Scope: the 19,483 directions of check 2, at steps 0.01 to 0.10.
 - Calibrated probability by step (fitted on unique pairs): it rises from 0.72 at 0.01 to about 0.86 at
   0.04, then stays flat through 0.10.
-- Finalist rule: both judges must say better (z > 0.3), and the whole radius-0.01 ball must stay inside
-  the ExtraTrees veto. Finalists are then ranked by their worst calibrated probability on that ball.
+- Finalist rule (commit `ab6cbf0`, outputs regenerated at `4e06606`):
+  - **Step at most 0.05.** The calibrated probability stops rising at 0.04, so a longer step buys no
+    supported probability but adds risks the models cannot see: unresolved roughness below 0.165, the
+    closest pair spacing in the data, and selection among more directions. The GPs' measured failures
+    (submission 1 at 0.58; V3.3.2 region-holdout picks 0.31–0.39 from any training row) lie far beyond 0.05,
+    where the prior correlation with `p01969` is still 0.99.
+  - **Both judges clearly agree: z_ard > 0.5 and z_lgp > 0.5.** Among unique backtest pairs, those where
+    only one judge was clearly confident improved about 67 % of the time, against 79 % when both were.
+  - **Ranking:** eligible finalists are ranked by their worst calibrated probability on the radius-0.01 ball.
+  - **ExtraTrees** gain is reported, not used.
 
-| Finalist | Calibrated P | Ball worst | z ARD / local GP | ExtraTrees gain (ball max) |
-|---|---:|---:|---|---:|
-| **direction 14840, step 0.08** | **0.856** | **0.835** | 1.57 / 0.88 | 3.93 (4.25) |
-| direction 15713, step 0.05 | 0.861 | 0.831 | 1.90 / 0.34 | 2.39 (2.91) |
-| direction 14840, step 0.07 | 0.854 | 0.831 | 1.58 / 0.84 | 3.44 (4.14) |
-| direction 14840, step 0.05 | 0.844 | 0.808 | 1.58 / 0.71 | 1.91 (2.78) |
-| direction 14840, step 0.10 | 0.854 | 0.838 | 1.54 / 0.92 | 4.47 (5.10, vetoed) |
+| Finalist | Eligible | Calibrated P | Ball worst | z ARD / local GP | ExtraTrees gain |
+|---|---|---:|---:|---|---:|
+| **direction 14840, step 0.05** | **yes** | **0.844** | **0.808** | 1.58 / 0.71 | 1.91 |
+| direction 7986, step 0.05 | yes | 0.837 | 0.800 | 1.63 / 0.51 | 2.70 |
+| direction 14840, step 0.04 | yes | 0.833 | 0.786 | 1.55 / 0.62 | 1.49 |
+| direction 15713, step 0.05 | no (z_lgp 0.34) | 0.861 | 0.831 | 1.90 / 0.34 | 2.39 |
+| direction 14840, step 0.08 | no (step) | 0.856 | 0.835 | 1.57 / 0.88 | 3.93 |
+
+  The previous rule (z > 0.3 and the ExtraTrees veto) chose direction 14840 at step 0.08. The two choices
+  differ by 0.03 in ball-worst probability, well inside the calibration's uncertainty.
 
 **What the probability means.** The calibrated values above are model outputs, not validated success
 probabilities. All finalists fall in the top calibration bin, where the purged backtest observed 0.63
@@ -162,7 +173,7 @@ by less than this uncertainty, so the choice among them rests on agreement and t
 the probability gaps.
 
 Remaining risks:
-- The backtest measures sign skill at 0.21–0.45 and applies it to a step of 0.08.
+- The backtest measures sign skill at 0.21–0.45 and applies it to a step of 0.05.
 - `p01969` is the global best row, so it is a stricter anchor than most backtest anchors. Each split's best
   anchor contributed 316 pairs but only one pair where both judges were confident.
 - The direction is the best of many.
@@ -210,9 +221,8 @@ For the recommended step this is mixed evidence.
   space, and the step leaves `p01969` into space with no row within 0.3.
 - **For:** in the real case the anchor `p01969` is known; the GPs measure the gain from it; and the
   supported tasks show no false claims of beating a known best.
-- **Practical reading:** keep the direction, and weigh the shorter step d0.05
-  (`delivery/consensus-d0.05.json`) more seriously. Its calibrated probability is nearly the same
-  (0.84 against 0.86), and it extrapolates less.
+- **Distance check:** the failing picks lay 0.31–0.39 from any training row, while the recommended step
+  is 0.05 from `p01969`. The warning therefore rules out long steps, not the 0.05 step.
 
 The PR #12 boosted recipes, refitted on all rows, give the recommended direction mixed gains:
 
