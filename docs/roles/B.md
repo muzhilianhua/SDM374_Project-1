@@ -23,6 +23,9 @@ Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protoco
 - [x] Gradient-boosted trees `histgb` and `xgboost` (A, 2026-10-29, with B's agreement; B's
       full-data settings): v32_score 72.35 / 73.47, std_coverage 0.696 / 0.687 — runs
       `20261029-073439-evaluate-histgb-v32`, `20261029-073455-evaluate-xgboost-v32`
+- [x] Local judge `local-gp` (A, 2026-11-05, for offline submission 2): Matern ARD GP on the 800 rows
+      nearest the best row. A local judge, not a global surrogate: v32_score 64.50, top1 regret 3.31,
+      std_coverage 0.70 — run `20261105-145418-evaluate-local-gp-v32`; see `analysis/offline_submission2/`
 - [ ] Model leaderboard via `sdm evaluate`: random forest, Gaussian process
       (a read-only probe gave GP-ARD mae 5.02 / top50_recall 0.60 but ~4 min per evaluate), MLP ensemble
 - [ ] Smooth or extrapolation-aware models matter for optimization: see `analysis/coupling/README.md`

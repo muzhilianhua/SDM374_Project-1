@@ -1,0 +1,98 @@
+{
+  "created": "2026-11-05T14:58:06",
+  "git": {
+    "commit": "e4fa38f3b52932c0203598e68ca23e37713b8fc7",
+    "dirty": false
+  },
+  "dataset": {
+    "version": "same8.20261020",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  },
+  "judges": {
+    "ard": {
+      "model": "bayes-search",
+      "params": {
+        "family": "gp",
+        "kernel": "additive-ard",
+        "lengths": [
+          0.5
+        ],
+        "noises": [
+          0.03
+        ],
+        "seed": 2026
+      }
+    },
+    "lgp": {
+      "model": "local-gp",
+      "params": {}
+    },
+    "lgp400/lgp1200": {
+      "model": "local-gp",
+      "params": {
+        "neighbors": "400/1200"
+      }
+    },
+    "et": {
+      "model": "extratrees",
+      "params": {}
+    },
+    "*_real": "fit on the 2048 rows plus baseline W* and submission 1 with their real R",
+    "*_loo": "fit without p01969"
+  },
+  "own_p01969_prediction": {
+    "ard": 115.79416097144686,
+    "ard_real": 115.7940459278112,
+    "ard_loo": 117.64163231849555,
+    "lgp": 116.86423963612825,
+    "lgp_real": 116.8637591326222,
+    "lgp400": 116.49438002042447,
+    "lgp1200": 116.89458595333599,
+    "lgp_loo": 117.93867647287718,
+    "et": 121.16471339151408
+  },
+  "consensus": {
+    "seed": 2026,
+    "directions": 20000,
+    "steps": [
+      0.03,
+      0.05,
+      0.07
+    ],
+    "max_cos_to_failure": 0.5,
+    "et_veto": 4.9,
+    "allowed_directions": 19483,
+    "scored": 57655,
+    "share_both_smooth_gains_negative": {
+      "0.03": 0.234224983313652,
+      "0.05": 0.19559997766486123,
+      "0.07": 0.1838511301014296
+    },
+    "chosen_direction": 14840
+  },
+  "robustness": {
+    "ball_radius": 0.01,
+    "ball_points": 64,
+    "ball_seed": 7
+  },
+  "local_gp_kernel": "1.03**2 * Matern(length_scale=[0.32, 0.329, 3.21, 10, 0.17, 0.219, 10, 10, 2.23, 4.24, 10, 1.13, 0.892, 5.71, 0.446, 0.515, 2.4, 10, 0.239, 0.325, 1.66], nu=2.5) + WhiteKernel(noise_level=0.0265)",
+  "inputs": {
+    "lines": "analysis/bayesian_search/delivery/current/all_candidate_weights.json",
+    "ard_oof": "analysis/bayesian_search/delivery/cli_evidence/20261102-195112-evaluate-bayes-study-gp-ard/predictions.csv.gz",
+    "submission1": "SUBMISSION_READY/01_FIRST_REAL_TEST/weights.json",
+    "baseline": "weights.json"
+  },
+  "real_results": {
+    "baseline": 119.0916,
+    "submission1": 119.71206678869203
+  },
+  "bar": 115.7648,
+  "solver_calls": 0
+}
