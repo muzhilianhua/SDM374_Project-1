@@ -6,11 +6,12 @@ submission 1 119.71206678869203. Nothing here is a measured score; every number 
 prediction.
 
 **Recommended W: [`delivery/sign/max-p.json`](delivery/sign/max-p.json)**, a step of 0.08 from `p01969`
-along consensus direction 14840, chosen by the sign study below to maximize the calibrated probability of
-beating `p01969` (0.89; 0.87 at the worst point of a radius-0.01 ball). It passes `check_weights`
-(minimum weight 0.038). It supersedes the first recommendation, `delivery/consensus-d0.05.json` (same
-direction, calibrated probability 0.88). The submission itself and its real R are recorded in
-`docs/decisions.md` when made.
+along consensus direction 14840, chosen by the sign study below as the step with the highest calibrated
+probability of beating `p01969`. It passes `check_weights` (minimum weight 0.038). Its probability is not
+independently validated: the purged backtest observed 0.63 in the calibration bin it falls in, and the most
+similar backtest pairs improved 82–88 % of the time (see "What the probability means"). It supersedes
+the first recommendation, `delivery/consensus-d0.05.json` (same direction, a shorter step). The submission
+itself and its real R are recorded in `docs/decisions.md` when made.
 
 Reproduce from the repository root (about 4 minutes; all evidence below comes from commit `e4fa38f`,
 clean):
@@ -100,8 +101,8 @@ uv run python analysis/offline_submission2/sign_study.py                    # ab
 uv run python analysis/offline_submission2/sign_study.py --reuse-backtest   # scan only, about 1 minute
 ```
 
-The backtest pairs come from the full run at commit `6e3954d`; the scan and finalists from
-`--reuse-backtest` at `1f005ff`. The backtest code did not change in between. Both commits are clean.
+The backtest pairs come from the full run at commit `6e3954d`; calibration, scan and finalists from
+`--reuse-backtest` at `228dcae`. The backtest code did not change in between. Both commits are clean.
 
 **Joint-posterior z-score.** For each judge, z = −gain / √(SD(gain)² + noise²). SD(gain) is the latent
 posterior SD of f(w) − f(anchor), including their covariance; noise is the judge's fitted white noise,
@@ -113,42 +114,55 @@ standing for roughness the data cannot resolve. Positive z means the judge expec
   GP on the 800 nearest each anchor. This gives 4,256 anchor/test pairs at distances 0.21–0.45; the data
   has no pairs closer than 0.165.
 - Base rate: only 2.2 % of pairs improve on their anchor.
-- Calibration: out-of-split logistic calibration of improvement on (z_ard, z_lgp) is reliable. Predicted
-  0.25 / 0.39 / 0.60 / 0.83 against observed 0.29 / 0.35 / 0.64 / 0.73 (`reliability.csv`). Raw Φ(z_ard)
-  is almost as well calibrated: among the 23 pairs with z_ard > 1, 91 % improved against 92 % predicted.
-- Agreement (`agreement.csv`):
+- Holdout: the two CV repeats re-create most pairs (3,148 of 4,256 records have the same pair in another
+  split), so a plain leave-one-split-out would reuse labels (PR #11 review). Each calibration fold therefore
+  holds out one outer split and drops every training record that involves one of its candidates, as
+  candidate or anchor. Anchor labels stay shared: anchors are known reference rows, as `p01969` is for the
+  real step, and purging them too leaves no improving examples. The z features are not nested (each split's
+  judges saw the other splits' test rows), so leakage is reduced, not removed.
+- Calibration (`reliability.csv`), purged: predicted 0.25 / 0.38 / 0.61 / 0.83 against observed
+  0.35 / 0.40 / 0.61 / 0.63. Before the purge the top bin read 0.73 observed. The top bin is overconfident.
+- Agreement (`agreement.csv`, unique pairs):
 
   | Both judges say better (z > 0.3) | One says better, the other worse |
   |---|---|
-  | 38 pairs, 82 % improved | 41 pairs, about 36 % improved |
+  | 28 pairs, 79 % improved | 24 pairs, about 29 % improved |
 
-- Adding ExtraTrees gain or distance to the calibration does not improve its out-of-split log loss
-  (0.0345 → 0.0344 / 0.0345). The +4.9 ExtraTrees veto is kept only as the guard learned from
+  The pairs closest to the recommended point (z_ard > 1.3 and z_lgp > 0.6, unique) improved 9 of 11 times.
+
+- Adding ExtraTrees gain or distance to the calibration did not improve its split-holdout log loss
+  (0.0345 → 0.0344 / 0.0345, before the purge). The +4.9 ExtraTrees veto is kept only as the guard learned from
   submission 1.
-- Selection check (`selection_backtest.csv`): when each anchor submits its neighbour with the highest
-  calibrated probability, the observed rate matches the prediction (observed 0.45 vs predicted 0.45;
-  observed 0.77 vs predicted 0.75 for picks above 0.5).
+- Selection check (`selection_backtest.csv`, purged): when each anchor submits its neighbour with the
+  highest calibrated probability, 0.45 is observed against 0.44 predicted overall, and 0.69 against 0.74
+  for picks above 0.5.
 
 **Scan (`scan_top.csv`, `scan_by_step.csv`, `finalists.csv`).**
 - Scope: the 19,483 directions of check 2, at steps 0.01 to 0.10.
-- Calibrated probability by step: it rises from 0.76 at 0.01 to about 0.90 at 0.04, then stays flat
-  through 0.10.
+- Calibrated probability by step (fitted on unique pairs): it rises from 0.72 at 0.01 to about 0.86 at
+  0.04, then stays flat through 0.10.
 - Finalist rule: both judges must say better (z > 0.3), and the whole radius-0.01 ball must stay inside
   the ExtraTrees veto. Finalists are then ranked by their worst calibrated probability on that ball.
 
 | Finalist | Calibrated P | Ball worst | z ARD / local GP | ExtraTrees gain (ball max) |
 |---|---:|---:|---|---:|
-| **direction 14840, step 0.08** | **0.890** | **0.873** | 1.57 / 0.88 | 3.93 (4.25) |
-| direction 15713, step 0.05 | 0.896 | 0.870 | 1.90 / 0.34 | 2.39 (2.91) |
-| direction 14840, step 0.07 | 0.889 | 0.868 | 1.58 / 0.84 | 3.44 (4.14) |
-| direction 14840, step 0.05 | 0.881 | 0.849 | 1.58 / 0.71 | 1.91 (2.78) |
-| direction 14840, step 0.10 | 0.889 | 0.875 | 1.54 / 0.92 | 4.47 (5.10, vetoed) |
+| **direction 14840, step 0.08** | **0.856** | **0.835** | 1.57 / 0.88 | 3.93 (4.25) |
+| direction 15713, step 0.05 | 0.861 | 0.831 | 1.90 / 0.34 | 2.39 (2.91) |
+| direction 14840, step 0.07 | 0.854 | 0.831 | 1.58 / 0.84 | 3.44 (4.14) |
+| direction 14840, step 0.05 | 0.844 | 0.808 | 1.58 / 0.71 | 1.91 (2.78) |
+| direction 14840, step 0.10 | 0.854 | 0.838 | 1.54 / 0.92 | 4.47 (5.10, vetoed) |
 
-**What the probability means.** About 0.89 is the most the current information supports. The finalists
-differ by less than the calibration's own uncertainty: its top bin holds 41 pairs and was overconfident
-(0.83 predicted, 0.73 observed). A realistic reading is 0.75–0.89.
+**What the probability means.** The calibrated values above are model outputs, not validated success
+probabilities. All finalists fall in the top calibration bin, where the purged backtest observed 0.63
+(38 pairs, standard error about 0.08) against 0.83 predicted. The backtest pairs most like the recommended
+point, where both judges are confident, did better: 79 % of the 28 unique agreeing pairs and 9 of 11 of
+the closest ones improved. A defensible reading for the recommended W is 0.6–0.8. It is not a validated
+number: the features are not nested, and the best-row case below is barely tested. The finalists differ
+by less than this uncertainty, so the choice among them rests on agreement and the ball check, not on
+the probability gaps.
 
 Remaining risks:
 - The backtest measures sign skill at 0.21–0.45 and applies it to a step of 0.08.
-- `p01969` is the global best row, so it is a stricter anchor than most backtest anchors.
+- `p01969` is the global best row, so it is a stricter anchor than most backtest anchors. Each split's best
+  anchor contributed 316 pairs but only one pair where both judges were confident.
 - The direction is the best of many.

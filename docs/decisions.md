@@ -45,13 +45,15 @@ and record the new decision here with a date.
   real value was 1.1–2.3 higher, and the direction is the best of many, so the rough chance of R < 115.76
   is 45–65 %.
   *Superseded the same day by the sign study* (`analysis/offline_submission2/sign_study.py`, commits
-  `6e3954d` backtest and `1f005ff` scan, both clean). The study back-tests the judges on 4,256 anchor/test
-  pairs of the frozen outer splits and calibrates P(improvement) out of split: it is reliable, and agreeing
-  GPs were right 82 % of the time against about 36 % when they disagreed. ExtraTrees adds nothing to it.
-  On that calibration, P(R < R(`p01969`)) is flat at about 0.89 for steps 0.04–0.10 along direction 14840.
-  Recommended W: `analysis/offline_submission2/delivery/sign/max-p.json` (step 0.08; calibrated 0.89,
-  0.87 at the worst point of a radius-0.01 ball). Realistic reading 0.75–0.89: the top calibration bin was
-  overconfident (0.83 vs 0.73), and the backtest distances are 0.21–0.45.
+  `6e3954d` backtest and `228dcae` scan, both clean). The study back-tests the judges on 4,256 anchor/test
+  pairs of the frozen outer splits and calibrates P(improvement) per held-out split. On unique pairs,
+  agreeing GPs were right 79 % of the time against about 29 % when they disagreed; ExtraTrees adds nothing.
+  The calibrated P(R < R(`p01969`)) is flat for steps 0.04–0.10 along direction 14840.
+  Recommended W: `analysis/offline_submission2/delivery/sign/max-p.json` (step 0.08).
+  *Corrected after the PR #11 review*: the two CV repeats re-created most pairs, so the split holdout
+  reused labels. With held-out candidates purged (commit `228dcae`), the top calibration bin is 0.83
+  predicted against 0.63 observed. Unique agreeing pairs improved 79 % of the time. A defensible but
+  unvalidated reading for the recommended W is 0.6–0.8.
 - **Offline submission 1 failed the bar** (2026-11-02). Submitted C's consensus challenger
   (`20261029-132648-optimize-consensus-r075-2026` rank 1, identical to `SUBMISSION_READY/01_FIRST_REAL_TEST`);
   real R = **119.7121**, 3.95 above `p01969` and 0.62 above baseline W\*. Predictions for the same W: stack

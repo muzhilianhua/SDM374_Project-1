@@ -1,7 +1,7 @@
 {
-  "created": "2026-11-05T15:58:15",
+  "created": "2026-11-05T16:51:19",
   "git": {
-    "commit": "1f005ffd9eb678158268b86ef60149b8aaa9005e",
+    "commit": "228dcaed80617431b28f510d856198cf430ebc00",
     "dirty": false
   },
   "packages": {
@@ -25,17 +25,17 @@
   },
   "calibration": {
     "ard": {
-      "intercept": -0.29507957524029493,
-      "z_ard": 1.59117000315091
+      "intercept": -0.3790804416629995,
+      "z_ard": 1.4874250647156744
     },
     "lgp": {
-      "intercept": -0.7226781696113262,
-      "z_lgp": 1.3801762376398392
+      "intercept": -0.7636910816398021,
+      "z_lgp": 1.3482455740975372
     },
     "both": {
-      "intercept": -0.3010386631456871,
-      "z_ard": 1.1841214666182647,
-      "z_lgp": 0.611471013593254
+      "intercept": -0.41380779897908554,
+      "z_ard": 1.073327337237304,
+      "z_lgp": 0.5791424724204601
     }
   },
   "scan": {
@@ -58,7 +58,9 @@
   "max_p": {
     "step": 0.08,
     "direction": 14840,
-    "p_both": 0.8903284912456255,
-    "ball_min_p_both": 0.8725958339219976
-  }
+    "p_both": 0.8555765961061785,
+    "ball_min_p_both": 0.8354072363403053,
+    "purged_bin_observed": 0.631578947368421
+  },
+  "calibration_holdout": "leave one outer split out; training rows involving its candidates (as candidate or anchor) are purged; z features are not nested"
 }

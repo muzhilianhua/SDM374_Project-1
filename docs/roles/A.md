@@ -18,8 +18,8 @@ only person who sends points to the real evaluator so the 20-call budget is neve
 - [x] Offline submission 1 (2026-11-02): consensus challenger, real R 119.7121, bar not met (Findings)
 - [ ] Before 2026-11-05 end of class: offline submission 2. The bar is R < 115.76 (decision 17) and it is
       chosen without the solver (decision 23). Recommended W: `analysis/offline_submission2/delivery/sign/max-p.json`,
-      a 0.08 step from `p01969` with the highest back-test-calibrated P(R < R(p01969)), about 0.89
-      (realistic 0.75–0.89; README there). Record the real R in decisions.md Findings after submitting
+      a 0.08 step from `p01969` with the highest back-test-calibrated P(R < R(p01969)); after the
+      PR #11 purge fix a defensible, unvalidated reading is 0.6–0.8 (README there). Record the real R in decisions.md Findings after submitting
 - [x] `local-gp` judge plugin (2026-11-05, B's path, added for submission 2): v32_score 64.50,
       std_coverage 0.70 — run `20261105-145418-evaluate-local-gp-v32`
 - [ ] Prepare an evaluator smoke-test checklist (input format, time per point, renormalisation; determinism
