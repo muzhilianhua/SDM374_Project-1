@@ -151,6 +151,31 @@ def _from_dataframe(df):
     return arr.reshape(1, N_FEATURES)
 
 
+SIMPLEX_TOL = 1e-6
+
+
+def _validate_simplex(arr):
+    """每栋 7 项权重必须非负且和为 1（单纯形约束）。
+
+    负权重、和偏离 1 超过 `SIMPLEX_TOL`、NaN/inf 一律抛 ContractError —— 绝不静默接受。
+    """
+    if not np.all(np.isfinite(arr)):
+        raise ContractError("权重中存在 NaN / inf")
+    neg = np.argwhere(arr < 0)
+    if len(neg):
+        r, c = int(neg[0][0]), int(neg[0][1])
+        raise ContractError(
+            f"权重必须非负：第 {r + 1} 组 {FEATURES[c]} = {arr[r, c]:.6g} < 0；"
+            "每栋 7 项权重是单纯形上的比例")
+    sums = arr.reshape(-1, N_BUILDINGS, N_METRICS).sum(axis=2)
+    dev = np.abs(sums - 1.0)
+    if dev.max() > SIMPLEX_TOL:
+        r, b = np.unravel_index(int(dev.argmax()), dev.shape)
+        raise ContractError(
+            f"每栋 7 项权重之和必须为 1（容差 {SIMPLEX_TOL:g}）："
+            f"第 {r + 1} 组 建筑{b + 1} 的和 = {sums[r, b]:.9f}")
+
+
 def pack_weights(obj):
     """把 3×7 权重（或多组）或 21 维向量整理成 (n, 21) 的规范顺序矩阵。
 
@@ -183,6 +208,7 @@ def pack_weights(obj):
 
     if not np.all(np.isfinite(arr)):
         raise ContractError("权重中存在 NaN / inf")
+    _validate_simplex(arr)
     return np.ascontiguousarray(arr, dtype=np.float64)
 
 
@@ -319,6 +345,7 @@ class ModelBundle:
             Xq = Xq.reshape(1, -1)
         if Xq.shape[1] != N_FEATURES:
             raise ContractError(f"查询特征应为 21 维，得到 {Xq.shape}")
+        _validate_simplex(Xq)                       # 直接调用 predict 也必须过单纯形校验
 
         if return_std is None:
             return_std = not return_std_heuristic               # 默认仍取 std（向后兼容）

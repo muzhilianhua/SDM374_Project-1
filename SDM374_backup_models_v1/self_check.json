@@ -123,8 +123,8 @@
   ],
   "hash_verification": {
     "mode": "working-tree",
-    "manifest_files": 71,
-    "checked_hashes": 96,
+    "manifest_files": 72,
+    "checked_hashes": 97,
     "mismatched": 0,
     "missing": 0,
     "extra": 0,

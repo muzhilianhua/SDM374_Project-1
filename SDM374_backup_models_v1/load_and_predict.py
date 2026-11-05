@@ -87,6 +87,15 @@ def _weights_from_csv(df):
     others = [i for i in range(len(cols)) if i not in metric_positions]
     if len(metric_positions) == M.N_METRICS and len(others) == 1:
         building = df.iloc[:, others[0]]
+        # pandas 默认 RangeIndex 落成的附加列（列名 Unnamed: 0，值 0..n-1）视为位置索引，
+        # 按行序映射到 楼1→楼3（既有的"无标签按位置"约定）。
+        extra_norm = norm[others[0]]
+        if extra_norm in ("unnamed:_0", "unnamed_0", "unnamed", "index") and len(df) == M.N_BUILDINGS:
+            vals = pd.to_numeric(building, errors="coerce")
+            if vals.notna().all() and np.array_equal(vals.to_numpy(), np.arange(len(df))):
+                metric_df = df.iloc[:, metric_positions].copy()
+                metric_df.index = [1, 2, 3]
+                return M.pack_weights(metric_df)
         labels = [M._building_label(v) for v in building]
         bad = [v for v, label in zip(building, labels) if label is None]
         if bad:

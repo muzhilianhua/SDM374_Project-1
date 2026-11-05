@@ -132,9 +132,17 @@ class EntryTest(unittest.TestCase):
         self.assert_prediction(self.write_csv(df, index=False))
 
     # ─────────────────────── 坏表：必须抛可读 ContractError ───────────────────────
-    def test_bad_numeric_index_3x7(self):
+    def test_numeric_rangeindex_3x7_accepted(self):
+        # pandas 默认 RangeIndex 落成 `Unnamed: 0` 且值 0/1/2 → 按行序映射 楼1→楼3
         df = pd.DataFrame(W21.reshape(3, 7), columns=EN)
         path = self.write_csv(df, index=True)                       # Unnamed: 0 = 0/1/2
+        self.assert_prediction(path)
+        np.testing.assert_array_equal(L.read_weights(path), W21.reshape(1, -1))
+
+    def test_bad_numeric_index_3x7(self):
+        # 行号不是 0..n-1（10/11/12），也不像建筑标签 → 仍必须报错
+        df = pd.DataFrame(W21.reshape(3, 7), index=[10, 11, 12], columns=EN)
+        path = self.write_csv(df, index=True)
         self.assert_contract_error(path, "识别到 3 行 × 8 列", "不是可识别的建筑标签")
 
     def test_bad_21_columns_missing_one_feature(self):
