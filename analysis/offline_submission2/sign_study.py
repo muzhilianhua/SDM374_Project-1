@@ -48,6 +48,7 @@ SEED, DIRECTIONS, MAX_COS_TO_FAILURE, ET_VETO = 2026, 20000, 0.5, 4.9
 STEPS = (0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10)
 FEATURES = ("z_ard", "z_lgp")
 FINALISTS, BALL_RADIUS, BALL_POINTS = 10, 0.01, 64
+AGREE = 0.3
 
 
 def pair_stats(model, anchor, Q, chunk=4000):
@@ -227,7 +228,11 @@ def scan(final, pairs):
                       "cos_submission1": float(u[row.direction] @ failure[1]),
                       "cos_baseline": float(u[row.direction] @ failure[0])})
     finalists = pd.concat([finalists, pd.DataFrame(worst)], axis=1)
-    return table, finalists.sort_values("ball_min_p_both", ascending=False), p, u
+    # Eligible: both judges say "better" (z > AGREE, where the backtest's agreeing pairs improved 82 % of
+    # the time against about 36 % when they disagreed) and the whole ball stays inside the ExtraTrees veto.
+    finalists["eligible"] = ((finalists.z_ard > AGREE) & (finalists.z_lgp > AGREE)
+                             & (finalists.ball_max_et_gain <= ET_VETO))
+    return table, finalists.sort_values(["eligible", "ball_min_p_both"], ascending=False), p, u
 
 
 def main():
@@ -255,6 +260,7 @@ def main():
     by_step.to_csv(OUT / "scan_by_step.csv", index=False)
     finalists.to_csv(OUT / "finalists.csv", index=False)
     top = finalists.iloc[0]
+    assert top.eligible, "no finalist passes the agreement and veto rules"
     w = (p + top.step * u[int(top.direction)]).reshape(3, 7)
     check_weights(w.reshape(1, 21))
     (OUT / "max-p.json").write_text(json.dumps(w.tolist(), indent=2) + "\n")
