@@ -1,0 +1,64 @@
+{
+  "created": "2026-11-05T15:58:15",
+  "git": {
+    "commit": "1f005ffd9eb678158268b86ef60149b8aaa9005e",
+    "dirty": false
+  },
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  },
+  "backtest": {
+    "anchors_per_split": 12,
+    "max_pair_distance": 0.45,
+    "local_rows": 800,
+    "pairs": 4256,
+    "pair_distance_quantiles": [
+      0.2111916958399949,
+      0.4128289907488625,
+      0.4499796965268879
+    ],
+    "improvement_rate": 0.022086466165413533
+  },
+  "calibration": {
+    "ard": {
+      "intercept": -0.29507957524029493,
+      "z_ard": 1.59117000315091
+    },
+    "lgp": {
+      "intercept": -0.7226781696113262,
+      "z_lgp": 1.3801762376398392
+    },
+    "both": {
+      "intercept": -0.3010386631456871,
+      "z_ard": 1.1841214666182647,
+      "z_lgp": 0.611471013593254
+    }
+  },
+  "scan": {
+    "seed": 2026,
+    "directions": 20000,
+    "steps": [
+      0.01,
+      0.02,
+      0.03,
+      0.04,
+      0.05,
+      0.06,
+      0.07,
+      0.08,
+      0.1
+    ],
+    "max_cos_to_failure": 0.5,
+    "et_veto": 4.9
+  },
+  "max_p": {
+    "step": 0.08,
+    "direction": 14840,
+    "p_both": 0.8903284912456255,
+    "ball_min_p_both": 0.8725958339219976
+  }
+}

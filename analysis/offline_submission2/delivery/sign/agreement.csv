@@ -1,0 +1,10 @@
+ard_says,lgp_says,pairs,observed
+better,better,38,0.8157894736842105
+better,unsure,8,0.75
+better,worse,11,0.36363636363636365
+unsure,better,13,0.5384615384615384
+unsure,unsure,3,1.0
+unsure,worse,23,0.21739130434782608
+worse,better,30,0.36666666666666664
+worse,unsure,17,0.17647058823529413
+worse,worse,4113,0.005835156819839533
