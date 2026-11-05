@@ -4,15 +4,21 @@
 目标量统一为 `ramping`（越低越好）。评分采用外部 v3.2 评分器（协议
 `sdm374.surrogate.tolerance.v3.2`），OOF 采用冻结划分 `sdm374.same8.splits.2x5x3.frozen.v1`。
 
-| 模型 | 角色 | v3.2 总分 | OOF 低尾 RMSE（≤q01, n=42） |
+| 模型 | 角色 | v3.2 总分（**得分**，满分 100，越高越好） | OOF 低尾 RMSE（**原始误差**，实际 ≤q01，n=42 预测行 = 21 唯一 × 2） |
 | --- | --- | --- | --- |
 | `gp-ard` | 基线 / σ 校准最可靠 | 83.1496 | 4.7669 |
 | `tail5opt` | 低尾专精 | 83.0766 | **4.3382（四模型最低）** |
 | `hp_wlearn` | 全局精度对照 | 82.5547 | 5.3066（四模型最差） |
 | `blend_xgb_w20x3` | 最高总分混合 / 不可外推参照 | **83.5477** | 5.0654 |
 
-> 四个模型的总分差异都在 10 折折间噪声之内（见 `scores/paired_delta_vs_gp-ard.csv`，
-> 配对 p 值 0.329–0.917），不要据此宣称"某模型更强"。
+> 四个模型的分差来自重复交叉验证（2 repeats × 5 folds = 10 折，每折 410 条留出预测，
+> 合计 4096 条预测行 = 2048 个唯一候选 × 2 次重复；**有效独立样本是 2048**）。
+> 折间不是独立观测，`scores/paired_delta_vs_gp-ard.csv` 里的配对 t 检验 p 值（0.917 / 0.464 / 0.329）
+> **只能作探索性描述，不能当作“两模型等效”的证据**。请看逐折差值（10 个）与胜负计数：
+> tail5opt 对 gp-ard 5 胜 5 负、hp_wlearn 3 胜 7 负、blend 6 胜 4 负。
+>
+> **得分 ≠ 误差**：上表第一列是 v3.2 **得分**（越高越好）；第二列是**原始误差**（越低越好）。
+> `blend` 的 `local_mae` 得分最高（11.924/15），但它的**原始低值 MAE 4.0793（实际 ≤132.80）是四模型最差**。
 
 ## 三条命令跑起来
 
@@ -55,6 +61,24 @@ b3_cost b3_carbon b3_peak b3_discomfort b3_degradation b3_ramping b3_resilience
   `.json` / `.npy` / `.txt` 各入口与 CLI `--weights-file`）。
   `python load_and_predict.py --self-check` 也会验证 21 维向量与 3×7 中文表头结果一致。
 
+## 标准差接口（谁能给可信 σ）
+
+| 模型 | `predict(x, return_std=True)` | `uncertainty_kind` |
+| --- | --- | --- |
+| `gp-ard` / `tail5opt` / `hp_wlearn` | 返回 GP 后验 σ | `gp_posterior` |
+| `blend_xgb_w20x3` | **抛 `ContractError`**（`σ` 只是 `(1-α)·σ_gp` 的启发式近似，不能用于 LCB / EI / 过线概率 / 风险排序） | `heuristic`（仅当显式诊断） |
+
+blend 的近似 σ 只能通过显式诊断入口获取：
+
+```python
+mean, sd = bundle.predict(x, return_std_heuristic=True)   # sd 语义 = heuristic
+```
+
+`return_std=True` 与 `return_std_heuristic=True` 同时给一律抛 `ContractError`，不会静默取一个。
+`return_std=None`（默认）保持历史行为，等价于 `return_std=True`。
+CLI 对 blend 输出 std 时会在 stderr 打印"启发式近似，不可用于 LCB/EI"，JSON 输出也带
+`"uncertainty_kind"`。回归测试见 `tests/test_std_contract.py`。
+
 ## 目录结构
 
 ```text
@@ -87,7 +111,7 @@ SDM374_backup_models_v1/
     ├── scores_gp-ard.csv / scores_tail5opt.csv / scores_hp_wlearn.csv / scores_blend_xgb_w20x3.csv
     ├── fold_scores_all.csv           逐折分数宽表（10 折 × 4 模型）
     ├── paired_delta_vs_gp-ard.csv    逐折配对 Δ、均值、sd、胜/负、t、p
-    ├── model_scores_oof.csv          总分 + 五个分项 + OOF/低尾/高段 RMSE + in_sample（已标注不可当泛化）
+    ├── model_scores_oof.csv          总分 + 五个分项（**均为得分**）+ OOF/低尾/高段 RMSE（**原始误差**）+ in_sample（已标注不可当泛化）
     └── oof_pred_<model>.csv.gz       逐折留出预测（供 compute_scores.py 复算）
 ```
 
@@ -177,3 +201,4 @@ python load_and_predict.py --self-check
 - C 加载 vs p01969 的 OOF 留出预测：最大 3.31（全量 refit 与折内模型的正常差异）
 - D 加载 vs 历史 gp 提交预测 121.488948：gp-ard 0.0015，其余 1.19–2.18
 - E 反转特征顺序：四模型预测全部改变（无静默重排）
+- F blend 的**可信 std 请求被拒绝**（`return_std=True` 抛 `ContractError`，`uncertainty_kind="heuristic"`）

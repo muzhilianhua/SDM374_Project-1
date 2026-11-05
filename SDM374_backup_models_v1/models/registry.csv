@@ -1,4 +1,4 @@
-model,path,v32_total,v32_fold_sd,oof_rmse,oof_low_q01_rmse,oof_high_q90_rmse,in_sample_rmse,seed,model_file
+﻿model,path,v32_total_score,v32_fold_sd_score,oof_rmse_raw,oof_low_q01_rmse_raw,oof_high_q90_rmse_raw,in_sample_rmse_interpolation_only,seed,model_file
 gp-ard,gp-ard,83.1496,3.547,5.2311,4.7669,11.2772,0.0689,2026,model.npz
 tail5opt,tail5opt,83.0766,4.7121,5.332,4.3382,11.3954,0.1454,2026,model.npz
 hp_wlearn,hp_wlearn,82.5547,4.5861,5.1136,5.3066,10.9036,0.2515,2026,model.npz

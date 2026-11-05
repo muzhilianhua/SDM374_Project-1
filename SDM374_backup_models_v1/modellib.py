@@ -293,26 +293,62 @@ class ModelBundle:
                     "找不到混合模型所需的树模型，已尝试: " + "; ".join(str(p) for p in candidates))
         return self._tree
 
-    def predict(self, Xq, return_std=True):
+    @property
+    def uncertainty_kind(self) -> str:
+        """`predict` 返回标准差时的语义。
+
+        - `gp_posterior`：三个纯 GP 模型（gp-ard / tail5opt / hp_wlearn）的 GP 后验 σ；
+        - `heuristic`：混合模型只把 GP 分支的 σ 乘以 (1-α)，没有树模型方差项，
+          不构成后验分布，不能用于 LCB / EI / 过线概率 / 风险排序。
+        """
+        return "heuristic" if self.payload["kind"] == "blend" else "gp_posterior"
+
+    def predict(self, Xq, return_std=None, return_std_heuristic=False):
+        """预测均值（可选标准差）。
+
+        `return_std=True` 请求**可信**标准差：三个 GP 模型返回 GP 后验 σ；
+        混合模型 `blend_xgb_w20x3` 直接抛 `ContractError`（它的 σ 只是启发式近似）。
+        需要混合模型的诊断用 `return_std_heuristic=True`，结果语义为 `uncertainty_kind="heuristic"`。
+        两个标志同时为 True 一律报错，绝不静默取其中一个。
+
+        `return_std=None`（默认）保持历史行为：等价于 `return_std=True`，
+        但显式传 `return_std_heuristic=True` 时自动降为只看均值 + 启发式 σ。
+        """
         Xq = np.asarray(Xq, float)
         if Xq.ndim == 1:
             Xq = Xq.reshape(1, -1)
         if Xq.shape[1] != N_FEATURES:
             raise ContractError(f"查询特征应为 21 维，得到 {Xq.shape}")
 
+        if return_std is None:
+            return_std = not return_std_heuristic               # 默认仍取 std（向后兼容）
+        if return_std and return_std_heuristic:
+            raise ContractError(
+                "return_std 与 return_std_heuristic 不能同时为 True："
+                "前者要求可信后验 σ，后者只给启发式近似；请只选一个")
+
         p = self.payload
         if p["kind"] == "blend":
+            if return_std:                                     # 可信 σ 请求：直接拒绝，不加载树模型
+                raise ContractError(
+                    "blend_xgb_w20x3 的标准差只是 (1-α)·σ_gp 的启发式近似（没有树模型方差项），"
+                    "不构成后验分布，不能用于 LCB / EI / 过线概率 / 风险排序。"
+                    "请只用均值（return_std=False），或显式改用诊断入口 "
+                    "return_std_heuristic=True（返回 uncertainty_kind='heuristic'）")
             g = p["gp"]
             mean_gp, Ks, mz = self._gp_mean(g, Xq)
             est, info = self._tree_model()
             mean_tree = np.asarray(est.predict(Xq), float)
             a = float(p["alpha_mix"])
             mean = (1.0 - a) * mean_gp + a * mean_tree
-            if not return_std:
-                return mean
-            sd = (1.0 - a) * self._gp_std(g, Xq, Ks, mz)   # 近似，非校准区间；见说明文档风险节
-            return mean, sd
+            if return_std_heuristic:
+                return mean, (1.0 - a) * self._gp_std(g, Xq, Ks, mz)
+            return mean
 
+        if return_std_heuristic:
+            raise ContractError(
+                f"return_std_heuristic 只用于混合模型（kind='blend'）；本模型 kind={p['kind']}，"
+                "请用 return_std=True 取 GP 后验 σ")
         g = p
         mean, Ks, mz = self._gp_mean(g, Xq)
         if not return_std:

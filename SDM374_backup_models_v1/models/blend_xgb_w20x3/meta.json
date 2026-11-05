@@ -63,5 +63,11 @@
     "model.npz": "纯数组载荷（np.savez_compressed，allow_pickle=False），numpy 1.24.x / 2.x 通用",
     "params.json": "超参与元数据（schema/kind/feature_order/loc/scale/noise/global_weight 等）"
   },
-  "notes": "变体 5b：与交付树模型固定权重混合；α 是在同一批发现折上选出的，偏乐观。"
+  "notes": "变体 5b：与交付树模型固定权重混合；α 是在同一批发现折上选出的，偏乐观。",
+  "uncertainty": {
+    "kind": "heuristic",
+    "formula": "sigma = (1 - alpha) * sigma_gp (no tree variance term)",
+    "usage": "NOT for LCB / EI / passing probability / risk ranking",
+    "interface": "predict(x, return_std=True) raises ContractError; use predict(x, return_std_heuristic=True) explicitly"
+  }
 }

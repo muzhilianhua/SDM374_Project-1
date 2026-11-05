@@ -147,10 +147,22 @@ def model_names():
 
 # ─────────────────────────── 预测 ───────────────────────────
 def predict(model: str, weights, return_std=True):
+    """返回 (mean, sd, uncertainty_kind)。
+
+    `uncertainty_kind` 为 `None`（不取 sd）、`gp_posterior`（三个 GP 模型的后验 σ）
+    或 `heuristic`（混合模型 `(1-α)·σ_gp` 的启发式近似，不可用于 LCB/EI）。
+    """
     bundle = M.load_model(MODELS / model)
     x = M.pack_weights(weights)
-    mean, sd = bundle.predict(x) if return_std else (bundle.predict(x, return_std=False), None)
-    return mean, sd
+    if not return_std:
+        return bundle.predict(x, return_std=False), None, None
+    if bundle.uncertainty_kind == "heuristic":
+        mean, sd = bundle.predict(x, return_std_heuristic=True)
+        print(f"[{model}] 警告：std 为启发式近似 (1-α)·σ_gp（uncertainty_kind=heuristic），"
+              "不可用于 LCB / EI / 过线概率 / 风险排序", file=sys.stderr)
+        return mean, sd, "heuristic"
+    mean, sd = bundle.predict(x, return_std=True)
+    return mean, sd, "gp_posterior"
 
 
 # ─────────────────────────── 自检 ───────────────────────────
@@ -208,12 +220,17 @@ def self_check():
 
         # D) 第一组离线提交
         if x_sub is not None:
-            pred_sub, sd_sub = bundle.predict(x_sub)
+            sd_kind = bundle.uncertainty_kind
+            if sd_kind == "heuristic":
+                pred_sub, sd_sub = bundle.predict(x_sub, return_std_heuristic=True)
+            else:
+                pred_sub, sd_sub = bundle.predict(x_sub, return_std=True)
             sub_pred = float(pred_sub[0])
             d_hist = abs(sub_pred - SUBMISSION_HISTORICAL_GP)
             err_truth = abs(sub_pred - SUBMISSION_TRUTH)
         else:
             sub_pred, sd_sub, d_hist, err_truth = float("nan"), float("nan"), float("nan"), float("nan")
+            sd_kind = None
 
         # E) 反转 21 维顺序，预测必须改变（证明没有静默重排）
         m_rev = bundle.predict(x21[::-1].reshape(1, -1), return_std=False)[0]
@@ -229,10 +246,23 @@ def self_check():
             "diff_vs_oof": d_oof,
             "submission_pred": sub_pred,
             "submission_sd": float(sd_sub[0]) if x_sub is not None else float("nan"),
+            "submission_sd_kind": sd_kind,
             "diff_vs_historical_gp": d_hist,
             "abs_err_vs_truth_119.712": err_truth,
             "permutation_changes_prediction": bool(abs(float(m_rev) - float(m_vec)) > 1e-9),
         })
+
+    # F) blend 的可信 std 请求必须被拒绝（只有显式的 return_std_heuristic 才返回启发式 σ）
+    blend_dir = MODELS / "blend_xgb_w20x3"
+    blend_std_rejected = False
+    blend_std_kind = None
+    if blend_dir.exists():
+        blend = M.load_model(blend_dir)
+        blend_std_kind = blend.uncertainty_kind
+        try:
+            blend.predict(x21.reshape(1, -1), return_std=True)
+        except M.ContractError:
+            blend_std_rejected = True
 
     summary = {
         "package": "SDM374_backup_models_v1",
@@ -248,6 +278,8 @@ def self_check():
             "C_load_vs_OOF_p01969_max_abs": max((d for r in rows for d in r["diff_vs_oof"]), default=float("nan")),
             "D_load_vs_historical_gp_submission_max_abs": max(r["diff_vs_historical_gp"] for r in rows),
             "E_all_permutation_tests_changed": all(r["permutation_changes_prediction"] for r in rows),
+            "F_blend_trusted_std_rejected": blend_std_rejected,
+            "F_blend_uncertainty_kind": blend_std_kind,
         },
         "references": {"submission_gp": SUBMISSION_HISTORICAL_GP, "submission_truth": SUBMISSION_TRUTH,
                        "dataset_present": has_data, "submission_present": has_sub},
@@ -273,6 +305,8 @@ def self_check():
     print(f"C 加载 vs p01969 的 OOF 留出预测      最大绝对差 = {c['C_load_vs_OOF_p01969_max_abs']:.4f}")
     print(f"D 加载 vs 历史 gp 提交预测(121.489)   最大绝对差 = {c['D_load_vs_historical_gp_submission_max_abs']:.4f}")
     print(f"E 反转特征顺序是否都改变预测: {c['E_all_permutation_tests_changed']}")
+    print(f"F blend 的可信 std 请求是否被拒: {c['F_blend_trusted_std_rejected']}"
+          f"（uncertainty_kind={c['F_blend_uncertainty_kind']}）")
     print(f"自检明细已写入 {out}")
     return summary
 
@@ -304,13 +338,15 @@ def main():
     else:
         ap.error("需要 --weights 或 --weights-file")
 
-    mean, sd = predict(a.model, w)
+    mean, sd, sd_kind = predict(a.model, w)
     if a.json:
         print(json.dumps({"model": a.model, "n": int(len(mean)),
-                          "mean": mean.tolist(), "std": sd.tolist()}, ensure_ascii=False, indent=2))
+                          "mean": mean.tolist(), "std": sd.tolist(),
+                          "uncertainty_kind": sd_kind}, ensure_ascii=False, indent=2))
     else:
+        note = "" if sd_kind != "heuristic" else "  (启发式 std，不可用于 LCB/EI)"
         for i in range(len(mean)):
-            print(f"[{a.model}] #{i + 1}  mean={mean[i]:.6f}  std={sd[i]:.6f}")
+            print(f"[{a.model}] #{i + 1}  mean={mean[i]:.6f}  std={sd[i]:.6f}{note}")
 
 
 if __name__ == "__main__":

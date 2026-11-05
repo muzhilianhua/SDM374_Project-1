@@ -33,7 +33,9 @@
     "B_21vec_vs_3x7_chinese_max_abs": 0.0,
     "C_load_vs_OOF_p01969_max_abs": 3.314564190279981,
     "D_load_vs_historical_gp_submission_max_abs": 2.1794571958934057,
-    "E_all_permutation_tests_changed": true
+    "E_all_permutation_tests_changed": true,
+    "F_blend_trusted_std_rejected": true,
+    "F_blend_uncertainty_kind": "heuristic"
   },
   "references": {
     "submission_gp": 121.488948,
@@ -56,6 +58,7 @@
       ],
       "submission_pred": 119.5772582085072,
       "submission_sd": 4.114541752425757,
+      "submission_sd_kind": "heuristic",
       "diff_vs_historical_gp": 1.9116897914927904,
       "abs_err_vs_truth_119.712": 0.1347417914928002,
       "permutation_changes_prediction": true
@@ -74,6 +77,7 @@
       ],
       "submission_pred": 121.487489313433,
       "submission_sd": 4.846145906644955,
+      "submission_sd_kind": "gp_posterior",
       "diff_vs_historical_gp": 0.0014586865669912186,
       "abs_err_vs_truth_119.712": 1.775489313432999,
       "permutation_changes_prediction": true
@@ -92,6 +96,7 @@
       ],
       "submission_pred": 123.6684051958934,
       "submission_sd": 4.573048407373911,
+      "submission_sd_kind": "gp_posterior",
       "diff_vs_historical_gp": 2.1794571958934057,
       "abs_err_vs_truth_119.712": 3.956405195893396,
       "permutation_changes_prediction": true
@@ -110,15 +115,16 @@
       ],
       "submission_pred": 120.29882687121366,
       "submission_sd": 5.0418087252969555,
+      "submission_sd_kind": "gp_posterior",
       "diff_vs_historical_gp": 1.1901211287863305,
       "abs_err_vs_truth_119.712": 0.5868268712136597,
       "permutation_changes_prediction": true
     }
   ],
   "hash_verification": {
-    "mode": "git:HEAD",
-    "manifest_files": 70,
-    "checked_hashes": 95,
+    "mode": "working-tree",
+    "manifest_files": 71,
+    "checked_hashes": 96,
     "mismatched": 0,
     "missing": 0,
     "extra": 0,

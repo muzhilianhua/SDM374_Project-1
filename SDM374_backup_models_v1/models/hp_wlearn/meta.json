@@ -119,5 +119,9 @@
     "model.npz": "纯数组载荷（np.savez_compressed，allow_pickle=False），numpy 1.24.x / 2.x 通用",
     "params.json": "超参与元数据（schema/kind/feature_order/loc/scale/noise/global_weight 等）"
   },
-  "notes": "变体 1a/1b/1c/1d：多起点 + 更多迭代 + 上界 6；参数级差异见 config.json。"
+  "notes": "变体 1a/1b/1c/1d：多起点 + 更多迭代 + 上界 6；参数级差异见 config.json。",
+  "uncertainty": {
+    "kind": "gp_posterior",
+    "interface": "predict(x, return_std=True)"
+  }
 }
