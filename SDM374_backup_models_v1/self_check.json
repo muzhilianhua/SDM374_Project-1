@@ -114,5 +114,17 @@
       "abs_err_vs_truth_119.712": 0.5868268712136597,
       "permutation_changes_prediction": true
     }
-  ]
+  ],
+  "hash_verification": {
+    "mode": "git:HEAD",
+    "manifest_files": 70,
+    "checked_hashes": 95,
+    "mismatched": 0,
+    "missing": 0,
+    "extra": 0,
+    "model_checksums_checked": 25,
+    "model_mismatched": 0,
+    "model_missing": 0,
+    "passed": true
+  }
 }
