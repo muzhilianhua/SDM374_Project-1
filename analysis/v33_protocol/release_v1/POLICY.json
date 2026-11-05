@@ -1,0 +1,44 @@
+{
+  "accuracy_scale": 5.0,
+  "cutoff": 132.8,
+  "diagnostic_cutoff": 132.8,
+  "empty_predicted_low": "zero points; always report count",
+  "empty_true_low": "fail the task; do not skip",
+  "family_weights": {
+    "hidden_elite": 0.5,
+    "local_region": 0.5
+  },
+  "feedback_baseline": "minimum of original outer-train labels and P1; never rank against primary total",
+  "inner_folds": 3,
+  "inner_seed": 3303,
+  "inner_tuning": "not performed; published modal parameters fixed before evidence",
+  "p1_usage": "excluded from primary fits; 5 points; feedback refits separately reported out of 95",
+  "points": {
+    "breakthrough": 35,
+    "p1_accuracy": 5,
+    "predicted_low_accuracy": 30,
+    "true_low_accuracy": 30
+  },
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.1",
+  "region_anchor_ranks": [
+    1,
+    3,
+    5
+  ],
+  "region_mandatory_hidden_ranks": 5,
+  "score": "sum of 35-point clipped breakthrough utility, two 30-point MAE skills and 5-point P1 skill",
+  "score_clipping": "breakthrough utility floored at zero; each accuracy component positive and bounded",
+  "selection": "minimum predicted_mean, exact ties by candidate_id",
+  "status": "FROZEN",
+  "tail_hidden_ranks": [
+    5,
+    10,
+    20
+  ],
+  "tail_seeds": [
+    3301,
+    3302
+  ],
+  "task_overlap": "all nine tasks contain p01969; not independent samples",
+  "test_n": 410
+}

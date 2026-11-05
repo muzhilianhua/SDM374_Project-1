@@ -1,0 +1,17 @@
+{
+  "runze_low60_histgb": {
+    "convex_hull_feasible": 9,
+    "points": 20,
+    "reserved_neighbors_retained": 19
+  },
+  "runze_low80_histgb": {
+    "convex_hull_feasible": 9,
+    "points": 20,
+    "reserved_neighbors_retained": 20
+  },
+  "runze_low90_xgb": {
+    "convex_hull_feasible": 9,
+    "points": 20,
+    "reserved_neighbors_retained": 20
+  }
+}

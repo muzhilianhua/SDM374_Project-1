@@ -1,0 +1,65 @@
+[
+  {
+    "model": "runze_low60_histgb",
+    "provenance_sha256": "b6d36ce0b5973777a02e6dcc9b0ce6bda8b4b32eb226bcbe3913d72e32f16f2b",
+    "run_id": "20261105-154005-evaluate-v331-runze_low60_histgb",
+    "source_recipe": {
+      "historical_rank": 3,
+      "name": "runze_low60_histgb",
+      "params": {
+        "iterations": 600,
+        "l2_regularization": 0.0,
+        "learner": "histgb",
+        "learning_rate": 0.1,
+        "low_fraction": 0.2,
+        "low_weight": 1.0,
+        "max_leaf_nodes": 15,
+        "seed": 20263025,
+        "trim_fraction": 0.6
+      },
+      "registered_model": "runze-v33"
+    }
+  },
+  {
+    "model": "runze_low80_histgb",
+    "provenance_sha256": "1d7e54e837698ff7e1745f6577b28b7adda608434378ed46d7feafa35b1718ca",
+    "run_id": "20261105-154005-evaluate-v331-runze_low80_histgb",
+    "source_recipe": {
+      "historical_rank": 2,
+      "name": "runze_low80_histgb",
+      "params": {
+        "iterations": 600,
+        "l2_regularization": 0.0,
+        "learner": "histgb",
+        "learning_rate": 0.05,
+        "low_fraction": 0.2,
+        "low_weight": 1.0,
+        "max_leaf_nodes": 15,
+        "seed": 20263024,
+        "trim_fraction": 0.8
+      },
+      "registered_model": "runze-v33"
+    }
+  },
+  {
+    "model": "runze_low90_xgb",
+    "provenance_sha256": "9726d8acd22aef80848d67f6eee4da81976a33ad82c39a67013982ea11981116",
+    "run_id": "20261105-154005-evaluate-v331-runze_low90_xgb",
+    "source_recipe": {
+      "historical_rank": 1,
+      "name": "runze_low90_xgb",
+      "params": {
+        "iterations": 600,
+        "learner": "xgboost",
+        "learning_rate": 0.1,
+        "low_fraction": 0.2,
+        "low_weight": 3.0,
+        "max_depth": 3,
+        "seed": 20261024,
+        "subsample": 0.9,
+        "trim_fraction": 0.9
+      },
+      "registered_model": "runze-v33"
+    }
+  }
+]

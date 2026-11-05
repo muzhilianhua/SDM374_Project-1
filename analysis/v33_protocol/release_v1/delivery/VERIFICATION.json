@@ -1,0 +1,13 @@
+{
+  "complete_final_fits": 6,
+  "fit_membership_verified": true,
+  "no_optimizer_or_simulator": true,
+  "outer_model_fits": 54,
+  "output_hashes_verified": true,
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.1",
+  "publish_source_sha256": "0cb4c12e3f0ed221c20eacd690dca0e0045d5d55937d4276523ea5f3d32fc80f",
+  "release_checksums_sha256": "38f3ae31a393d21c598e2b17a85a40e0fd0e440e9e8786d925f08a8822290050",
+  "rescored_tasks": 54,
+  "source_run_count": 3,
+  "verified_prediction_rows": 22194
+}

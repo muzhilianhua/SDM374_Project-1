@@ -1,0 +1,92 @@
+{
+  "completed_utc": "2026-11-05T07:40:23.815323+00:00",
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "elapsed_seconds": 17.46900000000005,
+  "git_commit": "a4f203c701bae3bbf898a54fac029cb74f91697c",
+  "git_status": "M .gitattributes\n M .gitignore\n M docs/roles/B.md\n?? analysis/v32_behavior_audit/\n?? analysis/v33_protocol/\n?? tests/test_v331_protocol.py\n?? tests/test_v33_protocol.py",
+  "input_hashes": {
+    "SUBMISSION_READY\\01_FIRST_REAL_TEST\\weights.json": "50aac91132da1f244873b9031021102fab193600809dda8d38934b31f0d30b60",
+    "SUBMISSION_READY\\KNOWN_OBSERVATIONS.json": "1d80f8186dd2b89a8be669dfde7e6168a95c14a77745051303cce85f14775d0e",
+    "analysis\\v33_protocol\\protocol.py": "16a73d5b5afca77407aecd38928e30cc9c497fcf57d5e039a5c38b62665cf9d4",
+    "analysis\\v33_protocol\\release_v1\\protocol.py": "56dbca411fda96a13507d3fdabb275d725ebc10625e3683db63109501f15a953",
+    "analysis\\v33_protocol\\release_v1\\recipes.py": "9596552e21f3836e9f177d9585cab5cde873f52b451f0c47fb99616814461218",
+    "analysis\\v33_protocol\\release_v1\\study.py": "01fede94087d86e176a434faa7a329bf59aa9dade823244c31ea807047f85d67",
+    "dataset_same8\\train.csv": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "optimizer_used": false,
+  "outputs": {
+    "feedback\\elite-05-s3301.joblib": "fb6db15787f2006ebdbf16c4e11bb4bd47b6757a01afa8359a331e4a31c2c392",
+    "feedback\\elite-05-s3302.joblib": "dfe4cb980c009c6647b60586b2e0d6c95fc1a5564497e58dad5ebc511c70c2c5",
+    "feedback\\elite-10-s3301.joblib": "c3d6b2f38a0965d3454d434ba2d587a9d9d054112ae4b369e92f0622feced9d5",
+    "feedback\\elite-10-s3302.joblib": "651e1d4832b4d22ae2be31e5bbd434e74e5bb5708b12387109cb7255c8d6c8fe",
+    "feedback\\elite-20-s3301.joblib": "cc0f1f880926b51a0828c8371aa1b84f14d7c40d7470836ba106dcb2f6fc04cc",
+    "feedback\\elite-20-s3302.joblib": "3ebb73a1a9f1c7a0fd2d4e30583a22d4e97f5224262258801c192a498f41d72d",
+    "feedback\\fit_membership.json": "a5b8b62d8d732099a5a1e21dbc6a21669056f99db1364c4fa9361d904fb1e7b5",
+    "feedback\\full_fit.joblib": "e4b408a8962194f87bfc7299cc4dfd47b9c74369f3309981d66f9078788c7739",
+    "feedback\\full_fit.json": "891f35909d5932acace699120b7d7c18da66e6d89e3c14b39a493d880e60f099",
+    "feedback\\metrics.json": "0ee0be6d098324c7d36a0da1d4917d9e076df1a338561b8b8d02b8afcfcad0e0",
+    "feedback\\predictions.csv": "4de34ab28fbb4f4ea294de70fa78fd8f995510ad7cb0a44e57d64b22eea5825b",
+    "feedback\\region-rank01.joblib": "bfbf595ae1211035f04d8b12848a35600810aa6c1e6c90ed669c814da00fedfb",
+    "feedback\\region-rank03.joblib": "d768f761c3788926b89d400b7abe53597ef76c7cbb3228f78d0ec23902e91fca",
+    "feedback\\region-rank05.joblib": "8019d68ffe68771fe8c8efdb59a914b9d2bc16b299460d5815c810ba1bc88b6b",
+    "feedback\\task_scores.csv": "bad6a3b0573880e4fa2f68e131d2336a7b6e35018c9f381021faf077c2c174f9",
+    "primary\\elite-05-s3301.joblib": "95a58b58aceeda52d39731533ef74e85f75bda2632276696af366670dd56b2ae",
+    "primary\\elite-05-s3302.joblib": "27e7e35ccb5d2250fadef5ff8caf6fa8eaba08fe2d3ef5823e7c8dde08f9d8dc",
+    "primary\\elite-10-s3301.joblib": "3a33cd82b3728831a1646c314396ad5a2a35e768854ef4c3724f33bd364a69f8",
+    "primary\\elite-10-s3302.joblib": "3b25ba81249cdc9b775a068fe39e5127828e720e85712f1a534fd7c5abcbc1ac",
+    "primary\\elite-20-s3301.joblib": "24230fb32de058ca44e9bcebbdbade4b8100393c8b7376212507b0d3e1716e64",
+    "primary\\elite-20-s3302.joblib": "44918bebc694f8ab83764e1332b2f6b264dd1df3c06a5dea8a2eb492b605e4b4",
+    "primary\\fit_membership.json": "3d4bb7f74c2ab4f38a5c74a6a2c666503f9800dd3067db215fca0ce3290862ed",
+    "primary\\full_fit.joblib": "68128312a4fc0b2ce74819e1743ce38c150f3def40507060115463953339252e",
+    "primary\\full_fit.json": "aaa95768a336aa40ab47c4cc4b0b397ebc9ef5545e7306642735e359a9e6aba8",
+    "primary\\metrics.json": "f7c6ff4b9db735f9b1cc67d451afbe3849b1b2760c1e9f88f17b561f9564db3e",
+    "primary\\predictions.csv": "e5dbad1ab2d8824c61b5cffd278cd7c5d8a2c8f73e53cc9bf7f5ba19f5393541",
+    "primary\\region-rank01.joblib": "0020cdd6220dac9d3e23361b275a6534048cae00b0ac9a2279ec01dc6c300c66",
+    "primary\\region-rank03.joblib": "96eef65b0ef3b6396808c37d8860a2ec169a081209cbb723528d425f9e21c9d9",
+    "primary\\region-rank05.joblib": "a43c44051e3afa54d7dbac2a4b3df5ca9df18bb33bfe60dc136b8bde20ddbb08",
+    "primary\\task_scores.csv": "03ecddafa07b11494719885776d6b54c52f1d6ac1ad5a3b404f17c60001effa8"
+  },
+  "packages": {
+    "catboost": "1.2.8",
+    "joblib": "1.6.0",
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scikit-learn": "1.2.2",
+    "scipy": "1.10.1",
+    "xgboost": "3.2.0"
+  },
+  "phase_comparison": "feedback uses new known best and max95; totals not ranked across stages",
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.1",
+  "python": "3.11.18 (main, Oct 26 2026, 14:08:50) [MSC v.1944 64 bit (AMD64)]",
+  "recipe": {
+    "historical_rank": 3,
+    "name": "runze_low60_histgb",
+    "params": {
+      "iterations": 600,
+      "l2_regularization": 0.0,
+      "learner": "histgb",
+      "learning_rate": 0.1,
+      "low_fraction": 0.2,
+      "low_weight": 1.0,
+      "max_leaf_nodes": 15,
+      "seed": 20263025,
+      "trim_fraction": 0.6
+    },
+    "registered_model": "runze-v33"
+  },
+  "release_sha256": "38f3ae31a393d21c598e2b17a85a40e0fd0e440e9e8786d925f08a8822290050",
+  "run_id": "20261105-154005-evaluate-v331-runze_low60_histgb",
+  "seeds": {
+    "inner": 3303,
+    "tail": [
+      3301,
+      3302
+    ]
+  },
+  "simulator_calls": 0,
+  "source_state": "uncommitted content hashes recorded; Git identity unavailable",
+  "started_utc": "2026-11-05T07:40:06.237727+00:00",
+  "status": "complete",
+  "thread_policy": "OMP_NUM_THREADS=OPENBLAS_NUM_THREADS=MKL_NUM_THREADS=1",
+  "tuning_performed": false
+}

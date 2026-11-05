@@ -1,0 +1,11 @@
+{
+  "definition": "Historical top-three lineages; preserve trimming/weighting, fix published modal hyperparameters, no retuning",
+  "historical_selection": "analysis/surrogate_release/MODEL_SELECTION.md; 20261025-204551-artifact-review-v32",
+  "parameter_source": "origin/runze-liu:SDM374_final_models_v1/MANIFEST.json",
+  "limitation": "Historical per-fold RMSE tuning is not reconstructed; current project pinned package versions differ from original provider versions",
+  "recipes": [
+    {"name": "runze_low90_xgb", "historical_rank": 1, "registered_model": "runze-v33", "params": {"learner": "xgboost", "trim_fraction": 0.9, "low_fraction": 0.2, "low_weight": 3.0, "max_depth": 3, "learning_rate": 0.1, "iterations": 600, "subsample": 0.9, "seed": 20261024}},
+    {"name": "runze_low80_histgb", "historical_rank": 2, "registered_model": "runze-v33", "params": {"learner": "histgb", "trim_fraction": 0.8, "low_fraction": 0.2, "low_weight": 1.0, "max_leaf_nodes": 15, "learning_rate": 0.05, "iterations": 600, "l2_regularization": 0.0, "seed": 20263024}},
+    {"name": "runze_low60_histgb", "historical_rank": 3, "registered_model": "runze-v33", "params": {"learner": "histgb", "trim_fraction": 0.6, "low_fraction": 0.2, "low_weight": 1.0, "max_leaf_nodes": 15, "learning_rate": 0.1, "iterations": 600, "l2_regularization": 0.0, "seed": 20263025}}
+  ]
+}
