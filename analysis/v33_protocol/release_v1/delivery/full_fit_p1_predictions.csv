@@ -1,0 +1,7 @@
+model,stage,run_id,allowed_train_n,retained_train_n,p1_prediction,p1_error,scored,model_path
+runze_low60_histgb,primary,20261105-154005-evaluate-v331-runze_low60_histgb,2048,1228,115.22749145236621,-4.484575336325818,False,results\20261105-154005-evaluate-v331-runze_low60_histgb\primary\full_fit.joblib
+runze_low60_histgb,feedback,20261105-154005-evaluate-v331-runze_low60_histgb,2049,1229,119.58043467074249,-0.1316321179495361,False,results\20261105-154005-evaluate-v331-runze_low60_histgb\feedback\full_fit.joblib
+runze_low80_histgb,primary,20261105-154005-evaluate-v331-runze_low80_histgb,2048,1638,115.15023473674292,-4.561832051949111,False,results\20261105-154005-evaluate-v331-runze_low80_histgb\primary\full_fit.joblib
+runze_low80_histgb,feedback,20261105-154005-evaluate-v331-runze_low80_histgb,2049,1639,118.42181296262598,-1.2902538260660492,False,results\20261105-154005-evaluate-v331-runze_low80_histgb\feedback\full_fit.joblib
+runze_low90_xgb,primary,20261105-154005-evaluate-v331-runze_low90_xgb,2048,1843,113.04166412353516,-6.670402665156871,False,results\20261105-154005-evaluate-v331-runze_low90_xgb\primary\full_fit.joblib
+runze_low90_xgb,feedback,20261105-154005-evaluate-v331-runze_low90_xgb,2049,1844,118.77323150634766,-0.9388352823443711,False,results\20261105-154005-evaluate-v331-runze_low90_xgb\feedback\full_fit.joblib

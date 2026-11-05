@@ -1,0 +1,28 @@
+{
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "frozen_before_new_model_evidence": true,
+  "git_commit": "a4f203c701bae3bbf898a54fac029cb74f91697c",
+  "git_status": "M docs/roles/B.md\n?? .tools/\n?? analysis/v32_behavior_audit/\n?? analysis/v33_protocol/\n?? tests/test_v33_protocol.py",
+  "input_hashes": {
+    "SUBMISSION_READY\\01_FIRST_REAL_TEST\\weights.json": "50aac91132da1f244873b9031021102fab193600809dda8d38934b31f0d30b60",
+    "SUBMISSION_READY\\KNOWN_OBSERVATIONS.json": "1d80f8186dd2b89a8be669dfde7e6168a95c14a77745051303cce85f14775d0e",
+    "analysis\\v33_protocol\\protocol.py": "16a73d5b5afca77407aecd38928e30cc9c497fcf57d5e039a5c38b62665cf9d4",
+    "analysis\\v33_protocol\\release_v1\\protocol.py": "56dbca411fda96a13507d3fdabb275d725ebc10625e3683db63109501f15a953",
+    "analysis\\v33_protocol\\release_v1\\recipes.py": "9596552e21f3836e9f177d9585cab5cde873f52b451f0c47fb99616814461218",
+    "analysis\\v33_protocol\\release_v1\\study.py": "01fede94087d86e176a434faa7a329bf59aa9dade823244c31ea807047f85d67",
+    "dataset_same8\\train.csv": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.1",
+  "python": "3.11.18 (main, Oct 26 2026, 14:08:50) [MSC v.1944 64 bit (AMD64)]",
+  "recipe_sha256": "f71d1607ce29ba494508bb772dc690a9db76bdc8ff5a021c64506be67ebbbec9",
+  "score_and_split_authorization": "User requested fixed 35/30/30/5 protocol and top-three retraining",
+  "seeds": {
+    "inner": 3303,
+    "tail": [
+      3301,
+      3302
+    ]
+  },
+  "simulator_calls": 0,
+  "training_performed": false
+}

@@ -1,0 +1,32 @@
+{
+  "authorization": "User requested rotating elite participation and interpolation-oriented tests",
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "frozen_before_new_model_evidence": true,
+  "git_commit": "a4f203c701bae3bbf898a54fac029cb74f91697c",
+  "git_status": "M .gitattributes\n M .gitignore\n M docs/roles/B.md\n?? analysis/v32_behavior_audit/\n?? analysis/v33_protocol/\n?? tests/test_v331_protocol.py\n?? tests/test_v332_protocol.py\n?? tests/test_v33_protocol.py",
+  "input_hashes": {
+    "SUBMISSION_READY\\01_FIRST_REAL_TEST\\weights.json": "50aac91132da1f244873b9031021102fab193600809dda8d38934b31f0d30b60",
+    "SUBMISSION_READY\\KNOWN_OBSERVATIONS.json": "1d80f8186dd2b89a8be669dfde7e6168a95c14a77745051303cce85f14775d0e",
+    "analysis\\v33_protocol\\protocol.py": "16a73d5b5afca77407aecd38928e30cc9c497fcf57d5e039a5c38b62665cf9d4",
+    "analysis\\v33_protocol\\release_v1\\protocol.py": "56dbca411fda96a13507d3fdabb275d725ebc10625e3683db63109501f15a953",
+    "analysis\\v33_protocol\\release_v2\\geometry.py": "8d9fdbca3c97bdce666402d0a700969b351188abdc78abaa4e46de8d30407b45",
+    "analysis\\v33_protocol\\release_v2\\protocol.py": "ad9641f78bfd341aa7fb440b61d89c760bc71bca3952c56f49616866b58556e4",
+    "analysis\\v33_protocol\\release_v2\\publish.py": "77c23066349dbe4523e8fda1f75758365c542e1f67c4fa87e71c646052235ff1",
+    "analysis\\v33_protocol\\release_v2\\recipes.py": "9596552e21f3836e9f177d9585cab5cde873f52b451f0c47fb99616814461218",
+    "analysis\\v33_protocol\\release_v2\\study.py": "3494f23a021ce1c57ac4d89db223257936d895c1473c4fdc8b1b4b8ae2a2887a",
+    "dataset_same8\\train.csv": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "new_design_choices": "5-fold top20 rotation, reserved neighbors, supported tasks 50%; old stress families 25% each",
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.2",
+  "python": "3.11.18 (main, Oct 26 2026, 14:08:50) [MSC v.1944 64 bit (AMD64)]",
+  "seeds": {
+    "inner": 3303,
+    "tail": [
+      3301,
+      3302
+    ]
+  },
+  "simulator_calls": 0,
+  "supported_seed": 3320,
+  "training_performed": false
+}

@@ -1,0 +1,53 @@
+{
+  "accuracy_scale": 5.0,
+  "cutoff": 132.8,
+  "diagnostic_cutoff": 132.8,
+  "empty_predicted_low": "zero points; always report count",
+  "empty_true_low": "fail the task; do not skip",
+  "family_weights": {
+    "hidden_elite": 0.25,
+    "local_region": 0.25,
+    "supported_low": 0.5
+  },
+  "feedback_baseline": "minimum of original outer-train labels and P1; never rank against primary total",
+  "geometry_claim": "nearest-neighbor support is enforced; strict convex-hull interpolation is diagnostic only",
+  "inner_folds": 3,
+  "inner_seed": 3303,
+  "inner_tuning": "not performed; published modal parameters fixed before evidence",
+  "p1_usage": "excluded from primary fits; 5 points; feedback refits separately reported out of 95",
+  "points": {
+    "best_identification": 35,
+    "p1_accuracy": 5,
+    "predicted_low_accuracy": 30,
+    "true_low_accuracy": 30
+  },
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.2",
+  "region_anchor_ranks": [
+    1,
+    3,
+    5
+  ],
+  "region_mandatory_hidden_ranks": 5,
+  "score": "35 best identification + 30 true-low MAE + 30 predicted-low MAE + 5 P1; two task regimes",
+  "score_clipping": "breakthrough utility floored at zero; each accuracy component positive and bounded",
+  "selection": "minimum predicted_mean, exact ties by candidate_id",
+  "status": "FROZEN",
+  "stress_recognition": "35 * max(0, (train_best - selected_actual) / (train_best - test_best))",
+  "supported_elite_n": 20,
+  "supported_folds": 5,
+  "supported_neighbors": "reserve nearest non-held point for each mandatory hidden elite in training",
+  "supported_partition": "elite true-rank round robin; four test and sixteen forced train per task",
+  "supported_recognition": "35 / (1 + test_top1_regret / 5); no train-best breakthrough requirement",
+  "supported_seed": 3320,
+  "tail_hidden_ranks": [
+    5,
+    10,
+    20
+  ],
+  "tail_seeds": [
+    3301,
+    3302
+  ],
+  "task_overlap": "14 dependent tasks; each top20 elite tests once and trains four times in supported tasks",
+  "test_n": 410
+}

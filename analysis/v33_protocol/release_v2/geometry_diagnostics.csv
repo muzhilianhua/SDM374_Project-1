@@ -1,0 +1,21 @@
+split_id,candidate_id,reserved_neighbor_id,reserved_neighbor_is_train,nearest_train_distance,global_nearest_distance,distance_ratio_to_global_nearest,inside_allowed_train_convex_hull,solver_status,max_reconstruction_error,scope
+supported-f01,p01969,p00540,True,0.29669346784552864,0.29669346784552864,1.0,True,0,5.551115123125783e-15,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f01,p01269,p00230,True,0.21119169583999495,0.21119169583999495,1.0,True,0,2.545963440070409e-12,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f01,p00786,p00423,True,0.5519374262962122,0.5519374262962122,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f01,p00877,p01577,True,0.44440895468095,0.44440895468095,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f02,p00256,p01406,True,0.5612643835008715,0.5612643835008715,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f02,p01197,p01969,True,0.5346708416981493,0.5346708416981493,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f02,p01437,p00648,True,0.5854718060598869,0.5854718060598869,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f02,p01554,p01980,True,0.26440824938369456,0.26440824938369456,1.0,True,0,5.322547957931079e-13,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f03,p01631,p00973,True,0.5794302779678338,0.5794302779678338,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f03,p01263,p00555,True,0.3466207825474458,0.3466207825474458,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f03,p01914,p00855,True,0.2564119334888756,0.2564119334888756,1.0,True,0,4.493952432405024e-11,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f03,p01754,p00754,True,0.32362779157617033,0.32362779157617033,1.0,True,0,7.922620892664156e-12,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f04,p00992,p00332,True,0.5317126745948758,0.5317126745948758,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f04,p01024,p00130,True,0.3015521306470326,0.3015521306470326,1.0,True,0,5.501016309139573e-13,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f04,p00810,p00020,True,0.22528032339363882,0.22528032339363882,1.0,True,0,8.486600311385928e-12,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f04,p01052,p00968,True,0.56905317251259,0.56905317251259,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f05,p01339,p00910,True,0.27837656312289255,0.27837656312289255,1.0,True,0,1.2596368392792101e-11,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f05,p01142,p00043,True,0.4901809212818647,0.4901809212818647,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f05,p00985,p00870,True,0.267560328063286,0.267560328063286,1.0,True,0,8.576472865229334e-11,allowed outer training rows before model-specific trimming; not a scoring criterion
+supported-f05,p00017,p00473,True,0.5581170644909106,0.5581170644909106,1.0,False,2,,allowed outer training rows before model-specific trimming; not a scoring criterion
