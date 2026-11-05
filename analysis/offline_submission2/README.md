@@ -166,3 +166,60 @@ Remaining risks:
 - `p01969` is the global best row, so it is a stricter anchor than most backtest anchors. Each split's best
   anchor contributed 316 pairs but only one pair where both judges were confident.
 - The direction is the best of many.
+
+## V3.3.2 check of the judges (`delivery/v332/`)
+
+`v332_judges.py` runs the ARD GP and the local GP on the frozen V3.3.2 protocol
+(`analysis/v33_protocol/release_v2/`). It uses the same 14 tasks, P1 holdout, feedback stage and scorer
+that PR #12 used for the three boosted-tree recipes, and does not modify the release. It ran at clean
+commit `890bf5f`.
+
+```bash
+uv run python analysis/offline_submission2/v332_judges.py   # about 17 minutes, 60 fits
+```
+
+| Model (primary stage) | Score /100 | Hidden elite | Region holdout | Supported low | True-low MAE | Hidden-elite MAE | Full-fit P1 (real 119.71) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| ARD GP | 59.96 | **73.06** | 38.82 | **63.98** | **3.59** | **5.17** | **121.49** |
+| Local GP | 54.36 | 68.12 | 33.41 | 57.95 | 6.13 | 9.80 | 120.12 |
+| low60 HistGB (PR #12) | **60.51** | 68.19 | **51.54** | 61.16 | 6.56 | 7.04 | 115.23 |
+| low80 HistGB (PR #12) | 55.28 | 56.56 | 51.67 | 56.45 | 6.48 | 6.85 | 115.15 |
+| low90 XGBoost (PR #12) | 52.28 | 54.71 | 39.71 | 57.34 | 7.15 | 8.73 | 113.04 |
+
+What it says about the submission-2 judges:
+
+- **Overall.** ARD is level with the best boosted recipe overall and is by far the most accurate on low R:
+  - true-low MAE 3.59 against 6.5–7.2;
+  - its full-data P1 prediction misses by +1.78, where the boosted recipes miss by −4.5 to −6.7.
+- **Hidden-elite tasks** (top 5, 10 or 20 rows moved to the test set). Every model ranks `p01969` first,
+  so these tasks do not separate the judges on the question that matters here.
+- **Region-holdout tasks** (`p01969`'s neighbourhood removed from training). Both GPs fail all 3 with
+  false breakthroughs:
+  - their picks were predicted 111.3–118.1, against a training best of about 120.5, and measured 120.6–124.6;
+  - the boosted recipes broke through in all 3, with conservative predictions.
+
+  Where no training row is near, the GPs' low predictions can be several points too optimistic. This is
+  the main new warning.
+- **Supported tasks with `p01969` in training** (f02–f05). Neither GP predicted any test row below the
+  known best 115.76 (ARD picks 118.8–119.2). Where the anchor is known, they did not make false claims of
+  beating it. These test rows are at least 0.3 from `p01969`, so this is weaker evidence than a short
+  step would need.
+
+For the recommended step this is mixed evidence.
+- **Against:** the region-holdout failures show the GPs extrapolating too optimistically into data-sparse
+  space, and the step leaves `p01969` into space with no row within 0.3.
+- **For:** in the real case the anchor `p01969` is known; the GPs measure the gain from it; and the
+  supported tasks show no false claims of beating a known best.
+- **Practical reading:** keep the direction, and weigh the shorter step d0.05
+  (`delivery/consensus-d0.05.json`) more seriously. Its calibrated probability is nearly the same
+  (0.84 against 0.86), and it extrapolates less.
+
+The PR #12 boosted recipes, refitted on all rows, give the recommended direction mixed gains:
+
+| Recipe | d0.05 | d0.08 | Gain on P1 (real +3.95) |
+|---|---:|---:|---:|
+| low60 | −0.51 | −0.96 | −0.34 |
+| low80 | +0.87 | +0.80 | −1.41 |
+| low90 | +1.20 | +1.96 | −4.94 |
+
+All three judged P1 wrongly, so their sign is not used.

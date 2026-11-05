@@ -54,6 +54,12 @@ and record the new decision here with a date.
   reused labels. With held-out candidates purged (commit `228dcae`), the top calibration bin is 0.83
   predicted against 0.63 observed. Unique agreeing pairs improved 79 % of the time. A defensible but
   unvalidated reading for the recommended W is 0.6–0.8.
+  *V3.3.2 check of the judges* (`analysis/offline_submission2/v332_judges.py`, clean `890bf5f`, frozen
+  release unchanged). ARD GP scores 59.96, level with the best boosted recipe (60.51), with the best low-R
+  accuracy (true-low MAE 3.59 vs 6.5–7.2) and the closest full-fit P1 (121.49 vs 113.0–115.2). Both GPs fail
+  all three region-holdout tasks with false breakthroughs (predicted 111–118, measured 120.6–124.6), so
+  their low predictions far from data can be several points optimistic. With `p01969` in training they
+  claimed no test row below it. This argues for weighing the shorter d0.05 step more seriously.
 - **Offline submission 1 failed the bar** (2026-11-02). Submitted C's consensus challenger
   (`20261029-132648-optimize-consensus-r075-2026` rank 1, identical to `SUBMISSION_READY/01_FIRST_REAL_TEST`);
   real R = **119.7121**, 3.95 above `p01969` and 0.62 above baseline W\*. Predictions for the same W: stack

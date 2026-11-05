@@ -1,0 +1,40 @@
+{
+  "created": "2026-11-05T17:27:58",
+  "git": {
+    "commit": "890bf5ff6e3e7ba7dc64e09effc16845c5b5b028",
+    "dirty": false
+  },
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  },
+  "protocol_id": "sdm374.offline-breakthrough.v3.3.2",
+  "release_checksums_sha256": "cbb73004db7812594b722d9ad21ae35259f58d315ef05e400cdaee083f2e7da3",
+  "judges": {
+    "ard": {
+      "model": "bayes-search",
+      "params": {
+        "family": "gp",
+        "kernel": "additive-ard",
+        "lengths": [
+          0.5
+        ],
+        "noises": [
+          0.03
+        ],
+        "seed": 2026
+      }
+    },
+    "local-gp": {
+      "model": "local-gp",
+      "params": {}
+    }
+  },
+  "fits": 60,
+  "optimizer_used": false,
+  "simulator_calls": 0,
+  "boosted_rows": "copied from analysis/v33_protocol/release_v2/delivery/summary.csv"
+}
