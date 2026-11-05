@@ -8,15 +8,18 @@ Passing needs only R(w) < R(p01969) = 115.7648, so the target is P(gain < 0), no
               then logistic calibration maps the judges' z-scores to an observed improvement rate. Folds of the
               calibration are whole outer splits, so every reported probability is out of sample.
 2. scan:      full-data judges score steps 0.01-0.10 along the 19,483 simplex directions of study.py that
-              avoid the two measured failures; the calibrated model ranks them.
+              avoid the two measured failures; the calibrated model ranks those whose z-scores lie inside the
+              range the backtest observed. The finalists are re-ranked by their worst calibrated probability over
+              a radius-0.01 ball, so the choice does not rest on one exact point.
 
-Usage (repository root): uv run python analysis/offline_submission2/sign_study.py
+Usage (repository root): uv run python analysis/offline_submission2/sign_study.py [--reuse-backtest]
 """
 from __future__ import annotations
 
 import importlib.util
 import json
 import os
+import sys
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from importlib import metadata
@@ -44,6 +47,7 @@ ANCHORS_PER_SPLIT, MAX_PAIR_DISTANCE, LOCAL_ROWS = 12, 0.45, 800
 SEED, DIRECTIONS, MAX_COS_TO_FAILURE, ET_VETO = 2026, 20000, 0.5, 4.9
 STEPS = (0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10)
 FEATURES = ("z_ard", "z_lgp")
+FINALISTS, BALL_RADIUS, BALL_POINTS = 10, 0.01, 64
 
 
 def pair_stats(model, anchor, Q, chunk=4000):
@@ -159,6 +163,15 @@ def selection_backtest(pairs, oof):
     return pd.DataFrame(rows)
 
 
+def agreement(pairs):
+    """Observed improvement rate when the judges agree or disagree that the candidate is better."""
+    frame = pairs.assign(better=pairs.candidate_y < pairs.anchor_y,
+                         ard_says=np.where(pairs.z_ard > 0.3, "better", np.where(pairs.z_ard <= 0, "worse", "unsure")),
+                         lgp_says=np.where(pairs.z_lgp > 0.3, "better", np.where(pairs.z_lgp <= 0, "worse", "unsure")))
+    return (frame.groupby(["ard_says", "lgp_says"]).agg(pairs=("better", "size"), observed=("better", "mean"))
+            .reset_index())
+
+
 def scan(final, pairs):
     ds = load_dataset(REPO_ROOT / "dataset_same8")
     X, y, ids = ds.X, ds.y, list(ds.ids)
@@ -194,30 +207,54 @@ def scan(final, pairs):
         frames.append(frame)
     table = pd.concat(frames, ignore_index=True)
     table = table[table.et_gain <= ET_VETO]
-    lo, hi = pairs[list(FEATURES)].quantile(0.01), pairs[list(FEATURES)].quantile(0.99)
+    lo, hi = pairs[list(FEATURES)].min(), pairs[list(FEATURES)].max()
     table["inside_backtest_range"] = ((table[list(FEATURES)] >= lo) & (table[list(FEATURES)] <= hi)).all(axis=1)
-    return table, p, u
+
+    # Finalists: the best directions overall plus the consensus direction of study.py, judged on a ball.
+    inside = table[table.inside_backtest_range]
+    finalists = pd.concat([inside.nlargest(FINALISTS, "p_both"),
+                           inside[(inside.direction == 14840) & inside.step.between(0.03, 0.07)]])
+    finalists = finalists.drop_duplicates(["step", "direction"]).reset_index(drop=True)
+    ball = study.simplex_directions(BALL_POINTS, np.random.default_rng(7))
+    worst = []
+    for row in finalists.itertuples():
+        w = p + row.step * u[row.direction]
+        Q = np.clip(w + BALL_RADIUS * ball, 0, None).reshape(-1, 3, 7)
+        Q = (Q / Q.sum(axis=2, keepdims=True)).reshape(-1, 21)
+        z = pd.DataFrame({f"z_{tag}": z_score(pair_stats(model, p, Q)) for tag, model in (("ard", ard), ("lgp", lgp))})
+        worst.append({"ball_min_p_both": final["both"].predict_proba(z[list(FEATURES)])[:, 1].min(),
+                      "ball_max_et_gain": (et.predict(Q)[0] - et0).max(),
+                      "cos_submission1": float(u[row.direction] @ failure[1]),
+                      "cos_baseline": float(u[row.direction] @ failure[0])})
+    finalists = pd.concat([finalists, pd.DataFrame(worst)], axis=1)
+    return table, finalists.sort_values("ball_min_p_both", ascending=False), p, u
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    os.environ.setdefault("OMP_NUM_THREADS", "1")  # inherited by the spawned workers
-    with ProcessPoolExecutor(max_workers=5) as pool:
-        pairs = pd.concat(pool.map(backtest_split, range(10)), ignore_index=True)
-    pairs.to_csv(OUT / "backtest_pairs.csv.gz", index=False)
+    if "--reuse-backtest" in sys.argv:
+        pairs = pd.read_csv(OUT / "backtest_pairs.csv.gz")
+    else:
+        os.environ.setdefault("OMP_NUM_THREADS", "1")  # inherited by the spawned workers
+        with ProcessPoolExecutor(max_workers=5) as pool:
+            pairs = pd.concat(pool.map(backtest_split, range(10)), ignore_index=True)
+        pairs.to_csv(OUT / "backtest_pairs.csv.gz", index=False)
     oof, scores, final = calibrate(pairs)
     rel, sel = reliability(pairs, oof), selection_backtest(pairs, oof)
     scores.to_csv(OUT / "calibration_scores.csv", index=False)
     rel.to_csv(OUT / "reliability.csv", index=False)
     sel.to_csv(OUT / "selection_backtest.csv", index=False)
+    agree = agreement(pairs)
+    agree.to_csv(OUT / "agreement.csv", index=False)
 
-    table, p, u = scan(final, pairs)
+    table, finalists, p, u = scan(final, pairs)
     best = (table[table.inside_backtest_range].sort_values("p_both", ascending=False)
             .groupby("step").head(5).sort_values(["step", "p_both"], ascending=[True, False]))
     best.to_csv(OUT / "scan_top.csv", index=False)
-    by_step = table.groupby("step").p_both.max().rename("max_p_both").reset_index()
+    by_step = table[table.inside_backtest_range].groupby("step").p_both.max().rename("max_p_both").reset_index()
     by_step.to_csv(OUT / "scan_by_step.csv", index=False)
-    top = best.sort_values("p_both", ascending=False).iloc[0]
+    finalists.to_csv(OUT / "finalists.csv", index=False)
+    top = finalists.iloc[0]
     w = (p + top.step * u[int(top.direction)]).reshape(3, 7)
     check_weights(w.reshape(1, 21))
     (OUT / "max-p.json").write_text(json.dumps(w.tolist(), indent=2) + "\n")
@@ -237,7 +274,7 @@ def main():
                   "scan": {"seed": SEED, "directions": DIRECTIONS, "steps": list(STEPS),
                            "max_cos_to_failure": MAX_COS_TO_FAILURE, "et_veto": ET_VETO},
                   "max_p": {"step": float(top.step), "direction": int(top.direction),
-                            "p_both": float(top.p_both)}}
+                            "p_both": float(top.p_both), "ball_min_p_both": float(top.ball_min_p_both)}}
     (OUT / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
     pd.set_option("display.width", 250)
@@ -246,7 +283,9 @@ def main():
     print(rel.round(3).to_string(index=False))
     print(sel.round(3).to_string(index=False))
     print(json.dumps(coefficients, indent=1))
+    print(agree.round(3).to_string(index=False))
     print(by_step.round(3).to_string(index=False))
+    print(finalists.round(3).to_string(index=False))
     print(best.round(3).to_string(index=False))
     print(consensus.round(3).to_string(index=False))
 
