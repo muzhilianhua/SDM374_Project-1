@@ -200,6 +200,18 @@ def agreement(pairs):
             .reset_index())
 
 
+def extratrees_backtest(pairs):
+    """How often ExtraTrees calls an improvement, and what its +4.9 veto would have removed."""
+    once = unique_pairs(pairs).assign(better=lambda f: f.candidate_y < f.anchor_y)
+    agreeing = once[(once.z_ard > 0.3) & (once.z_lgp > 0.3)]
+    vetoed = agreeing[agreeing.et_gain > 4.9]
+    return pd.DataFrame([
+        {"set": "unique pairs, ExtraTrees predicts improvement", "pairs": int((once.et_gain < 0).sum()),
+         "observed": once.better[once.et_gain < 0].mean()},
+        {"set": "agreeing GP pairs (z > 0.3)", "pairs": len(agreeing), "observed": agreeing.better.mean()},
+        {"set": "agreeing GP pairs the +4.9 veto removes", "pairs": len(vetoed), "observed": vetoed.better.mean()}])
+
+
 def scan(final, pairs):
     ds = load_dataset(REPO_ROOT / "dataset_same8")
     X, y, ids = ds.X, ds.y, list(ds.ids)
@@ -276,12 +288,16 @@ def main():
     sel.to_csv(OUT / "selection_backtest.csv", index=False)
     agree = agreement(pairs)
     agree.to_csv(OUT / "agreement.csv", index=False)
+    extratrees_backtest(pairs).to_csv(OUT / "extratrees_backtest.csv", index=False)
 
     table, finalists, p, u = scan(final, pairs)
     best = (table[table.inside_backtest_range].sort_values("p_both", ascending=False)
             .groupby("step").head(5).sort_values(["step", "p_both"], ascending=[True, False]))
     best.to_csv(OUT / "scan_top.csv", index=False)
     by_step = table[table.inside_backtest_range].groupby("step").p_both.max().rename("max_p_both").reset_index()
+    et_steps = table.groupby("step").et_gain.agg(et_share_improving=lambda g: float((g < 0).mean()),
+                                                 et_median_gain="median").reset_index()
+    by_step = by_step.merge(et_steps, on="step")
     by_step.to_csv(OUT / "scan_by_step.csv", index=False)
     # The calibrated model is fitted on all pairs; read each finalist's probability through the purged
     # out-of-split reliability of its bin, which is the observed rate the backtest supports.
