@@ -123,3 +123,11 @@ analysis/**/results/
 /analysis/selection_training/delivery/candidates/neighbors-0.05-2044.npz
 /analysis/selection_training/delivery/candidates/neighbors-0.05-2045.npz
 /artifacts/bayesian_gp/model.pkl
+
+design-variants/
+
+# Course evaluator: 182 MB exe exceeds GitHub's 100 MB limit; copy it from the course solver.zip
+# and check it with `shasum -a 256 -c solver/CHECKSUMS.sha256`. usage.count is its local call counter.
+/solver/solver.exe
+/solver/usage.count
+/solver/__pycache__/

@@ -13,3 +13,5 @@ analysis/v33_protocol/release_v2/*.csv text eol=lf
 # Freeze exact release/evidence bytes, including CSV CRLF and JSON LF, on every platform.
 analysis/v33_protocol/** -text whitespace=cr-at-eol
 analysis/v32_behavior_audit/** -text whitespace=cr-at-eol
+# Course-provided solver files: keep their original bytes (run.py has CRLF).
+solver/** -text
