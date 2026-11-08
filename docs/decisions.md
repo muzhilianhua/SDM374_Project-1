@@ -156,16 +156,8 @@ and record the new decision here with a date.
   reproducing there. Seen on 2026-11-02 when submission 1 was scored: Windows, PowerShell, a conda
   environment. The TA ran `solver/run.py` with Python 3.14 (its `__pycache__` is `cpython-314`), while this
   repository pins 3.11 (numpy 1.24.4 has no newer wheels). Whether uv can be installed is unknown. Owner: A.
-- Which machine runs development evaluations. The released `solver.exe` (2026-11-06) is a 32-bit Windows
-  PyInstaller build (Python 3.11, CityLearn 2.5.0, weeks 1–8 inputs and three `Building_*.pth` models bundled);
-  it does not run on macOS. Candidates: a member's Windows PC, the course machines, a Windows VM (owner: A).
-  2026-11-08: smoke test `analysis/solver_smoke/smoke.py` (stdlib only) is ready; A runs it on a separate
-  Windows PC. It also answers the three questions below (114.43 example, renormalisation, run time).
-- `solver/README.md` shows all-ones weights (uniform per building) returning R 114.43, below the offline bar.
-  Check whether that example is real on the first local run (owner: A).
-- Whether the evaluator renormalises each building's weights. Now free to test locally: evaluate a training
-  row scaled × 2 once the evaluator is released (owner: D).
-- Evaluator run time per call of 50 sets. Run time decides how many full 20-call rehearsals fit into development.
+  2026-11-08: the stdlib-only smoke test ran with Python 3.14.7 on A's Windows PC (see Resolved), so the
+  evaluator side works with the course computer's Python; the `sdm` package side is still unverified there.
 - How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
   graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
   Ask the TA whether that is allowed (owner: A).
@@ -183,3 +175,16 @@ and record the new decision here with a date.
   `{"weights": [...]}` with 1–50 sets, each a 3 × 7 matrix or 21 numbers in building order (a single set may
   also be passed bare). It prints `{"R": [...]}` in input order; on error it writes the reason to stderr and
   exits with code 2. Weights must be finite and non-negative with at least one positive per building.
+- Windows smoke test of `solver.exe` (2026-11-08, `analysis/solver_smoke/reports/PC-20261108-115634.json`
+  (`--quick`) and `PC-20261108-120254.json` (`--quota`); Windows 11 Pro, Intel 20 threads, Python 3.14.7,
+  exe sha256 matches). Every check passes except `readme_example`:
+  - Which machine runs development evaluations: A's Windows PC (host `PC`), where the exe runs unmodified.
+  - The `solver/README.md` all-ones example is not real: all-ones weights return R 156.24560858344194, not
+    114.43. Known points reproduce exactly (`p01969` 115.76481925917324, submission 1 119.71206678869204,
+    baseline W\* 119.09161796723492), deterministically and independently of batch order and composition.
+  - The evaluator renormalises each building's weights: scaling a building's weights leaves R unchanged
+    (consistent with decision 21).
+  - Run time per call: 1 set 11.5 s, 10 sets 61.7 s, 50 sets 288.9 s (about 5.8 s per set in a full batch),
+    so a full 20 × 50 rehearsal costs about 1.6 h of evaluator time.
+  - Quota: counted per call, not per set, in `usage.count` next to the exe; calls 1–20 succeed and call 21
+    exits with code 2 and `Usage limit reached (20 batch invocations).` Deleting `usage.count` resets it.
