@@ -1,0 +1,39 @@
+﻿  [磁盘] 启动前：C 盘可用 15.11 GB
+=== v5 A 开始（预算 1200，已用 0，本次上限 30，seed=20261106）===
+  [磁盘] 第 1/2 批开始：C 盘可用 15.11 GB
+  [磁盘] 第 1/2 批结束：C 盘可用 14.64 GB
+  [磁盘] 第 2/2 批开始：C 盘可用 14.64 GB
+  [磁盘] 第 2/2 批结束：C 盘可用 14.64 GB
+  [v5A_b1] 候选 231，本次新增评估 30（预算 30/1200，本次上限 30），跳过 201 个（额度不足）
+  [v5A_b2] 候选 231，本次新增评估 0（预算 30/1200，本次上限 30），跳过 231 个（额度不足）
+  [v5A_b3] 候选 231，本次新增评估 0（预算 30/1200，本次上限 30），跳过 231 个（额度不足）
+  [v5A_dense_b1] 候选 21，本次新增评估 0（预算 30/1200，本次上限 30），跳过 18 个（额度不足）
+  [v5A_dense_b2] 候选 12，本次新增评估 0（预算 30/1200，本次上限 30），跳过 12 个（额度不足）
+  [v5A_dense_b3] 候选 12，本次新增评估 0（预算 30/1200，本次上限 30），跳过 12 个（额度不足）
+=== v5 A 结束：本轮新增 30，累计 v5 30 ===
+py : Traceback (most recent call last):
+所在位置 行:15 字符: 1682
++ ... rive C).Free/1GB,2)) GB"; py optimize_weights_v5.py A 30 2>&1 | Tee-O ...
++                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 618, in <module>
+    main()
+  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 605, in main
+    phase_a(ctx, anchor)
+  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 366, in phase_a
+    json.dump({"all": all_res, "per_pair": ranked,
+  File "D:\anaconda\lib\json\__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "D:\anaconda\lib\json\encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "D:\anaconda\lib\json\encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "D:\anaconda\lib\json\encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "D:\anaconda\lib\json\encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "D:\anaconda\lib\json\encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type ndarray is not JSON serializable

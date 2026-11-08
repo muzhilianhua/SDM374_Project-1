@@ -1,0 +1,13 @@
+﻿=== v5 A 开始（预算 1200，已用 0，seed=20261106）===
+  [重试] [Errno 32] Broken pipe
+  [重试] [Errno 32] Broken pipe
+  [重试] [Errno 32] Broken pipe
+  [重试] [Errno 32] Broken pipe
+=== v5 A 结束：本轮新增 0，累计 v5 0 ===
+py : Traceback (most recent call last):
+所在位置 行:15 字符: 1577
++ ... Desktop\在线"; py optimize_weights_v5.py A *> optimization\v5_run_A.log
++                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

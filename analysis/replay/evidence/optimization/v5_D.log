@@ -1,0 +1,66 @@
+﻿  [磁盘] 启动前：C 盘可用 26.16 GB
+=== v5 D 开始（预算 1200，已用 999，本次上限 不限，seed=20261106）===
+
+=== 阶段D：5 个多起点坐标下降 ===
+  [v5D_start1] 候选 1，本次新增评估 0（预算 999/1200，本次上限 不限）
+  [磁盘] 第 1/1 批开始：C 盘可用 26.16 GB
+  [磁盘] 第 1/1 批结束：C 盘可用 25.72 GB
+  [v5D_s1_r1] 候选 11，本次新增评估 11（预算 1010/1200，本次上限 不限）
+  起点1 第1轮 → 105.940297（楼1 主导F6 -0.01(对F5)）
+  [v5D_s1_r2] 候选 11，本次新增评估 0（预算 1010/1200，本次上限 不限）
+  起点1 第2轮 → 105.940297（楼1 主导F6 -0.01(对F5)）
+  [v5D_start2] 候选 1，本次新增评估 0（预算 1010/1200，本次上限 不限）
+  [磁盘] 第 1/1 批开始：C 盘可用 25.72 GB
+  [磁盘] 第 1/1 批结束：C 盘可用 25.72 GB
+  [v5D_s2_r1] 候选 11，本次新增评估 11（预算 1021/1200，本次上限 不限）
+  起点2 第1轮 → 106.053746（楼1 主导F6 +0.01(对F5)）
+  [v5D_s2_r2] 候选 11，本次新增评估 0（预算 1021/1200，本次上限 不限）
+  起点2 第2轮 → 106.053746（楼1 主导F6 +0.01(对F5)）
+  [v5D_start3] 候选 1，本次新增评估 0（预算 1021/1200，本次上限 不限）
+  [磁盘] 第 1/1 批开始：C 盘可用 25.72 GB
+  [磁盘] 第 1/1 批结束：C 盘可用 25.72 GB
+  [v5D_s3_r1] 候选 10，本次新增评估 10（预算 1031/1200，本次上限 不限）
+  起点3 第1轮 → 106.123143（楼1 主导F6 +0.01(对F5)）
+  [v5D_s3_r2] 候选 10，本次新增评估 0（预算 1031/1200，本次上限 不限）
+  起点3 第2轮 → 106.123143（楼1 主导F6 +0.01(对F5)）
+  [v5D_start4] 候选 1，本次新增评估 0（预算 1031/1200，本次上限 不限）
+  [磁盘] 第 1/1 批开始：C 盘可用 25.72 GB
+  [磁盘] 第 1/1 批结束：C 盘可用 25.72 GB
+  [v5D_s4_r1] 候选 11，本次新增评估 11（预算 1042/1200，本次上限 不限）
+  起点4 第1轮 → 106.172217（楼3 第三F3 +0.01(对F5)）
+  [v5D_s4_r2] 候选 11，本次新增评估 0（预算 1042/1200，本次上限 不限）
+  起点4 第2轮 → 106.172217（楼3 第三F3 +0.01(对F5)）
+  [v5D_start5] 候选 1，本次新增评估 0（预算 1042/1200，本次上限 不限）
+  [磁盘] 第 1/1 批开始：C 盘可用 25.72 GB
+  [磁盘] 第 1/1 批结束：C 盘可用 25.72 GB
+  [v5D_s5_r1] 候选 10，本次新增评估 10（预算 1052/1200，本次上限 不限）
+  起点5 第1轮 → 106.222271（楼2 第三F4 +0.01(对F5)）
+  [v5D_s5_r2] 候选 10，本次新增评估 0（预算 1052/1200，本次上限 不限）
+  起点5 第2轮 → 106.222271（楼2 第三F4 +0.01(对F5)）
+=== v5 D 结束：本轮新增 55，累计 v5 1054 ===
+py : Traceback (most recent call last):
+所在位置 行:15 字符: 1548
++ ... M = 'dumb'; py optimize_weights_v5.py D *> optimization\v5_D.log; "ex ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 635, in <module>
+    main()
+  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 628, in main
+    phase_d(ctx, anchor)
+  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 597, in phase_d
+    json.dump(out, f, ensure_ascii=False, indent=2)
+  File "D:\anaconda\lib\json\__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "D:\anaconda\lib\json\encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "D:\anaconda\lib\json\encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "D:\anaconda\lib\json\encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "D:\anaconda\lib\json\encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "D:\anaconda\lib\json\encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type ndarray is not JSON serializable

@@ -39,3 +39,16 @@ calls; the official 20-call log remains the source of truth for scoring.
 
 Open `T18_策略参数比较与推荐.ipynb`; code cells read `evidence/eval_log.jsonl` and
 `evidence/best_weights_phaseE5.json` relative to this folder.
+
+## Full evidence bundle
+
+- `evidence/eval_log.jsonl` — 6,568 records from local evaluator runs (weights, R, phase, timestamp).
+- `evidence/optimization/` — phase progress files, stdout/stderr logs, diagnostics and semantic probes
+  from `vE1` and `v5_phaseA`–`v5_phaseD`.
+- `evidence/weights/` — every `best_weights*.json` snapshot kept during the search.
+- `evidence/E3_summary.json`, `E4_progress.json`, `E5_summary.json` — aggregated terrain, line-scan
+  and quantisation results.
+- `evidence/dedupe_report.csv` — audit of overlap between the offline table and probe candidates.
+- `figures/` — all figures generated from these runs.
+
+Excluded on purpose: `solver.exe`, `usage.count`, local runner scripts and `__pycache__`.
