@@ -110,7 +110,7 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
    commit, the runs will be dirty: say so next to the run ids.
 8. Compare: `uv run sdm runs --json`, or in Python
    `from sdm import catalog; catalog.leaderboard(catalog.run_records())`.
-9. In the same PR, set your task's status and evidence in `docs/team.md` (section 3), then open the PR using
+9. In the same PR, set your task's status and evidence in `docs/team.md` (section 4), then open the PR using
    `.github/pull_request_template.md`.
 
 ## 6. Conventions
