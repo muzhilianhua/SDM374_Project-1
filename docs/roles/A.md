@@ -9,6 +9,10 @@ only person who sends points to the real evaluator so the 20-call budget is neve
 (infrastructure), `docs/`, `AGENTS.md`, `pyproject.toml`, `uv.lock`, `.streamlit/`, `.github/`.
 
 ## Backlog — offline (until the week 8 lab)
+
+> Paths to offline studies, `SUBMISSION_READY/` and `artifacts/` in this section resolve at git tag
+> `offline-final`; they are no longer on the online branch (decision 24).
+
 - [x] Repository skeleton, plugin interfaces, registry, `sdm` CLI, run records, `reproduce`
 - [x] Baseline regression tests; shared evaluation protocol (`sdm evaluate`)
 - [x] Workbench GUI that launches every CLI command as a background job

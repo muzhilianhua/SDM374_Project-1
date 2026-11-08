@@ -20,8 +20,13 @@ best measured R = 115.76, row `p01969`) and optimize `W` over the surrogate.
 | Online: a frozen policy proposes → real evaluator → retrain loop | Weeks 8–10 | ≤ 20 sequential calls of up to 50 W each; a call scores its minimum R; only the 2048 training rows before the first call (decision 19) | 8%: beat our offline result; 5%: rank among teams (best call counts) |
 | Presentation + code + IEEE report (≤ 4 pages) | Week 10 lab | — | 5% innovation, 5% report |
 
-The online evaluator was released on 2026-11-06 as `solver/` next to this repository (Windows only; interface
-in `docs/decisions.md`, Resolved). A prediction is never a measured score.
+The online evaluator was released on 2026-11-06 and lives in `solver/` (Windows only; interface in
+`solver/README.md` and `docs/decisions.md`, Resolved). `solver.exe` is not in git: copy it from the course
+`solver.zip` and run `shasum -a 256 -c CHECKSUMS.sha256` inside `solver/`. A prediction is never a measured score.
+
+The offline phase is frozen at git tag `offline-final` (all studies, `SUBMISSION_READY/`, `artifacts/`,
+offline configs and their tests). This branch keeps only what online work needs; read old studies with
+`git switch --detach offline-final` and do not restore them here (decision 24).
 
 ## 2. Setup and everyday commands
 
@@ -49,6 +54,7 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 | `src/sdm/optimizers/` | Optimizer plugins, one file per algorithm | C |
 | `src/sdm/replay.py`, `analysis/mechanism/` | Offline replay of the online loop; mechanism studies | D |
 | `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | A, D |
+| `analysis/v33_protocol/` | Frozen V3.3 model-evaluation protocol and releases | B |
 | `analysis/ablation/`, `report/` | Ablation tables and figures; IEEE report | E |
 | `experiments/*.toml` | One config per experiment (`_template.toml` is a template) | author of the experiment |
 | `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py` | Core framework | A (others: propose changes in an issue/PR) |
@@ -58,13 +64,15 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 | `runs/` | Generated run folders (git-ignored) | nobody edits by hand |
 | `baseline.py`, `model.npz`, `weights.json`, `requirements.txt`, `dataset_same8/` | Course-provided files | **read-only** |
 | `frozen_data/`, `evaluation_v3_2/` | Frozen data splits and v3.2 scorer (released by B, checked by sha256 in `sdm.frozen_v32`) | **read-only** |
+| `solver/` | Course evaluator (`README.md`, `run.py`, `weight.json`; `solver.exe` git-ignored, pinned in `CHECKSUMS.sha256`) | **read-only** |
+| `SUBMISSION_READY/01_FIRST_REAL_TEST/weights.json`, `SUBMISSION_READY/KNOWN_OBSERVATIONS.json` | Kept only because the frozen V3.3 protocol reads them; the online policy must not use them (decision 19) | **read-only** |
 
 Details of every interface: `docs/interfaces.md`. Settled design decisions and open questions:
 `docs/decisions.md`. Do not re-open a settled decision without asking the user.
 
 ## 4. Hard rules
 
-- MUST NOT edit the course-provided read-only files listed above.
+- MUST NOT edit the course-provided read-only files listed above (including `solver/`).
 - MUST NOT loosen tolerances or frozen numbers in `tests/test_baseline_regression.py`.
 - MUST NOT import `streamlit` (or anything in `app/`) from `src/sdm`. Dependencies point from `app/` to `src/sdm` only.
 - MUST NOT change the `[evaluate]` protocols used to compare models: `frozen-v32` (primary: frozen 2×5 splits,
@@ -80,7 +88,8 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
 
 ## 5. How to do a typical task
 
-1. Branch from `main` (`git switch -c feat/<short-topic>`). If `AGENTS.md` is not on `main` yet, branch
+1. Branch from `main` (`git switch -c feat/<short-topic>`); during the online phase, branch from `feat/online`
+   and open the PR against it. If `AGENTS.md` is not on `main` yet, branch
    from the branch you were told to use and say so in the PR.
 2. New model or optimizer: copy `src/sdm/models/_template.py` or `src/sdm/optimizers/_template.py` to a new
    file without the leading underscore, rename the class and the registry name. The registry imports

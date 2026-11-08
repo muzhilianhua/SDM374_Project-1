@@ -13,6 +13,9 @@ Any change to `src/sdm/interfaces.py`, `evaluate.py` or the `[evaluate]` protoco
 
 ## Backlog — offline (until the week 8 lab)
 
+> Paths to offline studies, `SUBMISSION_READY/` and `artifacts/` in this section resolve at git tag
+> `offline-final`; they are no longer on the online branch (decision 24).
+
 - [x] User-authorized v3.3 experimental protocol implementation (2026-11-05): isolated
       `analysis/v33_protocol/` freezes nine optimizer-independent elite/region tasks, a proposed
       normalized breakthrough-utility score and diagnostics, plus provenance-bearing refit/scoring

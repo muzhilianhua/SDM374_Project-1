@@ -13,6 +13,9 @@ Any change to `Optimizer.propose`'s signature or to `sdm.simplex`.
 
 ## Current status — PR #7 review
 
+> Paths to offline studies, `SUBMISSION_READY/` and `artifacts/` in this section resolve at git tag
+> `offline-final`; they are no longer on the online branch (decision 24).
+
 - P1 (`20261029-132648-optimize-consensus-r075-2026`, rank 1) was offline submission 1:
   real R 119.71206678869203, above the bar (team decisions, Findings). Do not resubmit it.
 - Baseline W* 119.0916 is TA-confirmed. P2 and P3 remain unmeasured historical/research candidates;

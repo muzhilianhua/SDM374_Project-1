@@ -30,6 +30,8 @@ and record the new decision here with a date.
 | 21 | Evaluator constraint: each building's 7 weights non-negative with at least one > 0; they need not sum to 1. We still submit exactly normalised weights that pass `sdm.simplex.check_weights` | TA, 2026-10-31. Whether the evaluator renormalises is unknown, so normalised inputs are the only ones whose meaning matches the training table |
 | 22 | The online code must be frozen and fully reproducible on the course computer: re-running it there sends the same batches in the same order | TA, 2026-11-01 |
 | 23 | Offline submission 2 is chosen offline: from the 2048 training rows, the two known real scores (baseline W\*, submission 1) and surrogates. The course `RampingSolver.exe` is not used to screen candidates; it currently runs only on the course machines | User, 2026-11-02 |
+| 24 | The offline phase is frozen at annotated tag `offline-final` (PR #11 merge, `62a2274`). Online work happens on `feat/online`, which drops the offline studies under `analysis/`, `SUBMISSION_READY/`, `artifacts/`, the offline experiment configs and their tests. It keeps `src/sdm` (every plugin), `app/`, `analysis/coupling/`, `analysis/v33_protocol/` and the two `SUBMISSION_READY` files that V3.3 reads. Rows and findings in this file that cite removed paths resolve at the tag | User, 2026-11-08: concentrate on online script development and testing |
+| 25 | `solver/` is in the repository with its course files unchanged; `solver.exe` (182 MB, above GitHub's 100 MB limit) and `usage.count` are git-ignored. Everyone copies the exe from the course `solver.zip` and checks it against `solver/CHECKSUMS.sha256` (sha256 `293867b8…a077247`) | User, 2026-11-08 |
 
 ## Findings
 
