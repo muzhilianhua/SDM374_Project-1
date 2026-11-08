@@ -17,9 +17,11 @@ only person who sends points to the real evaluator so the 20-call budget is neve
 - [ ] Review and merge B/C/D/E pull requests; keep `docs/interfaces.md` in sync with the code
 - [x] Offline submission 1 (2026-11-02): consensus challenger, real R 119.7121, bar not met (Findings)
 - [ ] Before 2026-11-05 end of class: offline submission 2. The bar is R < 115.76 (decision 17) and it is
-      chosen without the solver (decision 23). Plan: a short step (≈ 0.03) from `p01969` along a local GP's
-      descent direction, kept only if every GP neighbourhood size and extratrees agree; estimated
-      P(R < 115.76) ≈ 0.55–0.70, so not a sure pass
+      chosen without the solver (decision 23). Recommended W: `analysis/offline_submission2/delivery/sign/max-p.json`,
+      direction 14840 at step 0.05 from `p01969` (step ≤ 0.05, both GPs z > 0.5, ball-robust); a
+      defensible, unvalidated P(R < R(p01969)) reading is 0.6–0.8 (README there). Record the real R in decisions.md Findings after submitting
+- [x] `local-gp` judge plugin (2026-11-05, B's path, added for submission 2): v32_score 64.50,
+      std_coverage 0.70 — run `20261105-145418-evaluate-local-gp-v32`
 - [ ] Prepare an evaluator smoke-test checklist (input format, time per point, renormalisation; determinism
       is settled, decision 20)
 - [ ] Confirm the course computer environment (OS, Python, uv, `libomp`) for decision 22

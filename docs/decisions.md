@@ -33,6 +33,37 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **Offline submission 2 recommendation** (2026-11-05, [study](../analysis/offline_submission2/README.md),
+  commit `e4fa38f`, no solver calls). The PR #9 research lead (r06 line, distance 0.08, ARD gain −2.63) is
+  rejected by a second smooth judge, the new `local-gp` (`20261105-145418-evaluate-local-gp-v32`):
+  +1.73, worse than `p01969`. The r05 line, the only one both GPs like, points within cosine 0.79 of the
+  step to submission 1. A search over 19,483 directions that avoid both measured failures picks
+  direction 14840; at step 0.05 every smooth judge variant (ARD with and without `p01969`, local GP with
+  400 / 800 / 1200 neighbours and without `p01969`) predicts a gain between −1.42 and −2.27, also at the
+  worst point of a radius-0.01 ball, and extratrees +1.91 is inside its +4.9 veto. Recommended W:
+  `analysis/offline_submission2/delivery/consensus-d0.05.json`. Where either GP predicts below 120, the
+  real value was 1.1–2.3 higher, and the direction is the best of many, so the rough chance of R < 115.76
+  is 45–65 %.
+  *Superseded the same day by the sign study* (`analysis/offline_submission2/sign_study.py`, commits
+  `6e3954d` backtest and `228dcae` scan, both clean). The study back-tests the judges on 4,256 anchor/test
+  pairs of the frozen outer splits and calibrates P(improvement) per held-out split. On unique pairs,
+  agreeing GPs were right 79 % of the time against about 29 % when they disagreed; ExtraTrees adds nothing.
+  The calibrated P(R < R(`p01969`)) is flat for steps 0.04–0.10 along direction 14840.
+  Recommended W at the time: `analysis/offline_submission2/delivery/sign/max-p.json` (then step 0.08).
+  *Corrected after the PR #11 review*: the two CV repeats re-created most pairs, so the split holdout
+  reused labels. With held-out candidates purged (commit `228dcae`), the top calibration bin is 0.83
+  predicted against 0.63 observed. Unique agreeing pairs improved 79 % of the time. A defensible but
+  unvalidated reading for the recommended W is 0.6–0.8.
+  *V3.3.2 check of the judges* (`analysis/offline_submission2/v332_judges.py`, clean `890bf5f`, frozen
+  release unchanged). ARD GP scores 59.96, level with the best boosted recipe (60.51), with the best low-R
+  accuracy (true-low MAE 3.59 vs 6.5–7.2) and the closest full-fit P1 (121.49 vs 113.0–115.2). Both GPs fail
+  all three region-holdout tasks with false breakthroughs (predicted 111–118, measured 120.6–124.6), so
+  their low predictions far from data can be several points optimistic. With `p01969` in training they
+  claimed no test row below it. Their failing picks lay 0.31–0.39 from any training row.
+  *Final rule* (`ab6cbf0`): ExtraTrees predicts every step from `p01969` as worse, so its veto only capped
+  step length and is replaced by an explicit cap: steps ≤ 0.05, where the calibrated probability has
+  already plateaued (from 0.04), and both GPs at z > 0.5. Recommended W: `delivery/sign/max-p.json`,
+  direction 14840 at step 0.05, identical to `consensus-d0.05.json`. Defensible, unvalidated reading 0.6–0.8.
 - **Offline submission 1 failed the bar** (2026-11-02). Submitted C's consensus challenger
   (`20261029-132648-optimize-consensus-r075-2026` rank 1, identical to `SUBMISSION_READY/01_FIRST_REAL_TEST`);
   real R = **119.7121**, 3.95 above `p01969` and 0.62 above baseline W\*. Predictions for the same W: stack
