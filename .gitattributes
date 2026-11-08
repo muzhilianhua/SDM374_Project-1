@@ -1,7 +1,3 @@
-# Imported controller bytes are evidence; keep their original line endings.
-analysis/selection_training/delivery/raw_source_files/*.json -text whitespace=cr-at-eol
-# Preserve the original CLI evidence log, including its terminal newline.
-analysis/selection_training/delivery/reproduce.log whitespace=-blank-at-eof
 # Frozen v3.3 source and release hashes must survive Windows checkouts.
 analysis/v33_protocol/*.py text eol=lf
 analysis/v33_protocol/release_v1/*.py text eol=lf
@@ -12,6 +8,5 @@ analysis/v33_protocol/release_v2/*.json text eol=lf
 analysis/v33_protocol/release_v2/*.csv text eol=lf
 # Freeze exact release/evidence bytes, including CSV CRLF and JSON LF, on every platform.
 analysis/v33_protocol/** -text whitespace=cr-at-eol
-analysis/v32_behavior_audit/** -text whitespace=cr-at-eol
 # Course-provided solver files: keep their original bytes (run.py has CRLF).
 solver/** -text
