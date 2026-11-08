@@ -159,6 +159,8 @@ and record the new decision here with a date.
 - Which machine runs development evaluations. The released `solver.exe` (2026-11-06) is a 32-bit Windows
   PyInstaller build (Python 3.11, CityLearn 2.5.0, weeks 1–8 inputs and three `Building_*.pth` models bundled);
   it does not run on macOS. Candidates: a member's Windows PC, the course machines, a Windows VM (owner: A).
+  2026-11-08: smoke test `analysis/solver_smoke/smoke.py` (stdlib only) is ready; A runs it on a separate
+  Windows PC. It also answers the three questions below (114.43 example, renormalisation, run time).
 - `solver/README.md` shows all-ones weights (uniform per building) returning R 114.43, below the offline bar.
   Check whether that example is real on the first local run (owner: A).
 - Whether the evaluator renormalises each building's weights. Now free to test locally: evaluate a training

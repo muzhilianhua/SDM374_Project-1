@@ -55,6 +55,7 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 | `src/sdm/replay.py`, `analysis/mechanism/` | Offline replay of the online loop; mechanism studies | D |
 | `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | A, D |
 | `analysis/v33_protocol/` | Frozen V3.3 model-evaluation protocol and releases | B |
+| `analysis/solver_smoke/` | Windows smoke test of `solver.exe` (stdlib only) and its reports | A |
 | `analysis/ablation/`, `report/` | Ablation tables and figures; IEEE report | E |
 | `experiments/*.toml` | One config per experiment (`_template.toml` is a template) | author of the experiment |
 | `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py` | Core framework | A (others: propose changes in an issue/PR) |
