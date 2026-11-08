@@ -39,7 +39,7 @@ Then commit the report(s) on a branch from `feat/online` and record the outcome 
 
 ## Brief for a Claude Code session on the Windows machine
 
-> Work in the SDM374 Project 1 repo on branch `feat/online` (read `AGENTS.md`; you work for member A).
+> Work in the SDM374 Project 1 repo on branch `feat/online` (read `AGENTS.md`; you work for 张子木, member A).
 > Copy `solver.exe` from the course `solver.zip` into `solver/`, then run
 > `python analysis\solver_smoke\smoke.py --quick` and, if it passes, `python analysis\solver_smoke\smoke.py --quota`
 > (run in the background; a 50-set call may take long). Do not edit `solver/` or the script's expected

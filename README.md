@@ -21,9 +21,9 @@ over weeks 1–8. Surrogate models and optimizers are plugins behind fixed inter
 experiment runs from a TOML config through the `sdm` CLI and is recorded under `runs/` so it can be
 reproduced.
 
-**Working with a coding agent?** Point it at [`AGENTS.md`](AGENTS.md) and tell it which member it works
-for; it will find the role brief in [`docs/roles/`](docs/roles/). Claude Code loads `AGENTS.md`
-through `CLAUDE.md` automatically.
+**Who does what:** [`docs/team.md`](docs/team.md) lists each member's paths and tasks and the standard
+process for updating progress and splitting contributions. **Working with a coding agent?** Point it at
+[`AGENTS.md`](AGENTS.md) and tell it your name. Claude Code loads `AGENTS.md` through `CLAUDE.md` automatically.
 
 ## Setup
 
@@ -78,7 +78,7 @@ The frozen data splits ([`frozen_data/`](frozen_data/README.md)) and the v3.2 sc
 | [`docs/decisions.md`](docs/decisions.md) | Settled decisions, known issues, open questions |
 | [`docs/optimizer-research-2026-10-29.md`](docs/optimizer-research-2026-10-29.md) | Role C offline research log (paths resolve at tag `offline-final`) |
 | [`solver/README.md`](solver/README.md) | Course evaluator: stdin/stdout JSON, up to 50 weight sets per call |
-| [`docs/roles/`](docs/roles/) | Per-member mission, owned files, backlog and acceptance criteria |
+| [`docs/team.md`](docs/team.md) | Members, owned paths, task table, progress and contribution process |
 | `src/sdm/models/_template.py`, `src/sdm/optimizers/_template.py`, `experiments/_template.toml` | Starting points for new plugins and experiments |
 
 ## Course baseline (original notes)

@@ -1,8 +1,8 @@
 # AGENTS.md — SDM374 Project 1
 
 Guide for coding agents working in this repository. Read it fully before changing anything, then read
-the brief for the team member you work for: `docs/roles/<A|B|C|D|E>.md`. If nobody told you which
-member you work for, ask before writing code.
+[`docs/team.md`](docs/team.md): who owns which paths, the task table with each member's tasks, and how
+progress and contributions are recorded. If nobody told you which member you work for, ask before writing code.
 
 ## 1. The project in one paragraph
 
@@ -50,18 +50,18 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 
 | Path | What it is | Owner |
 |---|---|---|
-| `src/sdm/models/` | Surrogate plugins, one file per model | B |
-| `src/sdm/optimizers/` | Optimizer plugins, one file per algorithm | C |
-| `src/sdm/replay.py`, `analysis/mechanism/` | Offline replay of the online loop; mechanism studies | D |
-| `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | A, D |
-| `analysis/v33_protocol/` | Frozen V3.3 model-evaluation protocol and releases | B |
-| `analysis/solver_smoke/` | Windows smoke test of `solver.exe` (stdlib only) and its reports | A |
-| `analysis/ablation/`, `report/` | Ablation tables and figures; IEEE report | E |
+| `src/sdm/models/` | Surrogate plugins, one file per model | 刘润泽 (B) |
+| `src/sdm/optimizers/` | Optimizer plugins, one file per algorithm | 艾子齐 (C) |
+| `src/sdm/replay.py`, `analysis/mechanism/` | Offline replay of the online loop; mechanism studies | 胡馨澜 (D) |
+| `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | 张子木 (A), 胡馨澜 (D) |
+| `analysis/v33_protocol/` | Frozen V3.3 model-evaluation protocol and releases | 刘润泽 (B) |
+| `analysis/solver_smoke/` | Windows smoke test of `solver.exe` (stdlib only) and its reports | 张子木 (A) |
+| `analysis/ablation/`, `report/` | Ablation tables and figures; IEEE report | 武韵扬 (E) |
 | `experiments/*.toml` | One config per experiment (`_template.toml` is a template) | author of the experiment |
-| `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py` | Core framework | A (others: propose changes in an issue/PR) |
-| `app/` | Streamlit workbench; every action calls the `sdm` CLI | A |
-| `tests/` | Regression, contract, CLI and GUI tests | A; everyone adds tests for their code |
-| `docs/` | Interfaces, decisions, role briefs | A; each member keeps their own role brief's backlog current |
+| `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py` | Core framework | 张子木 (A) (others: propose changes in an issue/PR) |
+| `app/` | Streamlit workbench; every action calls the `sdm` CLI | 张子木 (A) |
+| `tests/` | Regression, contract, CLI and GUI tests | 张子木 (A); everyone adds tests for their code |
+| `docs/` | Interfaces, decisions, team roster and task table (`team.md`) | 张子木 (A); each member keeps their own rows in `docs/team.md` current |
 | `runs/` | Generated run folders (git-ignored) | nobody edits by hand |
 | `baseline.py`, `model.npz`, `weights.json`, `requirements.txt`, `dataset_same8/` | Course-provided files | **read-only** |
 | `frozen_data/`, `evaluation_v3_2/` | Frozen data splits and v3.2 scorer (released by B, checked by sha256 in `sdm.frozen_v32`) | **read-only** |
@@ -110,11 +110,12 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
    commit, the runs will be dirty: say so next to the run ids.
 8. Compare: `uv run sdm runs --json`, or in Python
    `from sdm import catalog; catalog.leaderboard(catalog.run_records())`.
-9. Update the backlog in your role brief, then open a PR using `.github/pull_request_template.md`.
+9. In the same PR, set your task's status and evidence in `docs/team.md` (section 3), then open the PR using
+   `.github/pull_request_template.md`.
 
 ## 6. Conventions
 
-- Code, comments, docstrings and docs in English; GUI text in Chinese.
+- Code, comments, docstrings and docs in English; GUI text and the team docs `docs/team.md`, `docs/online-tasks.md` (read by every member) in Chinese.
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `build:`).
 - One branch per task; merge to `main` through a reviewed PR.
 - Run ids are `<YYYYmmdd-HHMMSS>-<kind>-<config file name or --name>`, e.g.
@@ -131,4 +132,4 @@ Details of every interface: `docs/interfaces.md`. Settled design decisions and o
 - [ ] `uv run sdm list` shows any new plugin with sensible defaults.
 - [ ] Evidence runs exist, their ids are in the PR description, and any `dirty` run is flagged as such.
 - [ ] No read-only file changed; no regression tolerance changed.
-- [ ] Your role brief's backlog reflects what is done and what is next.
+- [ ] Your task rows in `docs/team.md` show the current status and evidence.
