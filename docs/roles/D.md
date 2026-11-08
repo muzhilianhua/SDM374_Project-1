@@ -16,8 +16,8 @@ Anything that changes how runs are recorded or how `X, y` are assembled.
 - [ ] Extend `analysis/coupling/study.py` (semi-synthetic truths, exact regret) into the online replayer;
       the truth × surrogate interaction there is the main open question for the evaluator probes
 - [ ] Offline replayer `src/sdm/replay.py`: hold out a pool from the 2048 rows; a policy (any registered
-      model + optimizer) makes 20 sequential calls, each picking one row from the pool, "measuring" it from
-      the table and retraining; report best-so-far per call (decision 19). Use `sdm.registry.build_model` /
+      model + optimizer) makes sequential calls, each picking a batch of rows from the pool, "measuring" them
+      from the table and retraining; report best-so-far per call (decision 19: 20 calls × ≤ 50 points). Use `sdm.registry.build_model` /
       `build_optimizer`
 - [ ] Compare exploit / explore settings for the 20-call policy with the replayer
 - [ ] Renormalisation probe: a training row scaled ×2 answers it in one evaluation, and local development
