@@ -35,6 +35,33 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **Offline submission 2 met the bar; the online target is 115.68** (submitted 2026-11-05, recorded
+  2026-11-09). Real R = **115.68**, below the bar 115.7648 (`p01969`, decision 17) by about 0.08. The
+  exact value returned by the evaluator is still to be added. The best offline result is therefore
+  min(119.7121, 115.68) = **115.68**: the online phase earns its 8 % only with a call whose batch minimum
+  is below it.
+  The submitted W is `p01969` + 0.05 · u[15713]: direction 15713 of the seed-2026 directions in
+  `analysis/offline_submission2/study.py` (tag `offline-final`), one of the 19,483 that avoid both measured
+  failures. It is the top pick when only the ARD GP is required. PR #11's final rule recommended direction
+  14840 instead, because the local GP was not clearly confident about 15713 (z 0.34 < 0.5). Judges at
+  `4030012`:
+  - ARD GP: gain −2.85, z 1.90;
+  - local GP: gain −0.86, z 0.34;
+  - calibrated P 0.861, worst on the radius-0.01 ball 0.831;
+  - ExtraTrees: +2.39.
+
+  The real gain is about −0.08. Both GPs had the right sign but overstated the improvement, ARD by about
+  2.8 and the local GP by about 0.8. One point does not show whether PR #11's agreement rule was wrong.
+  The file submitted was `02_A_dir15713_step0.05_ARD_only.json` (sha256 `0ec11414…c53b4d7`) from a
+  candidate bundle built from `4030012`. It is not in the repository, so the weights are kept here.
+  Minimum weight 0.0245; it passes `check_weights` and matches `p01969` + 0.05 · u[15713] to 1e-16.
+  Rows are buildings 1–3 and columns follow `METRICS`:
+  ```json
+  [[0.15769301241644582, 0.05264139579999994, 0.20854081714531605, 0.22837332588192233, 0.033200075292113704, 0.23276077156978842, 0.08679060189441362],
+   [0.2503591199835666, 0.13676967852502162, 0.08313656511837968, 0.0604233371724592, 0.12222408788989679, 0.28509901488585504, 0.06198819642482098],
+   [0.15385821627102042, 0.024476314274646253, 0.04676748001670422, 0.07253577354819109, 0.10757230502504825, 0.36784761044033554, 0.22694230042405422]]
+  ```
+  This W and its R count as known points: graded online calls must not resend it (decision 19).
 - **Offline submission 2 recommendation** (2026-11-05, [study](../analysis/offline_submission2/README.md),
   commit `e4fa38f`, no solver calls). The PR #9 research lead (r06 line, distance 0.08, ARD gain −2.63) is
   rejected by a second smooth judge, the new `local-gp` (`20261105-145418-evaluate-local-gp-v32`):
