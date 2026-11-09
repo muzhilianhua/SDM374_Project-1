@@ -1,0 +1,97 @@
+{
+  "model": "blend_xgb_w20x3",
+  "schema": "sdm374.model_library.v1",
+  "feature_order": [
+    "b1_cost",
+    "b1_carbon",
+    "b1_peak",
+    "b1_discomfort",
+    "b1_degradation",
+    "b1_ramping",
+    "b1_resilience",
+    "b2_cost",
+    "b2_carbon",
+    "b2_peak",
+    "b2_discomfort",
+    "b2_degradation",
+    "b2_ramping",
+    "b2_resilience",
+    "b3_cost",
+    "b3_carbon",
+    "b3_peak",
+    "b3_discomfort",
+    "b3_degradation",
+    "b3_ramping",
+    "b3_resilience"
+  ],
+  "feature_contract": "建筑1→建筑3；每栋 cost→carbon→peak→discomfort→degradation→ramping→resilience",
+  "target": "ramping",
+  "target_transform": "raw",
+  "seed": 2026,
+  "hyperparameters": {
+    "alpha_mix": 0.15,
+    "tree": "xgb_w20x3_full"
+  },
+  "kernel": {
+    "type": "BlockARD(Matern-5/2, ARD, 3 blocks) + 全区域交互 + WhiteKernel",
+    "n_blocks": 3,
+    "per_block": 7,
+    "nu": 2.5,
+    "ls_bounds": [
+      0.03,
+      6.0
+    ],
+    "learn_global_weight": false
+  },
+  "extra": {
+    "alpha_mix": 0.15,
+    "tree": {
+      "name": "xgb_w20x3_full",
+      "path": "SDM374_final_models_v1/models/xgb_w20x3_full.joblib",
+      "sha256": "62a928b19c497123ae40734cbe12b23025d7fa4469dca26319928364ef38583f"
+    },
+    "gp_base": "hp_ms"
+  },
+  "gp_hyperparameters": {
+    "transform": "raw",
+    "bounds": [
+      0.03,
+      6.0
+    ],
+    "n_starts": 4,
+    "maxiter": 100,
+    "noise": 0.03,
+    "noise_bounds": [
+      0.001,
+      0.3
+    ]
+  },
+  "gp_fitted": {
+    "length_scale": [
+      0.27410852646349365,
+      0.23505231387358322,
+      1.0541432974730374,
+      5.90084841515088,
+      0.17458581719047261,
+      0.17703795740938535,
+      6.0
+    ],
+    "global_weight": 0.1,
+    "noise_level": 0.0010000000000000002,
+    "loc": 160.45233558019424,
+    "scale": 15.767298536933115,
+    "theta_log": [
+      -1.2942311690302757,
+      -1.4479471773843897,
+      0.052728396734782364,
+      1.7750961397516782,
+      -1.7453388691711111,
+      -1.7313911207585355,
+      1.791759469228055,
+      -6.907755278982137
+    ]
+  },
+  "fitted": {
+    "note": "见 gp_fitted（混合模型的 GP 部分）"
+  }
+}
