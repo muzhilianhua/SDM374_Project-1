@@ -164,14 +164,14 @@ Findings（2026-11-09 张子木整理，T02）。路径都在 `offline-final` �
 | 成员 | 条目（引用 `offline-final` 中的路径或 PR） | 工作量 | 证据 |
 |---|---|---|---|
 | 张子木 | PR #1：`sdm` 框架（插件接口、注册表、CLI、运行记录与 `reproduce`、baseline 回归测试）与 Streamlit 工作台 | M | PR #1；`src/sdm/`、`app/`、`tests/test_baseline_regression.py` |
-| 张子木 | 树模型插件 `extratrees`、`histgb`、`xgboost`（conformal std） | M | PR #5；`20261025-145809-evaluate-extratrees-default`、`20261029-073439-evaluate-histgb-v32`、`20261029-073455-evaluate-xgboost-v32` |
+| 张子木 | 树模型插件 `extratrees`、`histgb`、`xgboost`（conformal std）；把胡馨澜与刘润泽分支中的模型配置改写为插件并入 main | M | PR #5；`20261025-145809-evaluate-extratrees-default`、`20261029-073439-evaluate-histgb-v32`、`20261029-073455-evaluate-xgboost-v32` |
 | 张子木 | 助教规则与离线提交 1 的记录（决策 17–23） | S | PR #8；`docs/decisions.md` |
 | 张子木 | 离线提交 2 的研究：`local-gp` 裁判、共识方向、符号回测与校准、V3.3.2 复核 | L | PR #11；`analysis/offline_submission2/`；`20261105-145418-evaluate-local-gp-v32` |
 | 张子木 | 两次离线正式提交：候选核对、提交与结果记录 | S | `docs/decisions.md` Findings（提交 1：119.71，提交 2：115.68） |
 | 张子木 | 审查与合并 PR：合并 #1、#3–#9、#11、#12；评审 #3、#4、#7、#9、#10、#11、#12 | M | 各 PR 的 review 记录 |
 | 刘润泽 50% / 胡馨澜 50% | `frozen-v32` 评估协议：冻结划分与 v3.2 评分接入 `sdm evaluate`，按 sha256 校验 | M | PR #2、#3；`20261027-174545-evaluate-baseline-v32` |
 | 刘润泽 50% / 胡馨澜 50% | 代理模型发布证据：11 组历史模型和 3 个全量配置按 v3.2 重新评分，附锁分测试 | M | PR #4；`analysis/surrogate_release/` |
-| 刘润泽 | 冻结 2×5 数据划分与 v3.2 评分标准，全组主比较口径 | M | `frozen_data/`、`evaluation_v3_2/`（2026-10-25 提交） |
+| 刘润泽 50% / 胡馨澜 50% | 冻结 2×5 数据划分与 v3.2 评分标准，全组主比较口径 | M | `frozen_data/`、`evaluation_v3_2/`（2026-10-25 提交） |
 | 刘润泽 | V3.3 评估协议（V3.3 → V3.3.2）：14 组冻结任务，三个配方重训与评分 | L | PR #12；`analysis/v33_protocol/`；`20261105-155332-evaluate-v332-runze_low60_histgb` 等 3 个 run |
 | 刘润泽 | 个人发布分支：21 组组员模型原始指标、11 组对比表与散点图 | S | 分支 `runze-liu`（未合并） |
 | 刘润泽 | 评审 PR #3（指出冻结测试折未校验，修复 `b3b3733` 后批准）、PR #11 | S | PR #3、#11 的 review 记录 |
@@ -189,15 +189,13 @@ Findings（2026-11-09 张子木整理，T02）。路径都在 `offline-final` �
 | 艾子齐 50% / 武韵扬 50% | 在线第 1 轮 50 点包（规则更正后降为想法池）；优化器研究日志 | S | PR #6；`analysis/online_round1/`、`docs/optimizer-research-2026-10-29.md` |
 | 艾子齐 50% / 武韵扬 50% | 加法 ARD 高斯过程研究：v3.2 83.15（同机 stack 74.39）、局部采集比较、5 个未实测候选、评审修订与可编辑复现检查；该 ARD GP 后来是离线提交 2 的主裁判，提交 2 就是只看 ARD 时的首选点 | L | PR #9；`analysis/bayesian_search/`；`20261102-195112-evaluate-bayes-study-gp-ard` |
 
-参考合计（暂定，合作条目按比例计入）：张子木 12、刘润泽 10、胡馨澜 12、艾子齐 9.5、武韵扬 9.5。
+参考合计（暂定，合作条目按比例计入）：张子木 12、刘润泽 9、胡馨澜 13、艾子齐 9.5、武韵扬 9.5。
 
 分配说明（张子木，2026-11-09）：
 - PR #1 的框架与工作台合为一条，按 M 计。
-- PR #2、#3、#4 由刘润泽与胡馨澜平分。
+- PR #2、#3、#4 以及冻结 2×5 数据划分与 v3.2 评分标准由刘润泽与胡馨澜平分。
 - 艾子齐与武韵扬在离线阶段合作完成 C 角色的工作（PR #6、#7、#9），但分工没有体现在 PR 的署名中，所以两人平分这些条目的合计工作量。
-
-需要本人确认的归属：
-- `histgb`、`xgboost` 插件默认参数的来源：胡馨澜的模型包在 2026-10-25 推到 main 后当天撤回，刘润泽在 PR #4 中按 v3.2 重新评分（`histgb_low80_full`），张子木在 PR #5 中重写成插件。三人各记了自己的一部分，如有遗漏请补充。
+- `histgb`、`xgboost` 插件的默认参数来自胡馨澜与刘润泽的分支，张子木改写后经 PR #5 并入 main。
 
 最终贡献分配（11 月 19 日前填写）：
 
