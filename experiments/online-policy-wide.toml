@@ -1,0 +1,31 @@
+# T18 recommendation for the online proposer (evidence: analysis/replay/README.md).
+# Exploratory: no value measured with the real evaluator was used to choose these parameters
+# (decision 19 / T03 still unanswered). The online runner (T08) and the exploit/explore split (T15)
+# are not on main yet; until they land this file loads with `sdm optimize`.
+#
+# Wide trust region (max distance ratio 1.0): in the replay the narrow setting (0.5) reached the
+# pool minimum later without a better final value, so the wide setting is the default.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "bayes-search"
+
+[model.params]
+family = "gp"
+kernel = "additive-ard"
+target = "raw"
+lengths = [0.25, 0.5, 1.0]
+noises = [0.005, 0.03]
+seed = 2026
+
+[optimizer]
+name = "bayes-pool"
+
+[optimizer.params]
+acquisition = "mean"
+samples = 6000
+max_distance_ratio = 1.0
+separation_ratio = 0.1
+seed = 2026

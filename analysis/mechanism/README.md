@@ -1,51 +1,102 @@
 # T20 — Mechanism notes (offline)
 
-Owner: member D. Backlog item: T20 in `docs/roles/D.md`.
+Owner: member D (`docs/team.md`). This folder answers the three T20 questions in
+`docs/online-tasks.md` using **only** the course-provided `dataset_same8` table (2048 rows).
+No evaluator calls are made here.
 
-This folder analyses how the 21 weights affect R **using only the course-provided offline table**.
-No real evaluator calls were made for these results.
+| Question | Answer |
+|---|---|
+| Within-building ratio effect | The share of the `ramping` objective dominates: Spearman -0.6434, octile median R 173.48 -> 145.90 |
+| Cross-building additivity | Holds well enough to model additively: additive-by-building GBM 0.8090 vs joint 0.7726 |
+| Building-2 sensitivity | Confirmed low: permutation R² drop 0.0728 vs 0.9087 / 0.4356; single-building CV R² -0.1375 |
 
-## Data
+## Data and scale
 
-`dataset_same8/train.csv` — 2048 rows, 3 buildings x 7 objectives, each building's weights sum to 1,
-target column `ramping`. Offline R range: 115.765–242.521 (median 161.914).
-These offline R values are not comparable with online evaluator scores.
+`dataset_same8/train.csv`, 2048 rows, 3 buildings x 7 objectives, each building's weights sum to 1.
+Offline R spans 115.765–242.521 (median 161.914).
 
-## Artifacts
-
-- `T20_机理笔记.ipynb` — analysis notebook (Chinese); figures are pre-rendered and the code cells rerun the
-  model comparison, grouped permutation importance and share-octile analysis.
-- `figures/` — five figures used by the notebook.
+The offline table and the evaluator are on the same scale: the solver smoke test reproduces offline
+values exactly (`analysis/solver_smoke/README.md`) — training row `p01969` -> 115.76481925917324,
+offline submission 1 -> 119.71206678869203, baseline W* -> 119.0916. What the 2048 rows cannot cover
+is the *shape* of the response surface away from the sampled points, not the scale.
 
 ## Findings
 
-1. **Within-building ratio effect.** The share of the `ramping` objective is the dominant lever:
-   Spearman with R is **-0.6434**; octile median R falls monotonically from **173.48 to 145.90** as the
-   three-building average `ramping` share increases. `degradation` (+0.220), `carbon` (+0.192) and
-   `cost` (+0.185) shares are positively associated with R; `peak`, `discomfort` and `resilience`
-   are close to zero.
-2. **Cross-building additivity does not hold.** A joint 21-feature GBM reaches CV R² = **0.7726**,
-   whereas three per-building GBMs summed reach only **0.2630**; adding pairwise cross-building terms
-   lifts a linear model from 0.5143 to 0.6247. R depends on the joint composition of the three buildings.
-3. **Building 2 has low sensitivity.** Grouped permutation of building 2's seven weights reduces the
-   joint model's R² by only **0.0728** (building 1: 0.9087, building 3: 0.4356); a model trained on
-   building 2 alone gives CV R² = **-0.1375**.
+### 1. Within-building ratio effect
 
-## Modelling priors for B/C
+Each building's seven weights are shares. The three-building mean share of `ramping` has
+Spearman **-0.6434** with R; splitting on that share and taking octile medians gives a monotone
+decline from **173.48 to 145.90**. Objective shares that co-move with higher R: `degradation`
+(+0.2203), `carbon` (+0.1921), `cost` (+0.1853). `peak` (-0.0809), `discomfort` (-0.0427) and
+`resilience` (-0.0333) carry almost no signal.
 
-1. Represent each building by its 7-dimensional share vector, not by raw magnitudes.
-2. Use one joint 21-dimensional model; do not sum three independently fitted per-building models.
-   If a decomposed model is required for interpretability, add explicit cross-building interactions.
-3. Spend proposal/model budget on buildings 1 and 3; keep building 2 conservative.
+### 2. Cross-building additivity (revised)
 
-## Limitations
+A GBM whose interactions are constrained to stay inside each building scores **0.8090** 5-fold CV R²,
+above the unconstrained joint GBM's **0.7726**. Linear models say the same thing more sharply:
 
-- The 2048 rows are a fixed offline sample; they cannot resolve narrow plateaus or single-point notches
-  in the online evaluator response surface.
-- Permutation importance is model-dependent and is not a causal effect.
-- "Building 2 is insensitive" holds within this offline sample and still needs online confirmation.
+| model | CV R² |
+|---|---|
+| ridge, additive | 0.5143 |
+| ridge + within-building squares and products | 0.6703 |
+| ridge + cross-building products only | 0.4466 |
+| GBM, joint 21 features | 0.7726 |
+| GBM, interactions constrained per building | **0.8090** |
+
+So the interaction structure that matters is **within** a building; adding cross-building products
+makes the linear model worse than plain additive. Treating the three buildings as separate additive
+blocks is a sound inductive bias, and it is what B's additive ARD GP (offline score 0.8315) already
+does.
+
+> Correction: the first version of this note reported "three independent GBMs summed" at 0.2630 and
+> concluded that additivity fails. That implementation fitted three models to the full target and
+> averaged their centred predictions instead of fitting one additive model. It has been replaced by the
+> constrained GBM and the two linear variants above. The earlier "ridge + all pairwise terms 0.6247"
+> result mixed within- and cross-building terms and is superseded by the separated rows.
+
+### 3. Building-2 sensitivity
+
+| building | permutation R² drop | single-building CV R² |
+|---|---|---|
+| 1 | 0.9087 | 0.4585 |
+| 2 | **0.0728** | **-0.1375** |
+| 3 | 0.4356 | 0.1506 |
+
+Building 2 alone does not beat the mean, and shuffling its weights barely moves the joint model.
+It still contributes inside a full composition, but it is the last place to spend proposal budget.
+
+## Priors handed to B/C
+
+1. Use the seven-dimensional share vector per building rather than raw magnitudes; `ramping` share is
+   the first lever, then `degradation` / `cost` / `carbon`.
+2. An additive-by-building model is appropriate. Do not drop the additive ARD GP for being additive,
+   and do not add cross-building interaction features — they do not help.
+3. Allocate proposal and feature budget to buildings 1 and 3; keep building 2 conservative.
+
+## Artifacts
+
+| path | contents |
+|---|---|
+| `study.py` | the whole study: share effect, additivity comparison, sensitivity |
+| `results/20261109/results.json` | all numbers above |
+| `results/20261109/provenance.json` | git state, dataset sha256, package versions, seed |
+| `results/20261109/figures/` | `share_vs_R.png`, `additivity.png`, `building_sensitivity.png` |
+| `t20_mechanism_notes.ipynb` | narrative notebook with saved outputs |
+
+`analysis/**/results/` is gitignored (line 8 of `.gitignore`); `study.py` regenerates that folder, and
+the notebook embeds the numbers and figures so the PR carries the outcome.
 
 ## Reproduce
 
-Open `T20_机理笔记.ipynb` and run all cells. Random seed 0, 5-fold CV, no external packages beyond
-numpy/pandas/scikit-learn/matplotlib.
+```bash
+uv run python analysis/mechanism/study.py
+```
+
+Seed 0, 5 folds, `HistGradientBoostingRegressor(max_iter=200)` with `interaction_cst` grouped per
+building. The run is single-machine and takes a few minutes.
+
+## Limits
+
+- 2048 rows cannot resolve narrow plateaus or single-point notches in the evaluator response surface.
+- Permutation importance is model-dependent and is not a causal effect.
+- "Building 2 is insensitive" holds over this sample; it is a prior, not a guarantee, for online runs.

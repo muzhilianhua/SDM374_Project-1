@@ -69,7 +69,7 @@
   "total_evals_e5": 221,
   "budget_e5": 400,
   "anchor_R": 104.85173345124349,
-  "anchor_src": "C:\\Users\\hp\\Desktop\\在线\\best_weights_phaseE4.json",
+  "anchor_src": "best_weights_phaseE4.json",
   "q1_best_R": null,
   "q1_best_label": null,
   "below_103_count": 0

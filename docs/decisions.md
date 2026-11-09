@@ -135,6 +135,22 @@ and record the new decision here with a date.
   For reference, member B's tree models score 72.3–74.7 on the same splits (`analysis/surrogate_release` on
   branch `runze-liu`), so gradient-boosted plugins are the obvious next step.
 
+- **T18 replay defaults; earlier strategy ranking withdrawn** (2026-11-09, commit `300193b`,
+  [replay](../analysis/replay/README.md), `analysis/replay/study.py`, no evaluator calls). The ranking of
+  strategy families from 6,568 local `solver.exe` calls, and the structural prior handed to T15 (old
+  notebook §6) and the note that T12 could adopt that ranking (old §9), are **withdrawn as policy input**:
+  decision 19 admits only the 2048 training rows before the first call and T03 is unanswered, so no value
+  measured with the real evaluator may enter the first batch. The log stays in `analysis/replay/evidence/`
+  as a search history only. Re-run on the replay (20 calls × 50 points, 1600-row holdout pool, 448 known
+  rows, 5 seeds, `table` and `semi-synthetic` truth), 14 settings end at the same value under each truth
+  (115.765 / 128.175), so the result is **near-null**: under `semi-synthetic` four of five seeds already
+  hold the truth minimum among the known rows. The one separated setting is the trust radius: 1.0 finds
+  the best point at call 1 against call 10 (median) at 0.5. Exploit 0.0 is worse at call 1 (117.437 vs
+  115.765) and slower (call 3); 0.5 and 1.0 tie. Defaults:
+  `experiments/online-policy-wide.toml` (radius 1.0) with `-narrow.toml` kept as the comparison arm;
+  exploit share 0.5 is recorded for T15 (not a parameter of any proposer on `main` yet); the surrogate is
+  left to T12. These are defaults, not measured gains.
+
 ## Known issues
 
 - `xgboost` results can differ slightly across operating systems and CPUs (floating-point order in the
