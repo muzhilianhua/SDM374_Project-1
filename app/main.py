@@ -15,6 +15,7 @@ if "runs_dir" not in st.session_state:
 
 page = st.navigation([
     st.Page("views/overview.py", title="总览", icon=":material/dashboard:", url_path="overview", default=True),
+    st.Page("views/online.py", title="在线控制台", icon=":material/monitoring:", url_path="online"),
     st.Page("views/launch.py", title="运行实验", icon=":material/play_circle:", url_path="launch"),
     st.Page("views/models.py", title="模型", icon=":material/model_training:", url_path="models"),
     st.Page("views/experiments.py", title="实验与数据", icon=":material/science:", url_path="experiments"),

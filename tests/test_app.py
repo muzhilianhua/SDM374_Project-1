@@ -10,7 +10,7 @@ from sdm.cli import main  # noqa: E402
 from sdm.paths import REPO_ROOT  # noqa: E402
 from tests.conftest import BASELINE_CONFIG  # noqa: E402
 
-PAGES = ("views/overview.py", "views/launch.py", "views/models.py", "views/experiments.py")
+PAGES = ("views/overview.py", "views/online.py", "views/launch.py", "views/models.py", "views/experiments.py")
 
 sys.path.insert(0, str(REPO_ROOT / "app"))
 import jobs  # noqa: E402  (same module object the pages import)

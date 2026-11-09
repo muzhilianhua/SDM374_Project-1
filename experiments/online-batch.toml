@@ -1,0 +1,29 @@
+# T15/T16 integration configuration.  The model is provisional until T12 selects
+# the online surrogate; the proposer itself is model-agnostic.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "ridge2"
+
+[optimizer]
+name = "online-batch"
+
+[optimizer.params]
+exploit_fraction = 0.5
+centers = 32
+pool_size = 4000
+concentration = 100.0
+risk = 1.0
+exploration_weight = 1.0
+diversity_weight = 0.25
+radius_ratio = 1.0
+min_radius_ratio = 0.25
+max_radius_ratio = 1.5
+min_separation_ratio = 0.1
+expand_factor = 1.5
+shrink_factor = 0.7
+success_patience = 1
+failure_patience = 1
+seed = 2026
