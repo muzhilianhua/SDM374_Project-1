@@ -1,5 +1,7 @@
 # Optimizer research log — 2026-10-29
 
+> Historical offline log. Every `analysis/…` path below resolves at git tag `offline-final`.
+
 Role C investigated offline search on branch `azq`, starting from main commit `3f1a6d7`.
 The current default remains the first recommendation. A second, exploratory candidate has better
 boosted-model predictions but does not pass the prespecified replacement gate. Neither has been

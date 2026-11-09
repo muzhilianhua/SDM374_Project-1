@@ -1,0 +1,320 @@
+{
+  "started": "2026-11-08T12:02:54",
+  "checks": {
+    "exe_sha256": {
+      "passed": true,
+      "expected": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+      "actual": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247"
+    },
+    "readme_example": {
+      "passed": false,
+      "expected": 114.4317428462673,
+      "usage_after": {
+        "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\usage.count": null,
+        "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\usage.count": "v1:VZglJxdz5bIfcNlKKh948HgB41iHMCIquduhrxrqgSYgj7HZZt5i3RcbUk9j3BYlD8C1YGjbSc31FmQnHTVHfg=="
+      },
+      "exit_code": 0,
+      "seconds": 17.399,
+      "stderr": "",
+      "R": [
+        156.24560858344194,
+        156.24560858344194
+      ]
+    },
+    "known_points": {
+      "passed": true,
+      "R": {
+        "baseline_w_star": 119.09161796723492,
+        "train_p01969": 115.76481925917324,
+        "submission_1": 119.71206678869204
+      },
+      "expected": {
+        "baseline_w_star": 119.0916,
+        "train_p01969": 115.76481925917324,
+        "submission_1": 119.71206678869203
+      },
+      "diff": {
+        "baseline_w_star": 1.796723492475394e-05,
+        "train_p01969": 0.0,
+        "submission_1": 1.4210854715202004e-14
+      },
+      "seconds": 23.022,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "deterministic_repeat": {
+      "passed": true,
+      "first": [
+        119.09161796723492,
+        115.76481925917324,
+        119.71206678869204
+      ],
+      "repeat": [
+        119.09161796723492,
+        115.76481925917324,
+        119.71206678869204
+      ]
+    },
+    "batch_order_independent": {
+      "passed": true,
+      "reversed_call": [
+        119.71206678869204,
+        115.76481925917324,
+        119.09161796723492
+      ]
+    },
+    "batch_composition_independent": {
+      "passed": true,
+      "alone": {
+        "baseline_w_star": 119.09161796723492,
+        "train_p01969": 115.76481925917324,
+        "submission_1": 119.71206678869204
+      }
+    },
+    "single_set_formats": {
+      "passed": true,
+      "R": {
+        "bare_21": 119.09161796723492,
+        "bare_3x7": 119.09161796723492,
+        "object_single": 119.09161796723492
+      },
+      "reference": 119.09161796723492
+    },
+    "renormalises_per_building": {
+      "passed": null,
+      "equal_to_normalised": true,
+      "R_scaled": [
+        119.09161796723492
+      ],
+      "R_normalised": 119.09161796723492
+    },
+    "course_weight_json": {
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 11.605,
+      "stderr": "",
+      "R": [
+        140.34708970107022
+      ]
+    },
+    "rejects_batch_of_51": {
+      "passed": true,
+      "exit_code": 2,
+      "seconds": 0.032,
+      "stderr": "A batch must contain between 1 and 50 weight sets.",
+      "stdout": ""
+    },
+    "rejects_negative_weight": {
+      "passed": true,
+      "exit_code": 2,
+      "seconds": 0.032,
+      "stderr": "Weights must be finite and nonnegative.",
+      "stdout": ""
+    },
+    "rejects_building_all_zero": {
+      "passed": true,
+      "exit_code": 2,
+      "seconds": 0.032,
+      "stderr": "Each building must have at least one positive weight.",
+      "stdout": ""
+    },
+    "rejects_twenty_weights": {
+      "passed": true,
+      "exit_code": 2,
+      "seconds": 0.031,
+      "stderr": "Each weight set must be a 3x7 matrix or 21-number array.",
+      "stdout": ""
+    },
+    "rejects_not_json": {
+      "passed": true,
+      "exit_code": 2,
+      "seconds": 0.026,
+      "stderr": "\ufffd\ufffd\u0427\ufffd\ufffd JSON \ufffd\ufffd\u052a: hello\ufffd\ufffd",
+      "stdout": ""
+    },
+    "usage_counter": {
+      "passed": null,
+      "trail": [
+        {
+          "exit_code": 0,
+          "usage": {
+            "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\usage.count": null,
+            "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\usage.count": "v1:wMGc246FzIWygQBgDeXx7n0CiajDRxjxVtA/64Vft21yRf1+IGtkgQ13LclsD/egbcpAe/ZuiGU+RA95XgB1QA=="
+          }
+        },
+        {
+          "exit_code": 0,
+          "usage": {
+            "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\usage.count": null,
+            "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\usage.count": "v1:3oRiaKfYWZ1KgY8GJnxyUTL4mAJZ3kyicGYDzWqIiyBFXHrPYFvM+X8VUGxtCQPgeEwjhXuOXy8i5Hn6bj+6GA=="
+          }
+        },
+        {
+          "after_invalid_call": {
+            "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\usage.count": null,
+            "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\usage.count": "v1:3oRiaKfYWZ1KgY8GJnxyUTL4mAJZ3kyicGYDzWqIiyBFXHrPYFvM+X8VUGxtCQPgeEwjhXuOXy8i5Hn6bj+6GA=="
+          }
+        }
+      ]
+    },
+    "timing": {
+      "passed": true,
+      "by_batch_size": {
+        "1": {
+          "seconds": 11.49,
+          "exit_code": 0,
+          "n_R": 1,
+          "min_R": 129.75634783675196
+        },
+        "10": {
+          "seconds": 61.743,
+          "exit_code": 0,
+          "n_R": 10,
+          "min_R": 139.99047632177826
+        },
+        "50": {
+          "seconds": 288.867,
+          "exit_code": 0,
+          "n_R": 50,
+          "min_R": 132.16026475987746
+        }
+      }
+    },
+    "quota_after_20_calls": {
+      "passed": null,
+      "calls": [
+        {
+          "call": 1,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 2,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 3,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 4,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 5,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 6,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 7,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 8,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 9,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 10,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 11,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 12,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 13,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 14,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 15,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 16,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 17,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 18,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 19,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 20,
+          "exit_code": 0,
+          "stderr": ""
+        },
+        {
+          "call": 21,
+          "exit_code": 2,
+          "stderr": "Usage limit reached (20 batch invocations)."
+        }
+      ],
+      "usage": {
+        "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\usage.count": null,
+        "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\usage.count": "v1:BgPd/lEXiAVTpc0HolJOwDZlfdazOby9QVe0c1ZFjv3vyI6jjC0BfDoWvfSsrDUrSPEy3Mq4axR6wYVvctzOzQ=="
+      }
+    }
+  },
+  "environment": {
+    "host": "PC",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 20,
+    "python": "3.14.7 (main, Sep  1 2026, 14:17:30) [MSC v.1944 64 bit (AMD64)]",
+    "exe": "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\solver.exe",
+    "git": {
+      "commit": "e929bc63fcd2e4dc67a9d1102bac594373b57550",
+      "branch": "feat/online",
+      "dirty": true
+    },
+    "usage_count_before": {
+      "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\usage.count": null,
+      "C:\\Users\\Administrator\\Desktop\\Nimo-\u5f20\u5b50\u6728\\Project-1\\SDM374_Project-1\\solver\\usage.count": null
+    }
+  },
+  "finished": "2026-11-08T12:16:11",
+  "failed": [
+    "readme_example"
+  ]
+}

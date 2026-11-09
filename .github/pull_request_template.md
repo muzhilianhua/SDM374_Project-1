@@ -1,6 +1,6 @@
 ## What and why
 
-<!-- One paragraph. Which role (A–E) and which backlog item in docs/roles/<X>.md does this address? -->
+<!-- One paragraph. Which task ID in docs/team.md (e.g. T08) does this address, and who owns it? -->
 
 ## Evidence
 
@@ -16,4 +16,4 @@
 - [ ] New plugins appear in `uv run sdm list` with sensible defaults
 - [ ] No changes to read-only course files or to `tests/test_baseline_regression.py`
 - [ ] `docs/interfaces.md` / `docs/decisions.md` updated if a shared interface or decision changed
-- [ ] Role brief backlog updated
+- [ ] Task status and evidence updated in `docs/team.md` (status `待审`, PR / run ids)
