@@ -25,11 +25,13 @@ and record the new decision here with a date.
 | 16 | Boosted-tree plugins share `models/_gbdt.py`: std is the 0.68 quantile of \|out-of-fold residual\| in bins of distance to the nearest training row, non-decreasing with distance | Boosted trees have no native uncertainty; distance bins widen std where the optimizer extrapolates (2026-10-29) |
 | 17 | Offline bar is **R < 115.76**: the TA sets it to min(baseline W\*'s real score 119.0916, best training row `p01969` 115.7648). Submitting a training row only ties the bar | TA, 2026-10-31 |
 | 18 | Offline: two submissions, made one after the other with the first result visible before the second; any gap between them; both due before the end of class on **2026-11-05**. The window is open, so the first can go in early | TA, 2026-10-31 and 2026-11-01. Plan the two as a decision tree: the second depends on the first result |
-| 19 | Online (revised 2026-11-01): the evaluator is handed to us and may be run locally without limit while we develop. The submitted, reproducible code may call it **at most 20 times, one weight set per call, sequentially** (each call may use the results of earlier calls). Before its first call the code may use **only the 2048 training rows**. The group grade is the **best** R of the 20 calls | TA via the user, 2026-11-01; supersedes the earlier "20 rounds × 50 points, minimum per round" reading. The online deliverable is a budget-20 sequential optimisation policy, not a set of batches |
-| 20 | The evaluator is deterministic (same weights → same R). The 20-call policy must never re-evaluate a point it already evaluated or a training row; local development runs are free | TA, 2026-10-31. With deterministic code and data, a local run of the frozen policy reproduces the graded result exactly |
+| 19 | Online (revised 2026-11-06, from the released `solver/README.md`): the submitted, reproducible code may call the evaluator **at most 20 times, sequentially**; each call sends **up to 50 weight sets** and gets one R per set, and may use the results of earlier calls. Before its first call the code may use **only the 2048 training rows**. A call scores the **minimum** R of its batch and the group grade is the **best** call, i.e. the lowest R over all ≤ 1000 points. During development the evaluator runs locally without limit: deleting `usage.count` resets the 20-call quota | TA 2026-10-31 (minimum per batch, best of 20); user 2026-11-01 (only training rows before the first call); solver README 2026-11-06 (≤ 50 sets per call), adopted by the user 2026-11-06. Supersedes the 2026-11-01 "one weight set per call" reading. Batches should maximise the chance that one point is very low, not the batch mean |
+| 20 | The evaluator is deterministic (same weights → same R). The policy must never re-evaluate a training row or a point it already sent, within a batch or across calls; local development runs are free | TA, 2026-10-31. With deterministic code and data, a local run of the frozen policy reproduces the graded result exactly |
 | 21 | Evaluator constraint: each building's 7 weights non-negative with at least one > 0; they need not sum to 1. We still submit exactly normalised weights that pass `sdm.simplex.check_weights` | TA, 2026-10-31. Whether the evaluator renormalises is unknown, so normalised inputs are the only ones whose meaning matches the training table |
-| 22 | The online code must be frozen and fully reproducible on the course computer: re-running it there makes the same 20 calls in the same order | TA, 2026-11-01 |
+| 22 | The online code must be frozen and fully reproducible on the course computer: re-running it there sends the same batches in the same order | TA, 2026-11-01 |
 | 23 | Offline submission 2 is chosen offline: from the 2048 training rows, the two known real scores (baseline W\*, submission 1) and surrogates. The course `RampingSolver.exe` is not used to screen candidates; it currently runs only on the course machines | User, 2026-11-02 |
+| 24 | The offline phase is frozen at annotated tag `offline-final` (PR #11 merge, `62a2274`). Online work happens on `feat/online`, which drops the offline studies under `analysis/`, `SUBMISSION_READY/`, `artifacts/`, the offline experiment configs and their tests. It keeps `src/sdm` (every plugin), `app/`, `analysis/coupling/`, `analysis/v33_protocol/` and the two `SUBMISSION_READY` files that V3.3 reads. Rows and findings in this file that cite removed paths resolve at the tag | User, 2026-11-08: concentrate on online script development and testing |
+| 25 | `solver/` is in the repository with its course files unchanged; `solver.exe` (182 MB, above GitHub's 100 MB limit) and `usage.count` are git-ignored. Everyone copies the exe from the course `solver.zip` and checks it against `solver/CHECKSUMS.sha256` (sha256 `293867b8…a077247`) | User, 2026-11-08 |
 
 ## Findings
 
@@ -139,12 +141,12 @@ and record the new decision here with a date.
   library), so `sdm reproduce` may report small mismatches on another machine. Reproduce on the machine
   that made the run; compare across machines with a tolerance. Run provenance records the xgboost version.
 
-- `pgd` returns duplicate rows when `n > 1` (all starts converge to the same point). The 20-call policy
-  asks for one point per call, but a call must not repeat an earlier one. Owner: C. Tracked by the `xfail` in
+- `pgd` returns duplicate rows when `n > 1` (all starts converge to the same point). Each call needs up to
+  50 distinct points that also differ from every earlier call. Owner: C. Tracked by the `xfail` in
   `tests/test_plugin_contract.py`.
-- The round-1 packet (`analysis/online_round1/delivery/`) assumes 50-point batches, which revised decision 19
-  removes. Its candidates are still useful as starting points for designing the policy, but the packet is not
-  submitted as a batch. Owner: C.
+- The round-1 packet (`analysis/online_round1/delivery/`) has the right 50-point shape again, but call 1 must be
+  generated by the frozen policy from the 2048 rows (decision 19), and the packet spends points on known values
+  (`r01-046` baseline W\*, `r01-047` = `p01969`). Use it as a design reference, not as a submission. Owner: C.
 - The baseline W* is an extrapolation: nearest training row 0.66 away vs. typical spacing 0.38; ridge2
   predicted 75.9 but the real score is 119.09. Treat corner-of-simplex predictions with suspicion.
 
@@ -152,12 +154,10 @@ and record the new decision here with a date.
 
 - Course computer environment (OS, Python, whether uv and `libomp` are available): decision 22 requires
   reproducing there. Seen on 2026-11-02 when submission 1 was scored: Windows, PowerShell, a conda
-  environment. Python version and whether uv can be installed are still unknown. Owner: A.
-- When the evaluator becomes usable outside the course machines. Decision 19 assumes unlimited local runs
-  during online development, but on 2026-11-02 `RampingSolver.exe` (Windows only) runs only there (owner: A).
-- Whether the evaluator renormalises each building's weights. Now free to test locally: evaluate a training
-  row scaled × 2 once the evaluator is released (owner: D).
-- Evaluator run time per point. Run time decides how many full 20-call rehearsals fit into development.
+  environment. The TA ran `solver/run.py` with Python 3.14 (its `__pycache__` is `cpython-314`), while this
+  repository pins 3.11 (numpy 1.24.4 has no newer wheels). Whether uv can be installed is unknown. Owner: A.
+  2026-11-08: the stdlib-only smoke test ran with Python 3.14.7 on A's Windows PC (see Resolved), so the
+  evaluator side works with the course computer's Python; the `sdm` package side is still unverified there.
 - How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
   graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
   Ask the TA whether that is allowed (owner: A).
@@ -171,3 +171,20 @@ and record the new decision here with a date.
 - Whether weights must sum to 1: no, non-negative with one positive per building (decision 21, 2026-10-31).
 - Evaluator input/output (2026-11-02, from submission 1): `RampingSolver.exe --weights <file>.json` reads a
   3 × 7 nested JSON list (one row per building, `FEATURES` order) and prints R as one float on stdout.
+- Online evaluator input/output (2026-11-06, `solver/README.md`): `solver.exe` reads JSON on stdin,
+  `{"weights": [...]}` with 1–50 sets, each a 3 × 7 matrix or 21 numbers in building order (a single set may
+  also be passed bare). It prints `{"R": [...]}` in input order; on error it writes the reason to stderr and
+  exits with code 2. Weights must be finite and non-negative with at least one positive per building.
+- Windows smoke test of `solver.exe` (2026-11-08, `analysis/solver_smoke/reports/PC-20261108-115634.json`
+  (`--quick`) and `PC-20261108-120254.json` (`--quota`); Windows 11 Pro, Intel 20 threads, Python 3.14.7,
+  exe sha256 matches). Every check passes except `readme_example`:
+  - Which machine runs development evaluations: A's Windows PC (host `PC`), where the exe runs unmodified.
+  - The `solver/README.md` all-ones example is not real: all-ones weights return R 156.24560858344194, not
+    114.43. Known points reproduce exactly (`p01969` 115.76481925917324, submission 1 119.71206678869204,
+    baseline W\* 119.09161796723492), deterministically and independently of batch order and composition.
+  - The evaluator renormalises each building's weights: scaling a building's weights leaves R unchanged
+    (consistent with decision 21).
+  - Run time per call: 1 set 11.5 s, 10 sets 61.7 s, 50 sets 288.9 s (about 5.8 s per set in a full batch),
+    so a full 20 × 50 rehearsal costs about 1.6 h of evaluator time.
+  - Quota: counted per call, not per set, in `usage.count` next to the exe; calls 1–20 succeed and call 21
+    exits with code 2 and `Usage limit reached (20 batch invocations).` Deleting `usage.count` resets it.

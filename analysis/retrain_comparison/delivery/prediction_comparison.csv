@@ -1,5 +1,0 @@
-model,column,points,max_abs_difference
-stack,predicted_mean,1554,0.0
-stack,predicted_std,1554,0.0
-consensus,predicted_mean,1554,0.0
-consensus,predicted_std,1554,0.0
