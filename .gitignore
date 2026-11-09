@@ -6,7 +6,7 @@ __pycache__/
 .DS_Store
 runs/
 analysis/**/results/
-
+.conda/
 design-variants/
 
 # Course evaluator: 182 MB exe exceeds GitHub's 100 MB limit; copy it from the course solver.zip
