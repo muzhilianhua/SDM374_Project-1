@@ -35,14 +35,15 @@ def build_table(runs_dir: Path) -> pd.DataFrame:
             "optimizer": record.optimizer or "(evaluate only)",
             "protocol": record.protocol,
             "commit": record.commit,
-            "dirty": bool(record.dirty),
+            "dirty": record.dirty if record.commit else None,
         }
         row.update({metric: metrics.get(metric) for metric in METRICS})
         rows.append(row)
     table = pd.DataFrame(rows)
     if table.empty:
         return table
-    return table.sort_values(["protocol", "v32_score", "mae"], na_position="last", kind="stable")
+    return table.sort_values(["protocol", "v32_score", "mae"], ascending=[True, False, True],
+                             na_position="last", kind="stable")
 
 
 def main() -> None:
@@ -54,7 +55,7 @@ def main() -> None:
     if table.empty:
         raise SystemExit("No completed evaluate runs found")
     args.out.mkdir(parents=True, exist_ok=True)
-    table.to_csv(args.out / "evaluation_table.csv", index=False, float_format="%.10g")
+    table.to_csv(args.out / "evaluation_table.csv", index=False, float_format="%.10g", lineterminator="\n")
     columns = list(table.columns)
     lines = ["| " + " | ".join(columns) + " |", "| " + " | ".join("---" for _ in columns) + " |"]
     for _, row in table.iterrows():
@@ -63,15 +64,16 @@ def main() -> None:
             value = row[column]
             values.append("" if pd.isna(value) else f"{value:.4f}" if isinstance(value, float) else str(value))
         lines.append("| " + " | ".join(values) + " |")
-    (args.out / "evaluation_table.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (args.out / "evaluation_table.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     provenance = {
         "runs_dir": str(args.runs_dir),
         "rows": len(table),
         "run_ids": table["run"].tolist(),
         "protocols": sorted(table.protocol.dropna().unique().tolist()),
-        "dirty_runs": table.loc[table.dirty, "run"].tolist(),
+        "dirty_runs": table.loc[table.dirty.eq(True), "run"].tolist(),
+        "unknown_provenance_runs": table.loc[table.dirty.isna(), "run"].tolist(),
     }
-    (args.out / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
+    (args.out / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"Wrote {len(table)} completed evaluations to {args.out}")
 
 
