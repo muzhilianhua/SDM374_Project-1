@@ -1,0 +1,79 @@
+"""Build reproducible tables from ``sdm`` run records for the report.
+
+The script reads only completed ``evaluate`` runs. It never edits ``runs/`` and
+keeps the run id beside every metric so report numbers remain traceable.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+import tomllib
+
+import pandas as pd
+
+from sdm.catalog import run_records
+
+
+METRICS = ["v32_score", "v32_top1_regret", "mae", "rmse", "spearman", "top50_recall", "std_coverage"]
+
+
+def build_table(runs_dir: Path) -> pd.DataFrame:
+    records = run_records(runs_dir)
+    records = records[(records.kind == "evaluate") & records.complete].copy()
+    rows = []
+    for _, record in records.iterrows():
+        config = tomllib.loads(Path(record.path, "config.toml").read_text(encoding="utf-8"))
+        params = config.get("model", {}).get("params", {})
+        variant = ", ".join(f"{key}={value}" for key, value in sorted(params.items()))
+        metrics = record.metrics
+        row = {
+            "run": record.run,
+            "created": record.created.isoformat(),
+            "model": record.model,
+            "model_variant": variant,
+            "optimizer": record.optimizer or "(evaluate only)",
+            "protocol": record.protocol,
+            "commit": record.commit,
+            "dirty": bool(record.dirty),
+        }
+        row.update({metric: metrics.get(metric) for metric in METRICS})
+        rows.append(row)
+    table = pd.DataFrame(rows)
+    if table.empty:
+        return table
+    return table.sort_values(["protocol", "v32_score", "mae"], na_position="last", kind="stable")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--runs-dir", type=Path, default=Path("runs"))
+    parser.add_argument("--out", type=Path, default=Path("analysis/ablation/delivery"))
+    args = parser.parse_args()
+    table = build_table(args.runs_dir)
+    if table.empty:
+        raise SystemExit("No completed evaluate runs found")
+    args.out.mkdir(parents=True, exist_ok=True)
+    table.to_csv(args.out / "evaluation_table.csv", index=False, float_format="%.10g")
+    columns = list(table.columns)
+    lines = ["| " + " | ".join(columns) + " |", "| " + " | ".join("---" for _ in columns) + " |"]
+    for _, row in table.iterrows():
+        values = []
+        for column in columns:
+            value = row[column]
+            values.append("" if pd.isna(value) else f"{value:.4f}" if isinstance(value, float) else str(value))
+        lines.append("| " + " | ".join(values) + " |")
+    (args.out / "evaluation_table.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    provenance = {
+        "runs_dir": str(args.runs_dir),
+        "rows": len(table),
+        "run_ids": table["run"].tolist(),
+        "protocols": sorted(table.protocol.dropna().unique().tolist()),
+        "dirty_runs": table.loc[table.dirty, "run"].tolist(),
+    }
+    (args.out / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
+    print(f"Wrote {len(table)} completed evaluations to {args.out}")
+
+
+if __name__ == "__main__":
+    main()

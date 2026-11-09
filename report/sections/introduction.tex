@@ -1,0 +1,6 @@
+\section{Introduction}
+Building energy controllers must balance cost, carbon, peak demand, discomfort, degradation, ramping, and resilience. For each of three buildings, the controller receives seven non-negative weights; a candidate therefore contains 21 values, with each building's seven values normalized to sum to one in our experiments.
+
+The project objective is to minimize the district ramping score returned by a deterministic black-box evaluator. The online stage permits at most 20 sequential evaluator calls, each containing at most 50 candidate weight sets. Before the first call, the policy may use only the 2,048-row training table; subsequent calls may append measured results and retrain the surrogate. This makes duplicate prevention, restart safety, and provenance as important as the choice of model.
+
+Our work separates three questions: whether a surrogate ranks low-score regions accurately, how an optimizer turns its predictions into a diverse batch, and whether the complete policy remains reproducible under the evaluator budget. The report compares these components with the frozen-v3.2 protocol and then records the online result separately from offline predictions.

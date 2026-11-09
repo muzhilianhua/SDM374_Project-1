@@ -95,9 +95,9 @@
 
 | ID | 任务 | 负责人 | 工作量 | 优先级 | 依赖 | 状态 | 证据 |
 |---|---|---|---|---|---|---|---|
-| T23 | 用 CLI 复现 baseline（`baseline-v32.toml`、`baseline.toml`），记录 run id | 武韵扬 | S | P1 | — | 待办 | |
-| T24 | 消融框架：用 `sdm.catalog` 从运行记录生成"模型 × 特征 × 优化器"表格，一条命令重建所有图 | 武韵扬 | M | P1 | T23 | 待办 | |
-| T25 | 报告模板：IEEE LaTeX 工程、统一绘图风格和各章篇幅预算；起草 Introduction | 武韵扬 | S | P1 | — | 待办 | |
+| T23 | 用 CLI 复现 baseline（`baseline-v32.toml`、`baseline.toml`），记录 run id | 武韵扬 | S | P1 | — | 待审 | `20261109-222524-evaluate-baseline-v32`; `20261109-222557-evaluate-baseline` |
+| T24 | 消融框架：用 `sdm.catalog` 从运行记录生成"模型 × 特征 × 优化器"表格，一条命令重建所有图 | 武韵扬 | M | P1 | T23 | 待审 | `analysis/ablation/build_table.py`; `analysis/ablation/delivery/` |
+| T25 | 报告模板：IEEE LaTeX 工程、统一绘图风格和各章篇幅预算；起草 Introduction | 武韵扬 | S | P1 | — | 待审 | `report/main.tex`; `report/sections/introduction.tex` |
 | T26 | 20 次调用的逐次最优值曲线，以及每次调用的预测与实测 R 对比 | 武韵扬 | M | P1 | T07 | 待办 | |
 | T27 | 本人章节与幻灯片：系统框架、评估器接口、在线主程序、冻结与正式运行（T06、T08、T21、T22） | 张子木 | M | P0 | T08 | 待办 | |
 | T28 | 本人章节与幻灯片：代理模型选择、在线重训与不确定度校准（T12–T14、T19） | 刘润泽 | M | P0 | T12 | 待办 | |

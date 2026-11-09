@@ -1,0 +1,25 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\title{Sequential Surrogate-Guided Weight Search for Building Energy Controllers}
+\author{SDM374 Project 1 Team}
+\begin{document}
+\maketitle
+\begin{abstract}
+We study a reproducible sequential search policy for tuning the seven objective weights of each of three building controllers. The policy must respect the evaluator budget, submit at most 50 feasible weight sets per call, and use feedback from earlier calls. This report compares surrogate models and search strategies under the released frozen evaluation protocol before documenting the online experiment.
+\end{abstract}
+
+\input{sections/introduction}
+\input{sections/experimental_setup}
+\input{sections/baseline_and_ablation}
+\input{sections/online_results}
+
+\section{Conclusion}
+The final conclusions will be updated after the frozen online policy is selected and executed. All numerical claims will retain their source run id so that the report and code package can be checked together.
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{1}
+\bibitem{sdm} SDM374 Project 1 repository, reproducible run records and frozen-v3.2 evaluation protocol, 2026.
+\end{thebibliography}
+\end{document}
