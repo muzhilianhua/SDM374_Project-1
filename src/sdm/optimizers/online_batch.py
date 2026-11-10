@@ -80,26 +80,33 @@ class OnlineBatchOptimizer(Optimizer):
 
     def __init__(self, params=None):
         super().__init__(params)
-        self._radius_ratio = float(self.params.radius_ratio)
         self._proposal_index = 0
         self._success_streak = 0
         self._failure_streak = 0
+        self._validate_params(1)
+        self._radius_ratio = float(self.params.radius_ratio)
 
     def _validate_params(self, n: int) -> None:
         p = self.params
-        finite = (p.exploit_fraction, p.concentration, p.alpha_floor, p.risk,
-                  p.exploration_weight, p.diversity_weight, p.radius_ratio,
-                  p.min_radius_ratio, p.max_radius_ratio, p.min_separation_ratio,
-                  p.expand_factor, p.shrink_factor, p.improvement_tolerance)
-        if (n < 1 or n > MAX_BATCH or p.centers < 1 or p.pool_size < max(64, n)
+        integer_fields = (n, p.centers, p.pool_size, p.success_patience, p.failure_patience, p.seed)
+        integer_ok = all(isinstance(value, (int, np.integer)) and not isinstance(value, bool)
+                         for value in integer_fields)
+        try:
+            finite = np.asarray((p.exploit_fraction, p.concentration, p.alpha_floor, p.risk,
+                                 p.exploration_weight, p.diversity_weight, p.radius_ratio,
+                                 p.min_radius_ratio, p.max_radius_ratio, p.min_separation_ratio,
+                                 p.expand_factor, p.shrink_factor, p.improvement_tolerance), dtype=float)
+        except (TypeError, ValueError):
+            finite = np.full(13, np.nan)
+        if (not integer_ok or n < 1 or n > MAX_BATCH or p.centers < 1 or p.pool_size < max(64, n)
+                or p.success_patience < 1 or p.failure_patience < 1 or p.seed < 0
                 or not np.isfinite(finite).all() or not 0 <= p.exploit_fraction <= 1
                 or p.concentration <= 0 or p.alpha_floor <= 0 or p.risk < 0
                 or p.exploration_weight < 0 or p.diversity_weight < 0
                 or p.min_radius_ratio <= 0 or p.max_radius_ratio < p.min_radius_ratio
                 or not p.min_radius_ratio <= p.radius_ratio <= p.max_radius_ratio
                 or p.min_separation_ratio <= 0 or p.expand_factor <= 1
-                or not 0 < p.shrink_factor < 1 or p.success_patience < 1
-                or p.failure_patience < 1 or p.improvement_tolerance < 0):
+                or not 0 < p.shrink_factor < 1 or p.improvement_tolerance < 0):
             raise ValueError("invalid online-batch parameters or requested batch size")
 
     def _pool(self, model: Surrogate, X: np.ndarray, y: np.ndarray,
@@ -122,6 +129,24 @@ class OnlineBatchOptimizer(Optimizer):
             pool = _unique_rows(np.concatenate(chunks)) if chunks else np.empty((0, DIM))
             if len(pool) >= max(n * 8, 128):
                 break
+
+        # At a shrunken radius, Dirichlet draws can miss the ball around every anchor.  Interpolate
+        # each good observed point toward an independent simplex draw and cap the interpolation
+        # length explicitly; this gives a feasible local fallback without widening the trust region.
+        pool = _unique_rows(np.concatenate(chunks)) if chunks else np.empty((0, DIM))
+        if len(pool) < max(n * 8, 128):
+            local_count = max(p.pool_size, n * 64, 512)
+            anchors = centers[rng.integers(len(centers), size=local_count)]
+            targets = rng.dirichlet(np.ones(N_METRICS), size=(local_count, N_BUILDINGS)).reshape(-1, DIM)
+            directions = targets - anchors
+            lengths = np.linalg.norm(directions, axis=1)
+            max_step = np.minimum(1.0, radius / np.maximum(lengths, 1e-15))
+            steps = max_step * rng.uniform(0.05, 1.0, size=local_count)
+            local = anchors + steps[:, None] * directions
+            distance = nearest_distances(local, X)
+            keep = (distance > OBSERVED_TOLERANCE) & (distance <= radius + 1e-12)
+            if keep.any():
+                chunks.append(local[keep])
 
         if not chunks:
             raise ValueError("no new candidates inside the current trust region")
@@ -200,7 +225,10 @@ class OnlineBatchOptimizer(Optimizer):
 
     def update(self, previous_best: float, batch_best: float) -> dict[str, float | int]:
         """Update the trust radius after a completed evaluator batch."""
-        previous_best, batch_best = float(previous_best), float(batch_best)
+        try:
+            previous_best, batch_best = float(previous_best), float(batch_best)
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError("previous_best and batch_best must be finite") from error
         if not np.isfinite((previous_best, batch_best)).all():
             raise ValueError("previous_best and batch_best must be finite")
         p = self.params
@@ -234,7 +262,10 @@ class OnlineBatchOptimizer(Optimizer):
         required = {"radius_ratio", "proposal_index", "success_streak", "failure_streak"}
         if not isinstance(state, dict) or set(state) != required:
             raise ValueError(f"online-batch state must contain exactly {sorted(required)}")
-        radius = float(state["radius_ratio"])
+        try:
+            radius = float(state["radius_ratio"])
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError("invalid online-batch state") from error
 
         integers = []
         for key in ("proposal_index", "success_streak", "failure_streak"):

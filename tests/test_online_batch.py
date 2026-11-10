@@ -66,3 +66,24 @@ def test_online_batch_rejects_more_than_solver_batch_limit(dataset, ridge2):
     optimizer = build_optimizer("online-batch")
     with pytest.raises(ValueError, match="batch size"):
         optimizer.propose(ridge2, dataset.X, dataset.y, n=51)
+
+
+def test_online_batch_still_proposes_after_radius_shrink(dataset, ridge2):
+    optimizer = build_optimizer("online-batch", {
+        "radius_ratio": 0.01, "min_radius_ratio": 0.01, "max_radius_ratio": 1.0,
+        "pool_size": 256, "seed": 19,
+    })
+    batch = optimizer.propose(ridge2, dataset.X, dataset.y, n=50)
+    check_weights(batch)
+    assert batch.shape == (50, 21)
+    assert nearest_distances(batch, dataset.X).max() <= 0.01 * 0.3772
+
+
+@pytest.mark.parametrize("params", [
+    {"pool_size": 63},
+    {"seed": -1},
+    {"success_patience": 1.5},
+])
+def test_online_batch_rejects_invalid_parameters(params):
+    with pytest.raises(ValueError, match="invalid online-batch parameters"):
+        build_optimizer("online-batch", params)
