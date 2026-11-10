@@ -8,7 +8,7 @@ No evaluator calls are made here.
 |---|---|
 | Within-building ratio effect | The share of the `ramping` objective dominates: Spearman -0.6434, octile median R 173.48 -> 145.90 |
 | Cross-building additivity | Holds well enough to model additively: additive-by-building GBM 0.8090 vs joint 0.7726 |
-| Building-2 sensitivity | Confirmed low: permutation R² drop 0.0728 vs 0.9087 / 0.4356; single-building CV R² -0.1375 |
+| Building-2 sensitivity | Confirmed low: permutation R² drop 0.0783 vs 0.9429 / 0.4416; single-building CV R² -0.1375 |
 
 ## Data and scale
 
@@ -56,14 +56,22 @@ does.
 
 ### 3. Building-2 sensitivity
 
+Grouped permutation importance: one shared row permutation shuffles all seven weights of a
+building together, so the composition (weights sum to 1) stays intact.
+
 | building | permutation R² drop | single-building CV R² |
 |---|---|---|
-| 1 | 0.9087 | 0.4585 |
-| 2 | **0.0728** | **-0.1375** |
-| 3 | 0.4356 | 0.1506 |
+| 1 | 0.9429 | 0.4585 |
+| 2 | **0.0783** | **-0.1375** |
+| 3 | 0.4416 | 0.1506 |
 
 Building 2 alone does not beat the mean, and shuffling its weights barely moves the joint model.
 It still contributes inside a full composition, but it is the last place to spend proposal budget.
+
+> Correction: the first version of this check permuted each of the seven columns independently,
+> which broke each building's sum-to-1 composition (deviations up to 2.06) and reported
+> 0.9087 / 0.0728 / 0.4356. The block permutation above is the documented grouped-building
+> importance; the ranking is unchanged.
 
 ## Priors handed to B/C
 

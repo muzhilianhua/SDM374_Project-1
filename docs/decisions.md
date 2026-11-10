@@ -141,12 +141,15 @@ and record the new decision here with a date.
   notebook §6) and the note that T12 could adopt that ranking (old §9), are **withdrawn as policy input**:
   decision 19 admits only the 2048 training rows before the first call and T03 is unanswered, so no value
   measured with the real evaluator may enter the first batch. The log stays in `analysis/replay/evidence/`
-  as a search history only. Re-run on the replay (20 calls × 50 points, 1600-row holdout pool, 448 known
-  rows, 5 seeds, `table` and `semi-synthetic` truth), 14 settings end at the same value under each truth
-  (115.765 / 128.175), so the result is **near-null**: under `semi-synthetic` four of five seeds already
-  hold the truth minimum among the known rows. The one separated setting is the trust radius: 1.0 finds
-  the best point at call 1 against call 10 (median) at 0.5. Exploit 0.0 is worse at call 1 (117.437 vs
-  115.765) and slower (call 3); 0.5 and 1.0 tie. Defaults:
+  as a search history only. Re-run on the replay (20 calls × up to 50 points, 1600-row holdout pool, 448
+  known rows, 5 seeds, `table` and `semi-synthetic` truth), with curves scoring submitted points only
+  and the training incumbent kept as a separate reference: under `semi-synthetic` every setting reaches
+  the truth minimum (128.175) in one call, so that arm cannot rank settings. Under `table` the settings
+  separate: exploit ≥ 0.5 with radius 1.0 puts each seed's pool minimum in the first batch (mean final
+  117.350 ± 1.957), pure exploration starts worse (126.937 ± 2.833) and needs a median of 5 calls, and
+  radius 0.5 starves the batch (0.9 points/call once strictly enforced) and ends at 133.697 ± 7.677.
+  (Revised 2026-11-10: the first version scored known rows as if submitted and silently filled short
+  batches out of radius, which made all table-truth settings appear to tie at 115.765.) Defaults:
   `experiments/online-policy-wide.toml` (radius 1.0) with `-narrow.toml` kept as the comparison arm;
   exploit share 0.5 is recorded for T15 (not a parameter of any proposer on `main` yet); the surrogate is
   left to T12. These are defaults, not measured gains.

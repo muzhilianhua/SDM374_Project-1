@@ -25,7 +25,7 @@ tool; the protocol below is what that run has to reproduce.
 
 | item | value |
 |---|---|
-| calls × batch | 20 × 50 (the online budget: 1000 points) |
+| calls × batch | 20 × up to 50 (the online budget: 1000 points) |
 | truth sources | `table` (held-out rows scored by lookup) and `semi-synthetic` (`histgb` fitted on all 2048 rows, following `analysis/coupling/`) |
 | candidate pool | 1600 rows; the other 448 rows are the policy's known data |
 | seeds | 0–4 (policy RNG and model seed); the pool split is per seed |
@@ -33,110 +33,102 @@ tool; the protocol below is what that run has to reproduce.
 | surrogates | `ridge2`, `histgb` (replay-cheap settings) |
 | evaluator calls | none |
 
+**Scoring.** Curves record the best R among *submitted points only*. The best of the 448 known rows
+(the training incumbent) is reported as a separate reference line and never enters the curve. The
+first version of this study took the minimum over known + submitted, so first-call and final scores
+quoted a row the policy never submitted; that bug made every table-truth setting appear to tie at
+115.765.
+
+**Trust-radius rule (table truth).** A pool row is eligible only within `median spacing × radius` of
+the known data. When fewer rows qualify than the batch needs, the batch is simply smaller — the
+radius is never widened silently. Every call logs the eligible count, the submitted count and the
+actual distance ratios (`runs.jsonl` → `call_log`); the results table carries mean points per call
+and the worst observed distance ratio so the constraint is auditable. (The first version filled
+short batches with out-of-radius rows — up to 45 of 50 — so the old radius arm never implemented the
+stated constraint.)
+
 The pool is larger than the budget on purpose: with a smaller pool every policy eventually sees every
-row. Even so, most policies stop improving inside a few calls, so **the final value is not the
+row. Even so, most policies stop improving inside a few calls, so **the final value alone is not the
 discriminating quantity**. The table therefore also reports the best after the first call (the graded
 batch minimum) and the call at which a run stops improving.
 
 ## Results
 
-| truth | surrogate | exploit | radius | best after call 1 | median calls to the run's best | mean final R | std |
-|---|---|---|---|---|---|---|---|
-| semi-synthetic | ridge2 | 0.5 | 1.0 | 128.175 | 0 | 128.175 | 0.000 |
-| semi-synthetic | ridge2 | 1.0 | 1.0 | 128.175 | 0 | 128.175 | 0.000 |
-| semi-synthetic | histgb | 0.5 | 1.0 | 128.263 | 0 | 128.175 | 0.000 |
-| semi-synthetic | histgb | 1.0 | 1.0 | 128.263 | 0 | 128.175 | 0.000 |
-| semi-synthetic | histgb | 0.5 | 0.5 | 128.263 | 0 | 128.175 | 0.000 |
-| semi-synthetic | ridge2 | 0.0 | 1.0 | 128.371 | 0 | 128.175 | 0.000 |
-| semi-synthetic | histgb | 0.0 | 1.0 | 128.371 | 0 | 128.175 | 0.000 |
-| table | ridge2 | 0.5 | 1.0 | 115.765 | 1 | 115.765 | 0.000 |
-| table | ridge2 | 1.0 | 1.0 | 115.765 | 1 | 115.765 | 0.000 |
-| table | histgb | 0.5 | 1.0 | 115.765 | 1 | 115.765 | 0.000 |
-| table | histgb | 1.0 | 1.0 | 115.765 | 1 | 115.765 | 0.000 |
-| table | ridge2 | 0.0 | 1.0 | 117.437 | 3 | 115.765 | 0.000 |
-| table | histgb | 0.0 | 1.0 | 117.437 | 3 | 115.765 | 0.000 |
-| table | histgb | 0.5 | 0.5 | 117.437 | 10 | 115.765 | 0.000 |
+70 seeded runs — `results/20261109/results.json`, one line per run in `runs.jsonl` (including the
+per-call radius audit), curves in `figures/`, numbers below from `summary.md`.
 
-Mean over 5 seeds; the per-seed curves are in `results/20261109/runs.jsonl`.
+Training incumbent (reference, mean over seeds; never submitted): **table 117.437**, semi-synthetic
+128.371.
+
+| truth | surrogate | exploit | radius | best after call 1 | median calls to the run's best | mean final R | std | mean pts/call | max dist ratio |
+|---|---|---|---|---|---|---|---|---|---|
+| semi-synthetic | ridge2 | 0.5 | 1.0 | 128.183 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 0.5 | 1.0 | 128.263 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 1.0 | 1.0 | 128.263 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 0.5 | 0.5 | 128.263 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | ridge2 | 1.0 | 1.0 | 128.540 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | ridge2 | 0.0 | 1.0 | 128.563 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 0.0 | 1.0 | 128.563 | 1 | 128.175 | 0.000 | — | — |
+| table | ridge2 | 1.0 | 1.0 | 117.350 | 1 | 117.350 | 1.957 | 27.8 | 1.00 |
+| table | histgb | 0.5 | 1.0 | 117.350 | 1 | 117.350 | 1.957 | 27.3 | 1.00 |
+| table | histgb | 1.0 | 1.0 | 117.350 | 1 | 117.350 | 1.957 | 26.7 | 1.00 |
+| table | ridge2 | 0.5 | 1.0 | 117.507 | 1 | 117.350 | 1.957 | 28.4 | 1.00 |
+| table | histgb | 0.5 | 0.5 | 133.697 | 1 | 133.697 | 7.677 | 0.9 | 0.50 |
+| table | ridge2 | 0.0 | 1.0 | 126.937 | 5 | 117.350 | 1.957 | 27.6 | 1.00 |
+| table | histgb | 0.0 | 1.0 | 126.937 | 5 | 117.350 | 1.957 | 27.6 | 1.00 |
 
 Reading:
 
-- **This is a near-null result, and it has to be reported as one.** Under both truth sources every
-  setting ends at the same value (table 115.765, semi-synthetic 128.175) with zero spread. Under
-  `semi-synthetic` four of five seeds already hold a point at the truth minimum among the 448 known
-  rows, so no call can improve on them; only seed 0 needs two calls. Under `table` the optimum is a
-  single held-out row, and every setting still finds it inside 20 calls.
-- **Exploit share.** 0.5 and 1.0 tie: both have the best point by call 1 in the table truth. Pure
-  exploration needs 3 calls (median) and its first batch is worse (117.437 against 115.765). So there
-  is evidence against 0.0 and none separating 0.5 from 1.0.
-- **Trust radius.** The narrow radius (0.5) needs 10 calls against 1, with the same final value.
-  This is the only setting the replay separates cleanly.
-- **Surrogate.** `ridge2` and `histgb` are indistinguishable. This replay is **not** a model-selection
-  experiment; T12 owns that decision and keeps it on `sdm evaluate`.
+- **The two truths tell different stories now.** Under `semi-synthetic` every setting reaches the
+  truth minimum (128.175) in one call (median); first-call values span only 128.183–128.563. That
+  arm cannot rank settings — it is a sanity check, not evidence.
+- **Under `table` the settings separate.** Exploit ≥ 0.5 with radius 1.0 puts each seed's pool
+  minimum in the first batch (mean final 117.350 ± 1.957: 115.765 for seeds 0/3/4; 120.119 and
+  119.334 for seeds 1/2, where `p01969` sits in the known rows). Pure exploration starts worse
+  (126.937 ± 2.833) and needs a median of 5 calls to catch up.
+- **Radius 0.5 starves the batch.** With the radius strictly enforced the narrow arm averages 0.9
+  submitted points per call (7–34 over the whole run): the in-radius supply of unused pool rows is
+  exhausted after the first calls. It ends at 133.697 ± 7.677, 16.3 points worse than radius 1.0.
+  The earlier "0.5 reaches the same final, only slower" was an artifact of silently filling batches
+  out of radius.
+- **Surrogate.** ridge2 and histgb are indistinguishable under both truths. T12 owns model
+  selection; this replay does not.
+- The training incumbent is reference only. For seeds 1 and 2 it equals 115.765 (`p01969` already
+  known), which no submission can beat; the submitted curve then converges to the pool minimum
+  instead.
 
-## Recommendation
+## Recommendation (defaults for T15; the online policy input stays D's)
 
 | parameter | value | source |
 |---|---|---|
-| exploit share | 0.5 | tied with 1.0 in both truths; 0.5 keeps half the batch exploring. Judgment call, not a measured gain |
-| trust radius | 1.0 (max distance ratio) | narrow radius is 9 calls slower, final value unchanged |
+| exploit share | 0.5 | tied with 1.0 under both truths (final 117.350 already at call 1 under table); 0.5 keeps half the batch exploring. Judgment call, not a measured gain |
+| trust radius | 1.0 (max distance ratio) | the narrow radius starves the batch (< 1 point/call) and ends 16 points worse under table truth |
 | batch composition | 25 acquisition + 25 exploration points, no repeats | decision 19 / T15 |
 | surrogate | whatever T12 selects | this replay cannot rank models |
-| first batch | same settings as later batches | no replay evidence for a special first batch |
+| first batch | same settings as later batches | the winning settings already put the run's best in batch 1 |
 
-Delivered as [`experiments/online-policy-wide.toml`](../../experiments/online-policy-wide.toml) with the
-narrow arm kept in `experiments/online-policy-narrow.toml` for re-running the radius comparison. The
-explore share is not a parameter of any proposer on `main` yet (T15 is in progress), so the configs
-carry the model and optimizer parameters that exist today; the share is recorded in `decisions.md`
-and must be added to the proposer when T15 lands.
+Delivered as `experiments/online-policy-wide.toml` (default) and `experiments/online-policy-narrow.toml`
+(comparison arm); the T15 policy itself lands in decision 19.
 
-These are **defaults, not measured gains**. They are consistent with the replay and with the protocol
-(no repeats, ≥ 20-point diversity per batch); they are not derived from any real-evaluator number.
+These are **defaults, not measured gains**: no setting here has been compared against another on the
+real objective. If T03 later allows local evaluator runs for tuning, this table must be rebuilt from
+that evidence.
 
-## Search history (real evaluator runs, not policy evidence)
+## Search history (kept, not used as evidence)
 
-Grouped by stage in the order they were run. `evidence/eval_log.jsonl` holds all 6,568 single-call
-records; every group is a different search strategy, not a controlled comparison.
-
-| stage (phase prefix) | calls | best R |
-|---|---|---|
-| screening (`screen`, `vertex`) | 387 | 120.299 |
-| `v2`–`v4` grid and line scans | 181 | 106.522 |
-| `v5` semi-blind supports | 1,056 | 105.940 |
-| `vE0` probes | 11 | 117.802 |
-| `vE1` three-building axes | 1,377 | 131.370 |
-| `vE2` structured supports | 806 | 105.118 |
-| `vE3` terrain and grid | 1,994 | 105.022 |
-| `vE4` one-dimensional scans | 535 | 104.852 |
-| `vE5` quantisation probes | 221 | 104.852 |
-
-Why this is history and not evidence:
-
-- Sample sizes are very uneven (11–1,994) and the stages are sequential, so each stage starts from
-  what the previous one found; a lower best R in a later stage does not mean that strategy is better.
-- The runs are not seeded or frozen: `optimize_weights_phaseE*.py` used Python's `random`/NumPy
-  defaults in places and the batch splits were chosen by hand. They cannot be replayed exactly.
-- The best point (R = 104.851733, eval_id 6335, 4 non-zero slots per building) is a **local-run
-  measurement**. It says the response surface has low points of that shape; it does not license a
-  first-batch prior, and under decision 19 the policy may not start from it.
+Before the withdrawal above, this folder tuned strategies on 6,568 local `solver.exe` calls and
+recommended proposals from that ranking. The log is kept in `evidence/` purely so the team can see
+what was tried and in what order. Per decision 19 / T03 it is not used for any parameter value, and
+it is not an input to the online policy. Details and checksums: `evidence/README.md`.
 
 ## Files
 
-| path | contents |
+| path | what it is |
 |---|---|
-| `study.py` | the replay: policies, both truth sources, curves, convergence metrics, figures |
-| `results/20261109/results.json` | per-setting aggregates and mean curves |
-| `results/20261109/runs.jsonl` | one record per run (20 curves, first-call best, call it stops improving) |
-| `results/20261109/provenance.json` | git state, dataset sha256, package versions, protocol |
-| `results/20261109/figures/` | `replay_table.png`, `replay_semi_synthetic.png`, `calls_to_final_best.png` |
-| `t18_strategy_comparison.ipynb` | narrative notebook with saved outputs |
-| `evidence/` | the 6,568-call search history (log, stage summaries, best weights, dedupe audit) |
-| `figures/` | figures drawn from the search history |
-| `harness/` | the four scripts that produced `evidence/` (`SDM_WORKSPACE` overrides the data root) |
-| `evidence/provenance.json` | solver sha256, host, seeds, exclusions, timestamp normalisation |
-
-`analysis/**/results/` is gitignored (line 8 of `.gitignore`); the run folder is regenerated by the
-command below, and the notebook embeds the table and figures so the PR carries the outcome.
+| `study.py` | the replayer: policy harness, both truths, seeded runs; `--from-runs` re-aggregates an existing `runs.jsonl` |
+| `t18_strategy_comparison.ipynb` | the narrative notebook with the saved figures |
+| `results/20261109/` | `results.json` / `provenance.json` / `runs.jsonl` (includes the per-call radius audit) / figures / `summary.md` |
+| `evidence/` | the withdrawn 6,568-call search history |
 
 ## Reproduce
 
@@ -144,21 +136,19 @@ command below, and the notebook embeds the table and figures so the PR carries t
 uv run python analysis/replay/study.py --seeds 5 --out analysis/replay/results/20261109
 ```
 
-No evaluator call is made. The run takes about half an hour on one laptop; the pool split and every
-policy are seeded, so the numbers reproduce exactly.
+A full pass takes about fifteen minutes on one laptop. `results/` is gitignored; the notebook embeds
+the table and figures so the PR carries the outcome. Raw data, provenance and the aggregation code
+are in this folder, and the markdown table above is `results/20261109/summary.md`.
 
 ## Limits
 
-- The table truth can only propose rows that exist in the table, so its optimum is a single known row;
-  the real response surface is continuous. Treat convergence differences as ordinal, not as an
-  expected online gain.
-- `semi-synthetic` truth is a `histgb` fitted on the same 2048 rows the policy learns from, which makes
-  it easier than the real evaluator. The offline findings already show predictions can be several
-  points optimistic far from the data.
-- 5 seeds is enough to rank settings that differ by several calls, not to resolve ties.
-- The near-null result is structural: with 448 known rows the truth is already close to the policy's
-  reach, and the table truth has a single optimum. A discriminating replay would need a truth that can
-  improve on the known rows over 20 calls (for example a cold start with far fewer known rows, or a
-  continuous truth with distance drift). That is a T17 design question, not a T18 claim.
-- Nothing here tests the runner, the log, deduplication or the quota (T06–T09), and no cross-machine
-  determinism is checked (T09).
+- Two truth sources, both offline. Neither is the evaluator, and the semi-synthetic arm cannot
+  separate settings at all (everything reaches the truth minimum in one call). The separating
+  evidence comes from the table truth, whose optimum is a single row. A truth that keeps improving
+  over 20 calls would discriminate further; that is a T17 design question.
+- The table pool holds few rows near the known data: even radius 1.0 exhausts its in-radius supply
+  after ~550 submissions, so mean points/call is ~27 rather than 50. The real policy proposes points
+  from a continuous space and has no such supply limit; the radius comparison therefore overstates
+  the narrow setting's failure cost but not its direction.
+- When `sdm replay` lands, this run has to be repeated on the shared tool before the numbers go into
+  the report; the T06–T09 merge order decides when that happens.
