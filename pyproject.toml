@@ -20,7 +20,8 @@ sdm = "sdm.cli:main"
 [dependency-groups]
 dev = ["pytest>=8"]
 # Optional so graders can run the CLI without it: `uv sync --group gui`.
-gui = ["streamlit>=1.40"]
+# Streamlit uses PyArrow for tables/charts; NumPy 1.x is pinned by the course baseline.
+gui = ["streamlit>=1.40", "pyarrow<15"]
 
 [build-system]
 requires = ["hatchling"]
