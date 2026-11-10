@@ -1,0 +1,34 @@
+{
+  "updated_utc": "2026-11-10T17:03:45.680341+00:00",
+  "initial_dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "initial_dataset_rows": 2048,
+  "solver_call_records_seen": 77,
+  "successful_solver_calls": 77,
+  "successful_solver_observations_seen": 433,
+  "training_rows_excluded": 0,
+  "unique_nontraining_solver_points": 419,
+  "deduplication": "weight vector rounded to 12 decimal places",
+  "counts_by_stage": {
+    "near_best_stress": {
+      "successful_observations": 50,
+      "unique_weights": 50
+    },
+    "online_v2": {
+      "successful_observations": 118,
+      "unique_weights": 118
+    },
+    "online_v3_directional": {
+      "successful_observations": 140,
+      "unique_weights": 140
+    },
+    "pilot_online": {
+      "successful_observations": 25,
+      "unique_weights": 11
+    },
+    "pilot_test": {
+      "successful_observations": 100,
+      "unique_weights": 100
+    }
+  },
+  "database_rows_after_upsert": 419
+}

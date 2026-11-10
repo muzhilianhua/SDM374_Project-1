@@ -1,0 +1,10 @@
+{
+  "seed": 5202,
+  "rounds": 10,
+  "pool_size": 300,
+  "global_points": 60,
+  "local_points_per_pool": 240,
+  "local_anchors": "25 lowest-R initial rows",
+  "local_sampler": "independent per-building Dirichlet(kappa*anchor+0.01), kappa cycles 25,100,400,1600",
+  "dedupe": "against initial data and earlier pools within this replicate"
+}

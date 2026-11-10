@@ -1,0 +1,16 @@
+﻿{
+  "source_tag": "offline-final",
+  "source_artifacts": [
+    "analysis/offline_submission2/delivery/sign/scan_top.csv",
+    "analysis/offline_submission2/delivery/sign/finalists.csv",
+    "analysis/offline_submission2/README.md"
+  ],
+  "direction_generation": {"seed": 2026, "count": 20000, "method": "Gaussian direction in the product-simplex tangent subspace; per-building component mean removed; normalize to unit L2 norm"},
+  "geometric_filter": {"max_cosine_to_each_measured_failure": 0.5, "eligible_before_simplex_feasibility": 19483},
+  "direction_ids": [14840, 7986, 15713, 7303, 14494, 13349, 11599, 14067, 17150, 19613, 6832, 2360, 12253, 1864, 19119, 14601, 5359],
+  "direction_id_basis": "union of direction IDs in the offline scan_top and finalist tables; includes consensus direction 14840 and the subsequently submitted direction 15713",
+  "offline_steps_scanned": [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.1],
+  "online_step_subset": [0.01, 0.02, 0.03, 0.04, 0.05],
+  "anchor_candidate_id": "p01969",
+  "known_external_point_to_exclude": {"direction_id": 15713, "step": 0.05, "reported_R": 115.68, "note": "Already submitted and evaluated; exact evaluator precision was not recorded in the repo"}
+}

@@ -1,0 +1,24 @@
+{
+  "status": "complete",
+  "replicates": 3,
+  "rounds_per_model_per_replicate": 10,
+  "pool_size": 300,
+  "models": [
+    "local-gp",
+    "histgb",
+    "xgboost",
+    "boosted-consensus",
+    "ridge2"
+  ],
+  "seeds": [
+    5201,
+    5202,
+    5203
+  ],
+  "selection": "minimum predicted mean R",
+  "initial_rows_per_model": 2048,
+  "feedback_rows_per_model": 10,
+  "low_R_target": 115.68,
+  "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+  "initial_data_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+}

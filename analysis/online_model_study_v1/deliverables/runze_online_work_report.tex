@@ -1,0 +1,51 @@
+﻿\documentclass[11pt,a4paper]{article}
+\usepackage[UTF8,scheme=plain]{ctex}
+\usepackage[margin=1.25cm,top=1.15cm,bottom=1.15cm]{geometry}
+\usepackage{enumitem,booktabs,tabularx,array,xcolor}
+\usepackage{titlesec}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.2em}
+\titleformat{\section}{\large\bfseries\color{blue!55!black}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{5pt}{2pt}
+\renewcommand{\arraystretch}{1.13}
+\begin{document}
+\begin{center}
+{\LARGE\bfseries 在线代理模型研究：工作逻辑、结果与下一步}\\[-1pt]
+{\small 刘润泽（Runze）\quad SDM374 Project-2\quad 2026年11月11日}
+\end{center}
+\vspace{-4pt}
+
+\section{目标与实验逻辑}
+目标是在逐轮获取 solver 真值的在线过程中，比较代理模型帮助寻找低 $R$ 权重 $W$ 的能力。五个模型从相同的 2048 条初始数据出发，在每轮共同的候选池上按预测均值最低选点；solver 返回真实 $R$ 后，只反馈给该模型自身并重训。这样保持候选选项一致、模型轨迹独立。在线寻优和预测误差分别评价，测试集题目与标签应在策略冻结前封存。
+
+候选池经历三版：V1 每池 50 个全局 Dirichlet 点 + 50 个低值训练点附近扰动；V2 每池 60 个全局点 + 240 个围绕初始前 25 个低值点的多尺度扰动；V3 按润泽提出的离线漫游思路，围绕最佳初始权重 $p01969$，沿离线筛选方向及更广方向，以步长 0.01--0.05 生成每池 300 点。当前统一选点规则为最小预测均值；离线方向只是候选生成先验，真实优劣由 solver 验证。
+
+\section{已完成实验和结果}
+\small
+\begin{tabularx}{\linewidth}{@{}lX X@{}}
+\toprule
+实验 & 设计与主要结果 & 解释 \\
+\midrule
+V1 pilot & 5 模型各 5 轮；25 次选择去重为 11 点。local-GP/ridge2 最佳 $R=115.759$，仅较初始 $115.765$ 改善 0.006。100 点开发测试无 $R\le115.68$。 & 流程可运行，但初始池/测试集低值覆盖不足，不能选赢家。 \\
+近优压力 & 50 点，仅 7 点落在 $R\le120.765$；该带 MAE：local-GP 1.192、HistGB 2.035、XGBoost 2.453、集成 2.011、ridge2 13.806；没有点达到 115.68。 & local-GP 有初步近优区信号；样本少，且标签已揭晓。 \\
+V2 多尺度 & 3 种子 $\times$ 10 轮；118 个唯一新点。local-GP 最终最佳均值 $113.820\pm0.534$，3/3 命中 $R\le115.68$；XGBoost $113.959\pm0.785$，亦 3/3，约 3 秒/轮；ridge2 0/3。 & 此候选池下 local-GP 质量最好，XGBoost 成本效果好。 \\
+V3 漫游 & 3 种子 $\times$ 10 轮；140 个唯一新点。HistGB $113.915\pm0.090$（最低均值）；ridge2 $114.163\pm0.350$；五模型均 3/3 命中；XGBoost 单点最低 113.444。 & 模型排名随候选池变化；V2/V3 不是同池因果比较。 \\
+\bottomrule
+\end{tabularx}
+\normalsize
+
+\section{数据资产与验证边界}
+去重 SQLite/CSV 库维护了 419 个不属于初始 2048 的唯一 solver 权重点（433 次观测，重复已折叠）：pilot 在线 11、pilot 开发测试 100、近优压力 50、V2 118、V3 140；与初始集重合为零。数据库和原始调用记录均按来源归档，后续可复用。Pilot 测试和压力测试都已揭晓标签，\textbf{不是盲测}；V4.1 sealed test 尚未生成，正式 20$\times$50 运行也尚未完成。V3 实际 solver 成本约 21.4 分钟；Local-GP 每轮拟合约 48 秒，树模型约 2--6 秒，ridge2 约 0.3 秒。
+
+\section{结论与后续改进}
+\begin{enumerate}
+\item 继续验证离线方向和步长：增加 solver 覆盖，比较方向命中率、低 $R$ 分布，并测试多个低值锚点。
+\item 固定候选池后再优化选点器：对比最小均值、LCB/EI 与探索配额；把代理模型质量和策略收益分开归因。动态移动候选中心另作端到端实验。
+\item 将重复种子先扩至约 8 组，报告完整轨迹与均值/波动；冻结模型和规则后再制作独立 V4.1 测试集，一次性揭盲。
+\item 控制成本：先小规模筛选方向/步长，只计算能影响模型选择的误差指标；暂不把 Spearman 作为主指标，单独记录 solver 与拟合耗时。
+\end{enumerate}
+\vfill
+{\footnotesize 详细设计、逐轮日志、报告、候选池和原始调用记录见 \texttt{analysis/online\_model\_study\_v1/}；唯一数据表位于 \texttt{solver\_database/}。本报告数值来自已归档开发实验，结论限于所测试的候选生成方式与三个随机种子。}
+\end{document}
+

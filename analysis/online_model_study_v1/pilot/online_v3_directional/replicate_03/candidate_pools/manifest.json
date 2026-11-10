@@ -1,0 +1,56 @@
+{
+  "replicate": 3,
+  "candidate_seed": 5303,
+  "points_per_round": 300,
+  "points_per_step_per_round": 60,
+  "anchor_id": "p01969",
+  "anchor_weights": [
+    [
+      0.18820192424833943,
+      0.06360466420059784,
+      0.20218812019519208,
+      0.2143194240587854,
+      0.033248929385831,
+      0.21981267379719566,
+      0.07862426411405848
+    ],
+    [
+      0.23588131097397017,
+      0.14100310763021828,
+      0.08205770080328545,
+      0.05530500458165258,
+      0.12974305755590243,
+      0.2875770324599347,
+      0.06843278599503624
+    ],
+    [
+      0.16258951876772473,
+      0.029255805470118926,
+      0.04458718056535448,
+      0.06959649096135122,
+      0.11341991678227721,
+      0.3471329386268938,
+      0.23341814882627956
+    ]
+  ],
+  "direction_seed": 2026,
+  "generated_direction_count": 20000,
+  "geometric_directions_after_failure_filter": 19483,
+  "directions_max_step_feasible": 19446,
+  "preferred_direction_ids": [
+    15713,
+    13349,
+    17150,
+    2360,
+    19119
+  ],
+  "steps": [
+    0.01,
+    0.02,
+    0.03,
+    0.04,
+    0.05
+  ],
+  "pool_method": "p01969 + step * unit tangent direction; 60 candidates at each step per round; shortlist plus uniformly sampled eligible directions",
+  "exclusions": "2048 training rows, prior solver database, prior V3 pools, known failed directions, and externally submitted direction 15713 at step 0.05"
+}

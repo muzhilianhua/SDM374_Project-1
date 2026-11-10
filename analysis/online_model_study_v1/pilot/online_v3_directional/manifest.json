@@ -1,0 +1,56 @@
+{
+  "status": "complete",
+  "replicates": 3,
+  "rounds_per_model_per_replicate": 10,
+  "pool_size": 300,
+  "models": [
+    "local-gp",
+    "histgb",
+    "xgboost",
+    "boosted-consensus",
+    "ridge2"
+  ],
+  "seeds": [
+    5301,
+    5302,
+    5303
+  ],
+  "selection": "minimum predicted mean R",
+  "initial_rows_per_model": 2048,
+  "feedback_rows_per_model": 10,
+  "low_R_target": 115.68,
+  "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+  "initial_data_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "candidate_generation": "offline directional roaming",
+  "anchor": "p01969",
+  "direction_seed": 2026,
+  "directions_generated": 20000,
+  "steps": [
+    0.01,
+    0.02,
+    0.03,
+    0.04,
+    0.05
+  ],
+  "direction_reference": "offline-final sign study: shortlist IDs from scan_top/finalists; geometric filter excludes directions with cosine >= 0.5 to the two known failures",
+  "preferred_direction_ids": [
+    14840,
+    7986,
+    15713,
+    7303,
+    14494,
+    13349,
+    11599,
+    14067,
+    17150,
+    19613,
+    6832,
+    2360,
+    12253,
+    1864,
+    19119,
+    14601,
+    5359
+  ],
+  "external_known_point_excluded": "p01969 + 0.05*u[15713], reported R=115.68"
+}

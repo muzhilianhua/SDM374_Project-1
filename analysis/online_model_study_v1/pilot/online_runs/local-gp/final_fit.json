@@ -1,0 +1,7 @@
+{
+  "fit_seconds": 34.42519519999951,
+  "model": "local-gp",
+  "seed": 2026,
+  "training_new_solver_rows": 5,
+  "training_rows": 2053
+}

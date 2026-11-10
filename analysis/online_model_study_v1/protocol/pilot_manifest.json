@@ -1,0 +1,37 @@
+{
+  "candidate_generation": {
+    "global": "50 Dirichlet(1,...,1) samples per building per pool",
+    "local": "50 convex perturbations around the 100 lowest-R initial rows per pool, alpha uniform [0.10,0.25]",
+    "pool_seed": 4101
+  },
+  "candidate_pool_count": 20,
+  "candidate_pool_size": 100,
+  "initial_dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "metrics": [
+    "overall MAE",
+    "MAE where actual R <= 115.68",
+    "test selected-point R",
+    "test selection regret"
+  ],
+  "model_seed": 2026,
+  "models": [
+    "local-gp",
+    "histgb",
+    "xgboost",
+    "boosted-consensus",
+    "ridge2"
+  ],
+  "pilot_rounds_per_model": 5,
+  "protocol": "online-surrogate-pilot-v1",
+  "seed": {
+    "candidate_pools": 4101,
+    "pilot_test": 4102
+  },
+  "selection": "each model selects its lowest predicted_mean from that round's shared pool; ties by candidate_id",
+  "solver_executable": "solver\\solver.exe",
+  "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+  "spearman": "not computed",
+  "started_utc": "2026-11-10T12:09:00.988083+00:00",
+  "test_protocol": "after each model's 5 rounds, refit on the initial 2048 plus its own five results; then generate and predict a separate 100-point test set before solver labels are obtained",
+  "trajectories": "each model receives only its own solver feedback"
+}

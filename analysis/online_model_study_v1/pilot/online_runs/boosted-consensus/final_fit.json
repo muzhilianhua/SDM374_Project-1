@@ -1,0 +1,7 @@
+{
+  "fit_seconds": 5.9752040000003035,
+  "model": "boosted-consensus",
+  "seed": 2026,
+  "training_new_solver_rows": 5,
+  "training_rows": 2053
+}

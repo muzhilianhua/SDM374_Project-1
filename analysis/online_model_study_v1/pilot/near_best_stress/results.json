@@ -1,0 +1,26 @@
+{
+  "completed_utc": "2026-11-10T13:22:17.582802+00:00",
+  "models": [
+    "local-gp",
+    "histgb",
+    "xgboost",
+    "boosted-consensus",
+    "ridge2"
+  ],
+  "near_best_band": 120.76481925917324,
+  "perturbation_alpha": [
+    0.005,
+    0.05
+  ],
+  "seed": 4103,
+  "solver_invocations": 10,
+  "solver_seconds": 695.2689093000008,
+  "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+  "spearman_computed": false,
+  "status": "complete",
+  "stress_test_points": 50,
+  "target_R": 115.68,
+  "test_labels_used_after_predictions": true,
+  "training_data_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "training_rows_per_model": 2053
+}
