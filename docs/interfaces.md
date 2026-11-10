@@ -54,7 +54,8 @@ class MyOptimizer(Optimizer):
 
 - `X, y` are all observations so far: the 2048 training rows offline, plus evaluated points online.
 - `model` is a fitted `Surrogate`; use only its public methods.
-- The online policy asks for `n = 1` per call (decision 19); whenever `n > 1`, the rows must be distinct.
+- Whenever `n > 1`, the rows must be distinct. Online, a call sends up to 50 sets (decision 19); the online
+  loop (T08) will drive proposals through a separate `BatchPolicy` interface (decision 26).
 
 ## Registered plugins
 
@@ -68,6 +69,45 @@ class MyOptimizer(Optimizer):
 | `pgd` | optimizer | course baseline (frozen); needs `gradient` + `smoothness`; returns duplicates for n > 1 |
 | `trust-dirichlet` | optimizer | gradient-free Dirichlet local search from the best rows, inside `max_distance_ratio · median_spacing` of the data, ranks by mean + risk · std, distinct batches |
 | `simplex-de` | optimizer | gradient-free DE/rand/1/bin with per-building simplex projection, observed-row exclusion, distance trust region, and distinct batches ranked by mean + risk · std; default radius ratio 0.75 |
+
+## Online evaluator (`sdm.online`)
+
+One interface for every source of real R, so the online loop (T08), the replay (T17) and the tests share a
+code path. `evaluate(W)` takes 1–50 weight sets (any shape `as_batch` accepts) and returns R, shape `(n,)`,
+in input order.
+
+```python
+from sdm.online import SolverEvaluator, TableEvaluator, SyntheticEvaluator, build_evaluator
+
+evaluator = SolverEvaluator()                    # solver/solver.exe, sha256 checked against CHECKSUMS.sha256
+R = evaluator.evaluate(W)                        # (n,) float
+evaluator.calls, evaluator.remaining             # successful calls made by this object; quota left (20 by default)
+evaluator.history[-1]                            # CallRecord(call, n, R, seconds, stderr, extra)
+evaluator.describe()                             # JSON provenance for meta.json
+```
+
+| Class | Source of R | Notes |
+|---|---|---|
+| `SolverEvaluator(exe, *, reset_usage=False, timeout=3600, quota=20)` | course `solver.exe`: `{"weights": [[21 floats], ...]}` on stdin, `{"R": [...]}` on stdout | Runs in the exe's folder, where the solver keeps `usage.count` (an opaque signed token: the count cannot be read). The default never touches it, which the graded run must use; `reset_usage=True` deletes it before every call and is for development only. A killed call (timeout) may still have cost quota. `command=[...]` replaces the process for stand-ins in tests; `checksums=None` skips the sha256 check |
+| `TableEvaluator(X, y, *, ids, atol=1e-9)`, `.from_dataset(dataset, rows=None)` | measured rows | A point must equal a row (after renormalisation) within `atol` in every coordinate, else `PointNotInTable`; `history[i].extra["ids"]` names the rows |
+| `SyntheticEvaluator(truth)`, `.fit(model_name, params, X, y)` | a fitted surrogate's mean | Semi-synthetic truth as in `analysis/coupling/` |
+
+`build_evaluator(kind, params, *, dataset=None)` builds one from a config table: `"solver"` (params go to
+`SolverEvaluator`), `"table"` (optional `rows`), `"synthetic"` (`model`, optional `model_params`).
+
+Shared rules, from the Windows smoke test (decisions.md, Resolved):
+
+- Each building's weights must be finite, non-negative and have one positive entry; anything else, and
+  more than 50 sets, raises `InvalidBatch` before the solver starts, so it costs no quota. The solver rescales
+  each building to sum 1, so the stand-ins renormalise before they look up or predict.
+- Every evaluator counts its own successful calls; at `quota` the next call raises `QuotaExhausted` without
+  running. The real solver also raises `QuotaExhausted` when it prints `Usage limit reached`. A resumed run
+  must build its evaluator with `quota = 20 - calls already logged`.
+- Other failures raise `EvaluatorError` with the solver's `stderr` and `returncode`; `EvaluatorTimeout`
+  when the process was killed. Output lines before the final `{"R": [...]}` line are ignored.
+- `tests/test_online_evaluator.py` checks all of this against a Python stand-in; on Windows with
+  `solver/solver.exe` present it also checks `p01969` against the real exe (in a copy of `solver/`, so the
+  repository's `usage.count` is untouched).
 
 ## Registry (`sdm.registry`)
 
