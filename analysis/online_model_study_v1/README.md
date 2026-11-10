@@ -13,7 +13,7 @@ This folder records the online surrogate comparison agreed for the SDM374 second
 ## Main documents
 
 - Complete work summary, experiment table, reusable-data inventory, and next steps: [`deliverables/WORK_SUMMARY.md`](deliverables/WORK_SUMMARY.md).
-- One-page A4 LaTeX work report: [`deliverables/runze_online_work_report.tex`](deliverables/runze_online_work_report.tex); compiled PDF: [`../../../output/pdf/runze_online_work_report.pdf`](../../../output/pdf/runze_online_work_report.pdf).
+- One-page A4 LaTeX work report: [`deliverables/runze_online_work_report.tex`](deliverables/runze_online_work_report.tex); compiled PDF: [`../../../output/pdf/runze_online_work_report_model_comparison.pdf`](../../../output/pdf/runze_online_work_report_model_comparison.pdf).
 - V1 metrics: [`pilot/results/REPORT.md`](pilot/results/REPORT.md).
 - Near-best stress test: [`pilot/near_best_stress/REPORT.md`](pilot/near_best_stress/REPORT.md).
 - V2 multi-seed comparison: [`pilot/online_v2/REPORT.md`](pilot/online_v2/REPORT.md).
@@ -47,3 +47,4 @@ deliverables/             # Comprehensive work summary and LaTeX report source
 ```
 
 Raw initial training data remains in the project dataset directory; this study stores its checksum and derived artifacts only.
+
