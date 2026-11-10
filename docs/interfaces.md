@@ -95,6 +95,16 @@ evaluator.describe()                             # JSON provenance for meta.json
 `build_evaluator(kind, params, *, dataset=None)` builds one from a config table: `"solver"` (params go to
 `SolverEvaluator`), `"table"` (optional `rows`), `"synthetic"` (`model`, optional `model_params`).
 
+  ### Append-only online log
+
+  `OnlineLog(path)` stores the successful evaluator calls in `online_log.csv`. `append(weights, R,
+  source=..., run_id=...)` writes one row per submitted point with the 1-based call number, batch point
+  number, all 21 weights, measured `R`, source label, run id, and UTC timestamp. The writer validates
+  simplex weights, finite scores, batch lengths, duplicate points, and contiguous calls before writing.
+  `rows()` validates the header and the complete sequence when resuming; `next_call` and `best()` provide
+  the state needed by the online loop and report figures. The file is append-only: a resumed process
+  reads existing rows and appends the next complete batch rather than rewriting history.
+
 Shared rules, from the Windows smoke test (decisions.md, Resolved):
 
 - Each building's weights must be finite, non-negative and have one positive entry; anything else, and
