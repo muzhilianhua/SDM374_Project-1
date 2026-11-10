@@ -162,8 +162,10 @@ def run(out: Path) -> None:
             base = r2_score(y[test], model.predict(X[test]))
             perturbed = X[test].copy()
             rng = np.random.default_rng(SEED + b)
-            for col in cols:
-                perturbed[:, col] = rng.permutation(perturbed[:, col])
+            # Grouped permutation: one shared row permutation for all seven weights, so each
+            # building stays on the simplex (its weights still sum to 1).
+            row_permutation = rng.permutation(len(perturbed))
+            perturbed[:, cols] = perturbed[row_permutation][:, cols]
             drops.append(base - r2_score(y[test], model.predict(perturbed)))
             single_scores.append(
                 r2_score(y[test], _gbm().fit(X[train][:, cols], y[train]).predict(X[test][:, cols])))
@@ -176,7 +178,7 @@ def run(out: Path) -> None:
            [building_drop[b] for b in (1, 2, 3)], color=["#4C78A8", "#BAB0AC", "#F58518"])
     for i, b in enumerate((1, 2, 3)):
         ax.text(i, building_drop[b] + 0.02, f"{building_drop[b]:.4f}", ha="center", fontsize=9)
-    ax.set_ylabel("R² drop when that building is shuffled")
+    ax.set_ylabel("R² drop when the building's weights are block-shuffled")
     ax.set_title("T20: building 2 carries the least information")
     fig.tight_layout()
     fig.savefig(figs / "building_sensitivity.png", dpi=150)

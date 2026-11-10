@@ -13,13 +13,20 @@ Policy settings (the T18 question):
   trust radius    max distance ratio of a proposal from the known data, 0.5 or 1.0
   surrogate       ridge2 or histgb
 
-For every setting the harness records the best known R after each call, so the comparison is on the
-same 20-call budget the team will spend online. Nothing here calls the evaluator.
+For every setting the harness records the best R among the points the policy has actually
+submitted after each call; the best row of the initial 448 known rows (the training incumbent)
+is kept as a separately labelled reference and never enters the submitted curve. The comparison
+is on the same 20-call budget the team will spend online. Nothing here calls the evaluator.
 
 The pool is larger than the 1000-point budget on purpose: if it were smaller, every policy would
 eventually see every row and the curves would say nothing about selection. The comparison is still
 weak when a policy finds its best point early (see README), so the report also carries
 `calls_to_final_best`, the call at which a run stops improving.
+
+Trust-radius rule (table truth): a pool row is eligible only within `median_spacing * radius` of
+the known data. If fewer rows qualify than the batch needs, only the qualifying rows are
+submitted - the radius is never widened silently. Every submitted batch logs its actual distance
+ratios, so the constraint is auditable.
 
 Usage: uv run python analysis/replay/study.py [--seeds 5] [--out DIR]
 """
@@ -84,21 +91,34 @@ def _explore(rng, anchors, n):
     return project(points)
 
 
-def _pool_policy(model, X_known, y_known, pool_X, n, exploit, radius, rng):
-    """Choose n rows from the fixed pool; exploit share is ranked by predicted mean."""
+def _pool_policy(model, X_known, pool_X, n, exploit, radius, rng):
+    """Choose up to n rows from the fixed pool, all inside the trust radius.
+
+    Exploit share is ranked by predicted mean. Candidate-shortage rule: when fewer than n rows
+    sit inside the radius, only those rows are submitted - the radius is never widened to fill
+    the batch. Returns the chosen indices plus a per-call record of the actual distance ratios.
+    """
     spacing = median_spacing(X_known)
     distance = nearest_distances(pool_X, X_known)
     eligible = np.flatnonzero(distance <= spacing * radius)
-    if len(eligible) < n:
-        eligible = np.argsort(distance, kind="stable")[:n]
-    mean, spread = model.predict(pool_X[eligible])
-    k = int(round(exploit * n))
+    if len(eligible) == 0:
+        return (np.empty(0, dtype=int),
+                {"eligible": 0, "submitted": 0,
+                 "max_distance_ratio": None, "mean_distance_ratio": None})
+    mean, _spread = model.predict(pool_X[eligible])
+    k = min(int(round(exploit * n)), len(eligible))
     ranked = eligible[np.argsort(mean, kind="stable")]
     chosen = list(ranked[:k])
     rest = np.setdiff1d(eligible, chosen)
-    if n - k > 0:
-        chosen.extend(rng.choice(rest, size=n - k, replace=False))
-    return np.asarray(chosen, dtype=int)
+    take = min(n - k, len(rest))
+    if take > 0:
+        chosen.extend(rng.choice(rest, size=take, replace=False))
+    chosen = np.asarray(chosen, dtype=int)
+    ratios = distance[chosen] / spacing
+    info = {"eligible": int(len(eligible)), "submitted": int(len(chosen)),
+            "max_distance_ratio": float(np.max(ratios)),
+            "mean_distance_ratio": float(np.mean(ratios))}
+    return chosen, info
 
 
 def _surrogate_truth(X_all, y_all, seed):
@@ -122,18 +142,23 @@ def run_config(truth_name, surrogate, exploit, radius, seed, X_all, y_all, pool_
         y_known = truth_model.predict(X_all[known_idx])[0]
 
     X_known = X_all[known_idx].copy()
-    best_curve = [float(np.min(y_known))]
+    # The training incumbent is a reference only; the reported curve scores submitted points alone.
+    training_incumbent = float(np.min(y_known))
+    submitted_best = float("inf")
+    submitted_curve = []
+    call_log = []
     used_pool = np.zeros(len(pool_X), dtype=bool)
 
-    for _call in range(CALLS):
+    for call in range(1, CALLS + 1):
         model = _make_model(surrogate, seed).fit(X_known, y_known)
         if truth_name == "table":
             candidate_pool = np.flatnonzero(~used_pool)
-            picks = _pool_policy(model, X_known, y_known, pool_X[candidate_pool], BATCH,
-                                 exploit, radius, rng)
+            picks, info = _pool_policy(model, X_known, pool_X[candidate_pool], BATCH,
+                                       exploit, radius, rng)
             picks = candidate_pool[picks]
             new_X, new_y = pool_X[picks], pool_y[picks]
             used_pool[picks] = True
+            call_log.append({"call": call, **info})
         else:
             anchors = X_known[np.argsort(y_known, kind="stable")[:32]]
             k = int(round(exploit * BATCH))
@@ -148,12 +173,16 @@ def run_config(truth_name, surrogate, exploit, radius, seed, X_all, y_all, pool_
             new_y = pool_y[:0] if truth_model is None else truth_model.predict(new_X)[0]
         X_known = np.vstack([X_known, new_X])
         y_known = np.concatenate([y_known, new_y])
-        best_curve.append(float(np.min(y_known)))
+        if len(new_y):
+            submitted_best = min(submitted_best, float(np.min(new_y)))
+        submitted_curve.append(submitted_best)
 
-    return {"curve": best_curve, "final_best": best_curve[-1],
-            "first_call_best": best_curve[1],
-            "calls_to_final_best": next(i for i, value in enumerate(best_curve)
-                                        if value <= best_curve[-1] + 1e-9)}
+    return {"curve": submitted_curve, "training_incumbent": training_incumbent,
+            "call_log": call_log,
+            "final_best": submitted_curve[-1],
+            "first_call_best": submitted_curve[0],
+            "calls_to_final_best": next(i + 1 for i, value in enumerate(submitted_curve)
+                                        if value <= submitted_curve[-1] + 1e-9)}
 
 
 def finish(out: Path, rows: list[dict], dataset, seeds: int, git: dict | None = None) -> None:
@@ -167,6 +196,12 @@ def finish(out: Path, rows: list[dict], dataset, seeds: int, git: dict | None = 
     summary = []
     for (truth_name, surrogate, exploit, radius), members in groups.items():
         finals = [row["final_best"] for row in members]
+        logs = [entry for row in members for entry in row.get("call_log", [])]
+        submitted = [entry["submitted"] for entry in logs]
+        max_ratios = [entry["max_distance_ratio"] for entry in logs
+                      if entry["max_distance_ratio"] is not None]
+        incumbents = [row["training_incumbent"] for row in members
+                      if row.get("training_incumbent") is not None]
         summary.append({"truth": truth_name, "surrogate": surrogate, "exploit": exploit,
                         "radius": radius, "seeds": len(members),
                         "final_mean": float(np.mean(finals)), "final_std": float(np.std(finals)),
@@ -175,14 +210,29 @@ def finish(out: Path, rows: list[dict], dataset, seeds: int, git: dict | None = 
                         "first_call_std": float(np.std([r["first_call_best"] for r in members])),
                         "calls_to_final_median": float(np.median(
                             [r["calls_to_final_best"] for r in members])),
+                        "training_incumbent_mean": (float(np.mean(incumbents))
+                                                    if incumbents else None),
+                        "submitted_per_call_mean": (float(np.mean(submitted))
+                                                    if submitted else None),
+                        "max_distance_ratio_observed": (float(np.max(max_ratios))
+                                                        if max_ratios else None),
                         "curve_mean": [float(v) for v in np.mean(
                             [r["curve"] for r in members], axis=0)]})
     summary.sort(key=lambda item: (item["truth"], item["calls_to_final_median"],
                                    item["first_call_mean"]))
 
+    incumbent_ref = {}
+    for truth_name in ("table", "semi-synthetic"):
+        values = [row["training_incumbent"] for row in rows
+                  if row["truth"] == truth_name and row.get("training_incumbent") is not None]
+        if values:
+            incumbent_ref[truth_name] = {"mean": float(np.mean(values)),
+                                         "min": float(np.min(values)),
+                                         "max": float(np.max(values))}
     result = {"protocol": {"calls": CALLS, "batch": BATCH, "pool_size": POOL_SIZE,
                            "initial_known": INIT_KNOWN, "seeds": seeds},
               "dataset": {"version": dataset.version, "sha256": dataset.sha256},
+              "training_incumbent_reference": incumbent_ref,
               "runs": summary}
     (out / "results.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     provenance = {
@@ -194,19 +244,26 @@ def finish(out: Path, rows: list[dict], dataset, seeds: int, git: dict | None = 
         "protocol": result["protocol"],
         "code": "analysis/replay/study.py",
         "note": "table truth scores proposals by lookup in the held-out rows; semi-synthetic truth is a "
-                "histgb fitted on all 2048 rows. No evaluator calls.",
+                "histgb fitted on all 2048 rows. Curves score submitted points only; the training "
+                "incumbent (best of the initial rows) is a separate reference. Table truth submits "
+                "only in-radius rows; shortfalls and actual distance ratios are logged per call. "
+                "No evaluator calls.",
     }
     (out / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
 
+    calls_axis = list(range(1, CALLS + 1))
     for truth_name in ("table", "semi-synthetic"):
         fig, ax = plt.subplots(figsize=(9, 4.8))
         shown = [item for item in summary if item["truth"] == truth_name]
         for item in shown:
-            ax.plot(range(len(item["curve_mean"])), item["curve_mean"], marker="o", ms=3,
+            ax.plot(calls_axis, item["curve_mean"], marker="o", ms=3,
                     lw=1.4, alpha=0.85,
                     label=f"{item['surrogate']} exploit={item['exploit']:.1f} r={item['radius']:.1f}")
+        if truth_name in incumbent_ref:
+            ax.axhline(incumbent_ref[truth_name]["mean"], color="k", ls="--", lw=1.2, alpha=0.7,
+                       label="training incumbent (reference, never submitted)")
         ax.set_xlabel("evaluator call")
-        ax.set_ylabel("best R so far")
+        ax.set_ylabel("best submitted R so far")
         ax.set_title(f"T18 replay ({truth_name} truth, mean over seeds)")
         ax.grid(alpha=0.3)
         ax.legend(fontsize=6, ncol=2)
@@ -225,22 +282,35 @@ def finish(out: Path, rows: list[dict], dataset, seeds: int, git: dict | None = 
         ax.set_yticks(range(len(shown)))
         ax.set_yticklabels(labels, fontsize=6)
         ax.invert_yaxis()
-        ax.set_xlabel("calls until the run's best R is reached (median over seeds)")
+        ax.set_xlabel("calls until the run's best submitted R is reached (median over seeds)")
         ax.set_title(truth_name)
         ax.grid(axis="x", alpha=0.3)
     fig.tight_layout()
     fig.savefig(figs / "calls_to_final_best.png", dpi=150)
     plt.close(fig)
 
+    def _opt(value, digits=2):
+        return "—" if value is None else f"{value:.{digits}f}"
+
     lines = ["# T18 replay study", "",
-             f"{CALLS} calls x {BATCH} points, {POOL_SIZE}-row pool, {INIT_KNOWN} known rows, "
+             f"{CALLS} calls x up to {BATCH} points, {POOL_SIZE}-row pool, {INIT_KNOWN} known rows, "
              f"{seeds} seeds, two truth sources.", "",
-             "| truth | surrogate | exploit | radius | best after call 1 | median calls to the "
-             "run's best | mean final R | std |",
-             "|---|---|---|---|---|---|---|---|"]
+             "Curves score **submitted points only**; the best of the initial rows (training "
+             "incumbent) is kept as a separate reference, never as a score. Under table truth a "
+             "batch holds only in-radius rows: when fewer qualify than requested the batch is "
+             "smaller (see mean pts/call), and max dist ratio audits that the radius held.", ""]
+    ref_bits = [f"{name} {vals['mean']:.3f}" for name, vals in sorted(incumbent_ref.items())]
+    if ref_bits:
+        lines += ["Training incumbent (reference, mean over seeds): " + "; ".join(ref_bits) + ".",
+                  ""]
+    lines += ["| truth | surrogate | exploit | radius | best after call 1 | median calls to the "
+              "run's best | mean final R | std | mean pts/call | max dist ratio |",
+              "|---|---|---|---|---|---|---|---|---|---|"]
     lines += [f"| {i['truth']} | {i['surrogate']} | {i['exploit']:.1f} | {i['radius']:.1f} | "
               f"{i['first_call_mean']:.3f} | {i['calls_to_final_median']:.0f} | "
-              f"{i['final_mean']:.3f} | {i['final_std']:.3f} |"
+              f"{i['final_mean']:.3f} | {i['final_std']:.3f} | "
+              f"{_opt(i['submitted_per_call_mean'], 1)} | "
+              f"{_opt(i['max_distance_ratio_observed'])} |"
               for i in summary]
     (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
@@ -264,7 +334,8 @@ def run(out: Path, seeds: int) -> None:
                 with (out / "runs.jsonl").open("a", encoding="utf-8") as handle:
                     handle.write(json.dumps(rows[-1]) + "\n")
                 print(f"{truth_name:14s} {surrogate:7s} exploit={exploit:.1f} "
-                      f"radius={radius:.1f} seed={seed} final={outcome['final_best']:.3f}", flush=True)
+                      f"radius={radius:.1f} seed={seed} final={outcome['final_best']:.3f} "
+                      f"incumbent={outcome['training_incumbent']:.3f}", flush=True)
     finish(out, rows, dataset, seeds)
     (out / "runs.jsonl").write_text("\n".join(json.dumps(row) for row in rows) + "\n",
                                     encoding="utf-8")
