@@ -81,3 +81,13 @@ def test_log_preserves_exact_weight_round_trip(tmp_path):
     point = weights(1) + np.arange(21).reshape(1, 21) * 1e-12
     log.append(point, [120.123456789], source="model", run_id="r")
     np.testing.assert_array_equal(log.rows()[0].weights, point[0])
+
+
+def test_rejects_a_truncated_batch(tmp_path):
+    path = tmp_path / "online_log.csv"
+    log = OnlineLog(path)
+    log.append(weights(5), np.full(5, 120), source="a", run_id="r")
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    path.write_text("".join(lines[:-2]), encoding="utf-8")
+    with pytest.raises(OnlineLogError, match="incomplete batch"):
+        log.rows()
