@@ -18,7 +18,10 @@ dependencies = [
 sdm = "sdm.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = [
+    "matplotlib>=3.10.9",
+    "pytest>=8",
+]
 # Optional so graders can run the CLI without it: `uv sync --group gui`.
 gui = ["streamlit>=1.40"]
 

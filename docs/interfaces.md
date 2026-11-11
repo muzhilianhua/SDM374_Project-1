@@ -148,6 +148,11 @@ before any result row is written, or a completely missing batch, cannot be detec
 Quota uses attempts, not `next_call`; submission deduplication uses renormalized weights, not the raw tuples
 stored here. Legacy logs without `n` are rejected: their batch completeness cannot be inferred safely.
 
+T08/T13 may export pre-evaluation predictions as a separate CSV with exactly
+`call,point,predicted_R` (positive 1-based successful call/point identifiers, finite predictions, unique
+keys). T26 requires exact key coverage of the supplied log. Predictions must be captured before fitting
+on that batch's measured labels; the CSV is a reporting sidecar, never a source of measured R.
+
 ## Registry (`sdm.registry`)
 
 `models()`, `optimizers()` → `{name: class}`; `build_model(name, params_dict)`,
