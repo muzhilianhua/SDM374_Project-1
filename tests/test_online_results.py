@@ -1,4 +1,6 @@
 import csv
+import hashlib
+import json
 
 import numpy as np
 import pytest
@@ -29,6 +31,14 @@ def test_plot_online_log_writes_both_figures(tmp_path):
     assert summary["best_R"] == 118 and summary["prediction_rows"] == 3
     assert (tmp_path / "figures/online_best_curve.png").is_file()
     assert (tmp_path / "figures/prediction_vs_measurement.png").is_file()
+    saved = json.loads((tmp_path / "figures/summary.json").read_text(encoding="utf-8"))
+    assert saved == summary
+    assert saved["run_ids"] == ["r1", "r2"]
+    assert saved["log_sha256"] == hashlib.sha256(log_path.read_bytes()).hexdigest()
+    assert saved["prediction_sha256"] == hashlib.sha256(prediction_path.read_bytes()).hexdigest()
+    assert saved["per_call"][0]["mae"] == 1
+    assert saved["per_call"][0]["bias"] == 0
+    assert not saved["beat_offline_baseline"]
 
 
 @pytest.mark.parametrize("prediction", ["nan", "inf", "-inf"])
@@ -48,3 +58,14 @@ def test_plot_rejects_prediction_keys_not_in_log(tmp_path):
         "call,point,predicted_R\n1,1,120\n1,2,121\n", encoding="utf-8")
     with pytest.raises(ValueError, match="unknown keys"):
         plot_online_log(log_path, tmp_path / "figures", prediction_path)
+    assert not (tmp_path / "figures").exists()
+
+
+def test_reference_parameters_and_log_only_summary(tmp_path):
+    log_path = tmp_path / "online_log.csv"
+    OnlineLog(log_path).append(weights(1), [118], source="test", run_id="synthetic")
+    summary = plot_online_log(log_path, tmp_path / "figures",
+                              offline_baseline=119, training_best=120)
+    assert summary["beat_offline_baseline"]
+    assert summary["offline_baseline"] == 119 and summary["training_best"] == 120
+    assert summary["prediction_sha256"] is None
