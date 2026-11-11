@@ -27,6 +27,13 @@ The offline-consensus direction 14840 at step 0.05 was selected by local-GP in r
 
 V3's comparison among the five models is paired and fair because they saw the same pool within each round. V2-to-V3 comparisons are descriptive only: candidate generation changed from a global-plus-multiscale-Dirichlet pool to a directional pool concentrated around `p01969`. These results do not establish that one model is intrinsically best under every candidate strategy.
 
+## Candidate-source availability audit
+
+The 30 shared pools contained 9,000 candidate appearances: 8,918 broad screened directions (99.09%) and 82 offline-shortlist candidates (0.91%). Across 150 model selections, 139 came from the broad set (92.67%) and 11 from the shortlist (7.33%). Thus shortlist candidates were selected about 8 times as often as their pool share would suggest; raw selection counts alone (139 vs. 11) hide this availability difference.
+
+Selection by model: local-GP chose 9 shortlist candidates out of 30 selections, boosted-consensus chose 2, while HistGB, XGBoost, and ridge2 chose none. The shortlist-selected points had a minimum observed R of 114.211 (6/11 selected events at R <= 115.68); broad-direction selections included the V3 minimum R=113.444 (62/139 events at R <= 115.68).
+
+This is evidence of model-specific preference for shortlist candidates, especially for local-GP, not proof that shortlist directions have better true R. Only selected points were solver-scored, the shortlist sample is small, and directions/steps were not evaluated in a balanced randomized design. V3.1 should track both candidate availability and selection rates by source, and allocate enough candidates to each source for meaningful solver evidence.
 ## Cost and saved artifacts
 
 - 150 model selections collapsed to 140 unique solver evaluations; 30 solver calls took 1,281.8 seconds (21.4 minutes).
@@ -37,3 +44,4 @@ V3's comparison among the five models is paired and fair because they saw the sa
 ## Limits
 
 Three replicates are still a small sample. The V3 pool explores one anchor and short steps up to 0.05, so results answer which surrogate works best under this roaming setup. They do not test wider or dynamically re-anchored search. The offline calibration itself was not a guarantee of improvement; V3 obtains new solver labels for the selected weights and should be treated as the actual online evidence.
+

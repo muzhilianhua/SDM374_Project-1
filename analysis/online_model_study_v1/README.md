@@ -18,6 +18,7 @@ This folder records the online surrogate comparison agreed for the SDM374 second
 - Near-best stress test: [`pilot/near_best_stress/REPORT.md`](pilot/near_best_stress/REPORT.md).
 - V2 multi-seed comparison: [`pilot/online_v2/REPORT.md`](pilot/online_v2/REPORT.md).
 - V3 directional-roaming comparison: [`pilot/online_v3_directional/REPORT.md`](pilot/online_v3_directional/REPORT.md).
+- V3.1 design notes and V3 shortlist availability audit: [`pilot/online_v3_1/README.md`](pilot/online_v3_1/README.md).
 - Canonical deduplicated solver database and maintenance instructions: [`solver_database/README.md`](solver_database/README.md).
 
 ## User-provided candidate-generation reference
