@@ -41,7 +41,7 @@ ridge2 & $115.765\pm0.000$（0/3） & $114.163\pm0.350$（3/3） & 0.5 / 0.29 \\
 
 \textbf{解读：}V2 多尺度池中 local-GP 均值最好、XGBoost 拟合快且表现接近；V3 漫游池中 HistGB 均值最低且最稳定，XGBoost 得到跨两版最低单点 $R=113.444$。ridge2 从 V2 的 0/3 命中变为 V3 的 3/3。每版内五模型共享相同候选池；V2 与 V3 改变了候选生成方式，跨版差异不能解释为纯模型因果差异。
 \section{数据资产与验证边界}
-去重 SQLite/CSV 库维护了 1,370 个不属于初始 2048 的唯一 solver 权重点（1,370 unique records. Sources include V3.1 152 model-selected weights and 799 new global audit points; pilot 在线 11、pilot 开发测试 100、近优压力 50、V2 118、V3 140；与初始集重合为零。数据库和原始调用记录均按来源归档，后续可复用。Pilot 测试和压力测试都已揭晓标签，\textbf{不是盲测}；V4.1 sealed test 尚未生成，正式 20$\times$50 运行也尚未完成。V3 实际 solver 成本约 21.4 分钟；Local-GP 每轮拟合约 48 秒，树模型约 2--6 秒，ridge2 约 0.3 秒。
+The deduplicated solver database now contains 1,370 unique non-training weights, with no overlap against the original 2,048 rows. It includes 152 unique V3.1 model-selected points and 799 new points from the global audit; all other V1/V2/V3 and pilot sources remain indexed by provenance. The audit labels were excluded from training. Earlier pilot and stress labels are development data, not a blind test. V3.1 had no test set. Online solver time was 36.7 min; separate global audit time was 2.62 h.
 
 \section{V3.1 results and candidate evidence}
 V3.1: 8 groups x 10 rounds, 5 models, strict 2048-row cold start; each model receives only its own chosen solver feedback. Same pool per round; first-place credit is fractionally split for ties. No test set; no full-pool MAE or Spearman.\par
