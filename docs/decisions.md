@@ -33,6 +33,7 @@ and record the new decision here with a date.
 | 24 | The offline phase is frozen at annotated tag `offline-final` (PR #11 merge, `62a2274`). Online work happens on `feat/online`, which drops the offline studies under `analysis/`, `SUBMISSION_READY/`, `artifacts/`, the offline experiment configs and their tests. It keeps `src/sdm` (every plugin), `app/`, `analysis/coupling/`, `analysis/v33_protocol/` and the two `SUBMISSION_READY` files that V3.3 reads. Rows and findings in this file that cite removed paths resolve at the tag | User, 2026-11-08: concentrate on online script development and testing |
 | 25 | `solver/` is in the repository with its course files unchanged; `solver.exe` (182 MB, above GitHub's 100 MB limit) and `usage.count` are git-ignored. Everyone copies the exe from the course `solver.zip` and checks it against `solver/CHECKSUMS.sha256` (sha256 `293867b8…a077247`) | User, 2026-11-08 |
 | 26 | Online framework design (T06, T08). Every source of R implements one `Evaluator` interface (`sdm.online`): the real `solver.exe`, a table of measured rows and a synthetic truth, with the solver's input rules and a per-object 20-call quota; the graded run never touches `usage.count`. The online loop (T08) will: drive proposals through a new `BatchPolicy` interface that receives the whole online state (call number, quota left, every sent point and result) and wraps existing optimizers; keep its state in a run folder `runs/<id>-online-<config>/` and resume with `sdm online --resume <run-id>` after checking the config and code version; when the pre-submit check drops points (duplicates of training rows or sent points, simplex violations), ask the policy for more candidates and send the first 50 that pass in the policy's order, logging the reasons, and stop without calling only when none pass | User, 2026-11-10 |
+| 27 | Local evaluator runs may be used to choose the model, the policy and their hyperparameters (replay and real `solver.exe` alike). The only constraint is no data leakage into the submitted code: before its first call it uses only the 2048 training rows, and it never embeds points or R values measured locally (as data, warm starts or exclusion lists); tuned settings in its config are allowed | User, 2026-11-11, from the rule that only the training rows may be used before the first call (decision 19); not yet confirmed by the TA. Supersedes the open question on tuning |
 
 ## Findings
 
@@ -186,14 +187,27 @@ and record the new decision here with a date.
   repository pins 3.11 (numpy 1.24.4 has no newer wheels). Whether uv can be installed is unknown. Owner: A.
   2026-11-08: the stdlib-only smoke test ran with Python 3.14.7 on A's Windows PC (see Resolved), so the
   evaluator side works with the course computer's Python; the `sdm` package side is still unverified there.
-- How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
-  graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
-  Ask the TA whether that is allowed (owner: A).
+  2026-11-11 (TA): the online evaluation runs on **Windows 10**. Still unknown: the Python version used to run
+  our code, whether uv can be installed or the internet reached, and the install path. Check on the course
+  computer on 2026-11-12 (see Resolved).
+- Who runs the graded online run and how the code is handed over: the TA offers to test code we send
+  (2026-11-11), but whether the graded run is the TA's run of our code or ours on the course computer, and
+  in what form (repository, zip, single script), is not settled (owner: A). Working assumption (user,
+  2026-11-11): the TA runs our code, so the package must start with one documented command, run unattended
+  and leave its logs where they can be sent back (T10, T22).
 - Schema of the policy's call log and how each call's result is merged into `X, y` (owner: A, after the
   evaluator format is known).
 
 ## Resolved
 
+- Course computer and testing (TA Archer, 2026-11-11, chat; T03, partial):
+  - The online evaluation runs on Windows 10 (our smoke test ran on Windows 11 Pro).
+  - `solver/run.py` is the harness left for teams to test with; its comments sketch the intended loop: call
+    the solver, read R, retrain the surrogate, update `weight.json`, repeat 20 times. It pipes `weight.json`
+    into `solver.exe` through PowerShell; `sdm.online.SolverEvaluator` writes the same JSON to the exe's
+    stdin directly.
+  - Teams may come and test on the course computer on Thursday 2026-11-12 (class 9).
+  - Teams may send their code to the TA, who will run a test for them.
 - Evaluator determinism: deterministic (decision 20, 2026-10-31).
 - Submitting a training row offline: allowed but only ties the bar (decision 17, 2026-10-31).
 - Whether weights must sum to 1: no, non-negative with one positive per building (decision 21, 2026-10-31).
