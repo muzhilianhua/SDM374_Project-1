@@ -111,8 +111,23 @@ Shared rules, from the Windows smoke test (decisions.md, Resolved):
 - The evaluators accept unnormalised weights (the solver renormalises each building), so `W` and `2·W` are
   the same point. Anything that deduplicates points, such as T08's pre-submit check, must compare
   renormalised weights (`sdm.online.evaluator.renormalise`).
-- Other failures raise `EvaluatorError` with the solver's `stderr` and `returncode`; `EvaluatorTimeout`
-  when the process was killed. Output lines before the final `{"R": [...]}` line are ignored.
+- Other failures raise `EvaluatorError` with the solver's `stderr` and `returncode`, including a
+  `{"error": "..."}` line on stdout (the solver's report when a pool worker dies, possibly with exit code 0),
+  whose message is passed on; `Usage limit reached` raises `QuotaExhausted` whether it appears on stderr or
+  stdout. Output lines before the final `{"R": [...]}` line are ignored.
+- `solver.exe` starts `Lab6Solver-<hash>.exe`, which runs a process pool; killing `solver.exe` alone leaves
+  them running. On timeout `SolverEvaluator` kills the whole tree (`taskkill /F /T` on Windows, the
+  process group elsewhere) and raises `EvaluatorTimeout`. It never retries by itself.
+- What a caller (T08) may do after each exception. Every retry of the real solver is a new attempt and
+  costs one of the 20 calls:
+  - `InvalidBatch`: nothing ran and no quota was used; fix the batch, never resend it unchanged.
+  - `QuotaExhausted`: stop; there are no calls left.
+  - `EvaluatorTimeout`, `EvaluatorError`: the solver is deterministic, so the same batch may be resent,
+    but only within the remaining quota and after logging the failed attempt.
+  - `PointNotInTable` (table stand-in only): the policy proposed a point outside the replay pool.
+- Known extensions for the replay (T17), to be added there by wrapping these classes rather than here: a
+  table with a surrogate fallback for points outside the pool, and an evaluator that injects failures to
+  test T08's handling. The real solver is deterministic (smoke test), so the stand-ins add no noise.
 - `tests/test_online_evaluator.py` checks all of this against a Python stand-in; on Windows with
   `solver/solver.exe` present it also checks `p01969` against the real exe (in a copy of `solver/`, so the
   repository's `usage.count` is untouched).

@@ -1,7 +1,10 @@
 """sdm.online.evaluator: the solver wrapper against a Python stand-in, and the table / synthetic stand-ins."""
 import json
+import os
 import shutil
+import subprocess
 import sys
+import time
 
 import numpy as np
 import pytest
@@ -171,6 +174,62 @@ def test_timeout_kills_the_solver(fake_solver, monkeypatch):
     monkeypatch.setenv("FAKE_SLEEP", "5")
     with pytest.raises(EvaluatorTimeout, match="within 0.5 s"):
         fake_solver(timeout=0.5).evaluate(np.full(21, 1 / 7))
+
+
+def _alive(pid: int) -> bool:
+    if sys.platform == "win32":
+        out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True, text=True).stdout
+        return str(pid) in out
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def test_timeout_kills_the_whole_process_tree(tmp_path):
+    # Like solver.exe, which starts Lab6Solver-<hash>.exe and a process pool under it.
+    pid_file = tmp_path / "child.pid"
+    script = tmp_path / "spawner.py"
+    script.write_text(
+        "import pathlib, subprocess, sys, time\n"
+        "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])\n"
+        f"pathlib.Path({str(pid_file)!r}).write_text(str(child.pid))\n"
+        "time.sleep(60)\n")
+    evaluator = SolverEvaluator(tmp_path / "solver.exe", command=[sys.executable, str(script)],
+                                checksums=None, timeout=3)
+    with pytest.raises(EvaluatorTimeout) as caught:
+        evaluator.evaluate(np.full(21, 1 / 7))
+    assert caught.value.returncode is not None
+    assert evaluator.failures[0]["returncode"] is not None
+    child = int(pid_file.read_text())
+    deadline = time.time() + 10
+    while _alive(child) and time.time() < deadline:
+        time.sleep(0.2)
+    assert not _alive(child)
+
+
+def test_error_line_on_stdout_is_reported(tmp_path):
+    # A dying pool worker makes the solver print {"error": ...} on stdout, possibly with exit code 0.
+    script = tmp_path / "pool_error.py"
+    script.write_text('import json, sys; sys.stdin.read(); '
+                      'print(json.dumps({"error": "A process in the process pool was terminated abruptly"}))')
+    evaluator = SolverEvaluator(tmp_path / "solver.exe", command=[sys.executable, str(script)], checksums=None)
+    with pytest.raises(EvaluatorError, match="terminated abruptly") as caught:
+        evaluator.evaluate(np.full(21, 1 / 7))
+    assert not isinstance(caught.value, QuotaExhausted)
+    assert evaluator.attempts == 1 and evaluator.remaining == 19
+    assert evaluator.failures[0]["message"].startswith("solver reported an error")
+
+
+def test_usage_limit_is_recognised_on_stdout(tmp_path):
+    with pytest.raises(QuotaExhausted):
+        parse_solver_output('{"error": "Usage limit reached (20 batch invocations)."}')
+    script = tmp_path / "limit_stdout.py"
+    script.write_text("import sys; sys.stdin.read(); print('Usage limit reached (20 batch invocations).'); sys.exit(2)")
+    evaluator = SolverEvaluator(tmp_path / "solver.exe", command=[sys.executable, str(script)], checksums=None)
+    with pytest.raises(QuotaExhausted, match="code 2: Usage limit"):
+        evaluator.evaluate(np.full(21, 1 / 7))
 
 
 def test_log_lines_before_the_json_are_ignored(fake_solver, monkeypatch):
