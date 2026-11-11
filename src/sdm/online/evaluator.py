@@ -22,7 +22,9 @@ import json
 import math
 import os
 from pathlib import Path
+import signal
 import subprocess
+import sys
 import time
 from typing import Any
 
@@ -38,6 +40,9 @@ QUOTA_MESSAGE = "Usage limit reached"
 # 50 sets took 289 s on A's PC (smoke test); the course computer may be slower. Killing a running call may
 # still cost quota, so the limit is generous: it only guards against a hung process.
 DEFAULT_TIMEOUT = 3600.0
+# solver.exe starts a second process (Lab6Solver-<hash>.exe) that runs a process pool; killing solver.exe
+# alone leaves those running, so a timeout kills the whole tree and then waits this long for the pipes.
+KILL_GRACE = 30.0
 # Deleting usage.count resets the solver's quota. Only a development machine may do that, so the switch
 # needs this environment variable as well as the argument; configs can never turn it on.
 RESET_USAGE_ENV = "SDM_DEV_RESET_USAGE"
@@ -222,20 +227,17 @@ class SolverEvaluator(Evaluator):
         self.attempts += 1
         start = time.perf_counter()
         try:
-            try:
-                result = subprocess.run(self.command, input=payload, capture_output=True, text=True,
-                                        encoding="utf-8", errors="replace", cwd=self.exe.parent,
-                                        timeout=self.timeout, check=False)
-            except subprocess.TimeoutExpired as error:
-                stderr = error.stderr.decode(errors="replace") if isinstance(error.stderr, bytes) else error.stderr
-                raise EvaluatorTimeout(f"solver did not finish within {self.timeout:g} s and was killed",
-                                       stderr=stderr or "") from None
-            stderr = result.stderr.strip()
-            if result.returncode != 0:
-                error_type = QuotaExhausted if QUOTA_MESSAGE in stderr else EvaluatorError
-                raise error_type(f"solver exited with code {result.returncode}: {stderr or '(no stderr)'}",
-                                 stderr=stderr, returncode=result.returncode)
-            R = parse_solver_output(result.stdout, stderr)
+            returncode, stdout, stderr = self._run_process(payload)
+            stderr = stderr.strip()
+            if returncode != 0:
+                detail = stderr or stdout.strip()[-500:] or "(no output)"
+                error_type = QuotaExhausted if QUOTA_MESSAGE in stderr + stdout else EvaluatorError
+                raise error_type(f"solver exited with code {returncode}: {detail}",
+                                 stderr=stderr, returncode=returncode)
+            R = parse_solver_output(stdout, stderr)
+            # Checked here as well as in evaluate(), so this charged attempt is recorded as a failure.
+            if len(R) != len(W):
+                raise EvaluatorError(f"expected {len(W)} finite R values; got {R!r}", stderr=stderr)
         except EvaluatorError as error:
             self.failures.append({"attempt": self.attempts, "n": len(W), "error": type(error).__name__,
                                   "message": str(error), "returncode": error.returncode,
@@ -244,25 +246,69 @@ class SolverEvaluator(Evaluator):
         return R, stderr, {"attempt": self.attempts, "usage_file_before": usage_before,
                            "usage_file_after": self.usage_file.exists()}
 
+    def _run_process(self, payload: str) -> tuple[int, str, str]:
+        """Run the solver once; on timeout kill its whole process tree and raise EvaluatorTimeout."""
+        # A new process group (Windows) or session (POSIX) lets the timeout reach every descendant.
+        group = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if sys.platform == "win32"
+                 else {"start_new_session": True})
+        process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
+                                   cwd=self.exe.parent, **group)
+        try:
+            stdout, stderr = process.communicate(payload, timeout=self.timeout)
+        except subprocess.TimeoutExpired:
+            kill_process_tree(process)
+            try:
+                _, stderr = process.communicate(timeout=KILL_GRACE)
+            except subprocess.TimeoutExpired:
+                stderr = ""
+            raise EvaluatorTimeout(f"solver did not finish within {self.timeout:g} s and was killed",
+                                   stderr=(stderr or "").strip(), returncode=process.poll()) from None
+        return process.returncode, stdout, stderr
+
     def describe(self):
         return {**super().describe(), "exe": str(self.exe), "sha256": self.sha256,
                 "reset_usage": self.reset_usage, "timeout": self.timeout, "attempts": self.attempts,
                 "failures": self.failures}
 
 
+def kill_process_tree(process: subprocess.Popen) -> None:
+    """Kill `process` and every process it started (solver.exe -> Lab6Solver -> pool workers)."""
+    if sys.platform == "win32":
+        # taskkill walks the tree by parent id, so it must run while the root is still alive.
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(process.pid)], capture_output=True,
+                       timeout=KILL_GRACE, check=False)
+    else:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    if process.poll() is None:
+        process.kill()
+
+
 def parse_solver_output(stdout: str, stderr: str = "") -> list[float]:
-    """R values from the solver's stdout; tolerates log lines before the final JSON line."""
+    """R values from the solver's stdout; tolerates log lines before the final JSON line.
+
+    A `{"error": "..."}` line (the solver's report when a pool worker dies) raises EvaluatorError with that
+    message, or QuotaExhausted when it is the usage-limit message.
+    """
     lines = [line for line in stdout.strip().splitlines() if line.strip()]
     for line in reversed(lines):
         try:
             data = json.loads(line)
         except ValueError:
             continue
-        if isinstance(data, dict) and isinstance(data.get("R"), list):
+        if not isinstance(data, dict):
+            continue
+        if isinstance(data.get("R"), list):
             values = data["R"]
             if all(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
                    for value in values):
                 return [float(value) for value in values]
+        if isinstance(data.get("error"), str):
+            error_type = QuotaExhausted if QUOTA_MESSAGE in data["error"] else EvaluatorError
+            raise error_type(f"solver reported an error: {data['error']}", stderr=stderr)
     raise EvaluatorError(f"no {{\"R\": [...]}} line in solver output: {stdout[-500:]!r}", stderr=stderr)
 
 
@@ -285,6 +331,8 @@ class TableEvaluator(Evaluator):
         if self.y.shape != (len(self.X),):
             raise ValueError(f"y has shape {self.y.shape}; expected ({len(self.X)},)")
         self.ids = tuple(ids) if ids is not None else tuple(str(index) for index in range(len(self.X)))
+        if len(self.ids) != len(self.X):
+            raise ValueError(f"got {len(self.ids)} ids for {len(self.X)} rows")
         self.atol = atol
 
     @classmethod
