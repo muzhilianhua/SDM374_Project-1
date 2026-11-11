@@ -44,4 +44,3 @@ This is evidence of model-specific preference for shortlist candidates, especial
 ## Limits
 
 Three replicates are still a small sample. The V3 pool explores one anchor and short steps up to 0.05, so results answer which surrogate works best under this roaming setup. They do not test wider or dynamically re-anchored search. The offline calibration itself was not a guarantee of improvement; V3 obtains new solver labels for the selected weights and should be treated as the actual online evidence.
-
