@@ -81,14 +81,15 @@ from sdm.online import SolverEvaluator, TableEvaluator, SyntheticEvaluator, buil
 
 evaluator = SolverEvaluator()                    # solver/solver.exe, sha256 checked against CHECKSUMS.sha256
 R = evaluator.evaluate(W)                        # (n,) float
-evaluator.calls, evaluator.remaining             # successful calls made by this object; quota left (20 by default)
+evaluator.calls, evaluator.remaining             # successful calls; quota left (20 by default)
+evaluator.attempts, evaluator.failures           # solver only: every process start, and why the failed ones failed
 evaluator.history[-1]                            # CallRecord(call, n, R, seconds, stderr, extra)
 evaluator.describe()                             # JSON provenance for meta.json
 ```
 
 | Class | Source of R | Notes |
 |---|---|---|
-| `SolverEvaluator(exe, *, reset_usage=False, timeout=3600, quota=20)` | course `solver.exe`: `{"weights": [[21 floats], ...]}` on stdin, `{"R": [...]}` on stdout | Runs in the exe's folder, where the solver keeps `usage.count` (an opaque signed token: the count cannot be read). The default never touches it, which the graded run must use; `reset_usage=True` deletes it before every call and is for development only. A killed call (timeout) may still have cost quota. `command=[...]` replaces the process for stand-ins in tests; `checksums=None` skips the sha256 check |
+| `SolverEvaluator(exe, *, reset_usage=False, timeout=3600, quota=20)` | course `solver.exe`: `{"weights": [[21 floats], ...]}` on stdin, `{"R": [...]}` on stdout | Runs in the exe's folder, where the solver keeps `usage.count` (an opaque signed token: the count cannot be read). The default never touches it, which the graded run must use. `reset_usage=True` deletes it before every call; it also needs the environment variable `SDM_DEV_RESET_USAGE=1` and cannot come from a config, so a frozen config can never reset the course computer's quota. Failed and killed calls may still have cost quota, so they count against `remaining` too. `command=[...]` replaces the process for stand-ins in tests; `checksums=None` skips the sha256 check |
 | `TableEvaluator(X, y, *, ids, atol=1e-9)`, `.from_dataset(dataset, rows=None)` | measured rows | A point must equal a row (after renormalisation) within `atol` in every coordinate, else `PointNotInTable`; `history[i].extra["ids"]` names the rows |
 | `SyntheticEvaluator(truth)`, `.fit(model_name, params, X, y)` | a fitted surrogate's mean | Semi-synthetic truth as in `analysis/coupling/` |
 
@@ -110,9 +111,15 @@ Shared rules, from the Windows smoke test (decisions.md, Resolved):
 - Each building's weights must be finite, non-negative and have one positive entry; anything else, and
   more than 50 sets, raises `InvalidBatch` before the solver starts, so it costs no quota. The solver rescales
   each building to sum 1, so the stand-ins renormalise before they look up or predict.
-- Every evaluator counts its own successful calls; at `quota` the next call raises `QuotaExhausted` without
-  running. The real solver also raises `QuotaExhausted` when it prints `Usage limit reached`. A resumed run
-  must build its evaluator with `quota = 20 - calls already logged`.
+- Every evaluator counts the calls charged against its quota; at `quota` the next call raises
+  `QuotaExhausted` without running. A stand-in charges successful calls only; `SolverEvaluator` charges
+  every attempt, because the solver may count a call before it fails or is killed. The real solver also
+  raises `QuotaExhausted` when it prints `Usage limit reached`. A resumed run must build its evaluator with
+  `quota = 20 - solver attempts already made`, so the run folder has to record failed attempts as well as
+  logged calls (`describe()["failures"]`).
+- The evaluators accept unnormalised weights (the solver renormalises each building), so `W` and `2·W` are
+  the same point. Anything that deduplicates points, such as T08's pre-submit check, must compare
+  renormalised weights (`sdm.online.evaluator.renormalise`).
 - Other failures raise `EvaluatorError` with the solver's `stderr` and `returncode`; `EvaluatorTimeout`
   when the process was killed. Output lines before the final `{"R": [...]}` line are ignored.
 - `tests/test_online_evaluator.py` checks all of this against a Python stand-in; on Windows with

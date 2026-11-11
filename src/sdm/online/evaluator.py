@@ -8,7 +8,10 @@ Shared behaviour, matching the solver as measured by the Windows smoke test (dec
 - each building's 7 weights must be finite, non-negative and have one positive entry; the evaluator
   rescales each building to sum 1, so the stand-ins renormalise before they look up or predict;
 - invalid batches are rejected before anything runs and cost no quota (`InvalidBatch`);
-- after `quota` successful calls the next call raises `QuotaExhausted`.
+- after `quota` calls the next call raises `QuotaExhausted`. The solver counts every call that reaches it,
+  so `SolverEvaluator` charges failed and timed-out attempts against its quota too.
+
+Callers that deduplicate points (T08) must compare renormalised weights: W and 2·W are the same point.
 """
 from __future__ import annotations
 
@@ -17,6 +20,7 @@ from dataclasses import dataclass, field
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import subprocess
 import time
@@ -34,6 +38,9 @@ QUOTA_MESSAGE = "Usage limit reached"
 # 50 sets took 289 s on A's PC (smoke test); the course computer may be slower. Killing a running call may
 # still cost quota, so the limit is generous: it only guards against a hung process.
 DEFAULT_TIMEOUT = 3600.0
+# Deleting usage.count resets the solver's quota. Only a development machine may do that, so the switch
+# needs this environment variable as well as the argument; configs can never turn it on.
+RESET_USAGE_ENV = "SDM_DEV_RESET_USAGE"
 
 
 class EvaluatorError(RuntimeError):
@@ -106,9 +113,14 @@ class Evaluator(ABC):
         self.history: list[CallRecord] = []
 
     @property
+    def spent(self) -> int:
+        """Calls charged against the quota: successful calls here; the solver also charges failed ones."""
+        return self.calls
+
+    @property
     def remaining(self) -> int | None:
         """Calls left according to this object's own count (None when unlimited)."""
-        return None if self.quota is None else max(self.quota - self.calls, 0)
+        return None if self.quota is None else max(self.quota - self.spent, 0)
 
     def evaluate(self, W) -> np.ndarray:
         """Return R, shape (n,), for 1 to `batch_limit` weight sets, in input order."""
@@ -168,8 +180,14 @@ class SolverEvaluator(Evaluator):
                  timeout: float = DEFAULT_TIMEOUT, quota: int | None = QUOTA, batch_limit: int = BATCH_LIMIT):
         """`command` replaces `[exe]` as the process to start (tests use a Python stand-in); the working
         directory is always the exe's folder, where the solver keeps `usage.count`. `checksums=None`
-        skips the sha256 check (stand-ins only)."""
+        skips the sha256 check (stand-ins only). `reset_usage=True` also needs `SDM_DEV_RESET_USAGE=1`."""
+        if reset_usage and os.environ.get(RESET_USAGE_ENV) != "1":
+            raise EvaluatorError(f"reset_usage deletes usage.count and is for development only; "
+                                 f"set {RESET_USAGE_ENV}=1 on a development machine to allow it")
         super().__init__(quota=quota, batch_limit=batch_limit)
+        # Every process start, whether it succeeds or not; failures keep their reason for the run record.
+        self.attempts = 0
+        self.failures: list[dict[str, Any]] = []
         self.exe = Path(exe).resolve()
         self.command = list(command) if command else [str(self.exe)]
         self.reset_usage = reset_usage
@@ -187,6 +205,11 @@ class SolverEvaluator(Evaluator):
     def usage_file(self) -> Path:
         return self.exe.parent / "usage.count"
 
+    @property
+    def spent(self) -> int:
+        # The solver may count a call before it fails or is killed, so every start counts.
+        return self.attempts
+
     def _before_call(self) -> None:
         super()._before_call()
         if self.reset_usage:
@@ -196,25 +219,35 @@ class SolverEvaluator(Evaluator):
         # json.dumps writes floats with repr, which round-trips exactly, so the solver sees our numbers.
         payload = json.dumps({"weights": W.tolist()})
         usage_before = self.usage_file.exists()
+        self.attempts += 1
+        start = time.perf_counter()
         try:
-            result = subprocess.run(self.command, input=payload, capture_output=True, text=True,
-                                    encoding="utf-8", errors="replace", cwd=self.exe.parent,
-                                    timeout=self.timeout, check=False)
-        except subprocess.TimeoutExpired as error:
-            stderr = error.stderr.decode(errors="replace") if isinstance(error.stderr, bytes) else error.stderr
-            raise EvaluatorTimeout(f"solver did not finish within {self.timeout:g} s and was killed",
-                                   stderr=stderr or "") from None
-        stderr = result.stderr.strip()
-        if result.returncode != 0:
-            error_type = QuotaExhausted if QUOTA_MESSAGE in stderr else EvaluatorError
-            raise error_type(f"solver exited with code {result.returncode}: {stderr or '(no stderr)'}",
-                             stderr=stderr, returncode=result.returncode)
-        R = parse_solver_output(result.stdout, stderr)
-        return R, stderr, {"usage_file_before": usage_before, "usage_file_after": self.usage_file.exists()}
+            try:
+                result = subprocess.run(self.command, input=payload, capture_output=True, text=True,
+                                        encoding="utf-8", errors="replace", cwd=self.exe.parent,
+                                        timeout=self.timeout, check=False)
+            except subprocess.TimeoutExpired as error:
+                stderr = error.stderr.decode(errors="replace") if isinstance(error.stderr, bytes) else error.stderr
+                raise EvaluatorTimeout(f"solver did not finish within {self.timeout:g} s and was killed",
+                                       stderr=stderr or "") from None
+            stderr = result.stderr.strip()
+            if result.returncode != 0:
+                error_type = QuotaExhausted if QUOTA_MESSAGE in stderr else EvaluatorError
+                raise error_type(f"solver exited with code {result.returncode}: {stderr or '(no stderr)'}",
+                                 stderr=stderr, returncode=result.returncode)
+            R = parse_solver_output(result.stdout, stderr)
+        except EvaluatorError as error:
+            self.failures.append({"attempt": self.attempts, "n": len(W), "error": type(error).__name__,
+                                  "message": str(error), "returncode": error.returncode,
+                                  "seconds": time.perf_counter() - start})
+            raise
+        return R, stderr, {"attempt": self.attempts, "usage_file_before": usage_before,
+                           "usage_file_after": self.usage_file.exists()}
 
     def describe(self):
         return {**super().describe(), "exe": str(self.exe), "sha256": self.sha256,
-                "reset_usage": self.reset_usage, "timeout": self.timeout}
+                "reset_usage": self.reset_usage, "timeout": self.timeout, "attempts": self.attempts,
+                "failures": self.failures}
 
 
 def parse_solver_output(stdout: str, stderr: str = "") -> list[float]:
@@ -227,7 +260,8 @@ def parse_solver_output(stdout: str, stderr: str = "") -> list[float]:
             continue
         if isinstance(data, dict) and isinstance(data.get("R"), list):
             values = data["R"]
-            if all(isinstance(value, (int, float)) and math.isfinite(value) for value in values):
+            if all(isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+                   for value in values):
                 return [float(value) for value in values]
     raise EvaluatorError(f"no {{\"R\": [...]}} line in solver output: {stdout[-500:]!r}", stderr=stderr)
 
@@ -244,6 +278,8 @@ class TableEvaluator(Evaluator):
     def __init__(self, X, y, *, ids=None, atol: float = 1e-9, quota: int | None = QUOTA,
                  batch_limit: int = BATCH_LIMIT):
         super().__init__(quota=quota, batch_limit=batch_limit)
+        if len(as_batch(X)) == 0:
+            raise ValueError("a table needs at least one row")
         self.X = renormalise(validate_batch(X, limit=len(as_batch(X))))
         self.y = np.asarray(y, dtype=float)
         if self.y.shape != (len(self.X),):
@@ -308,6 +344,8 @@ def build_evaluator(kind: str, params: dict | None = None, *, dataset=None) -> E
     `rows`) or "synthetic" (needs `dataset`; params `model` and optional `model_params`)."""
     params = dict(params or {})
     if kind == "solver":
+        if "reset_usage" in params:
+            raise ValueError("reset_usage cannot come from a config: a frozen config runs on the course computer")
         return SolverEvaluator(**params)
     if kind in ("table", "synthetic") and dataset is None:
         raise ValueError(f"evaluator kind {kind!r} needs the dataset")
