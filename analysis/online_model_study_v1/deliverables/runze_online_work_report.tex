@@ -1,18 +1,18 @@
-﻿\documentclass[11pt,a4paper]{article}
+\documentclass[8pt,a4paper]{article}
 \usepackage[UTF8,scheme=plain]{ctex}
-\usepackage[margin=1.25cm,top=1.15cm,bottom=1.15cm]{geometry}
+\usepackage[margin=0.85cm,top=0.65cm,bottom=0.65cm]{geometry}
 \usepackage{enumitem,booktabs,tabularx,array,xcolor}
 \usepackage{titlesec}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{3pt}
+\setlength{\parskip}{1pt}
 \setlist{nosep,leftmargin=1.2em}
 \titleformat{\section}{\large\bfseries\color{blue!55!black}}{}{0pt}{}
-\titlespacing*{\section}{0pt}{5pt}{2pt}
-\renewcommand{\arraystretch}{1.13}
+\titlespacing*{\section}{0pt}{2pt}{1pt}
+\renewcommand{\arraystretch}{0.98}
 \begin{document}
 \begin{center}
 {\LARGE\bfseries 在线代理模型研究：工作逻辑、结果与下一步}\\[-1pt]
-{\small 刘润泽（Runze）\quad SDM374 Project-2\quad 2026年11月11日}
+{\small 刘润泽（Runze）\quad SDM374 Project-2\quad 2026年12月11日}
 \end{center}
 \vspace{-4pt}
 
@@ -41,15 +41,15 @@ ridge2 & $115.765\pm0.000$（0/3） & $114.163\pm0.350$（3/3） & 0.5 / 0.29 \\
 
 \textbf{解读：}V2 多尺度池中 local-GP 均值最好、XGBoost 拟合快且表现接近；V3 漫游池中 HistGB 均值最低且最稳定，XGBoost 得到跨两版最低单点 $R=113.444$。ridge2 从 V2 的 0/3 命中变为 V3 的 3/3。每版内五模型共享相同候选池；V2 与 V3 改变了候选生成方式，跨版差异不能解释为纯模型因果差异。
 \section{数据资产与验证边界}
-去重 SQLite/CSV 库维护了 419 个不属于初始 2048 的唯一 solver 权重点（433 次观测，重复已折叠）：pilot 在线 11、pilot 开发测试 100、近优压力 50、V2 118、V3 140；与初始集重合为零。数据库和原始调用记录均按来源归档，后续可复用。Pilot 测试和压力测试都已揭晓标签，\textbf{不是盲测}；V4.1 sealed test 尚未生成，正式 20$\times$50 运行也尚未完成。V3 实际 solver 成本约 21.4 分钟；Local-GP 每轮拟合约 48 秒，树模型约 2--6 秒，ridge2 约 0.3 秒。
+去重 SQLite/CSV 库维护了 1,370 个不属于初始 2048 的唯一 solver 权重点（1,370 unique records. Sources include V3.1 152 model-selected weights and 799 new global audit points; pilot 在线 11、pilot 开发测试 100、近优压力 50、V2 118、V3 140；与初始集重合为零。数据库和原始调用记录均按来源归档，后续可复用。Pilot 测试和压力测试都已揭晓标签，\textbf{不是盲测}；V4.1 sealed test 尚未生成，正式 20$\times$50 运行也尚未完成。V3 实际 solver 成本约 21.4 分钟；Local-GP 每轮拟合约 48 秒，树模型约 2--6 秒，ridge2 约 0.3 秒。
 
-\section{结论与后续改进}
-\begin{enumerate}
-\item 继续验证离线方向和步长：增加 solver 覆盖，比较方向命中率、低 $R$ 分布，并测试多个低值锚点。
-\item 固定候选池后再优化选点器：对比最小均值、LCB/EI 与探索配额；把代理模型质量和策略收益分开归因。动态移动候选中心另作端到端实验。
-\item 将重复种子先扩至约 8 组，报告完整轨迹与均值/波动；冻结模型和规则后再制作独立 V4.1 测试集，一次性揭盲。
-\item 控制成本：先小规模筛选方向/步长，只计算能影响模型选择的误差指标；暂不把 Spearman 作为主指标，单独记录 solver 与拟合耗时。
-\end{enumerate}
+\section{V3.1 results and candidate evidence}
+V3.1: 8 groups x 10 rounds, 5 models, strict 2048-row cold start; each model receives only its own chosen solver feedback. Same pool per round; first-place credit is fractionally split for ties. No test set; no full-pool MAE or Spearman.\par
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}lrrrr@{}}\toprule Model & Mean group minimum & Lowest R & Wins/80 & Fit seconds \\ \midrule GP-ARD & \textbf{112.678} & 112.161 & \textbf{33} & 10,146 \\ HistGB & 112.724 & \textbf{111.704} & 16 & 438 \\ Boosted-consensus & 112.976 & 112.239 & 14 & 648 \\ XGBoost & 113.044 & 112.344 & 14 & 211 \\ Local-GP & 114.196 & 112.897 & 3 & 3,711 \\ \bottomrule\end{tabularx}\par
+GP-ARD led the average of 8 group minima and same-round wins, with the longest fit time and some boundary convergence warnings. HistGB found the lowest selected point (R=111.704) and fit in 438 s. V3.1 costs: 4.21 h total model fitting, 36.7 min online solver, and 2.62 h global audit.\par
+Candidate pool: 10 global Dirichlet + 290 local points; local anchors R=113.444/112.907/113.951; steps 0.01--0.10, denser at 0.01--0.06. Shortlist and broad each supplied 48.33\% of local appearances; selection shares were 76.75\% and 23\%. All 800 global points were solved separately: minimum 117.262, none below 115, only one selected online. V3 low R=113.444 came from a broad screened direction. V3.1 low R=111.704 came from a broad feasible direction at step 0.09 around the R=112.907 anchor; shortlist also yielded R=112.239. Selected-point outcomes are biased by model choice and do not prove source-wide superiority or an optimal step. Next: balance solver coverage across source, anchor, and step, then compare selectors.\par
+\normalsize
 \vfill
 {\footnotesize 详细设计、逐轮日志、报告、候选池和原始调用记录见 \texttt{analysis/online\_model\_study\_v1/}；唯一数据表位于 \texttt{solver\_database/}。本报告数值来自已归档开发实验，结论限于所测试的候选生成方式与三个随机种子。}
 \end{document}

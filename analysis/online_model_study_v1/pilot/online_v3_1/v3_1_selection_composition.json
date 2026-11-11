@@ -1,0 +1,346 @@
+{
+  "candidate_availability": [
+    {
+      "source": "broad_feasible_direction",
+      "candidate_appearances": 11600,
+      "availability_share": 0.48333333333333334,
+      "model_selection_events": 92,
+      "selection_share": 0.23,
+      "selection_events_per_candidate_appearance": 0.007931034482758621,
+      "relative_to_availability": 0.47586206896551725
+    },
+    {
+      "source": "global",
+      "candidate_appearances": 800,
+      "availability_share": 0.03333333333333333,
+      "model_selection_events": 1,
+      "selection_share": 0.0025,
+      "selection_events_per_candidate_appearance": 0.00125,
+      "relative_to_availability": 0.075
+    },
+    {
+      "source": "offline_shortlist",
+      "candidate_appearances": 11600,
+      "availability_share": 0.48333333333333334,
+      "model_selection_events": 307,
+      "selection_share": 0.7675,
+      "selection_events_per_candidate_appearance": 0.02646551724137931,
+      "relative_to_availability": 1.5879310344827586
+    }
+  ],
+  "selections_by_model_and_source": [
+    {
+      "model": "boosted-consensus",
+      "source": "broad_feasible_direction",
+      "selected": 7,
+      "share_of_model_selections": 0.0875
+    },
+    {
+      "model": "boosted-consensus",
+      "source": "offline_shortlist",
+      "selected": 73,
+      "share_of_model_selections": 0.9125
+    },
+    {
+      "model": "gp-ard",
+      "source": "broad_feasible_direction",
+      "selected": 48,
+      "share_of_model_selections": 0.6
+    },
+    {
+      "model": "gp-ard",
+      "source": "offline_shortlist",
+      "selected": 32,
+      "share_of_model_selections": 0.4
+    },
+    {
+      "model": "histgb",
+      "source": "broad_feasible_direction",
+      "selected": 37,
+      "share_of_model_selections": 0.4625
+    },
+    {
+      "model": "histgb",
+      "source": "offline_shortlist",
+      "selected": 43,
+      "share_of_model_selections": 0.5375
+    },
+    {
+      "model": "local-gp",
+      "source": "global",
+      "selected": 1,
+      "share_of_model_selections": 0.0125
+    },
+    {
+      "model": "local-gp",
+      "source": "offline_shortlist",
+      "selected": 79,
+      "share_of_model_selections": 0.9875
+    },
+    {
+      "model": "xgboost",
+      "source": "offline_shortlist",
+      "selected": 80,
+      "share_of_model_selections": 1.0
+    }
+  ],
+  "selections_by_model_and_anchor": [
+    {
+      "model": "boosted-consensus",
+      "anchor_id": "v2_best_112_907",
+      "selected": 7
+    },
+    {
+      "model": "boosted-consensus",
+      "anchor_id": "v2_diverse_113_951",
+      "selected": 73
+    },
+    {
+      "model": "gp-ard",
+      "anchor_id": "v2_best_112_907",
+      "selected": 33
+    },
+    {
+      "model": "gp-ard",
+      "anchor_id": "v2_diverse_113_951",
+      "selected": 35
+    },
+    {
+      "model": "gp-ard",
+      "anchor_id": "v3_best_113_444",
+      "selected": 12
+    },
+    {
+      "model": "histgb",
+      "anchor_id": "v2_best_112_907",
+      "selected": 37
+    },
+    {
+      "model": "histgb",
+      "anchor_id": "v2_diverse_113_951",
+      "selected": 43
+    },
+    {
+      "model": "local-gp",
+      "anchor_id": "",
+      "selected": 1
+    },
+    {
+      "model": "local-gp",
+      "anchor_id": "v3_best_113_444",
+      "selected": 79
+    },
+    {
+      "model": "xgboost",
+      "anchor_id": "v2_best_112_907",
+      "selected": 2
+    },
+    {
+      "model": "xgboost",
+      "anchor_id": "v2_diverse_113_951",
+      "selected": 78
+    }
+  ],
+  "selections_by_model_and_step": [
+    {
+      "model": "boosted-consensus",
+      "step": "0.02",
+      "selected": 1
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.04",
+      "selected": 1
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.05",
+      "selected": 5
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.06",
+      "selected": 11
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.07",
+      "selected": 9
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.08",
+      "selected": 13
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.09",
+      "selected": 12
+    },
+    {
+      "model": "boosted-consensus",
+      "step": "0.1",
+      "selected": 28
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.01",
+      "selected": 2
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.02",
+      "selected": 2
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.03",
+      "selected": 2
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.04",
+      "selected": 3
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.05",
+      "selected": 8
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.06",
+      "selected": 8
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.07",
+      "selected": 9
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.08",
+      "selected": 10
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.09",
+      "selected": 14
+    },
+    {
+      "model": "gp-ard",
+      "step": "0.1",
+      "selected": 22
+    },
+    {
+      "model": "histgb",
+      "step": "0.01",
+      "selected": 3
+    },
+    {
+      "model": "histgb",
+      "step": "0.03",
+      "selected": 1
+    },
+    {
+      "model": "histgb",
+      "step": "0.04",
+      "selected": 7
+    },
+    {
+      "model": "histgb",
+      "step": "0.05",
+      "selected": 13
+    },
+    {
+      "model": "histgb",
+      "step": "0.06",
+      "selected": 15
+    },
+    {
+      "model": "histgb",
+      "step": "0.07",
+      "selected": 11
+    },
+    {
+      "model": "histgb",
+      "step": "0.08",
+      "selected": 12
+    },
+    {
+      "model": "histgb",
+      "step": "0.09",
+      "selected": 10
+    },
+    {
+      "model": "histgb",
+      "step": "0.1",
+      "selected": 8
+    },
+    {
+      "model": "local-gp",
+      "step": "",
+      "selected": 1
+    },
+    {
+      "model": "local-gp",
+      "step": "0.06",
+      "selected": 4
+    },
+    {
+      "model": "local-gp",
+      "step": "0.07",
+      "selected": 6
+    },
+    {
+      "model": "local-gp",
+      "step": "0.08",
+      "selected": 15
+    },
+    {
+      "model": "local-gp",
+      "step": "0.09",
+      "selected": 16
+    },
+    {
+      "model": "local-gp",
+      "step": "0.1",
+      "selected": 38
+    },
+    {
+      "model": "xgboost",
+      "step": "0.02",
+      "selected": 1
+    },
+    {
+      "model": "xgboost",
+      "step": "0.05",
+      "selected": 5
+    },
+    {
+      "model": "xgboost",
+      "step": "0.06",
+      "selected": 11
+    },
+    {
+      "model": "xgboost",
+      "step": "0.07",
+      "selected": 5
+    },
+    {
+      "model": "xgboost",
+      "step": "0.08",
+      "selected": 13
+    },
+    {
+      "model": "xgboost",
+      "step": "0.09",
+      "selected": 9
+    },
+    {
+      "model": "xgboost",
+      "step": "0.1",
+      "selected": 36
+    }
+  ]
+}

@@ -34,6 +34,8 @@ The 30 shared pools contained 9,000 candidate appearances: 8,918 broad screened 
 Selection by model: local-GP chose 9 shortlist candidates out of 30 selections, boosted-consensus chose 2, while HistGB, XGBoost, and ridge2 chose none. The shortlist-selected points had a minimum observed R of 114.211 (6/11 selected events at R <= 115.68); broad-direction selections included the V3 minimum R=113.444 (62/139 events at R <= 115.68).
 
 This is evidence of model-specific preference for shortlist candidates, especially for local-GP, not proof that shortlist directions have better true R. Only selected points were solver-scored, the shortlist sample is small, and directions/steps were not evaluated in a balanced randomized design. V3.1 should track both candidate availability and selection rates by source, and allocate enough candidates to each source for meaningful solver evidence.
+
+After deduplicating repeated model selections, the solver-scored sample is 11 unique shortlist points (mean R 115.442; minimum 114.211; 6/11 at R <= 115.68) and 129 unique broad-direction points (mean R 115.764; minimum 113.444; 58/129 at R <= 115.68). This gives a descriptive positive signal for shortlist hit frequency, while the broad set found the lowest point; it does not isolate a causal direction-family effect.
 ## Cost and saved artifacts
 
 - 150 model selections collapsed to 140 unique solver evaluations; 30 solver calls took 1,281.8 seconds (21.4 minutes).

@@ -1,0 +1,95 @@
+{
+  "definition": "Group minima are minima among each model's ten selected solver-scored points; group mean is unweighted mean of eight group minima. Fit time reported separately.",
+  "summary": [
+    {
+      "model": "local-gp",
+      "group_minima": [
+        112.8974221014796,
+        114.52564872744551,
+        114.52564872744551,
+        113.51950798662438,
+        114.52564872744551,
+        114.52564872744551,
+        114.52564872744551,
+        114.52564872744551
+      ],
+      "mean_group_minimum": 114.19635280659713,
+      "overall_selected_minimum": 112.8974221014796,
+      "first_place_credit": 3.0,
+      "fit_seconds_total": 3711.068372999973,
+      "selected_point_records": 80
+    },
+    {
+      "model": "gp-ard",
+      "group_minima": [
+        112.65825664496516,
+        112.8273882556241,
+        113.11665304936469,
+        112.65825664496516,
+        112.69565099058671,
+        112.57075191987678,
+        112.16129901912063,
+        112.73293002834544
+      ],
+      "mean_group_minimum": 112.67764831910608,
+      "overall_selected_minimum": 112.16129901912063,
+      "first_place_credit": 33.0,
+      "fit_seconds_total": 10145.970943699955,
+      "selected_point_records": 80
+    },
+    {
+      "model": "histgb",
+      "group_minima": [
+        112.49908035527916,
+        112.90237200027332,
+        113.44218830403406,
+        112.67725169612096,
+        113.11501320218667,
+        111.70433956757188,
+        112.98683626088314,
+        112.46190823381768
+      ],
+      "mean_group_minimum": 112.72362370252085,
+      "overall_selected_minimum": 111.70433956757188,
+      "first_place_credit": 16.0,
+      "fit_seconds_total": 437.767421499957,
+      "selected_point_records": 80
+    },
+    {
+      "model": "xgboost",
+      "group_minima": [
+        112.3435624585254,
+        113.03466868703254,
+        112.84047245459806,
+        114.01885821227916,
+        113.43925317756656,
+        113.43925317756656,
+        112.68862837168854,
+        112.5475818120176
+      ],
+      "mean_group_minimum": 113.0440347939093,
+      "overall_selected_minimum": 112.3435624585254,
+      "first_place_credit": 14.0,
+      "fit_seconds_total": 211.22800849996565,
+      "selected_point_records": 80
+    },
+    {
+      "model": "boosted-consensus",
+      "group_minima": [
+        112.88797469669952,
+        112.84047245459806,
+        113.03466868703254,
+        114.08943946118234,
+        113.03466868703254,
+        112.84047245459806,
+        112.23904861306072,
+        112.84047245459806
+      ],
+      "mean_group_minimum": 112.97590218860023,
+      "overall_selected_minimum": 112.23904861306072,
+      "first_place_credit": 14.0,
+      "fit_seconds_total": 648.3501199000166,
+      "selected_point_records": 80
+    }
+  ]
+}

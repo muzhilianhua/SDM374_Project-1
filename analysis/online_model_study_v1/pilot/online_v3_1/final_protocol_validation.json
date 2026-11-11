@@ -1,0 +1,62 @@
+{
+  "replicates": [
+    {
+      "replicate": 1,
+      "trajectory_rows": 50,
+      "unique_selected_points": 37,
+      "status": "passed"
+    },
+    {
+      "replicate": 2,
+      "trajectory_rows": 50,
+      "unique_selected_points": 36,
+      "status": "passed"
+    },
+    {
+      "replicate": 3,
+      "trajectory_rows": 50,
+      "unique_selected_points": 30,
+      "status": "passed"
+    },
+    {
+      "replicate": 4,
+      "trajectory_rows": 50,
+      "unique_selected_points": 30,
+      "status": "passed"
+    },
+    {
+      "replicate": 5,
+      "trajectory_rows": 50,
+      "unique_selected_points": 35,
+      "status": "passed"
+    },
+    {
+      "replicate": 6,
+      "trajectory_rows": 50,
+      "unique_selected_points": 35,
+      "status": "passed"
+    },
+    {
+      "replicate": 7,
+      "trajectory_rows": 50,
+      "unique_selected_points": 32,
+      "status": "passed"
+    },
+    {
+      "replicate": 8,
+      "trajectory_rows": 50,
+      "unique_selected_points": 37,
+      "status": "passed"
+    }
+  ],
+  "models": [
+    "local-gp",
+    "gp-ard",
+    "histgb",
+    "xgboost",
+    "boosted-consensus"
+  ],
+  "rounds_per_replicate": 10,
+  "total_trajectory_rows": 400,
+  "status": "passed"
+}

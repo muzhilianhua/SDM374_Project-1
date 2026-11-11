@@ -8,7 +8,8 @@ This folder records the online surrogate comparison agreed for the SDM374 second
 - V2 used 3 seeds × 10 rounds with 300-point global + multiscale pools. V3 used 3 seeds × 10 rounds with 300-point directional-roaming pools based on the offline low-R direction/step search.
 - Each model selects the lowest predicted mean from a shared round pool and receives only its own online feedback. Duplicate same-round solver requests are collapsed.
 - Primary online outcomes are best-so-far actual R, target hits at R ≤ 115.68, between-seed variability, and fit time. Prediction checks use MAE, near-best-band MAE, and selected-point regret; Spearman is not a primary metric.
-- No full 20-round-per-model run or final V4.1 blind test has been run. Existing pilot/stress labels are development evidence and have been viewed.
+- V3.1 is complete: 8 groups × 10 rounds, with 5 models independently cold-started from the original 2,048 rows. It remains an exploratory online comparison, not the final sealed-test or 20×50 evaluation.
+- V3.1 has no test set. Existing pilot/stress labels have been viewed and are development evidence only. Candidate-generation effects and solver outcomes are documented separately for V3 and V3.1.
 
 ## Main documents
 
@@ -18,7 +19,9 @@ This folder records the online surrogate comparison agreed for the SDM374 second
 - Near-best stress test: [`pilot/near_best_stress/REPORT.md`](pilot/near_best_stress/REPORT.md).
 - V2 multi-seed comparison: [`pilot/online_v2/REPORT.md`](pilot/online_v2/REPORT.md).
 - V3 directional-roaming comparison: [`pilot/online_v3_directional/REPORT.md`](pilot/online_v3_directional/REPORT.md).
-- V3.1 design notes and V3 shortlist availability audit: [`pilot/online_v3_1/README.md`](pilot/online_v3_1/README.md).
+- V3.1 full protocol, source/anchor/step outcomes, low-R point provenance, model comparison, time costs, and global candidate audit: [`pilot/online_v3_1/README.md`](pilot/online_v3_1/README.md).
+- Updated full work summary and one-page report: [`deliverables/WORK_SUMMARY.md`](deliverables/WORK_SUMMARY.md), [`deliverables/runze_online_work_report.tex`](deliverables/runze_online_work_report.tex), and [`../../../output/pdf/runze_online_work_report_model_comparison.pdf`](../../../output/pdf/runze_online_work_report_model_comparison.pdf).
+- Canonical database now tracks 1,370 unique non-training solver points; V3.1 contributes 152 model-selected points and 799 new global-audit points (overlap deduplicated).
 - Canonical deduplicated solver database and maintenance instructions: [`solver_database/README.md`](solver_database/README.md).
 
 ## User-provided candidate-generation reference

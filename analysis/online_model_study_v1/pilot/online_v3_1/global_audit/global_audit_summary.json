@@ -1,0 +1,21 @@
+{
+  "unique_global_candidates": 800,
+  "already_scored_as_model_selections": 1,
+  "new_solver_points": 799,
+  "total_result_rows": 800,
+  "minimum_global_R": 117.26157611544475,
+  "solver_invocations": 16,
+  "training_feedback_added": false,
+  "status": "complete",
+  "distribution": {
+    "n": 800,
+    "min": 117.26157611544475,
+    "q10": 140.74190968228794,
+    "median": 160.72607429773325,
+    "q90": 173.43201967665226,
+    "max": 198.16953103613923,
+    "count_lt_115": 0,
+    "count_lt_113": 0,
+    "count_le_120": 4
+  }
+}

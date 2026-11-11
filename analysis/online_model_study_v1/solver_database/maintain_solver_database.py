@@ -28,10 +28,12 @@ def scan_calls():
       "near_best_stress": STUDY/"pilot"/"near_best_stress"/"solver_calls",
       "online_v2": STUDY/"pilot"/"online_v2",
       "online_v3_directional": STUDY/"pilot"/"online_v3_directional",
+      "online_v31": STUDY/"pilot"/"online_v3_1",
+      "global_audit": STUDY/"pilot"/"online_v3_1"/"global_audit"/"solver_calls",
     }
     records=[]; attempted=defaultdict(int); successful_calls=defaultdict(int)
     for stage,folder in sources.items():
-        paths=folder.glob("replicate_*/solver_calls/round_*.json") if stage in {"online_v2","online_v3_directional"} else folder.glob("*.json")
+        paths=folder.glob("replicate_*/solver_calls/round_*.json") if stage in {"online_v2","online_v3_directional","online_v31"} else folder.glob("call_*.json") if stage == "global_audit" else folder.glob("*.json")
         for path in sorted(paths):
             attempted[stage]+=1
             obj=json.loads(path.read_text(encoding="utf-8"))

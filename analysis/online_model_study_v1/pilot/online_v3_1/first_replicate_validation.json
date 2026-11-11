@@ -1,0 +1,11 @@
+{
+  "replicate": 1,
+  "status": "passed",
+  "trajectory_rows": 50,
+  "model_count": 5,
+  "rounds": 10,
+  "solver_calls": 10,
+  "unique_solver_points": 37,
+  "cold_start_rows_per_model": 2048,
+  "post_run_rows_per_model": 2058
+}
