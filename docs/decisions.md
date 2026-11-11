@@ -189,11 +189,13 @@ and record the new decision here with a date.
 - How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
   graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
   Ask the TA whether that is allowed (owner: A).
-- Schema of the policy's call log and how each call's result is merged into `X, y` (owner: A, after the
-  evaluator format is known).
 
 ## Resolved
 
+- Call log schema and how results reach `X, y` (2026-11-11): `online_log.csv` (T07, `sdm.online.log`) holds
+  every successful call; the online loop (T08) rebuilds `OnlineState` from the 2048 training rows plus the
+  log before each call, so a policy refits on `state.X = [X_train; X_online]`. Attempts, including failed
+  and interrupted ones, are journalled separately in `attempts.jsonl` (docs/interfaces.md, Online loop).
 - Evaluator determinism: deterministic (decision 20, 2026-10-31).
 - Submitting a training row offline: allowed but only ties the bar (decision 17, 2026-10-31).
 - Whether weights must sum to 1: no, non-negative with one positive per building (decision 21, 2026-10-31).

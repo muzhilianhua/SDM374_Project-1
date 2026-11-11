@@ -1,0 +1,32 @@
+# Local end-to-end check of the online loop against a semi-synthetic truth (no solver needed):
+# `uv run sdm online -c experiments/online-baseline-synthetic.toml`. Same policy as online-baseline.toml.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "ridge2"
+
+[optimizer]
+name = "trust-dirichlet"
+
+[optimizer.params]
+seed = 2026
+
+[policy]
+name = "surrogate"   # refit [model] on all observations each call, then ask [optimizer] for a batch
+
+[evaluator]
+kind = "synthetic"   # truth: extratrees fitted on the 2048 rows (semi-synthetic replay)
+
+[evaluator.params]
+model = "extratrees"
+
+[online]
+calls = 20           # call budget; every solver attempt counts, including failed ones
+batch_size = 50
+seed = 2026
+candidate_margin = 25
+max_rounds = 3
+max_retries = 1
+dedupe_atol = 1e-9

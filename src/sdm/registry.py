@@ -1,5 +1,6 @@
-"""Name -> class registries. Every non-underscore module in sdm.models / sdm.optimizers is imported
-on first lookup, so a new plugin only needs a new file with a @register_model / @register_optimizer class."""
+"""Name -> class registries. Every non-underscore module in sdm.models / sdm.optimizers / sdm.policies is
+imported on first lookup, so a new plugin only needs a new file with a @register_model / @register_optimizer /
+@register_policy class."""
 from __future__ import annotations
 
 import dataclasses
@@ -7,11 +8,12 @@ import importlib
 import pkgutil
 from typing import Any
 
-from .interfaces import Optimizer, Surrogate
+from .interfaces import BatchPolicy, Optimizer, Surrogate
 
 _MODELS: dict[str, type[Surrogate]] = {}
 _OPTIMIZERS: dict[str, type[Optimizer]] = {}
-_PLUGIN_PACKAGES = ("sdm.models", "sdm.optimizers")
+_POLICIES: dict[str, type[BatchPolicy]] = {}
+_PLUGIN_PACKAGES = ("sdm.models", "sdm.optimizers", "sdm.policies")
 _discovered = False
 
 
@@ -37,6 +39,10 @@ def register_optimizer(name: str):
     return _register(_OPTIMIZERS, Optimizer, "optimizer", name)
 
 
+def register_policy(name: str):
+    return _register(_POLICIES, BatchPolicy, "policy", name)
+
+
 def _discover() -> None:
     global _discovered
     if _discovered:
@@ -57,6 +63,11 @@ def models() -> dict[str, type[Surrogate]]:
 def optimizers() -> dict[str, type[Optimizer]]:
     _discover()
     return dict(_OPTIMIZERS)
+
+
+def policies() -> dict[str, type[BatchPolicy]]:
+    _discover()
+    return dict(_POLICIES)
 
 
 def build_params(cls: type, values: dict[str, Any] | None):
@@ -85,6 +96,12 @@ def build_model(name: str, params: dict[str, Any] | None = None) -> Surrogate:
 def build_optimizer(name: str, params: dict[str, Any] | None = None) -> Optimizer:
     cls = _lookup(optimizers(), "optimizer", name)
     return cls(build_params(cls, params))
+
+
+def build_policy(name: str, params: dict[str, Any] | None = None, *, model=None, optimizer=None) -> BatchPolicy:
+    """`model` / `optimizer` are the config's components (objects with `name` and `params`), or None."""
+    cls = _lookup(policies(), "policy", name)
+    return cls(build_params(cls, params), model=model, optimizer=optimizer)
 
 
 def describe(cls: type) -> list[dict[str, Any]]:

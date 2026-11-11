@@ -1,4 +1,4 @@
-"""Contracts that every surrogate model and optimizer plugin implements.
+"""Contracts that every surrogate model, optimizer and online batch policy plugin implements.
 
 Each plugin declares its tunable settings as a nested frozen dataclass named `Params`.
 The registry builds it from the `[model.params]` / `[optimizer.params]` tables of a config,
@@ -7,7 +7,7 @@ and the CLI (later the GUI) lists its fields, so adding a plugin needs no other 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import ClassVar
 
 import numpy as np
@@ -63,3 +63,75 @@ class Optimizer(ABC):
 
         X, y hold every observation so far: the offline table plus any online evaluations.
         """
+
+
+@dataclass(frozen=True)
+class OnlineState:
+    """Everything an online policy may use before call `call`: the training table and earlier results only.
+
+    `X_online` / `y_online` hold the points of successful calls in the order they were sent, and
+    `online_call[i]` is the call that measured row i. Before call 1 they are empty, so the first batch can
+    only depend on the 2048 training rows (decision 19).
+    """
+
+    call: int                      # 1-based number of the successful call about to be made
+    calls_total: int               # the run's call budget (20)
+    calls_left: int                # attempts still allowed, after failed or lost attempts
+    batch_size: int                # points per call (50)
+    seed: int                      # the run's [online] seed
+    X_train: np.ndarray
+    y_train: np.ndarray
+    X_online: np.ndarray
+    y_online: np.ndarray
+    online_call: np.ndarray
+
+    @property
+    def X(self) -> np.ndarray:
+        """Every observation so far, training rows first: what a surrogate is refitted on."""
+        return np.vstack([self.X_train, self.X_online])
+
+    @property
+    def y(self) -> np.ndarray:
+        return np.concatenate([self.y_train, self.y_online])
+
+    @property
+    def best(self) -> float:
+        """Lowest measured R so far, training rows included."""
+        return float(self.y.min())
+
+    @property
+    def best_online(self) -> float | None:
+        return float(self.y_online.min()) if len(self.y_online) else None
+
+
+@dataclass(frozen=True)
+class Proposal:
+    """Candidates from a policy, best first. The online loop screens them and sends the first that pass."""
+
+    weights: np.ndarray                          # (m, 21); each row passes sdm.simplex.check_weights
+    predicted_mean: np.ndarray | None = None     # (m,) the policy's prediction, saved for T13/T26
+    predicted_std: np.ndarray | None = None      # (m,)
+    tags: tuple[str, ...] | None = None          # optional per-row label, e.g. "exploit" / "explore"
+    diagnostics: dict = field(default_factory=dict)   # scalars, saved with the call
+
+
+class BatchPolicy(ABC):
+    """Proposes the next online batch from the whole online state (T08). Plugins live in `sdm.policies`.
+
+    A policy fits whatever model it needs inside `propose`; `self.model` and `self.optimizer` hold the
+    config's [model] / [optimizer] components (name and params) for policies that use them. `propose`
+    must be deterministic given the state and the params, so a resumed or re-run session sends the same
+    batches (decision 22).
+    """
+
+    name: ClassVar[str]  # set by @register_policy
+    Params: ClassVar[type] = NoParams
+
+    def __init__(self, params=None, *, model=None, optimizer=None):
+        self.params = params if params is not None else self.Params()
+        self.model = model
+        self.optimizer = optimizer
+
+    @abstractmethod
+    def propose(self, state: OnlineState, n: int) -> Proposal:
+        """Return at least `n` candidates if possible, best first; the loop may ask again with a larger n."""
