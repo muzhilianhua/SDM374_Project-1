@@ -236,6 +236,9 @@ class SolverEvaluator(Evaluator):
                 raise error_type(f"solver exited with code {result.returncode}: {stderr or '(no stderr)'}",
                                  stderr=stderr, returncode=result.returncode)
             R = parse_solver_output(result.stdout, stderr)
+            # Checked here as well as in evaluate(), so this charged attempt is recorded as a failure.
+            if len(R) != len(W):
+                raise EvaluatorError(f"expected {len(W)} finite R values; got {R!r}", stderr=stderr)
         except EvaluatorError as error:
             self.failures.append({"attempt": self.attempts, "n": len(W), "error": type(error).__name__,
                                   "message": str(error), "returncode": error.returncode,
@@ -285,6 +288,8 @@ class TableEvaluator(Evaluator):
         if self.y.shape != (len(self.X),):
             raise ValueError(f"y has shape {self.y.shape}; expected ({len(self.X)},)")
         self.ids = tuple(ids) if ids is not None else tuple(str(index) for index in range(len(self.X)))
+        if len(self.ids) != len(self.X):
+            raise ValueError(f"got {len(self.ids)} ids for {len(self.X)} rows")
         self.atol = atol
 
     @classmethod

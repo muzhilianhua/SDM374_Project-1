@@ -105,8 +105,9 @@ Shared rules, from the Windows smoke test (decisions.md, Resolved):
   `QuotaExhausted` without running. A stand-in charges successful calls only; `SolverEvaluator` charges
   every attempt, because the solver may count a call before it fails or is killed. The real solver also
   raises `QuotaExhausted` when it prints `Usage limit reached`. A resumed run must build its evaluator with
-  `quota = 20 - solver attempts already made`, so the run folder has to record failed attempts as well as
-  logged calls (`describe()["failures"]`).
+  `quota = 20 - solver attempts already made`, so the run folder has to record every attempt, not only
+  logged calls: `describe()["attempts"]` counts every process start and `describe()["failures"]` lists each
+  failed one (including output with the wrong number of R values).
 - The evaluators accept unnormalised weights (the solver renormalises each building), so `W` and `2·W` are
   the same point. Anything that deduplicates points, such as T08's pre-submit check, must compare
   renormalised weights (`sdm.online.evaluator.renormalise`).

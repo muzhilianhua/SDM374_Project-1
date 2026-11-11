@@ -190,6 +190,9 @@ def test_wrong_number_of_r_values_raises(tmp_path):
     evaluator = SolverEvaluator(tmp_path / "solver.exe", command=[sys.executable, str(script)], checksums=None)
     with pytest.raises(EvaluatorError, match="expected 2 finite R values"):
         evaluator.evaluate(np.full((2, 21), 1 / 7))
+    # The solver ran, so the attempt is charged and recorded for a resumed run.
+    assert evaluator.calls == 0 and evaluator.attempts == 1 and evaluator.remaining == 19
+    assert [failure["error"] for failure in evaluator.describe()["failures"]] == ["EvaluatorError"]
 
 
 def test_checksum_is_verified(tmp_path):
@@ -222,6 +225,11 @@ def test_table_returns_measured_rows_and_rejects_other_points(dataset):
 def test_empty_table_is_rejected():
     with pytest.raises(ValueError, match="at least one row"):
         TableEvaluator(np.empty((0, 21)), np.empty(0))
+
+
+def test_table_ids_must_match_the_rows(dataset):
+    with pytest.raises(ValueError, match="1 ids for 3 rows"):
+        TableEvaluator(dataset.X[:3], dataset.y[:3], ids=[dataset.ids[0]])
 
 
 def test_best_training_row_is_in_the_full_table(dataset):
