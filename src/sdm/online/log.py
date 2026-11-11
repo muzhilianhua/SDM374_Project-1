@@ -11,6 +11,7 @@ import numpy as np
 from ..simplex import check_weights
 
 N_WEIGHTS = 21
+MAX_POINTS_PER_CALL = 50
 WEIGHT_COLUMNS = tuple(f"weight_{i:02d}" for i in range(N_WEIGHTS))
 FIELDS = ("call", "point", *WEIGHT_COLUMNS, "R", "source", "run_id", "timestamp")
 
@@ -55,6 +56,8 @@ class OnlineLog:
                 raise OnlineLogError(f"unexpected header; expected {FIELDS!r}")
             result = []
             for index, raw in enumerate(reader, 2):
+                if None in raw:
+                    raise OnlineLogError(f"unexpected fields in row {index}")
                 try:
                     call = int(raw["call"])
                     point = int(raw["point"])
@@ -75,11 +78,15 @@ class OnlineLog:
 
     @staticmethod
     def _validate_sequence(rows: list[LogRow]) -> None:
+        if rows and (rows[0].call != 1 or rows[0].point != 1):
+            raise OnlineLogError("log must start at call 1, point 1")
         seen = set()
         expected_call = 1
         expected_point = 1
         for row in rows:
             if row.call == expected_call and row.point == expected_point:
+                if row.point > MAX_POINTS_PER_CALL:
+                    raise OnlineLogError("a call may contain at most 50 points")
                 expected_point += 1
             elif row.call == expected_call + 1 and row.point == 1:
                 expected_call += 1
@@ -99,6 +106,8 @@ class OnlineLog:
     def append(self, weights, scores, *, source: str, run_id: str, call: int | None = None) -> list[LogRow]:
         batch = check_weights(np.asarray(weights, dtype=float))
         scores = np.asarray(scores, dtype=float).reshape(-1)
+        if len(batch) == 0 or len(batch) > MAX_POINTS_PER_CALL:
+            raise OnlineLogError("a call must contain 1 to 50 points")
         if len(batch) != len(scores) or not np.isfinite(scores).all():
             raise OnlineLogError("weights and finite scores must have the same length")
         if not source or not run_id:

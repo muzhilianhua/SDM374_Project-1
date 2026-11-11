@@ -48,6 +48,26 @@ def test_rejects_malformed_sequence_and_header(tmp_path):
         OnlineLog(path).rows()
 
 
+def test_rejects_log_that_does_not_start_at_first_call(tmp_path):
+    path = tmp_path / "online_log.csv"
+    log = OnlineLog(path)
+    log.append(shifted_weights(0.02), [120], source="a", run_id="r", call=1)
+    text = path.read_text(encoding="utf-8").replace("1,1,", "2,1,", 1)
+    path.write_text(text, encoding="utf-8")
+    with pytest.raises(OnlineLogError, match="start at call 1"):
+        log.rows()
+
+
+def test_rejects_more_than_50_points(tmp_path):
+    log = OnlineLog(tmp_path / "online_log.csv")
+    batch = np.full((51, 21), 1 / 7)
+    for index in range(51):
+        batch[index, 0] += index / 1000
+        batch[index, 1] -= index / 1000
+    with pytest.raises(OnlineLogError, match="1 to 50"):
+        log.append(batch, np.full(51, 120), source="a", run_id="r")
+
+
 def test_rejects_invalid_weights_and_scores(tmp_path):
     log = OnlineLog(tmp_path / "online_log.csv")
     with pytest.raises(ValueError):

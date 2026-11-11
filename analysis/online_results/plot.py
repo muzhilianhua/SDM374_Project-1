@@ -25,11 +25,18 @@ def read_predictions(path: Path) -> dict[tuple[int, int], float]:
         if set(reader.fieldnames or ()) != expected:
             raise ValueError(f"prediction CSV must have columns {sorted(expected)}")
         result = {}
-        for raw in reader:
-            key = (int(raw["call"]), int(raw["point"]))
+        for index, raw in enumerate(reader, 2):
+            try:
+                call, point = int(raw["call"]), int(raw["point"])
+                prediction = float(raw["predicted_R"])
+            except (KeyError, TypeError, ValueError) as error:
+                raise ValueError(f"invalid prediction row {index}") from error
+            if call < 1 or point < 1 or not np.isfinite(prediction):
+                raise ValueError(f"invalid prediction row {index}")
+            key = (call, point)
             if key in result:
                 raise ValueError(f"duplicate prediction key {key}")
-            result[key] = float(raw["predicted_R"])
+            result[key] = prediction
         return result
 
 
@@ -60,6 +67,10 @@ def plot_online_log(log_path: Path, output: Path, prediction_path: Path | None =
             if key not in predictions:
                 raise ValueError(f"missing prediction for call {key[0]}, point {key[1]}")
             actual.append(row.R); predicted.append(predictions[key])
+        observed_keys = {(row.call, row.point) for row in rows}
+        extra = set(predictions) - observed_keys
+        if extra:
+            raise ValueError(f"prediction has unknown keys: {sorted(extra)[:3]}")
         actual, predicted = np.asarray(actual), np.asarray(predicted)
         fig, ax = plt.subplots(figsize=(5.2, 4.2))
         ax.scatter(predicted, actual, s=14, alpha=0.7)
