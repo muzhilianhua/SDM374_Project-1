@@ -96,16 +96,6 @@ evaluator.describe()                             # JSON provenance for meta.json
 `build_evaluator(kind, params, *, dataset=None)` builds one from a config table: `"solver"` (params go to
 `SolverEvaluator`), `"table"` (optional `rows`), `"synthetic"` (`model`, optional `model_params`).
 
-  ### Append-only online log
-
-  `OnlineLog(path)` stores the successful evaluator calls in `online_log.csv`. `append(weights, R,
-  source=..., run_id=...)` writes one row per submitted point with the 1-based call number, batch point
-  number, all 21 weights, measured `R`, source label, run id, and UTC timestamp. The writer validates
-  simplex weights, finite scores, batch lengths, duplicate points, and contiguous calls before writing.
-  `rows()` validates the header and the complete sequence when resuming; `next_call` and `best()` provide
-  the state needed by the online loop and report figures. The file is append-only: a resumed process
-  reads existing rows and appends the next complete batch rather than rewriting history.
-
 Shared rules, from the Windows smoke test (decisions.md, Resolved):
 
 - Each building's weights must be finite, non-negative and have one positive entry; anything else, and
@@ -141,6 +131,22 @@ Shared rules, from the Windows smoke test (decisions.md, Resolved):
 - `tests/test_online_evaluator.py` checks all of this against a Python stand-in; on Windows with
   `solver/solver.exe` present it also checks `p01969` against the real exe (in a copy of `solver/`, so the
   repository's `usage.count` is untouched).
+
+### Append-only online log
+
+`OnlineLog(path)` stores successful calls as CSV columns `call,point,n,weight_00,...,weight_20,R,source,run_id,timestamp`.
+The 1-based `call` counts successful batches; `point` is the batch index and `n` is the expected batch size
+(1 to 50), repeated on every row. Weights must pass `check_weights`; R must be finite. The writer rejects
+duplicate raw weights and noncontiguous successful call numbers. It serializes a complete batch in memory,
+appends it with one write, then flushes and calls `os.fsync`. `rows()` checks every batch contains exactly
+`n` contiguous points, so a partial final batch raises `OnlineLogError`; it must not be silently ignored or
+resubmitted. `next_call` and `best()` also validate the full file.
+
+This is a single-writer, successful-result log, not an evaluator transaction journal. T08 must durably record
+pending attempts before launching the solver and reconcile failures/uncertain outcomes separately. A crash
+before any result row is written, or a completely missing batch, cannot be detected by this CSV alone.
+Quota uses attempts, not `next_call`; submission deduplication uses renormalized weights, not the raw tuples
+stored here. Legacy logs without `n` are rejected: their batch completeness cannot be inferred safely.
 
 ## Registry (`sdm.registry`)
 
