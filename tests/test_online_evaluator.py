@@ -18,7 +18,7 @@ from sdm.online import (
     TableEvaluator,
     build_evaluator,
 )
-from sdm.online.evaluator import SOLVER_DIR, parse_solver_output, renormalise
+from sdm.online.evaluator import RESET_USAGE_ENV, SOLVER_DIR, parse_solver_output, renormalise
 from sdm.paths import REPO_ROOT
 from sdm.simplex import sample
 
@@ -74,7 +74,7 @@ def test_solver_returns_r_in_input_order(fake_solver):
     assert evaluator.calls == 1 and evaluator.remaining == 19
     record = evaluator.history[0]
     assert record.n == 5 and record.R == tuple(R) and record.seconds > 0
-    assert record.extra == {"usage_file_before": False, "usage_file_after": True}
+    assert record.extra == {"attempt": 1, "usage_file_before": False, "usage_file_after": True}
 
 
 def test_solver_accepts_one_set_in_any_shape_and_unnormalised_weights(fake_solver):
@@ -117,12 +117,44 @@ def test_local_quota_stops_before_the_solver_is_started(fake_solver, tmp_path):
     assert (tmp_path / "usage.count").read_text() == "2"
 
 
-def test_development_mode_resets_usage_before_every_call(fake_solver, tmp_path):
+def test_development_mode_resets_usage_before_every_call(fake_solver, tmp_path, monkeypatch):
+    monkeypatch.setenv(RESET_USAGE_ENV, "1")
     (tmp_path / "usage.count").write_text("20")
     evaluator = fake_solver(reset_usage=True, quota=None)
     for _ in range(3):
         evaluator.evaluate(np.full(21, 1 / 7))
     assert (tmp_path / "usage.count").read_text() == "1" and evaluator.remaining is None
+
+
+def test_reset_usage_needs_the_development_switch(fake_solver, monkeypatch):
+    monkeypatch.delenv(RESET_USAGE_ENV, raising=False)
+    with pytest.raises(EvaluatorError, match=RESET_USAGE_ENV):
+        fake_solver(reset_usage=True)
+
+
+def test_configs_cannot_reset_usage(monkeypatch):
+    # A frozen config runs on the course computer, where deleting usage.count would bypass the quota.
+    monkeypatch.setenv(RESET_USAGE_ENV, "1")
+    with pytest.raises(ValueError, match="cannot come from a config"):
+        build_evaluator("solver", {"reset_usage": True, "checksums": None})
+
+
+def test_failed_and_timed_out_attempts_count_against_the_quota(fake_solver, tmp_path, monkeypatch):
+    script = tmp_path / "broken.py"
+    script.write_text("import sys; print('boom', file=sys.stderr); sys.exit(3)")
+    broken = SolverEvaluator(tmp_path / "solver.exe", command=[sys.executable, str(script)], checksums=None)
+    with pytest.raises(EvaluatorError):
+        broken.evaluate(np.full(21, 1 / 7))
+    assert broken.calls == 0 and broken.attempts == 1 and broken.remaining == 19
+    assert broken.failures[0]["error"] == "EvaluatorError" and broken.failures[0]["returncode"] == 3
+
+    monkeypatch.setenv("FAKE_SLEEP", "5")
+    slow = fake_solver(timeout=0.5, quota=1)
+    with pytest.raises(EvaluatorTimeout):
+        slow.evaluate(np.full(21, 1 / 7))
+    with pytest.raises(QuotaExhausted, match="quota of 1"):
+        slow.evaluate(np.full(21, 1 / 7))
+    assert slow.attempts == 1 and slow.describe()["failures"][0]["error"] == "EvaluatorTimeout"
 
 
 def test_solver_error_keeps_stderr(tmp_path):
@@ -146,7 +178,7 @@ def test_log_lines_before_the_json_are_ignored(fake_solver, monkeypatch):
     assert fake_solver().evaluate(np.full(21, 1 / 7))[0] == pytest.approx(110 + 30 / 7)
 
 
-@pytest.mark.parametrize("stdout", ["", "not json", '{"R": [1.0, NaN]}', '{"r": [1.0]}'])
+@pytest.mark.parametrize("stdout", ["", "not json", '{"R": [1.0, NaN]}', '{"r": [1.0]}', '{"R": [true]}'])
 def test_unusable_output_raises(stdout):
     with pytest.raises(EvaluatorError, match="no"):
         parse_solver_output(stdout)
@@ -185,6 +217,11 @@ def test_table_returns_measured_rows_and_rejects_other_points(dataset):
     with pytest.raises(PointNotInTable):
         table.evaluate(dataset.X[[0, 1]])
     assert table.calls == 2
+
+
+def test_empty_table_is_rejected():
+    with pytest.raises(ValueError, match="at least one row"):
+        TableEvaluator(np.empty((0, 21)), np.empty(0))
 
 
 def test_best_training_row_is_in_the_full_table(dataset):
