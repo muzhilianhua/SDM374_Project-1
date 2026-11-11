@@ -132,6 +132,22 @@ Shared rules, from the Windows smoke test (decisions.md, Resolved):
   `solver/solver.exe` present it also checks `p01969` against the real exe (in a copy of `solver/`, so the
   repository's `usage.count` is untouched).
 
+### Append-only online log
+
+`OnlineLog(path)` stores successful calls as CSV columns `call,point,n,weight_00,...,weight_20,R,source,run_id,timestamp`.
+The 1-based `call` counts successful batches; `point` is the batch index and `n` is the expected batch size
+(1 to 50), repeated on every row. Weights must pass `check_weights`; R must be finite. The writer rejects
+duplicate raw weights and noncontiguous successful call numbers. It serializes a complete batch in memory,
+appends it with one write, then flushes and calls `os.fsync`. `rows()` checks every batch contains exactly
+`n` contiguous points, so a partial final batch raises `OnlineLogError`; it must not be silently ignored or
+resubmitted. `next_call` and `best()` also validate the full file.
+
+This is a single-writer, successful-result log, not an evaluator transaction journal. T08 must durably record
+pending attempts before launching the solver and reconcile failures/uncertain outcomes separately. A crash
+before any result row is written, or a completely missing batch, cannot be detected by this CSV alone.
+Quota uses attempts, not `next_call`; submission deduplication uses renormalized weights, not the raw tuples
+stored here. Legacy logs without `n` are rejected: their batch completeness cannot be inferred safely.
+
 ## Registry (`sdm.registry`)
 
 `models()`, `optimizers()` → `{name: class}`; `build_model(name, params_dict)`,

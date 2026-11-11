@@ -14,6 +14,7 @@ from .evaluator import (
     TableEvaluator,
     build_evaluator,
 )
+from .log import LogRow, OnlineLog, OnlineLogError
 
 __all__ = [
     "BATCH_LIMIT",
@@ -29,4 +30,7 @@ __all__ = [
     "SyntheticEvaluator",
     "TableEvaluator",
     "build_evaluator",
+    "LogRow",
+    "OnlineLog",
+    "OnlineLogError",
 ]
