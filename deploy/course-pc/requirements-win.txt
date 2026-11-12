@@ -1,0 +1,82 @@
+# Generated: uv export --format requirements-txt --no-hashes --group dev --no-emit-project
+# Installed offline on the course computer by 01_setup.bat from the kit's wheels/ folder.
+catboost==1.2.8
+    # via sdm374
+cloudpickle==3.1.2
+    # via joblib
+colorama==0.4.6 ; sys_platform == 'win32'
+    # via pytest
+contourpy==1.3.2
+    # via matplotlib
+cycler==0.12.1
+    # via matplotlib
+fonttools==4.68.0
+    # via matplotlib
+graphviz==0.21
+    # via catboost
+iniconfig==2.3.1
+    # via pytest
+joblib==1.6.0
+    # via scikit-learn
+kiwisolver==1.5.1
+    # via matplotlib
+matplotlib==3.10.9
+    # via catboost
+narwhals==2.27.1
+    # via plotly
+numpy==1.24.4
+    # via
+    #   catboost
+    #   contourpy
+    #   matplotlib
+    #   pandas
+    #   scikit-learn
+    #   scipy
+    #   sdm374
+    #   xgboost
+nvidia-nccl-cu12==2.32.3 ; sys_platform == 'linux'
+    # via xgboost
+packaging==26.3
+    # via
+    #   matplotlib
+    #   plotly
+    #   pytest
+pandas==1.5.3
+    # via
+    #   catboost
+    #   sdm374
+pillow==12.3.0
+    # via matplotlib
+plotly==7.1.0
+    # via catboost
+pluggy==1.7.0
+    # via pytest
+pygments==2.21.0
+    # via pytest
+pyparsing==3.3.3
+    # via matplotlib
+pytest==9.1.1
+python-dateutil==3.0.0
+    # via
+    #   matplotlib
+    #   pandas
+pytz==2026.5
+    # via pandas
+scikit-learn==1.2.2
+    # via sdm374
+scipy==1.10.1
+    # via
+    #   catboost
+    #   scikit-learn
+    #   sdm374
+    #   xgboost
+six==1.17.0
+    # via
+    #   catboost
+    #   python-dateutil
+threadpoolctl==3.7.0
+    # via scikit-learn
+tzdata==2026.5
+    # via python-dateutil
+xgboost==3.2.0
+    # via sdm374

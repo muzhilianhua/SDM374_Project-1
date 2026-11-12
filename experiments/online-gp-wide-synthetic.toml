@@ -1,0 +1,46 @@
+# Temporary online policy for the course-computer test on 2026-11-12 (course-pc kit), until T12/T15/T18 land.
+# Model and optimizer copied from online-policy-wide.toml (T18): additive ARD GP, pure-exploit bayes-pool,
+# wide trust region. Wrapped in the T08 surrogate policy. Not tuned on real evaluator values.
+# Same policy against a semi-synthetic truth (no solver): deploy/course-pc/02_selftest.bat.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "bayes-search"
+
+[model.params]
+family = "gp"
+kernel = "additive-ard"
+target = "raw"
+lengths = [0.25, 0.5, 1.0]
+noises = [0.005, 0.03]
+seed = 2026
+
+[optimizer]
+name = "bayes-pool"
+
+[optimizer.params]
+acquisition = "mean"
+samples = 6000
+max_distance_ratio = 1.0
+separation_ratio = 0.1
+seed = 2026
+
+[policy]
+name = "surrogate"   # refit [model] on all observations each call, then ask [optimizer] for a batch
+
+[evaluator]
+kind = "synthetic"   # truth: extratrees fitted on the 2048 rows (semi-synthetic replay)
+
+[evaluator.params]
+model = "extratrees"
+
+[online]
+calls = 20
+batch_size = 50
+seed = 2026
+candidate_margin = 25
+max_rounds = 3
+max_failures = 2
+dedupe_atol = 1e-9

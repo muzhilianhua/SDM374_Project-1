@@ -27,7 +27,10 @@ def git_state() -> dict[str, Any]:
         return {"commit": git("rev-parse", "HEAD"),
                 "dirty": bool(git("status", "--porcelain", "--", *TRACKED_FOR_DIRTY))}
     except (OSError, subprocess.CalledProcessError):
-        return {"commit": None, "dirty": None}
+        # A deployed copy without .git (the course-computer kit) records the commit it was built from.
+        version = REPO_ROOT / "VERSION"
+        commit = version.read_text(encoding="utf-8").split()[0] if version.is_file() else None
+        return {"commit": commit, "dirty": None}
 
 
 @dataclass(frozen=True)

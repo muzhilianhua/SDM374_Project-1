@@ -10,3 +10,6 @@ analysis/v33_protocol/release_v2/*.csv text eol=lf
 analysis/v33_protocol/** -text whitespace=cr-at-eol
 # Course-provided solver files: keep their original bytes (run.py has CRLF).
 solver/** -text
+
+# Course-computer kit: cmd.exe needs CRLF in batch files.
+deploy/course-pc/bat/*.bat text eol=crlf
