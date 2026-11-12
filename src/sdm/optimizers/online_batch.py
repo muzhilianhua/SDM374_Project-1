@@ -11,8 +11,8 @@ from ..registry import register_optimizer
 from ..simplex import DIM, N_BUILDINGS, N_METRICS, as_batch, check_weights
 
 
-MAX_BATCH = 50
 OBSERVED_TOLERANCE = 1e-8
+MAX_BATCH = 50
 
 
 def _unique_rows(points: np.ndarray) -> np.ndarray:
@@ -98,7 +98,7 @@ class OnlineBatchOptimizer(Optimizer):
                                  p.expand_factor, p.shrink_factor, p.improvement_tolerance), dtype=float)
         except (TypeError, ValueError):
             finite = np.full(13, np.nan)
-        if (not integer_ok or n < 1 or n > MAX_BATCH or p.centers < 1 or p.pool_size < max(64, n)
+        if (not integer_ok or n < 1 or p.centers < 1 or p.pool_size < max(64, n)
                 or p.success_patience < 1 or p.failure_patience < 1 or p.seed < 0
                 or not np.isfinite(finite).all() or not 0 <= p.exploit_fraction <= 1
                 or p.concentration <= 0 or p.alpha_floor <= 0 or p.risk < 0
@@ -110,7 +110,8 @@ class OnlineBatchOptimizer(Optimizer):
             raise ValueError("invalid online-batch parameters or requested batch size")
 
     def _pool(self, model: Surrogate, X: np.ndarray, y: np.ndarray,
-              spacing: float, rng: np.random.Generator, n: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+              spacing: float, rng: np.random.Generator, n: int,
+              excluded: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Generate a feasible, unobserved pool inside the current trust region."""
         p = self.params
         centers = X[np.argsort(y, kind="stable")[:min(p.centers, len(X))]]
@@ -151,6 +152,8 @@ class OnlineBatchOptimizer(Optimizer):
         if not chunks:
             raise ValueError("no new candidates inside the current trust region")
         points = _unique_rows(np.concatenate(chunks))
+        if len(excluded):
+            points = points[nearest_distances(points, excluded) > OBSERVED_TOLERANCE]
         if len(points) < n:
             raise ValueError(
                 f"only {len(points)} new candidates inside trust radius {self._radius_ratio:.3g}; "
@@ -166,8 +169,24 @@ class OnlineBatchOptimizer(Optimizer):
 
     def propose(self, model: Surrogate, X, y, n: int = 1) -> np.ndarray:
         """Return a distinct batch, ordered by the pessimistic acquisition objective."""
+        if n > MAX_BATCH:
+            raise ValueError("batch size cannot exceed 50 solver points")
+        return self.propose_candidates(model, X, y, n)
+
+    def propose_candidates(self, model: Surrogate, X, y, n: int, *, excluded=None,
+                           batch_size: int | None = None) -> np.ndarray:
+        """Propose an oversupply; balance each solver-sized prefix when batch_size is given.
+
+        Candidate counts may exceed 50. Only the evaluator limits the actual submitted batch to 50.
+        Failed/lost points are excluded without inventing labels or affecting model training.
+        """
         self._validate_params(n)
+        if batch_size is not None and (isinstance(batch_size, bool)
+                or not isinstance(batch_size, (int, np.integer)) or not 1 <= batch_size <= 50):
+            raise ValueError("batch_size must be an integer between 1 and 50")
         X = check_weights(as_batch(X))
+        excluded = (np.empty((0, DIM)) if excluded is None or not len(excluded)
+                    else check_weights(as_batch(excluded)))
         y = np.asarray(y, dtype=float)
         if y.shape != (len(X),) or len(X) < 2 or not np.isfinite(y).all():
             raise ValueError("online-batch needs at least two observations and finite aligned labels")
@@ -176,50 +195,69 @@ class OnlineBatchOptimizer(Optimizer):
         if not np.isfinite(spacing) or spacing <= 0:
             raise ValueError("online-batch needs positive training spacing")
         rng = np.random.default_rng(self.params.seed + self._proposal_index)
-        points, mean, std = self._pool(model, X, y, spacing, rng, n)
+        points, mean, std = self._pool(model, X, y, spacing, rng, n, excluded)
         objective = mean + self.params.risk * std
-        exploit_count = 1 if n == 1 else int(round(n * self.params.exploit_fraction))
-        explore_count = n - exploit_count
-
         exploit_order = np.argsort(objective, kind="stable")
         separation = self.params.min_separation_ratio * spacing
-        exploit_indices, used_separation = _diverse_selection(
-            points, exploit_order, exploit_count, separation
-        )
-
-        if explore_count:
-            mean_scale = max(float(np.ptp(mean)), 1e-12)
-            std_scale = max(float(np.ptp(std)), 1e-12)
-            distance_ratio = nearest_distances(points, X) / spacing
-            explore_score = ((mean - mean.min()) / mean_scale
-                             - self.params.exploration_weight * (std - std.min()) / std_scale
-                             - self.params.diversity_weight * distance_ratio)
-            explore_order = np.argsort(explore_score, kind="stable")
-            explore_indices, used_separation = _diverse_selection(
-                points, explore_order, explore_count, used_separation,
-                already=points[exploit_indices],
+        mean_scale = max(float(np.ptp(mean)), 1e-12)
+        std_scale = max(float(np.ptp(std)), 1e-12)
+        distance_ratio = nearest_distances(points, X) / spacing
+        explore_score = ((mean - mean.min()) / mean_scale
+                         - self.params.exploration_weight * (std - std.min()) / std_scale
+                         - self.params.diversity_weight * distance_ratio)
+        explore_order = np.argsort(explore_score, kind="stable")
+        selected: list[int] = []
+        tags: list[str] = []
+        used_separation = separation
+        while len(selected) < n:
+            count = min(batch_size or n, n - len(selected))
+            exploit_count = (1 if count == 1 and batch_size is None
+                             else int(round(count * self.params.exploit_fraction)))
+            available = ~np.isin(np.arange(len(points)), selected)
+            exploit_indices, used_separation = _diverse_selection(
+                points, exploit_order[available[exploit_order]], exploit_count, used_separation,
+                already=points[selected],
             )
-        else:
-            explore_indices = np.empty(0, dtype=int)
-
-        chosen_indices = np.concatenate((exploit_indices, explore_indices))
-        # The public contract always returns best-first by the optimizer's objective.
-        chosen_indices = chosen_indices[np.argsort(objective[chosen_indices], kind="stable")]
+            available[exploit_indices] = False
+            explore_indices, used_separation = _diverse_selection(
+                points, explore_order[available[explore_order]], count - exploit_count, used_separation,
+                already=points[selected + exploit_indices.tolist()],
+            )
+            chunk = np.concatenate((exploit_indices, explore_indices))
+            chunk_tags = np.array(["exploit"] * len(exploit_indices) + ["explore"] * len(explore_indices))
+            if batch_size is None:
+                order = np.argsort(objective[chunk], kind="stable")
+            else:
+                # Interleave ranked arms so truncating an oversupply keeps both in the actual batch.
+                order, e, x = [], 0, 0
+                for position in range(count):
+                    if e < round((position + 1) * exploit_count / count):
+                        order.append(e)
+                        e += 1
+                    else:
+                        order.append(exploit_count + x)
+                        x += 1
+                order = np.asarray(order)
+            selected.extend(chunk[order].tolist())
+            tags.extend(chunk_tags[order].tolist())
+        chosen_indices = np.asarray(selected)
         chosen = check_weights(points[chosen_indices])
         if len(np.unique(np.round(chosen, 9), axis=0)) != len(chosen):
             raise ValueError("online-batch generated duplicate points")
         self._proposal_index += 1
+        self.proposal_tags = tuple(tags)
+        best_index = chosen_indices[np.argmin(objective[chosen_indices])]
         self.diagnostics = {
             "batch_size": int(n),
-            "exploit_count": int(exploit_count),
-            "explore_count": int(explore_count),
+            "exploit_count": tags.count("exploit"),
+            "explore_count": tags.count("explore"),
             "pool_size": int(len(points)),
             "radius_ratio": float(self._radius_ratio),
             "spacing": float(spacing),
             "separation": float(used_separation),
-            "best_objective": float(objective[chosen_indices[0]]),
-            "best_mean": float(mean[chosen_indices[0]]),
-            "best_std": float(std[chosen_indices[0]]),
+            "best_objective": float(objective[best_index]),
+            "best_mean": float(mean[best_index]),
+            "best_std": float(std[best_index]),
         }
         return chosen
 

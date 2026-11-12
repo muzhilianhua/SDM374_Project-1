@@ -1,0 +1,36 @@
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "ridge2"
+
+[optimizer]
+name = "online-batch"
+
+[optimizer.params]
+exploit_fraction = 0.5
+pool_size = 4000
+radius_ratio = 1.0
+min_radius_ratio = 0.25
+max_radius_ratio = 1.5
+expand_factor = 1.5
+shrink_factor = 0.7
+seed = 2026
+
+[policy]
+name = "online-batch"
+
+[evaluator]
+kind = "solver"
+
+[evaluator.params]
+timeout = 3600.0
+
+[online]
+calls = 20
+batch_size = 50
+seed = 2026
+candidate_margin = 25
+max_rounds = 3
+max_failures = 2
+dedupe_atol = 1e-9

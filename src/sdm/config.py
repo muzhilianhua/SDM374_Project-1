@@ -1,4 +1,5 @@
-"""Experiment configs (TOML): the dataset, model, optimizer and evaluation protocol a run uses."""
+"""Experiment configs (TOML): the dataset, model, optimizer and evaluation protocol a run uses; online
+configs (`sdm online`) add [policy], [evaluator] and [online]."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field, fields
@@ -10,7 +11,7 @@ import tomllib
 from typing import Any
 
 from .paths import REPO_ROOT, resolve
-from .registry import build_model, build_optimizer
+from .registry import build_model, build_optimizer, build_policy
 
 
 @dataclass(frozen=True)
@@ -33,11 +34,40 @@ class EvaluateSettings:
 
 
 @dataclass(frozen=True)
+class EvaluatorSpec:
+    # kind: "solver", "table" or "synthetic"; params go to sdm.online.build_evaluator.
+    kind: str = "solver"
+    params: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class OnlineSettings:
+    calls: int = 20                 # call budget, counting every solver attempt (decision 19)
+    batch_size: int = 50            # points per call
+    seed: int = 2026                # passed to the policy through OnlineState
+    candidate_margin: int = 25      # ask the policy for batch_size + margin candidates, then screen
+    max_rounds: int = 3             # if too few pass, ask again with twice as many, up to this many times
+    max_failures: int = 2           # stop after this many failed attempts in a row; a failed batch is never
+                                    # resent (decision 28), so each further attempt sends a new batch
+    dedupe_atol: float = 1e-9       # renormalised points this close (max abs) count as the same point
+
+    def __post_init__(self):
+        if not 1 <= self.batch_size <= 50 or self.calls < 1:
+            raise ValueError("[online] needs calls >= 1 and 1 <= batch_size <= 50")
+        if self.candidate_margin < 0 or self.max_rounds < 1 or self.max_failures < 1 or self.dedupe_atol < 0:
+            raise ValueError("[online] candidate_margin and dedupe_atol must be >= 0, max_rounds and "
+                             "max_failures >= 1")
+
+
+@dataclass(frozen=True)
 class Config:
     dataset: Path
     model: Component
     optimizer: Component | None
     evaluate: EvaluateSettings
+    policy: Component | None = None
+    evaluator: EvaluatorSpec | None = None
+    online: OnlineSettings = field(default_factory=OnlineSettings)
 
 
 def _component(raw: dict, section: str) -> Component | None:
@@ -52,7 +82,7 @@ def _component(raw: dict, section: str) -> Component | None:
 
 def load_config(path) -> Config:
     raw = tomllib.loads(Path(path).read_text(encoding="utf-8"))
-    unknown = sorted(set(raw) - {"data", "model", "optimizer", "evaluate"})
+    unknown = sorted(set(raw) - {"data", "model", "optimizer", "evaluate", "policy", "evaluator", "online"})
     if unknown:
         raise ValueError(f"{path}: unknown section(s) {unknown}")
     model = _component(raw, "model")
@@ -67,11 +97,24 @@ def load_config(path) -> Config:
         raise ValueError(f"[evaluate] protocol must be one of {list(PROTOCOLS)}; got {protocol!r}")
     if protocol == "frozen-v32" and {"folds", "seed"} & set(evaluate):
         raise ValueError("[evaluate] protocol 'frozen-v32' uses the frozen splits; remove folds and seed")
+    evaluator = raw.get("evaluator")
+    if evaluator is not None:
+        unknown = sorted(set(evaluator) - {"kind", "params"})
+        if unknown or "kind" not in evaluator:
+            raise ValueError(f"[evaluator] needs `kind` and optional [evaluator.params]; unexpected keys {unknown}")
+        evaluator = EvaluatorSpec(evaluator["kind"], dict(evaluator.get("params", {})))
+    online = raw.get("online", {})
+    valid = [item.name for item in fields(OnlineSettings)]
+    if set(online) - set(valid):
+        raise ValueError(f"[online] accepts {valid}; got {sorted(online)}")
     return Config(
         dataset=resolve(raw.get("data", {}).get("dataset", "dataset_same8")),
         model=model,
         optimizer=_component(raw, "optimizer"),
         evaluate=EvaluateSettings(**evaluate),
+        policy=_component(raw, "policy"),
+        evaluator=evaluator,
+        online=OnlineSettings(**online),
     )
 
 
@@ -92,9 +135,9 @@ def _toml_value(value) -> str:
 
 
 def dump_config(raw: dict[str, Any]) -> str:
-    """Serialize a config dict ({data, model, optimizer, evaluate}) to TOML; load_config reads it back."""
+    """Serialize offline and online config sections to TOML; load_config reads it back."""
     lines = []
-    for section in ("data", "model", "optimizer", "evaluate"):
+    for section in ("data", "model", "optimizer", "policy", "evaluator", "evaluate", "online"):
         table = raw.get(section)
         if table is None:
             continue
@@ -117,6 +160,11 @@ def write_new_config(name: str, raw: dict[str, Any], directory: Path = EXPERIMEN
     build_model(raw["model"]["name"], raw["model"].get("params"))
     if raw.get("optimizer"):
         build_optimizer(raw["optimizer"]["name"], raw["optimizer"].get("params"))
+    if raw.get("policy"):
+        build_policy(raw["policy"]["name"], raw["policy"].get("params"),
+                     model=Component(raw["model"]["name"], raw["model"].get("params", {})),
+                     optimizer=(Component(raw["optimizer"]["name"], raw["optimizer"].get("params", {}))
+                                if raw.get("optimizer") else None))
     text = f"# Created from the workbench on {datetime.now():%Y-%m-%d %H:%M}.\n\n" + dump_config(raw)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "x", encoding="utf-8") as file:

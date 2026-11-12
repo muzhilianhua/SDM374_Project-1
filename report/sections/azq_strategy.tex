@@ -1,0 +1,10 @@
+\subsection{Recoverable exploit--explore proposal}
+\label{sec:azq-strategy}
+
+The online budget allows at most 20 sequential calls and 50 weight vectors per call. Before the first call, the proposer fits only the released 2048-row training table. At each later call it refits on the training rows and successful online measurements; points from failed or lost attempts remain excluded but do not receive synthetic labels.
+
+Our batch proposer samples a deterministic local pool around the best observed rows. Its trust-region radius is $r$ times the median nearest-neighbour spacing, with $r\in[0.25,1.5]$. Half of a solver-sized batch exploits low predicted $R+\kappa\sigma$; the other half explores uncertainty and distance from observed rows. The two arms are interleaved before screening, so the first 50 candidates retain the intended 25/25 split even when the policy requests a candidate margin for refill.
+
+After a measured improvement, $r$ expands by $1.5$; after a non-improving batch it contracts by $0.7$, subject to the bounds. The policy is reconstructed from the saved online state and completed call minima on resume, making the proposal stream deterministic. A failed or lost attempt consumes quota and its points enter the sent-point exclusion set. The dashboard reads the strict \texttt{call,point,n} log together with \texttt{attempts.jsonl}, so it does not mistake a partial batch or success-only log for available quota.
+
+Targeted tests cover simplex feasibility, distinct oversupplied candidates, the balanced solver prefix, radius expansion, failed-point exclusion, deterministic resume, strict batch snapshots, and pending-attempt accounting. Synthetic smoke runs validate the mechanism; formal performance claims remain reserved for the course evaluator.

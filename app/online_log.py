@@ -8,9 +8,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from sdm.simplex import check_weights
+
 
 MAX_CALLS = 20
 MAX_BATCH = 50
+WEIGHT_COLUMNS = tuple(f"weight_{index:02d}" for index in range(21))
+OFFICIAL_FIELDS = ("call", "point", "n", *WEIGHT_COLUMNS, "R", "source", "run_id", "timestamp")
 
 
 def _normalise(name: object) -> str:
@@ -58,6 +62,10 @@ def read_online_log(path: str | Path) -> tuple[pd.DataFrame | None, str | None]:
     names = [_normalise(column) for column in header]
     if len(set(names)) != len(names):
         return None, "在线日志包含重复的列名，无法确定调用号和实测 R。"
+    official_markers = {"call", "point", "n"}.issubset(set(names)) and any(
+        _normalise(column).startswith("weight_") for column in header)
+    if official_markers and tuple(names) != tuple(_normalise(column) for column in OFFICIAL_FIELDS):
+        return None, "在线日志的官方表头不完整或顺序错误。"
 
     call = _find_column(frame, ("call", "call_no", "call_number", "调用号"))
     score = _find_column(frame, ("r", "actual_r", "score", "ramping", "value", "R"))
@@ -83,6 +91,38 @@ def read_online_log(path: str | Path) -> tuple[pd.DataFrame | None, str | None]:
     oversized = oversized[oversized > MAX_BATCH]
     if not oversized.empty:
         return None, f"第 {int(oversized.index[0])} 次调用超过每批 {MAX_BATCH} 组权重的上限。"
+    # Official T07 batches are committed as n rows, with point=1..n. A CSV can end in a newline
+    # while only part of its final batch has reached disk; never expose that as a completed call.
+    point = _find_column(frame, ("point",))
+    size = _find_column(frame, ("n",))
+    if point is not None or size is not None:
+        if point is None or size is None:
+            return None, "在线日志必须同时包含 point 和 n，才能验证批次完整性。"
+        for column in (point, size):
+            values = pd.to_numeric(frame[column], errors="coerce")
+            if (pd.api.types.is_bool_dtype(frame[column]) or not np.isfinite(values).all()
+                    or (values < 1).any() or (values % 1 != 0).any() or (values > MAX_BATCH).any()):
+                return None, "在线日志的 point/n 必须是 1–50 的整数。"
+        for call_no, batch in frame.groupby("_call", sort=False):
+            sizes = pd.to_numeric(batch[size])
+            if (sizes.nunique() != 1 or sizes.iloc[0] != len(batch)
+                    or pd.to_numeric(batch[point]).tolist() != list(range(1, len(batch) + 1))):
+                return None, f"第 {int(call_no)} 次调用的批次不完整，point/n 必须连续且与行数一致。"
+    weights = [f"weight_{i:02d}" for i in range(21)]
+    if any(column in frame for column in weights):
+        if not all(column in frame for column in weights):
+            return None, "官方在线日志缺少部分权重列。"
+        try:
+            matrix = frame[weights].to_numpy(dtype=float)
+            check_weights(matrix)
+            if len(np.unique(matrix, axis=0)) != len(matrix):
+                raise ValueError("duplicate weights")
+        except ValueError as error:
+            return None, f"在线日志中的权重无效：{error}"
+    if official_markers:
+        for column in ("source", "run_id", "timestamp"):
+            if frame[column].isna().any() or (frame[column].astype(str).str.strip() == "").any():
+                return None, f"官方在线日志的 {column} 不能为空。"
     return frame, None
 
 

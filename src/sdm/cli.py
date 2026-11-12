@@ -13,7 +13,7 @@ from . import catalog, frozen_v32
 from .config import load_config
 from .data import load_dataset
 from .evaluate import median_spacing, nearest_distances, out_of_fold, score
-from .registry import build_model, build_optimizer, describe, models, optimizers
+from .registry import build_model, build_optimizer, describe, models, optimizers, policies
 from .runs import Run, create_run, list_runs, resolve_run
 from .simplex import N_BUILDINGS, N_METRICS, check_weights
 
@@ -115,9 +115,10 @@ def _cmd_list(args) -> int:
         _print_json({title: {name: {"class": f"{cls.__module__}.{cls.__qualname__}",
                                     "doc": (cls.__doc__ or "").strip(), "params": describe(cls)}
                              for name, cls in sorted(table.items())}
-                     for title, table in (("models", models()), ("optimizers", optimizers()))})
+                     for title, table in (("models", models()), ("optimizers", optimizers()),
+                                          ("policies", policies()))})
         return 0
-    for title, table in (("models", models()), ("optimizers", optimizers())):
+    for title, table in (("models", models()), ("optimizers", optimizers()), ("policies", policies())):
         print(f"{title}:")
         for name, cls in sorted(table.items()):
             summary = (cls.__doc__ or "").strip().splitlines()[0] if cls.__doc__ else ""
@@ -187,11 +188,38 @@ def _cmd_runs(args) -> int:
         else:
             metrics = run.read_json("metrics.json")
             keys = [k for k in ("v32_score", "cv_mae", "cv_r2", "mae", "r2", "spearman", "predicted_mean",
-                                "nearest_train_distance") if k in metrics]
+                                "nearest_train_distance", "best_R", "calls_completed")
+                    if isinstance(metrics.get(k), (int, float))]
             summary = "  ".join(f"{k}={metrics[k]:.4g}" for k in keys)
         dirty = "*" if meta["git"].get("dirty") else ""
         print(f"{run.id:<48} {meta['kind']:<9} {(meta['git'].get('commit') or '?')[:7]}{dirty:<2} {summary}")
     return 0
+
+
+def _cmd_online(args) -> int:
+    from .online import loop  # imported here so the other commands do not load the online stack
+
+    options = {"runs_root": args.runs_dir, "max_calls": args.max_calls, "dry_run": args.dry_run,
+               "dev_reset_usage": args.dev_reset_usage}
+    try:
+        if args.resume:
+            if args.config or args.name:
+                raise ValueError("--resume uses the config saved in the run folder; drop -c/--name")
+            run, summary = loop.resume(args.resume, accept_lost_attempt=args.accept_lost_attempt,
+                                       allow_code_change=args.allow_code_change, **options)
+        else:
+            if args.config is None:
+                raise ValueError("give -c <online config> to start a run, or --resume <run-id>")
+            if args.accept_lost_attempt or args.allow_code_change:
+                raise ValueError("--accept-lost-attempt and --allow-code-change only apply with --resume")
+            run, summary = loop.start(args.config, name=args.name, **options)
+    except loop.OnlineRunError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
+    print(f"run: {run.path}")
+    _print_json(run.read_json("metrics.json"))
+    stop = run.read_json("metrics.json").get("stop_reason")
+    return 1 if stop in ("evaluator_failed", "quota_exhausted", "no_valid_candidates") else 0
 
 
 def _cmd_predict(args) -> int:
@@ -238,6 +266,22 @@ def build_parser() -> argparse.ArgumentParser:
     listing = commands.add_parser("runs", help="list recorded runs")
     listing.add_argument("--json", action="store_true", help="print run records as a JSON array")
     listing.set_defaults(handler=_cmd_runs)
+
+    online = commands.add_parser("online", help="run the online loop: propose, call the evaluator, log, refit")
+    online.add_argument("-c", "--config", type=Path, help="online config (experiments/online-*.toml) for a new run")
+    online.add_argument("--name", help="run label (default: config file name)")
+    online.add_argument("--resume", metavar="RUN", help="continue an online run (run id or folder)")
+    online.add_argument("--max-calls", type=int, help="stop after this many successful calls in this invocation")
+    online.add_argument("--dry-run", action="store_true",
+                        help="propose and screen the next batch, write it to calls/, call nothing")
+    online.add_argument("--dev-reset-usage", action="store_true",
+                        help="development only: delete solver/usage.count before every call "
+                             "(also needs SDM_DEV_RESET_USAGE=1)")
+    online.add_argument("--accept-lost-attempt", action="store_true",
+                        help="with --resume: count an attempt that has no outcome as used, then continue")
+    online.add_argument("--allow-code-change", action="store_true",
+                        help="with --resume: continue although the code differs from the run's commit")
+    online.set_defaults(handler=_cmd_online)
 
     predict = commands.add_parser("predict", help="predict ramping for weights with a trained model")
     predict.add_argument("--model-run", required=True)

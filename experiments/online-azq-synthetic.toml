@@ -1,0 +1,30 @@
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "ridge2"
+
+[optimizer]
+name = "online-batch"
+
+[optimizer.params]
+pool_size = 700
+seed = 2026
+
+[policy]
+name = "online-batch"
+
+[evaluator]
+kind = "synthetic"
+
+[evaluator.params]
+model = "ridge2"
+
+[online]
+calls = 20
+batch_size = 50
+seed = 2026
+candidate_margin = 25
+max_rounds = 3
+max_failures = 2
+dedupe_atol = 1e-9
