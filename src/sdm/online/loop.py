@@ -16,9 +16,11 @@ The call budget counts attempts, not successful calls: the solver may charge a c
 so every `started` line uses one of the calls. A failed batch is never resent (decision 28): the solver had
 started, so its points count as sent (decision 20) even though no R came back. They go to
 `OnlineState.X_unmeasured`, the pre-submit check excludes them, and the next attempt sends a new batch.
-A `started` line without an outcome means the process died during a call; resuming then needs an explicit
-`accept_lost_attempt`, which records it as `lost` (the call may or may not have been charged) and treats
-its points the same way. Each `started` line carries its batch, so the journal alone says what was sent.
+A `started` line without an outcome means the process died or was interrupted (Ctrl-C) during a call. If the
+call record already holds R, resume logs it; otherwise resuming needs an explicit `accept_lost_attempt`,
+which records it as `lost` (the call may or may not have been charged) and treats its points the same way.
+An attempt the evaluator rejected before running (`InvalidBatch`, `PointNotInTable`) is closed as
+`rejected` and not charged. An unfinished last journal line is cut and kept in `attempts.jsonl.torn`. Each `started` line carries its batch, so the journal alone says what was sent.
 """
 from __future__ import annotations
 
@@ -43,6 +45,8 @@ from .evaluator import (
     Evaluator,
     EvaluatorError,
     EvaluatorTimeout,
+    InvalidBatch,
+    PointNotInTable,
     QuotaExhausted,
     SolverEvaluator,
     build_evaluator,
@@ -92,6 +96,29 @@ def _read_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def repair_torn_tail(path: Path) -> str | None:
+    """Cut an unfinished last line (the process died while writing it) and keep it in `<name>.torn`.
+
+    Every journal line is written and fsynced before the step it announces: a torn `started` line means the
+    solver was never launched, and a torn outcome line leaves its attempt pending, which the recovery and
+    `--accept-lost-attempt` paths handle. Only the last line may be torn; any other bad line still raises.
+    """
+    if not path.exists():
+        return None
+    data = path.read_bytes()
+    if not data or data.endswith(b"\n"):
+        return None
+    cut = data.rfind(b"\n") + 1
+    fragment = data[cut:]
+    with open(path.with_name(path.name + ".torn"), "ab") as stream:
+        stream.write(fragment + b"\n")
+    with open(path, "r+b") as stream:
+        stream.truncate(cut)
+        stream.flush()
+        os.fsync(stream.fileno())
+    return fragment.decode("utf-8", errors="replace")
+
+
 def batch_digest(W: np.ndarray) -> str:
     """sha256 of the batch as sent (repr floats), to tie journal lines to calls/call_NN.json."""
     return hashlib.sha256(json.dumps(np.asarray(W).tolist()).encode()).hexdigest()
@@ -114,7 +141,15 @@ class Journal:
 
     @property
     def used(self) -> int:
-        return len(self.started)
+        """Attempts charged against the budget: every start except those rejected before the solver ran."""
+        rejected = {record["attempt"] for record in self.records if record["event"] == "rejected"}
+        return sum(record["attempt"] not in rejected for record in self.started)
+
+    @property
+    def last_outcome(self) -> str | None:
+        """Event of the latest closed attempt (`ok`, `failed`, `lost`, `rejected`), or None."""
+        outcomes = [record["event"] for record in self.records if record["event"] != "started"]
+        return outcomes[-1] if outcomes else None
 
     def unmeasured(self) -> np.ndarray:
         """Points of attempts that ended `failed` or `lost`: sent, never measured, never to be sent again."""
@@ -210,29 +245,44 @@ class OnlineSession:
         n = settings.batch_size
         requested = n + settings.candidate_margin
         sent = state.X_sent
-        rounds = []
+        rounds, rejections, diagnostics = [], [], {}
+        # Points accepted so far, each with the prediction and tag from the round that proposed it. Rounds
+        # accumulate: a policy's answer for a larger n need not contain its answer for a smaller one.
+        rows: list[np.ndarray] = []
+        means: list[float | None] = []
+        stds: list[float | None] = []
+        tags: list[str | None] = []
         for round_number in range(1, settings.max_rounds + 1):
             start = time.perf_counter()
             proposal = self.policy.propose(state, requested)
             seconds = time.perf_counter() - start
             weights = np.asarray(proposal.weights, dtype=float).reshape(-1, DIM)
-            result = screen(weights, train=state.X_train, sent=sent, n=n, atol=settings.dedupe_atol)
+            result = screen(weights, train=state.X_train, sent=sent, n=n - len(rows), atol=settings.dedupe_atol,
+                            accepted=np.asarray(rows).reshape(-1, DIM))
+            for index in result.accepted:
+                rows.append(weights[index])
+                means.append(_pick(proposal.predicted_mean, index))
+                stds.append(_pick(proposal.predicted_std, index))
+                tags.append(proposal.tags[index] if proposal.tags is not None else None)
+            rejections += [{**item, "round": round_number} for item in result.rejected]
+            if round_number == 1:
+                diagnostics = _jsonable(proposal.diagnostics)
             rounds.append({"round": round_number, "requested": requested, "returned": len(weights),
                            "accepted": len(result.accepted), "rejected": result.counts(), "seconds": seconds})
-            if len(result.accepted) >= n:
+            if len(rows) >= n:
                 break
             requested *= 2
-        chosen = list(result.accepted)
-        batch = weights[chosen]
+        batch = np.asarray(rows, dtype=float).reshape(-1, DIM)
         record = {
             "call": state.call, "status": "proposed", "policy": self.policy.name, "time": _now(),
             "calls_left_before": state.calls_left, "observations": len(state.y),
-            "rounds": rounds, "rejections": list(result.rejected),
+            "rounds": rounds, "rejections": rejections,
             "weights": batch.reshape(-1, N_BUILDINGS, N_METRICS).tolist(),
-            "predicted_mean": _select(proposal.predicted_mean, chosen),
-            "predicted_std": _select(proposal.predicted_std, chosen),
-            "tags": [proposal.tags[i] for i in chosen] if proposal.tags is not None else None,
-            "diagnostics": _jsonable(proposal.diagnostics), "batch_sha256": batch_digest(batch) if len(batch) else None,
+            # A prediction column is kept only when every point in the batch has one.
+            "predicted_mean": means if rows and None not in means else None,
+            "predicted_std": stds if rows and None not in stds else None,
+            "tags": tags if rows and None not in tags else None,
+            "diagnostics": diagnostics, "batch_sha256": batch_digest(batch) if len(batch) else None,
             "attempts": [],
         }
         return batch, record
@@ -263,11 +313,14 @@ class OnlineSession:
             self.echo(f"call {call}: attempt {attempt} failed: {error}; its {len(batch)} points count as sent")
             record["stop_reason"] = "quota_exhausted" if isinstance(error, QuotaExhausted) else None
             return None
-        except BaseException as error:
-            # Anything else (a bug, PointNotInTable, Ctrl-C) leaves no doubt that no R was recorded.
-            _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "failed",
+        except (InvalidBatch, PointNotInTable) as error:
+            # Raised before anything was evaluated: not charged, and the points were not sent.
+            _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "rejected",
                                               "time": _now(), "error": type(error).__name__, "message": str(error)})
             raise
+        # Anything else (Ctrl-C, SystemExit, a bug) may arrive after the solver used the call and computed R.
+        # The attempt stays `started` with no outcome, so resume must recover it or have the operator accept
+        # it as lost; the evaluator kills the solver's process tree on the way out.
         outcome = {"attempt": attempt, "call": call, "event": "ok", "time": _now(),
                    "seconds": time.perf_counter() - start}
         # The R values reach disk in the call record first, so a crash before the log append loses
@@ -285,6 +338,9 @@ class OnlineSession:
     # ----- the loop ------------------------------------------------------------------------------------
     def run(self, *, max_calls: int | None = None, dry_run: bool = False) -> dict:
         """Make calls until the budget is used, `max_calls` calls were made, or a call cannot be made."""
+        torn = repair_torn_tail(self.journal_path)
+        if torn is not None:
+            self.echo(f"cut an unfinished last journal line (kept in {JOURNAL_NAME}.torn): {torn[:120]!r}")
         if self.recover_measured():
             self.echo("recovered measured R values that were saved but not yet logged")
             self.write_outputs(stop_reason=None)
@@ -299,7 +355,9 @@ class OnlineSession:
         while stop_reason is None:
             state = self.state()
             if state.call > self.settings.calls or state.calls_left <= 0:
-                stop_reason = "budget_used"
+                # Running out right after a failed or lost attempt is a failure, not a normal finish.
+                last = self.journal().last_outcome
+                stop_reason = "evaluator_failed" if last in ("failed", "lost") else "budget_used"
                 break
             if max_calls is not None and made >= max_calls:
                 stop_reason = "max_calls"
@@ -324,7 +382,8 @@ class OnlineSession:
             R = self.send(state.call, batch, record)
             if R is None:
                 if record.get("stop_reason") == "budget_used":
-                    stop_reason = "budget_used"
+                    last = self.journal().last_outcome
+                    stop_reason = "evaluator_failed" if last in ("failed", "lost") else "budget_used"
                     break
                 # Keep the failed batch under its attempt number; the next proposal for this call number
                 # writes call_NN.json afresh, with the failed points screened out as already sent.
@@ -369,28 +428,37 @@ class OnlineSession:
         summary = self.summary()
         summary["stop_reason"] = stop_reason
         summary["finished"] = summary["calls_left"] <= 0 or summary["calls_completed"] >= self.settings.calls
+        summary["predictions_complete"] = self._write_predictions()
         _write_json_atomic(self.run_folder.path / "metrics.json", summary)
-        self._write_predictions()
 
-    def _write_predictions(self) -> None:
-        """`call,point,predicted_R` for every logged point whose call recorded a prediction (T26 format)."""
-        lines = []
-        for call in sorted({row.call for row in self.log.rows()}):
-            record = json.loads(self.call_path(call).read_text(encoding="utf-8"))
-            if record.get("predicted_mean") is None:
-                return
-            lines += [f"{call},{point},{value:.17g}" for point, value in enumerate(record["predicted_mean"], 1)]
+    def _write_predictions(self) -> bool:
+        """Write `call,point,predicted_R` (T26 format) when every logged point has a prediction.
+
+        T26 needs exact key coverage of the log, so a partial file is never written: if any logged call
+        lacks predictions, an existing `predictions.csv` is removed and this returns False.
+        """
         path = self.run_folder.path / "predictions.csv"
+        rows = self.log.rows()
+        lines = []
+        for call in sorted({row.call for row in rows}):
+            record = json.loads(self.call_path(call).read_text(encoding="utf-8"))
+            predicted = record.get("predicted_mean")
+            logged = sum(row.call == call for row in rows)
+            if predicted is None or len(predicted) != logged:
+                path.unlink(missing_ok=True)
+                return False
+            lines += [f"{call},{point},{value:.17g}" for point, value in enumerate(predicted, 1)]
+        if not lines:
+            path.unlink(missing_ok=True)
+            return False
         temporary = path.with_name(path.name + ".tmp")
         temporary.write_text("call,point,predicted_R\n" + "".join(line + "\n" for line in lines), encoding="utf-8")
         os.replace(temporary, path)
+        return True
 
 
-def _select(values, indices) -> list[float] | None:
-    if values is None:
-        return None
-    values = np.asarray(values, dtype=float)
-    return [float(values[i]) for i in indices]
+def _pick(values, index: int) -> float | None:
+    return None if values is None else float(np.asarray(values, dtype=float)[index])
 
 
 def _jsonable(data: dict) -> dict:
@@ -469,6 +537,12 @@ def resume(reference: str, *, runs_root=None, max_calls: int | None = None, dry_
     factory = _evaluator_factory(config, dataset, dev_reset_usage=dev_reset_usage)
     session = OnlineSession(run, config, dataset, policy=policy, evaluator_factory=factory, echo=echo)
     if accept_lost_attempt:
+        # Recover first: an attempt whose R values were saved is measured, not lost.
+        torn = repair_torn_tail(session.journal_path)
+        if torn is not None:
+            echo(f"cut an unfinished last journal line (kept in {JOURNAL_NAME}.torn): {torn[:120]!r}")
+        if session.recover_measured():
+            echo("recovered measured R values that were saved but not yet logged")
         lost = session.accept_lost_attempts()
         if lost:
             echo(f"recorded {lost} lost attempt(s); they stay counted against the budget")

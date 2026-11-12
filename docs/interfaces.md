@@ -171,8 +171,11 @@ policy refits on the grown `state.X, state.y`). The check drops, in this order, 
 `check_weights` (`constraint`), whose renormalised weights are within `dedupe_atol` (max abs) of a training
 row (`training_row`), of a point sent earlier (`sent_before`), or of a point already in this batch
 (`batch_duplicate`). If fewer than `batch_size` pass, the policy is asked again with twice as many, up to
-`max_rounds` times; then the loop sends what passed, and with nothing left it stops without calling
-(`no_valid_candidates`). Decision 26.
+`max_rounds` times. Rounds accumulate: points accepted in an earlier round stay in the batch (with that
+round's prediction and tag) and later rounds are screened against them, because a policy's answer for a
+larger `n` need not contain its answer for a smaller one. The loop then sends what passed, and with nothing
+accepted in any round it stops without calling (`no_valid_candidates`). Decision 26. A prediction or tag
+column is kept only when every point of the batch has one.
 
 Run folder `runs/<id>-online-<config>/`:
 
@@ -180,13 +183,13 @@ Run folder `runs/<id>-online-<config>/`:
 |---|---|
 | `config.toml`, `meta.json` | config and provenance; `meta.kind` is `online` |
 | `online_log.csv` | successful calls (T07 format above); `source` is the policy name |
-| `attempts.jsonl` | evaluator attempts: `started` (written before launching), then `ok`, `failed` or `lost` |
+| `attempts.jsonl` | evaluator attempts: `started` (written before launching), then `ok`, `failed`, `lost` or `rejected`; an unfinished last line is cut on resume and kept in `attempts.jsonl.torn` |
 | `calls/call_NN.json` | status (`proposed`, `measured`, `not_sent`), screening rounds and rejections, the batch, predicted mean / std, tags, policy diagnostics, attempts, R |
 | `calls/call_NN_attempt_MM_failed.json` | the same record for a failed (`failed`) or lost (`lost`) attempt MM; its points count as sent |
 | `calls/call_NN_dry_run.json` | what `--dry-run` would send |
-| `predictions.csv` | `call,point,predicted_R` for every logged point (T26 sidecar), when the policy predicts |
+| `predictions.csv` | `call,point,predicted_R` for every logged point (T26 sidecar); written only when every logged point has a prediction, otherwise removed (`metrics.json` `predictions_complete` is false) |
 | `sessions.jsonl` | one line per invocation (git state, options) plus the evaluator's `describe()` at exit |
-| `metrics.json` | `calls_completed`, `attempts`, `calls_left`, `points_evaluated`, `best_R`, `best_call`, `best_point`, `best_weights`, `call_min_R`, `training_best_R`, `stop_reason`, `finished` |
+| `metrics.json` | `calls_completed`, `attempts`, `calls_left`, `points_evaluated`, `best_R`, `best_call`, `best_point`, `best_weights`, `call_min_R`, `training_best_R`, `stop_reason`, `finished`, `predictions_complete` |
 
 Budget and failures:
 
@@ -196,13 +199,22 @@ Budget and failures:
   `EvaluatorError` / `EvaluatorTimeout` the attempt is logged as `failed`; its points go to
   `OnlineState.X_unmeasured` (sent, no R: not observations), the pre-submit check rejects them as
   `sent_before`, and the loop asks the policy for a new batch for the same call number. After
-  `max_failures` failed attempts in a row the run stops with `evaluator_failed` (exit code 1).
-  `QuotaExhausted` stops at once. Any other exception is logged as `failed` (its points count as sent too)
-  and re-raised.
-- A `started` line with no outcome means the process died during a call. If `calls/call_NN.json` already
-  holds the R values (status `measured`, same `batch_sha256`), resume finishes the logging by itself.
-  Otherwise resume refuses until the operator passes `--accept-lost-attempt`, which records the attempt as
-  `lost` (still charged, its points count as sent) and continues with a new batch.
+  `max_failures` failed attempts in a row the run stops with `evaluator_failed` (exit code 1); so does a
+  run whose budget runs out right after a failed or lost attempt. `QuotaExhausted` stops at once.
+  `InvalidBatch` and `PointNotInTable` are raised before anything is evaluated: the attempt is closed as
+  `rejected`, not charged, its points do not count as sent, and the exception is re-raised.
+- Any other exception during a call (Ctrl-C, `SystemExit`, a bug) may arrive after the solver used the call
+  and computed R, so the attempt is left `started` with no outcome and the exception is re-raised;
+  `SolverEvaluator` kills the solver's process tree first (it runs in its own process group and does not
+  receive Ctrl-C).
+- A `started` line with no outcome means the process died or was interrupted during a call. If
+  `calls/call_NN.json` already holds the R values (status `measured`, same `batch_sha256`), resume finishes
+  the logging by itself, before anything else, including `--accept-lost-attempt`. Otherwise resume refuses
+  until the operator passes `--accept-lost-attempt`, which records the attempt as `lost` (still charged,
+  its points count as sent) and continues with a new batch.
+- Each journal line is written and fsynced before the step it announces, so a torn last line is safe to
+  cut: a torn `started` line means the solver never started, and a torn outcome leaves its attempt pending
+  for the step above. Only the last line may be torn; any other malformed line stops the run.
 - Resume refuses when the code differs from the run's recorded commit or either is dirty (decision 22),
   unless `--allow-code-change`. The dataset sha256 must match.
 - `--dev-reset-usage` deletes `solver/usage.count` before every call (needs `SDM_DEV_RESET_USAGE=1`; never

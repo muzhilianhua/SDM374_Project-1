@@ -216,10 +216,156 @@ def test_repeated_failure_stops_the_run(session_factory):
 
 
 def test_failures_stop_at_the_budget(session_factory):
+    # Running out of calls right after a failure is a failure, not a normal finish (PR #21 review).
     session = session_factory(evaluator=Truth(fail=5), calls=2, max_failures=5)
     summary = session.run()
     assert summary["attempts"] == 2 and summary["calls_left"] == 0
-    assert session.run_folder.read_json("metrics.json")["stop_reason"] == "budget_used"
+    assert session.run_folder.read_json("metrics.json")["stop_reason"] == "evaluator_failed"
+
+
+def test_last_attempt_failing_exits_nonzero(tmp_path, monkeypatch):
+    config = write_config(tmp_path, calls=1)
+    monkeypatch.setattr(loop, "build_evaluator", lambda kind, params, dataset: Truth(fail=1))
+    assert main(["--runs-dir", str(tmp_path / "runs"), "online", "-c", str(config)]) == 1
+    (run,) = list_runs(tmp_path / "runs")
+    metrics = run.read_json("metrics.json")
+    assert metrics["stop_reason"] == "evaluator_failed" and metrics["calls_completed"] == 0
+
+
+class Dwindling(BatchPolicy):
+    """Round 1 offers one new point after training rows; later rounds offer training rows only."""
+
+    name = "dwindling"
+
+    def propose(self, state, n):
+        if n <= state.batch_size + 5:
+            fresh = sample(1, np.random.default_rng(state.call))
+            return Proposal(np.vstack([state.X_train[:4], fresh]), predicted_mean=np.arange(5.0))
+        return Proposal(state.X_train[:n], predicted_mean=np.zeros(n))
+
+
+def test_refill_keeps_points_accepted_in_earlier_rounds(session_factory):
+    session = session_factory(policy=Dwindling(), calls=1)
+    summary = session.run()
+    record = json.loads(session.call_path(1).read_text())
+    assert [item["accepted"] for item in record["rounds"]] == [1, 0, 0]
+    assert len(record["weights"]) == 1 and record["predicted_mean"] == [4.0]
+    assert summary["calls_completed"] == 1 and summary["points_evaluated"] == 1
+    assert {item["round"] for item in record["rejections"]} == {1, 2, 3}
+
+
+def test_refill_rounds_screen_against_points_already_taken(dataset):
+    taken = sample(2, np.random.default_rng(3))
+    result = screen(np.vstack([taken[1], taken[0]]), train=dataset.X, sent=np.empty((0, 21)), n=5,
+                    accepted=taken)
+    assert result.accepted == () and result.counts()["batch_duplicate"] == 2
+
+
+class Patchy(Sampler):
+    """Predicts on every call except `skip`."""
+
+    def __init__(self, skip):
+        super().__init__()
+        self.skip = skip
+
+    def propose(self, state, n):
+        proposal = super().propose(state, n)
+        if state.call == self.skip:
+            return Proposal(proposal.weights)
+        return proposal
+
+
+def test_predictions_sidecar_needs_every_logged_point(session_factory):
+    session = session_factory(policy=Patchy(skip=2), calls=3)
+    session.run(max_calls=1)
+    path = session.run_folder.path / "predictions.csv"
+    assert path.exists() and session.run_folder.read_json("metrics.json")["predictions_complete"]
+    session.run()
+    assert session.run_folder.read_json("metrics.json")["calls_completed"] == 3
+    # Call 2 has no predictions, so no file is better than a stale or partial one (T26 needs exact keys).
+    assert not path.exists() and session.run_folder.read_json("metrics.json")["predictions_complete"] is False
+
+
+class Interrupted(Truth):
+    """The solver used the call, then Ctrl-C arrived before R came back."""
+
+    def _run(self, W):
+        raise KeyboardInterrupt
+
+
+def test_ctrl_c_during_a_call_leaves_the_attempt_open(session_factory):
+    session = session_factory(evaluator=Interrupted(), calls=3)
+    with pytest.raises(KeyboardInterrupt):
+        session.run()
+    assert [item["event"] for item in journal(session.run_folder)] == ["started"]
+    session.evaluator = Truth()
+    with pytest.raises(loop.OnlineRunError, match="accept-lost-attempt"):
+        session.run()
+    assert session.accept_lost_attempts() == 1
+    summary = session.run()
+    assert summary["attempts"] == 3 and summary["calls_completed"] == 2
+
+
+class OutsidePool(Truth):
+    def _run(self, W):
+        from sdm.online import PointNotInTable
+        raise PointNotInTable("not a table row")
+
+
+def test_rejected_attempt_is_not_charged(session_factory):
+    from sdm.online import PointNotInTable
+    session = session_factory(evaluator=OutsidePool(), calls=3)
+    with pytest.raises(PointNotInTable):
+        session.run()
+    assert [item["event"] for item in journal(session.run_folder)] == ["started", "rejected"]
+    assert session.journal().used == 0 and session.journal().pending == []
+    assert len(session.state().X_sent) == 0
+
+
+def test_solver_process_tree_is_killed_on_ctrl_c(tmp_path, monkeypatch):
+    import subprocess
+    from sdm.online import evaluator as evaluator_module
+    script = tmp_path / "fake_solver.py"
+    script.write_text(FAKE)
+    solver = SolverEvaluator(tmp_path / "solver.exe", command=[sys.executable, str(script)], checksums=None)
+    killed = []
+    monkeypatch.setattr(evaluator_module, "kill_process_tree", lambda process: (killed.append(process.pid),
+                                                                               process.kill()))
+
+    def interrupt(self, *args, **kwargs):
+        raise KeyboardInterrupt
+    monkeypatch.setattr(subprocess.Popen, "communicate", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        solver.evaluate(np.full(21, 1 / 7))
+    assert len(killed) == 1
+
+
+def test_accept_lost_attempt_recovers_measured_values_first(tmp_path, monkeypatch):
+    config = write_config(tmp_path, calls=2)
+    runs = tmp_path / "runs"
+    original = loop.OnlineLog.append
+
+    def crash(*args, **kwargs):
+        raise KeyboardInterrupt
+    monkeypatch.setattr(loop.OnlineLog, "append", crash)
+    with pytest.raises(KeyboardInterrupt):
+        loop.start(config, runs_root=runs, echo=lambda text: None)
+    monkeypatch.setattr(loop.OnlineLog, "append", original)
+    (run,) = list_runs(runs)
+    loop.resume(run.id, runs_root=runs, accept_lost_attempt=True, allow_code_change=True, echo=lambda text: None)
+    events = [item["event"] for item in journal(run)]
+    assert "lost" not in events and any(item.get("recovered") for item in journal(run))
+    assert run.read_json("metrics.json")["calls_completed"] == 2
+
+
+def test_torn_last_journal_line_is_cut_and_kept(session_factory):
+    session = session_factory(calls=3)
+    session.run(max_calls=1)
+    with open(session.journal_path, "a", encoding="utf-8") as stream:
+        stream.write('{"attempt": 2, "call": 2, "event": "sta')
+    summary = session.run()
+    assert summary["calls_completed"] == 3 and summary["attempts"] == 3
+    assert (session.run_folder.path / "attempts.jsonl.torn").read_text() == '{"attempt": 2, "call": 2, "event": "sta\n'
 
 
 def test_quota_message_stops_at_once(session_factory):
