@@ -3,9 +3,9 @@
 # (decision 19 / T03 still unanswered). The online runner (T08) and the exploit/explore split (T15)
 # are not on main yet; until they land this file loads with `sdm optimize`.
 #
-# Wide trust region (max distance ratio 1.0): in the replay the narrow setting (0.5), with the
-# radius strictly enforced, starves the batch (under one in-radius point per call on average) and
-# ends ~16 points worse, so the wide setting is the default.
+# Wide trust region (max distance ratio 1.0). Judgment call: the replay cannot separate 0.5 from
+# 1.0 - both arms are identical under semi-synthetic truth, and the table arm is limited by the
+# supply of a fixed pool rather than by the radius. 1.0 is the default, not a measured gain.
 
 [data]
 dataset = "dataset_same8"

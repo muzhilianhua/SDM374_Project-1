@@ -144,12 +144,18 @@ and record the new decision here with a date.
   as a search history only. Re-run on the replay (20 calls × up to 50 points, 1600-row holdout pool, 448
   known rows, 5 seeds, `table` and `semi-synthetic` truth), with curves scoring submitted points only
   and the training incumbent kept as a separate reference: under `semi-synthetic` every setting reaches
-  the truth minimum (128.175) in one call, so that arm cannot rank settings. Under `table` the settings
-  separate: exploit ≥ 0.5 with radius 1.0 puts each seed's pool minimum in the first batch (mean final
-  117.350 ± 1.957), pure exploration starts worse (126.937 ± 2.833) and needs a median of 5 calls, and
-  radius 0.5 starves the batch (0.9 points/call once strictly enforced) and ends at 133.697 ± 7.677.
+  the truth minimum (128.175) in one call, so that arm cannot rank settings. Under `table` only the first
+  batch separates: exploit ≥ 0.5 puts each seed's pool minimum in the first batch (117.350 / 117.507),
+  while pure exploration starts at 126.937 ± 2.833 and needs a median of 5 calls; every exploit ≥ 0.5 run
+  then exhausts its eligible pool, so later calls and the final value (117.350 ± 1.957) cannot rank those
+  settings. The radius is **not** separated by this replay: under `table` it only filters a fixed pool
+  (seed 0 / `histgb` / exploit 0.5 submits 10 points at radius 0.5 against 501 at 1.0), and under
+  `semi-synthetic`, which uses the real `bayes-pool` proposer, both radii give the same result
+  (128.263 after call 1, 128.175 final), so radius 1.0 is a judgment call.
   (Revised 2026-11-10: the first version scored known rows as if submitted and silently filled short
-  batches out of radius, which made all table-truth settings appear to tie at 115.765.) Defaults:
+  batches out of radius, which made all table-truth settings appear to tie at 115.765. Revised
+  2026-11-11: dropped the "radius 0.5 starves the batch" reasoning — it measured how many points a fixed
+  pool could supply, not the effect of the radius.) Defaults:
   `experiments/online-policy-wide.toml` (radius 1.0) with `-narrow.toml` kept as the comparison arm;
   exploit share 0.5 is recorded for T15 (not a parameter of any proposer on `main` yet); the surrogate is
   left to T12. These are defaults, not measured gains.

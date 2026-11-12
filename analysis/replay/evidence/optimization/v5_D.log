@@ -45,22 +45,22 @@ py : Traceback (most recent call last):
     + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 635, in <module>
+  File "<workspace>\optimize_weights_v5.py", line 635, in <module>
     main()
-  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 628, in main
+  File "<workspace>\optimize_weights_v5.py", line 628, in main
     phase_d(ctx, anchor)
-  File "C:\Users\hp\Desktop\在线\optimize_weights_v5.py", line 597, in phase_d
+  File "<workspace>\optimize_weights_v5.py", line 597, in phase_d
     json.dump(out, f, ensure_ascii=False, indent=2)
-  File "D:\anaconda\lib\json\__init__.py", line 179, in dump
+  File "<python>\lib\json\__init__.py", line 179, in dump
     for chunk in iterable:
-  File "D:\anaconda\lib\json\encoder.py", line 431, in _iterencode
+  File "<python>\lib\json\encoder.py", line 431, in _iterencode
     yield from _iterencode_dict(o, _current_indent_level)
-  File "D:\anaconda\lib\json\encoder.py", line 405, in _iterencode_dict
+  File "<python>\lib\json\encoder.py", line 405, in _iterencode_dict
     yield from chunks
-  File "D:\anaconda\lib\json\encoder.py", line 405, in _iterencode_dict
+  File "<python>\lib\json\encoder.py", line 405, in _iterencode_dict
     yield from chunks
-  File "D:\anaconda\lib\json\encoder.py", line 438, in _iterencode
+  File "<python>\lib\json\encoder.py", line 438, in _iterencode
     o = _default(o)
-  File "D:\anaconda\lib\json\encoder.py", line 179, in default
+  File "<python>\lib\json\encoder.py", line 179, in default
     raise TypeError(f'Object of type {o.__class__.__name__} '
 TypeError: Object of type ndarray is not JSON serializable

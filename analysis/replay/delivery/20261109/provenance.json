@@ -1,0 +1,28 @@
+{
+  "created": "2026-11-10T17:12:58",
+  "git": {
+    "commit": "3cabe67b718eb9c7c779c9e401e879afc8dde6f7",
+    "dirty": false
+  },
+  "dataset": {
+    "version": "same8.20261020",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+    "path": "dataset_same8/train.csv"
+  },
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  },
+  "protocol": {
+    "calls": 20,
+    "batch": 50,
+    "pool_size": 1600,
+    "initial_known": 448,
+    "seeds": 5
+  },
+  "code": "analysis/replay/study.py",
+  "note": "table truth scores proposals by lookup in the held-out rows; semi-synthetic truth is a histgb fitted on all 2048 rows. Curves score submitted points only; the training incumbent (best of the initial rows) is a separate reference. Table truth submits only in-radius rows; shortfalls and actual distance ratios are logged per call. No evaluator calls."
+}

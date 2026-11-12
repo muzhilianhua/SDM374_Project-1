@@ -6,7 +6,7 @@
 === v5 A 结束：本轮新增 0，累计 v5 0 ===
 py : Traceback (most recent call last):
 所在位置 行:15 字符: 1577
-+ ... Desktop\在线"; py optimize_weights_v5.py A *> optimization\v5_run_A.log
++ ... <workspace>"; py optimize_weights_v5.py A *> optimization\v5_run_A.log
 +                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError

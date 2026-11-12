@@ -82,15 +82,20 @@ Reading:
 - **The two truths tell different stories now.** Under `semi-synthetic` every setting reaches the
   truth minimum (128.175) in one call (median); first-call values span only 128.183–128.563. That
   arm cannot rank settings — it is a sanity check, not evidence.
-- **Under `table` the settings separate.** Exploit ≥ 0.5 with radius 1.0 puts each seed's pool
-  minimum in the first batch (mean final 117.350 ± 1.957: 115.765 for seeds 0/3/4; 120.119 and
-  119.334 for seeds 1/2, where `p01969` sits in the known rows). Pure exploration starts worse
-  (126.937 ± 2.833) and needs a median of 5 calls to catch up.
-- **Radius 0.5 starves the batch.** With the radius strictly enforced the narrow arm averages 0.9
-  submitted points per call (7–34 over the whole run): the in-radius supply of unused pool rows is
-  exhausted after the first calls. It ends at 133.697 ± 7.677, 16.3 points worse than radius 1.0.
-  The earlier "0.5 reaches the same final, only slower" was an artifact of silently filling batches
-  out of radius.
+- **Under `table`, the exploit share separates at call 1 only.** Exploit ≥ 0.5 puts each seed's pool
+  minimum in the first batch (best after call 1: 117.350 for 1.0 / histgb, 117.507 for ridge2 at
+  0.5; mean final 117.350 ± 1.957, i.e. 115.765 for seeds 0/3/4 and 120.119 / 119.334 for seeds
+  1/2, where `p01969` sits in the known rows). Pure exploration starts at 126.937 ± 2.833 and needs
+  a median of 5 calls to reach the same value. Past call 1 this truth cannot rank the exploit ≥ 0.5
+  settings: each run exhausts its eligible pool, so every final value is that pool's minimum.
+- **The radius is not separated by this replay.** Under `table` truth the radius only filters a fixed
+  pool, so the arms differ in how many points they can submit, not in where they look. Seed 0,
+  `histgb`, exploit 0.5: radius 0.5 has 8 → 2 → 0 eligible rows and submits 10 points in the whole
+  run, while radius 1.0 has 761 → 623 → … → 3 → 0 and submits 501 (pool dry at call 11). The
+  133.697 vs 117.350 gap therefore measures pool supply, not the radius. Under `semi-synthetic`
+  truth — which runs the real `bayes-pool` proposer, drawing 6000 fresh in-radius candidates on
+  every call — the two radii are identical (128.263 after call 1, 128.175 final). This replay gives
+  no evidence for 1.0 over 0.5.
 - **Surrogate.** ridge2 and histgb are indistinguishable under both truths. T12 owns model
   selection; this replay does not.
 - The training incumbent is reference only. For seeds 1 and 2 it equals 115.765 (`p01969` already
@@ -102,7 +107,7 @@ Reading:
 | parameter | value | source |
 |---|---|---|
 | exploit share | 0.5 | tied with 1.0 under both truths (final 117.350 already at call 1 under table); 0.5 keeps half the batch exploring. Judgment call, not a measured gain |
-| trust radius | 1.0 (max distance ratio) | the narrow radius starves the batch (< 1 point/call) and ends 16 points worse under table truth |
+| trust radius | 1.0 (max distance ratio) | judgment call: this replay cannot separate 0.5 from 1.0 (identical under semi-synthetic truth; the table arm is limited by fixed-pool supply) |
 | batch composition | 25 acquisition + 25 exploration points, no repeats | decision 19 / T15 |
 | surrogate | whatever T12 selects | this replay cannot rank models |
 | first batch | same settings as later batches | the winning settings already put the run's best in batch 1 |
@@ -128,6 +133,7 @@ it is not an input to the online policy. Details and checksums: `evidence/README
 | `study.py` | the replayer: policy harness, both truths, seeded runs; `--from-runs` re-aggregates an existing `runs.jsonl` |
 | `t18_strategy_comparison.ipynb` | the narrative notebook with the saved figures |
 | `results/20261109/` | `results.json` / `provenance.json` / `runs.jsonl` (includes the per-call radius audit) / figures / `summary.md` |
+| `delivery/20261109/` | committed copies of `summary.md` and `provenance.json`, because `results/` is gitignored |
 | `evidence/` | the withdrawn 6,568-call search history |
 
 ## Reproduce
@@ -136,9 +142,9 @@ it is not an input to the online policy. Details and checksums: `evidence/README
 uv run python analysis/replay/study.py --seeds 5 --out analysis/replay/results/20261109
 ```
 
-A full pass takes about fifteen minutes on one laptop. `results/` is gitignored; the notebook embeds
-the table and figures so the PR carries the outcome. Raw data, provenance and the aggregation code
-are in this folder, and the markdown table above is `results/20261109/summary.md`.
+A full pass takes about fifteen minutes on one laptop. `results/` is gitignored, so the committed
+copies live in `delivery/20261109/` (`summary.md`, `provenance.json`) and the notebook embeds the
+table and figures; the markdown table above is `results/20261109/summary.md`.
 
 ## Limits
 
@@ -148,7 +154,7 @@ are in this folder, and the markdown table above is `results/20261109/summary.md
   over 20 calls would discriminate further; that is a T17 design question.
 - The table pool holds few rows near the known data: even radius 1.0 exhausts its in-radius supply
   after ~550 submissions, so mean points/call is ~27 rather than 50. The real policy proposes points
-  from a continuous space and has no such supply limit; the radius comparison therefore overstates
-  the narrow setting's failure cost but not its direction.
+  from a continuous space and has no such supply limit, so this arm cannot measure a radius effect
+  at all — it only ranks how much supply each radius leaves.
 - When `sdm replay` lands, this run has to be repeated on the shared tool before the numbers go into
   the report; the T06–T09 merge order decides when that happens.
