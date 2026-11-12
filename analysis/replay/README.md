@@ -1,0 +1,167 @@
+# T18 — Strategy parameters on the replay (exploratory)
+
+> **Exploratory only. Not an input to the online policy.** The previous version of this folder
+> (`online` branch, commits `8b4d67f` / `f47c28e`) ranked strategy families on 6,568 local
+> `solver.exe` calls and handed T15 a structural prior (old §6) plus a note that T12 could adopt the
+> same ranking directly (old §9). **Both are withdrawn.** Decision 19 allows only the 2048 training
+> rows before the first evaluator call, and T03 (whether local evaluator runs may be used to tune
+> parameters) is still unanswered, so no number measured with the real evaluator may enter the first
+> batch. Everything below comes from the replayer and uses the table only.
+>
+> The 6,568-call log is kept in `evidence/` as a **search history** (what was tried, in what order).
+> It is not evidence about parameter values and is not used in any recommendation.
+
+Owner: member D (胡馨澜). Task: T18 in `docs/online-tasks.md`; the T17 replayer is D's as well.
+
+## Replayer status
+
+The replayer this study runs on is `analysis/replay/study.py`, a prototype of T17. `src/sdm/replay.py`
+is not on `main` yet (T06/T08 land first), so this harness re-implements only the loop it needs:
+fit → propose a batch of ≤ 50 → score the batch → append → repeat, 20 times. When T17 lands the same
+settings will be re-run through `sdm replay` so the numbers quoted in the report come from the shared
+tool; the protocol below is what that run has to reproduce.
+
+## Protocol
+
+| item | value |
+|---|---|
+| calls × batch | 20 × up to 50 (the online budget: 1000 points) |
+| truth sources | `table` (held-out rows scored by lookup) and `semi-synthetic` (`histgb` fitted on all 2048 rows, following `analysis/coupling/`) |
+| candidate pool | 1600 rows; the other 448 rows are the policy's initial data |
+| seeds | 0–4 (policy RNG and model seed); the pool split is per seed |
+| policies | exploit share 0.0 / 0.5 / 1.0, trust radius 1.0 (and 0.5 for the strongest surrogate) |
+| surrogates | `ridge2`, `histgb` (replay-cheap settings) |
+| evaluator calls | none |
+
+**Scoring.** Curves record the best R among *submitted points only*. The best of the 448 initial rows
+(the training incumbent) is reported as a separate reference line and never enters the curve. The
+first version of this study took the minimum over initial + submitted, so first-call and final scores
+quoted a row the policy never submitted; that bug made every table-truth setting appear to tie at
+115.765.
+
+**Trust-radius rule (table truth).** A pool row is eligible only within `median spacing × radius` of
+the initial data. When fewer rows qualify than the batch needs, the batch is simply smaller — the
+radius is never widened silently. Every call logs the eligible count, the submitted count and the
+actual distance ratios (`runs.jsonl` → `call_log`); the results table carries mean points per call
+and the worst observed distance ratio so the constraint is auditable. (The first version filled
+short batches with out-of-radius rows — up to 45 of 50 — so the old radius arm never implemented the
+stated constraint.)
+
+The pool is larger than the budget on purpose: with a smaller pool every policy eventually sees every
+row. Even so, most policies stop improving inside a few calls, so **the final value alone is not the
+discriminating quantity**. The table therefore also reports the best after the first call (the graded
+batch minimum) and the call at which a run stops improving.
+
+## Results
+
+70 seeded runs — `results/20261109/results.json`, one line per run in `runs.jsonl` (including the
+per-call radius audit), curves in `figures/`, numbers below from `summary.md`.
+
+Training incumbent (reference, mean over seeds; never submitted): **table 117.437**, semi-synthetic
+128.371.
+
+| truth | surrogate | exploit | radius | best after call 1 | median calls to the run's best | mean final R | std | mean pts/call | max dist ratio |
+|---|---|---|---|---|---|---|---|---|---|
+| semi-synthetic | ridge2 | 0.5 | 1.0 | 128.183 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 0.5 | 1.0 | 128.263 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 1.0 | 1.0 | 128.263 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 0.5 | 0.5 | 128.263 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | ridge2 | 1.0 | 1.0 | 128.540 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | ridge2 | 0.0 | 1.0 | 128.563 | 1 | 128.175 | 0.000 | — | — |
+| semi-synthetic | histgb | 0.0 | 1.0 | 128.563 | 1 | 128.175 | 0.000 | — | — |
+| table | ridge2 | 1.0 | 1.0 | 117.350 | 1 | 117.350 | 1.957 | 27.8 | 1.00 |
+| table | histgb | 0.5 | 1.0 | 117.350 | 1 | 117.350 | 1.957 | 27.3 | 1.00 |
+| table | histgb | 1.0 | 1.0 | 117.350 | 1 | 117.350 | 1.957 | 26.7 | 1.00 |
+| table | ridge2 | 0.5 | 1.0 | 117.507 | 1 | 117.350 | 1.957 | 28.4 | 1.00 |
+| table | histgb | 0.5 | 0.5 | 133.697 | 1 | 133.697 | 7.677 | 0.9 | 0.50 |
+| table | ridge2 | 0.0 | 1.0 | 126.937 | 5 | 117.350 | 1.957 | 27.6 | 1.00 |
+| table | histgb | 0.0 | 1.0 | 126.937 | 5 | 117.350 | 1.957 | 27.6 | 1.00 |
+
+Reading:
+
+- **The two truths tell different stories now.** Under `semi-synthetic` every setting reaches the
+  truth minimum (128.175) in one call (median); first-call values span only 128.183–128.563. That
+  arm cannot rank settings — it is a sanity check, not evidence.
+- **Under `table`, the exploit share separates at call 1 only.** Exploit ≥ 0.5 puts each seed's pool
+  minimum in the first batch (best after call 1: 117.350 for 1.0 / histgb, 117.507 for ridge2 at
+  0.5; mean final 117.350 ± 1.957, i.e. 115.765 for seeds 0/3/4 and 120.119 / 119.334 for seeds
+  1/2, where `p01969` sits in the initial 448 rows). These pool rows are all training rows, so
+  117.350 is a selection test on the table, not an achievable online score (see Limits). Pure
+  exploration starts at 126.937 ± 2.833 and needs a median of 5 calls to reach the same value. Past
+  call 1 this truth cannot rank the exploit ≥ 0.5 settings: each run exhausts its eligible pool, so
+  every final value is that pool's minimum.
+- **The radius is not separated by this replay.** Under `table` truth the radius only filters a fixed
+  pool, so the arms differ in how many points they can submit, not in where they look. Seed 0,
+  `histgb`, exploit 0.5: radius 0.5 has 8 → 2 → 0 eligible rows and submits 10 points in the whole
+  run, while radius 1.0 has 761 → 623 → … → 3 → 0 and submits 501 (pool dry at call 11). The
+  133.697 vs 117.350 gap therefore measures pool supply, not the radius. Under `semi-synthetic`
+  truth — which runs the real `bayes-pool` proposer, drawing 3000 fresh candidates per call before
+  the radius filter — the two radii are identical (128.263 after call 1, 128.175 final). This
+  replay gives no evidence for 1.0 over 0.5.
+- **Surrogate.** ridge2 and histgb are indistinguishable under both truths. T12 owns model
+  selection; this replay does not.
+- The training incumbent is reference only. For seeds 1 and 2 it equals 115.765 (`p01969` is in the
+  initial 448), which no submission can beat; the submitted curve then converges to the pool minimum
+  instead.
+
+## Recommendation (defaults for T15; the online policy input stays D's)
+
+| parameter | value | source |
+|---|---|---|
+| exploit share | 0.5 | the only separation is a selection test on the table: exploit ≥ 0.5 puts each seed's pool minimum in the first batch, but those rows are training rows, so 117.350 is not an achievable online score. 0.5 keeps half the batch exploring; judgment call, not a measured gain |
+| trust radius | 1.0 (max distance ratio) | judgment call: this replay cannot separate 0.5 from 1.0 (identical under semi-synthetic truth; the table arm is limited by fixed-pool supply) |
+| batch composition | 25 acquisition + 25 exploration points, no repeats | decision 19 / T15 |
+| surrogate | whatever T12 selects | this replay cannot rank models |
+| first batch | same settings as later batches | the winning settings already put the run's best in batch 1 |
+
+Delivered as `experiments/online-policy-wide.toml` (default) and `experiments/online-policy-narrow.toml`
+(comparison arm); the T15 policy itself lands in decision 19.
+
+These are **defaults, not measured gains**: no setting here has been compared against another on the
+real objective. If T03 later allows local evaluator runs for tuning, this table must be rebuilt from
+that evidence.
+
+## Search history (kept, not used as evidence)
+
+Before the withdrawal above, this folder tuned strategies on 6,568 local `solver.exe` calls and
+recommended proposals from that ranking. The log is kept in `evidence/` purely so the team can see
+what was tried and in what order. Per decision 19 / T03 it is not used for any parameter value, and
+it is not an input to the online policy. Details and checksums: `evidence/provenance.json`.
+
+## Files
+
+| path | what it is |
+|---|---|
+| `study.py` | the replayer: policy harness, both truths, seeded runs; `--from-runs` re-aggregates an existing `runs.jsonl` |
+| `t18_strategy_comparison.ipynb` | the narrative notebook with the saved figures |
+| `results/20261109/` | `results.json` / `provenance.json` / `runs.jsonl` (includes the per-call radius audit) / figures / `summary.md` |
+| `delivery/20261109/` | committed copies of `summary.md` and `provenance.json`, because `results/` is gitignored |
+| `evidence/` | the withdrawn 6,568-call search history |
+
+## Reproduce
+
+```bash
+uv run python analysis/replay/study.py --seeds 5 --out analysis/replay/results/20261109
+```
+
+A full pass takes about fifteen minutes on one laptop. `results/` is gitignored, so the committed
+copies live in `delivery/20261109/` (`summary.md`, `provenance.json`) and the notebook embeds the
+table and figures; the markdown table above is `results/20261109/summary.md`.
+
+## Limits
+
+- Two truth sources, both offline. Neither is the evaluator, and the semi-synthetic arm cannot
+  separate settings at all (everything reaches the truth minimum in one call). The separating
+  evidence comes from the table truth, whose optimum is a single row. A truth that keeps improving
+  over 20 calls would discriminate further; that is a T17 design question.
+- **The table arm submits training rows.** Every submitted point is a row of `train.csv` whose R is
+  already known; for seeds 0/3/4 the pool contains `p01969`, so the 115.765 entries in the curve are
+  that row being submitted. The online pre-submit check (decisions 20 and 26, T08) drops points that
+  duplicate a training row, so no table-arm number is an achievable online submission. Read the
+  call-1 comparison as a selection test on the table, not as a first-batch score.
+- The table pool holds few rows near the initial data: even radius 1.0 exhausts its in-radius supply
+  after ~550 submissions, so mean points/call is ~27 rather than 50. The real policy proposes points
+  from a continuous space and has no such supply limit, so this arm cannot measure a radius effect
+  at all — it only ranks how much supply each radius leaves.
+- When `sdm replay` lands, this run has to be repeated on the shared tool before the numbers go into
+  the report; the T06–T09 merge order decides when that happens.

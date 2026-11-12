@@ -32,9 +32,39 @@ and record the new decision here with a date.
 | 23 | Offline submission 2 is chosen offline: from the 2048 training rows, the two known real scores (baseline W\*, submission 1) and surrogates. The course `RampingSolver.exe` is not used to screen candidates; it currently runs only on the course machines | User, 2026-11-02 |
 | 24 | The offline phase is frozen at annotated tag `offline-final` (PR #11 merge, `62a2274`). Online work happens on `feat/online`, which drops the offline studies under `analysis/`, `SUBMISSION_READY/`, `artifacts/`, the offline experiment configs and their tests. It keeps `src/sdm` (every plugin), `app/`, `analysis/coupling/`, `analysis/v33_protocol/` and the two `SUBMISSION_READY` files that V3.3 reads. Rows and findings in this file that cite removed paths resolve at the tag | User, 2026-11-08: concentrate on online script development and testing |
 | 25 | `solver/` is in the repository with its course files unchanged; `solver.exe` (182 MB, above GitHub's 100 MB limit) and `usage.count` are git-ignored. Everyone copies the exe from the course `solver.zip` and checks it against `solver/CHECKSUMS.sha256` (sha256 `293867b8…a077247`) | User, 2026-11-08 |
+| 26 | Online framework design (T06, T08). Every source of R implements one `Evaluator` interface (`sdm.online`): the real `solver.exe`, a table of measured rows and a synthetic truth, with the solver's input rules and a per-object 20-call quota; the graded run never touches `usage.count`. The online loop (T08) will: drive proposals through a new `BatchPolicy` interface that receives the whole online state (call number, quota left, every sent point and result) and wraps existing optimizers; keep its state in a run folder `runs/<id>-online-<config>/` and resume with `sdm online --resume <run-id>` after checking the config and code version; when the pre-submit check drops points (duplicates of training rows or sent points, simplex violations), ask the policy for more candidates and send the first 50 that pass in the policy's order, logging the reasons, and stop without calling only when none pass | User, 2026-11-10 |
+| 28 | A failed or interrupted evaluator call is never resent. Once `solver.exe` has started, its batch counts as sent (decision 20) even when no R came back: the online loop records those points as sent without R, never proposes them again and sends a new batch within the remaining calls. Only a batch rejected before anything is evaluated may be fixed and sent: `InvalidBatch` (the solver's input rules, checked locally) or, in replay only, `PointNotInTable` (a point outside the table stand-in's pool); such an attempt is closed as `rejected` and costs no call | User, 2026-11-12, the default until the TA says whether a failed call may be resent (Open questions). Measured on a copy of `solver.exe`: a 50-set call killed by a timeout after 8 s leaves `usage.count` behind, so the solver charges a call when it starts; an input it rejects (exit 2) does not; it accepts a repeated point and returns the same R. Supersedes the 2026-11-11 T06 note that a failed batch may be resent |
+| 29 | The online code does not exclude the offline submissions' weights (submission 1, submission 2) from its batches, and never writes those weights or their R into code, configs or exclusion lists. Before its first call it uses only the 2048 training rows (decision 19), and the pre-submit check screens only training rows and points this run has sent. A policy proposing a submission's exact W again (within `dedupe_atol`) is practically impossible and would only cost one point | User, 2026-11-12, answering the PR #21 review; supersedes the 2026-11-05 note that graded online calls must not resend submission 2 |
 
 ## Findings
 
+- **Offline submission 2 met the bar; the online target is 115.68** (submitted 2026-11-05, recorded
+  2026-11-09). Real R = **115.68**, below the bar 115.7648 (`p01969`, decision 17) by about 0.08. The
+  exact value returned by the evaluator is still to be added. The best offline result is therefore
+  min(119.7121, 115.68) = **115.68**: the online phase earns its 8 % only with a call whose batch minimum
+  is below it.
+  The submitted W is `p01969` + 0.05 · u[15713]: direction 15713 of the seed-2026 directions in
+  `analysis/offline_submission2/study.py` (tag `offline-final`), one of the 19,483 that avoid both measured
+  failures. It is the top pick when only the ARD GP is required. PR #11's final rule recommended direction
+  14840 instead, because the local GP was not clearly confident about 15713 (z 0.34 < 0.5). Judges at
+  `4030012`:
+  - ARD GP: gain −2.85, z 1.90;
+  - local GP: gain −0.86, z 0.34;
+  - calibrated P 0.861, worst on the radius-0.01 ball 0.831;
+  - ExtraTrees: +2.39.
+
+  The real gain is about −0.08. Both GPs had the right sign but overstated the improvement, ARD by about
+  2.8 and the local GP by about 0.8. One point does not show whether PR #11's agreement rule was wrong.
+  The file submitted was `02_A_dir15713_step0.05_ARD_only.json` (sha256 `0ec11414…c53b4d7`) from a
+  candidate bundle built from `4030012`. It is not in the repository, so the weights are kept here.
+  Minimum weight 0.0245; it passes `check_weights` and matches `p01969` + 0.05 · u[15713] to 1e-16.
+  Rows are buildings 1–3 and columns follow `METRICS`:
+  ```json
+  [[0.15769301241644582, 0.05264139579999994, 0.20854081714531605, 0.22837332588192233, 0.033200075292113704, 0.23276077156978842, 0.08679060189441362],
+   [0.2503591199835666, 0.13676967852502162, 0.08313656511837968, 0.0604233371724592, 0.12222408788989679, 0.28509901488585504, 0.06198819642482098],
+   [0.15385821627102042, 0.024476314274646253, 0.04676748001670422, 0.07253577354819109, 0.10757230502504825, 0.36784761044033554, 0.22694230042405422]]
+  ```
+  This W and its R are known points, but the online code neither excludes nor embeds them (decision 29).
 - **Offline submission 2 recommendation** (2026-11-05, [study](../analysis/offline_submission2/README.md),
   commit `e4fa38f`, no solver calls). The PR #9 research lead (r06 line, distance 0.08, ARD gain −2.63) is
   rejected by a second smooth judge, the new `local-gp` (`20261105-145418-evaluate-local-gp-v32`):
@@ -135,6 +165,33 @@ and record the new decision here with a date.
   For reference, member B's tree models score 72.3–74.7 on the same splits (`analysis/surrogate_release` on
   branch `runze-liu`), so gradient-boosted plugins are the obvious next step.
 
+- **T18 replay defaults; earlier strategy ranking withdrawn** (2026-11-09, commit `300193b`,
+  [replay](../analysis/replay/README.md), `analysis/replay/study.py`, no evaluator calls). The ranking of
+  strategy families from 6,568 local `solver.exe` calls, and the structural prior handed to T15 (old
+  notebook §6) and the note that T12 could adopt that ranking (old §9), are **withdrawn as policy input**:
+  decision 19 admits only the 2048 training rows before the first call and T03 is unanswered, so no value
+  measured with the real evaluator may enter the first batch. The log stays in `analysis/replay/evidence/`
+  as a search history only. Re-run on the replay (20 calls × up to 50 points, 1600-row holdout pool, 448
+  initial rows, 5 seeds, `table` and `semi-synthetic` truth), with curves scoring submitted points only
+  and the training incumbent kept as a separate reference: under `semi-synthetic` every setting reaches
+  the truth minimum (128.175) in one call, so that arm cannot rank settings. Under `table` only the first
+  batch separates: exploit ≥ 0.5 puts each seed's pool minimum in the first batch (117.350 / 117.507),
+  while pure exploration starts at 126.937 ± 2.833 and needs a median of 5 calls; every exploit ≥ 0.5 run
+  then exhausts its eligible pool, so later calls and the final value (117.350 ± 1.957) cannot rank those
+  settings. Those pool rows are training rows and the online pre-submit drops duplicates (decisions 20
+  and 26), so 117.350 / 117.507 are selection tests on the table, not achievable online scores. The
+  radius is **not** separated by this replay: under `table` it only filters a fixed pool
+  (seed 0 / `histgb` / exploit 0.5 submits 10 points at radius 0.5 against 501 at 1.0), and under
+  `semi-synthetic`, which uses the real `bayes-pool` proposer, both radii give the same result
+  (128.263 after call 1, 128.175 final), so radius 1.0 is a judgment call.
+  (Revised 2026-11-10: the first version scored known rows as if submitted and silently filled short
+  batches out of radius, which made all table-truth settings appear to tie at 115.765. Revised
+  2026-11-11: dropped the "radius 0.5 starves the batch" reasoning — it measured how many points a fixed
+  pool could supply, not the effect of the radius.) Defaults:
+  `experiments/online-policy-wide.toml` (radius 1.0) with `-narrow.toml` kept as the comparison arm;
+  exploit share 0.5 is recorded for T15 (not a parameter of any proposer on `main` yet); the surrogate is
+  left to T12. These are defaults, not measured gains.
+
 ## Known issues
 
 - `xgboost` results can differ slightly across operating systems and CPUs (floating-point order in the
@@ -158,14 +215,17 @@ and record the new decision here with a date.
   repository pins 3.11 (numpy 1.24.4 has no newer wheels). Whether uv can be installed is unknown. Owner: A.
   2026-11-08: the stdlib-only smoke test ran with Python 3.14.7 on A's Windows PC (see Resolved), so the
   evaluator side works with the course computer's Python; the `sdm` package side is still unverified there.
+- May a failed call be resent? A call that fails or is killed after `solver.exe` started has been charged, but returned no R. Decision 28 treats its points as sent and never resends them; ask the TA whether resending the same batch after such a failure is allowed (owner: A, with T03).
 - How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
   graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
   Ask the TA whether that is allowed (owner: A).
-- Schema of the policy's call log and how each call's result is merged into `X, y` (owner: A, after the
-  evaluator format is known).
 
 ## Resolved
 
+- Call log schema and how results reach `X, y` (2026-11-11): `online_log.csv` (T07, `sdm.online.log`) holds
+  every successful call; the online loop (T08) rebuilds `OnlineState` from the 2048 training rows plus the
+  log before each call, so a policy refits on `state.X = [X_train; X_online]`. Attempts, including failed
+  and interrupted ones, are journalled separately in `attempts.jsonl` (docs/interfaces.md, Online loop).
 - Evaluator determinism: deterministic (decision 20, 2026-10-31).
 - Submitting a training row offline: allowed but only ties the bar (decision 17, 2026-10-31).
 - Whether weights must sum to 1: no, non-negative with one positive per building (decision 21, 2026-10-31).

@@ -54,7 +54,8 @@ class MyOptimizer(Optimizer):
 
 - `X, y` are all observations so far: the 2048 training rows offline, plus evaluated points online.
 - `model` is a fitted `Surrogate`; use only its public methods.
-- The online policy asks for `n = 1` per call (decision 19); whenever `n > 1`, the rows must be distinct.
+- Whenever `n > 1`, the rows must be distinct. Online, a call sends up to 50 sets (decision 19); the online
+  loop (T08) will drive proposals through a separate `BatchPolicy` interface (decision 26).
 
 ## Registered plugins
 
@@ -69,10 +70,215 @@ class MyOptimizer(Optimizer):
 | `trust-dirichlet` | optimizer | gradient-free Dirichlet local search from the best rows, inside `max_distance_ratio · median_spacing` of the data, ranks by mean + risk · std, distinct batches |
 | `simplex-de` | optimizer | gradient-free DE/rand/1/bin with per-building simplex projection, observed-row exclusion, distance trust region, and distinct batches ranked by mean + risk · std; default radius ratio 0.75 |
 
+## Online evaluator (`sdm.online`)
+
+One interface for every source of real R, so the online loop (T08), the replay (T17) and the tests share a
+code path. `evaluate(W)` takes 1–50 weight sets (any shape `as_batch` accepts) and returns R, shape `(n,)`,
+in input order.
+
+```python
+from sdm.online import SolverEvaluator, TableEvaluator, SyntheticEvaluator, build_evaluator
+
+evaluator = SolverEvaluator()                    # solver/solver.exe, sha256 checked against CHECKSUMS.sha256
+R = evaluator.evaluate(W)                        # (n,) float
+evaluator.calls, evaluator.remaining             # successful calls; quota left (20 by default)
+evaluator.attempts, evaluator.failures           # solver only: every process start, and why the failed ones failed
+evaluator.history[-1]                            # CallRecord(call, n, R, seconds, stderr, extra)
+evaluator.describe()                             # JSON provenance for meta.json
+```
+
+| Class | Source of R | Notes |
+|---|---|---|
+| `SolverEvaluator(exe, *, reset_usage=False, timeout=3600, quota=20)` | course `solver.exe`: `{"weights": [[21 floats], ...]}` on stdin, `{"R": [...]}` on stdout | Runs in the exe's folder, where the solver keeps `usage.count` (an opaque signed token: the count cannot be read). The default never touches it, which the graded run must use. `reset_usage=True` deletes it before every call; it also needs the environment variable `SDM_DEV_RESET_USAGE=1` and cannot come from a config, so a frozen config can never reset the course computer's quota. Failed and killed calls may still have cost quota, so they count against `remaining` too. `command=[...]` replaces the process for stand-ins in tests; `checksums=None` skips the sha256 check |
+| `TableEvaluator(X, y, *, ids, atol=1e-9)`, `.from_dataset(dataset, rows=None)` | measured rows | A point must equal a row (after renormalisation) within `atol` in every coordinate, else `PointNotInTable`; `history[i].extra["ids"]` names the rows |
+| `SyntheticEvaluator(truth)`, `.fit(model_name, params, X, y)` | a fitted surrogate's mean | Semi-synthetic truth as in `analysis/coupling/` |
+
+`build_evaluator(kind, params, *, dataset=None)` builds one from a config table: `"solver"` (params go to
+`SolverEvaluator`), `"table"` (optional `rows`), `"synthetic"` (`model`, optional `model_params`).
+
+Shared rules, from the Windows smoke test (decisions.md, Resolved):
+
+- Each building's weights must be finite, non-negative and have one positive entry; anything else, and
+  more than 50 sets, raises `InvalidBatch` before the solver starts, so it costs no quota. The solver rescales
+  each building to sum 1, so the stand-ins renormalise before they look up or predict.
+- Every evaluator counts the calls charged against its quota; at `quota` the next call raises
+  `QuotaExhausted` without running. A stand-in charges successful calls only; `SolverEvaluator` charges
+  every attempt, because the solver may count a call before it fails or is killed. The real solver also
+  raises `QuotaExhausted` when it prints `Usage limit reached`. A resumed run must build its evaluator with
+  `quota = 20 - solver attempts already made`, so the run folder has to record every attempt, not only
+  logged calls: `describe()["attempts"]` counts every process start and `describe()["failures"]` lists each
+  failed one (including output with the wrong number of R values).
+- The evaluators accept unnormalised weights (the solver renormalises each building), so `W` and `2·W` are
+  the same point. Anything that deduplicates points, such as T08's pre-submit check, must compare
+  renormalised weights (`sdm.online.evaluator.renormalise`).
+- Other failures raise `EvaluatorError` with the solver's `stderr` and `returncode`, including a
+  `{"error": "..."}` line on stdout (the solver's report when a pool worker dies, possibly with exit code 0),
+  whose message is passed on; `Usage limit reached` raises `QuotaExhausted` whether it appears on stderr or
+  stdout. Output lines before the final `{"R": [...]}` line are ignored.
+- `solver.exe` starts `Lab6Solver-<hash>.exe`, which runs a process pool; killing `solver.exe` alone leaves
+  them running. On timeout `SolverEvaluator` kills the whole tree (`taskkill /F /T` on Windows, the
+  process group elsewhere) and raises `EvaluatorTimeout`. It never retries by itself.
+- What a caller (T08) may do after each exception. Every retry of the real solver is a new attempt and
+  costs one of the 20 calls:
+  - `InvalidBatch`: nothing ran and no quota was used; fix the batch, never resend it unchanged.
+  - `QuotaExhausted`: stop; there are no calls left.
+  - `EvaluatorTimeout`, `EvaluatorError`: the solver had started, and it charges a call when it starts
+    (a call killed by a timeout leaves `usage.count` behind), so the batch counts as sent. Never resend it
+    (decisions 20 and 28): record its points as sent without R and send a new batch, within the quota.
+  - `PointNotInTable` (table stand-in only): the policy proposed a point outside the replay pool.
+- Known extensions for the replay (T17), to be added there by wrapping these classes rather than here: a
+  table with a surrogate fallback for points outside the pool, and an evaluator that injects failures to
+  test T08's handling. The real solver is deterministic (smoke test), so the stand-ins add no noise.
+- `tests/test_online_evaluator.py` checks all of this against a Python stand-in; on Windows with
+  `solver/solver.exe` present it also checks `p01969` against the real exe (in a copy of `solver/`, so the
+  repository's `usage.count` is untouched).
+
+### Append-only online log
+
+`OnlineLog(path)` stores successful calls as CSV columns `call,point,n,weight_00,...,weight_20,R,source,run_id,timestamp`.
+The 1-based `call` counts successful batches; `point` is the batch index and `n` is the expected batch size
+(1 to 50), repeated on every row. Weights must pass `check_weights`; R must be finite. The writer rejects
+duplicate raw weights and noncontiguous successful call numbers. It serializes a complete batch in memory,
+appends it with one write, then flushes and calls `os.fsync`. `rows()` checks every batch contains exactly
+`n` contiguous points, so a partial final batch raises `OnlineLogError`; it must not be silently ignored or
+resubmitted. `next_call` and `best()` also validate the full file.
+
+This is a single-writer, successful-result log, not an evaluator transaction journal. T08 must durably record
+pending attempts before launching the solver and reconcile failures/uncertain outcomes separately. A crash
+before any result row is written, or a completely missing batch, cannot be detected by this CSV alone.
+Quota uses attempts, not `next_call`; submission deduplication uses renormalized weights, not the raw tuples
+stored here. Legacy logs without `n` are rejected: their batch completeness cannot be inferred safely.
+
+T08/T13 may export pre-evaluation predictions as a separate CSV with exactly
+`call,point,predicted_R` (positive 1-based successful call/point identifiers, finite predictions, unique
+keys). T26 requires exact key coverage of the supplied log. Predictions must be captured before fitting
+on that batch's measured labels; the CSV is a reporting sidecar, never a source of measured R.
+
+## Online loop (`sdm online`, `sdm.online.loop`, T08)
+
+```bash
+uv run sdm online -c experiments/online-baseline.toml             # new run; the graded run uses the real solver
+uv run sdm online -c experiments/online-baseline-synthetic.toml   # same policy against a synthetic truth, no solver
+uv run sdm online --resume <run-id>                               # continue with the config saved in the run
+uv run sdm online -c <config> --dry-run                           # propose and screen call 1, call nothing
+uv run sdm online --resume <run-id> --max-calls 1                 # one more call, then stop
+```
+
+Each call: build an `OnlineState` from the 2048 training rows and the log → `policy.propose(state, n)` with
+`n = batch_size + candidate_margin` → pre-submit check (`sdm.online.screen.screen`) → send the first
+`batch_size` points that pass → save R in `calls/call_NN.json` → append to `online_log.csv` → next call (the
+policy refits on the grown `state.X, state.y`). The check drops, in this order, points that fail
+`check_weights` (`constraint`), whose renormalised weights are within `dedupe_atol` (max abs) of a training
+row (`training_row`), of a point sent earlier (`sent_before`), or of a point already in this batch
+(`batch_duplicate`). If fewer than `batch_size` pass, the policy is asked again with twice as many, up to
+`max_rounds` times. Rounds accumulate: points accepted in an earlier round stay in the batch (with that
+round's prediction and tag) and later rounds are screened against them, because a policy's answer for a
+larger `n` need not contain its answer for a smaller one. The loop then sends what passed, and with nothing
+accepted in any round it stops without calling (`no_valid_candidates`). Decision 26. A prediction or tag
+column is kept only when every point of the batch has one.
+
+Run folder `runs/<id>-online-<config>/`:
+
+| File | Content |
+|---|---|
+| `config.toml`, `meta.json` | config and provenance; `meta.kind` is `online` |
+| `online_log.csv` | successful calls (T07 format above); `source` is the policy name |
+| `attempts.jsonl` | evaluator attempts: `started` (written before launching), then `ok`, `failed`, `lost` or `rejected`; an unfinished last line is cut on resume and kept in `attempts.jsonl.torn` |
+| `calls/call_NN.json` | status (`proposed`, `measured`, `not_sent`), screening rounds and rejections, the batch, predicted mean / std, tags, policy diagnostics, attempts, R |
+| `calls/call_NN_attempt_MM_failed.json` | the same record for a failed (`failed`) or lost (`lost`) attempt MM; its points count as sent |
+| `calls/call_NN_dry_run.json` | what `--dry-run` would send |
+| `predictions.csv` | `call,point,predicted_R` for every logged point (T26 sidecar); written only when every logged point has a prediction, otherwise removed (`metrics.json` `predictions_complete` is false) |
+| `sessions.jsonl` | one line per invocation (git state, options) plus the evaluator's `describe()` at exit |
+| `metrics.json` | `calls_completed`, `attempts`, `calls_left`, `points_evaluated`, `best_R`, `best_call`, `best_point`, `best_weights`, `call_min_R`, `training_best_R`, `stop_reason`, `finished`, `predictions_complete` |
+
+Budget and failures:
+
+- The budget is `[online] calls` attempts: every `started` line counts, because the solver may charge a call
+  that fails or is killed. The evaluator is built with `quota = calls - attempts so far`.
+- A failed batch is never resent (decision 28). Each `started` line carries the batch it sent. After
+  `EvaluatorError` / `EvaluatorTimeout` the attempt is logged as `failed`; its points go to
+  `OnlineState.X_unmeasured` (sent, no R: not observations), the pre-submit check rejects them as
+  `sent_before`, and the loop asks the policy for a new batch for the same call number. After
+  `max_failures` failed attempts in a row the run stops with `evaluator_failed` (exit code 1); so does a
+  run whose budget runs out right after a failed or lost attempt. `QuotaExhausted` stops at once.
+  `InvalidBatch` and `PointNotInTable` are raised before anything is evaluated: the attempt is closed as
+  `rejected`, not charged, its points do not count as sent, and the exception is re-raised. Attempt ids are
+  never reused (the next id is the largest so far + 1), so after a `rejected` attempt the id runs ahead of
+  the charged count; a journal with an id started twice, or an outcome before its start, stops the run.
+- Any other exception during a call (Ctrl-C, `SystemExit`, a bug) may arrive after the solver used the call
+  and computed R, so the attempt is left `started` with no outcome and the exception is re-raised;
+  `SolverEvaluator` kills the solver's process tree first (it runs in its own process group and does not
+  receive Ctrl-C).
+- A `started` line with no outcome means the process died or was interrupted during a call. If
+  `calls/call_NN.json` already holds the R values (status `measured`, same `batch_sha256`), resume finishes
+  the logging by itself, before anything else, including `--accept-lost-attempt`. Otherwise resume refuses
+  until the operator passes `--accept-lost-attempt`, which records the attempt as `lost` (still charged,
+  its points count as sent) and continues with a new batch.
+- Each journal line is written and fsynced before the step it announces, so a torn last line is safe to
+  cut: a torn `started` line means the solver never started, and a torn outcome leaves its attempt pending
+  for the step above. Only the last line may be torn; any other malformed line stops the run.
+- Resume refuses when the code differs from the run's recorded commit or either is dirty (decision 22),
+  unless `--allow-code-change`. The dataset sha256 must match.
+- `--dev-reset-usage` deletes `solver/usage.count` before every call (needs `SDM_DEV_RESET_USAGE=1`; never
+  from a config). Exit codes: 0 done or stopped by `--max-calls` / `--dry-run`; 1 stopped by a failure or
+  no valid candidates; 2 bad config or a refused resume.
+
+Config sections (all optional except `[evaluator]` for `sdm online`):
+
+```toml
+[policy]
+name = "surrogate"            # default; any name from `uv run sdm list` under policies
+[policy.params]
+
+[evaluator]
+kind = "solver"               # "solver", "table" or "synthetic"; params go to sdm.online.build_evaluator
+[evaluator.params]
+timeout = 3600.0
+
+[online]
+calls = 20                    # attempts, failed ones included
+batch_size = 50
+seed = 2026                   # OnlineState.seed
+candidate_margin = 25
+max_rounds = 3
+max_failures = 2              # failed attempts in a row before the run stops
+dedupe_atol = 1e-9
+```
+
+`loop.start(config_path, ...)` and `loop.resume(run_id, ...)` are the CLI's entry points;
+`loop.OnlineSession(run, config, dataset, policy=..., evaluator_factory=...)` takes any policy object and any
+evaluator factory, which is how the replay (T17) and the tests drive the same loop.
+
+## Online batch policy (`sdm.interfaces.BatchPolicy`, plugins in `src/sdm/policies/`)
+
+```python
+@register_policy("name")                    # sdm.registry
+class MyPolicy(BatchPolicy):
+    """One-line summary shown by `sdm list`."""
+
+    @dataclass(frozen=True)
+    class Params:
+        explore: float = 0.4
+
+    def propose(self, state: OnlineState, n: int) -> Proposal: ...
+```
+
+- `OnlineState`: `call` (1-based, the call about to be made), `calls_total`, `calls_left` (after failed
+  attempts), `batch_size`, `seed`, `X_train` / `y_train` (the 2048 rows), `X_online` / `y_online` /
+  `online_call` (successful calls in order; empty before call 1), and `X`, `y`, `best`, `best_online`.
+- `Proposal(weights, predicted_mean=None, predicted_std=None, tags=None, diagnostics={})`: at least `n`
+  rows if possible, best first, each passing `check_weights`. The loop keeps the first `batch_size` that pass
+  the check and stores predictions, tags and diagnostics in `calls/call_NN.json`.
+- `self.model` / `self.optimizer` are the config's `[model]` / `[optimizer]` components (name, params);
+  build them with `build_model` / `build_optimizer`. `propose` must be deterministic given the state and
+  params: resume and the course computer must send the same batches (decision 22).
+- Registered: `surrogate` (refits `[model]` on `state.X, state.y` each call and returns
+  `[optimizer].propose(model, X, y, n)` with the model's predictions). Template: `src/sdm/policies/_template.py`.
+
 ## Registry (`sdm.registry`)
 
-`models()`, `optimizers()` → `{name: class}`; `build_model(name, params_dict)`,
-`build_optimizer(name, params_dict)`; `describe(cls)` → `[{"name", "type", "default"}]`.
+`models()`, `optimizers()`, `policies()` → `{name: class}`; `build_model(name, params_dict)`,
+`build_optimizer(name, params_dict)`, `build_policy(name, params_dict, model=, optimizer=)`; `describe(cls)` → `[{"name", "type", "default"}]`.
 Modules whose file name starts with `_` are not auto-imported (templates, shared helpers).
 
 ## Config (`sdm.config`)
