@@ -85,17 +85,18 @@ Reading:
 - **Under `table`, the exploit share separates at call 1 only.** Exploit ≥ 0.5 puts each seed's pool
   minimum in the first batch (best after call 1: 117.350 for 1.0 / histgb, 117.507 for ridge2 at
   0.5; mean final 117.350 ± 1.957, i.e. 115.765 for seeds 0/3/4 and 120.119 / 119.334 for seeds
-  1/2, where `p01969` sits in the known rows). Pure exploration starts at 126.937 ± 2.833 and needs
-  a median of 5 calls to reach the same value. Past call 1 this truth cannot rank the exploit ≥ 0.5
-  settings: each run exhausts its eligible pool, so every final value is that pool's minimum.
+  1/2, where `p01969` sits in the known rows). These pool rows are training rows (see Limits). Pure
+  exploration starts at 126.937 ± 2.833 and needs a median of 5 calls to reach the same value. Past
+  call 1 this truth cannot rank the exploit ≥ 0.5 settings: each run exhausts its eligible pool, so
+  every final value is that pool's minimum.
 - **The radius is not separated by this replay.** Under `table` truth the radius only filters a fixed
   pool, so the arms differ in how many points they can submit, not in where they look. Seed 0,
   `histgb`, exploit 0.5: radius 0.5 has 8 → 2 → 0 eligible rows and submits 10 points in the whole
   run, while radius 1.0 has 761 → 623 → … → 3 → 0 and submits 501 (pool dry at call 11). The
   133.697 vs 117.350 gap therefore measures pool supply, not the radius. Under `semi-synthetic`
-  truth — which runs the real `bayes-pool` proposer, drawing 6000 fresh in-radius candidates on
-  every call — the two radii are identical (128.263 after call 1, 128.175 final). This replay gives
-  no evidence for 1.0 over 0.5.
+  truth — which runs the real `bayes-pool` proposer, drawing 3000 fresh candidates per call before
+  the radius filter — the two radii are identical (128.263 after call 1, 128.175 final). This
+  replay gives no evidence for 1.0 over 0.5.
 - **Surrogate.** ridge2 and histgb are indistinguishable under both truths. T12 owns model
   selection; this replay does not.
 - The training incumbent is reference only. For seeds 1 and 2 it equals 115.765 (`p01969` already
@@ -124,7 +125,7 @@ that evidence.
 Before the withdrawal above, this folder tuned strategies on 6,568 local `solver.exe` calls and
 recommended proposals from that ranking. The log is kept in `evidence/` purely so the team can see
 what was tried and in what order. Per decision 19 / T03 it is not used for any parameter value, and
-it is not an input to the online policy. Details and checksums: `evidence/README.md`.
+it is not an input to the online policy. Details and checksums: `evidence/provenance.json`.
 
 ## Files
 
@@ -152,6 +153,11 @@ table and figures; the markdown table above is `results/20261109/summary.md`.
   separate settings at all (everything reaches the truth minimum in one call). The separating
   evidence comes from the table truth, whose optimum is a single row. A truth that keeps improving
   over 20 calls would discriminate further; that is a T17 design question.
+- **The table arm submits training rows.** Every submitted point is a row of `train.csv` whose R is
+  already known; for seeds 0/3/4 the pool contains `p01969`, so the 115.765 entries in the curve are
+  that row being submitted. The online pre-submit check (decisions 20 and 26, T08) drops points that
+  duplicate a training row, so no table-arm number is an achievable online submission. Read the
+  call-1 comparison as a selection test on the table, not as a first-batch score.
 - The table pool holds few rows near the known data: even radius 1.0 exhausts its in-radius supply
   after ~550 submissions, so mean points/call is ~27 rather than 50. The real policy proposes points
   from a continuous space and has no such supply limit, so this arm cannot measure a radius effect

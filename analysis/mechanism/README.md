@@ -45,8 +45,8 @@ above the unconstrained joint GBM's **0.7726**. Linear models say the same thing
 
 So the interaction structure that matters is **within** a building; adding cross-building products
 makes the linear model worse than plain additive. Treating the three buildings as separate additive
-blocks is a sound inductive bias, and it is what B's additive ARD GP (offline score 0.8315) already
-does.
+blocks is a sound inductive bias, and it is what B's additive ARD GP (v3.2 score 83.15, a 0–100
+scale that is not comparable with the CV R² above) already does.
 
 > Correction: the first version of this note reported "three independent GBMs summed" at 0.2630 and
 > concluded that additivity fails. That implementation fitted three models to the full target and
