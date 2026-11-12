@@ -1,0 +1,4 @@
+# Matches the repository online environment in pyproject.toml (Python 3.11).
+# hp_noise001 inference needs only numpy + scipy.
+numpy==1.24.4
+scipy==1.10.1

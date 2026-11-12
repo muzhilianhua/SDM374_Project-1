@@ -1,0 +1,97 @@
+{
+  "model": "hp_noise001",
+  "created_local": "2026-11-04T11:19:23",
+  "train_rows": 2048,
+  "data": {
+    "path": "dataset_same8\\train.csv",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "protocol": {
+    "id": "sdm374.same8.splits.2x5x3.frozen.v1",
+    "status": "FROZEN",
+    "manifest": "外推方案\\趋势与尾部\\frozen\\split_manifest.json"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.1.3",
+    "scipy": "1.15.3",
+    "scikit-learn": "1.6.1",
+    "joblib": "1.4.2",
+    "pandas": "2.2.3",
+    "platform": "win32"
+  },
+  "fit": {
+    "method": "sklearn GPR (custom BlockARD kernel) + L-BFGS-B 多起点",
+    "log_marginal_likelihood": -599.5293258849006,
+    "theta_log": [
+      -1.2418036857971546,
+      -1.3945180670919035,
+      0.18428306804991448,
+      1.791759469228055,
+      -1.676793211498857,
+      -1.6565917705247513,
+      1.791759469228055
+    ],
+    "trials": [
+      {
+        "theta_log": [
+          -1.2417903305699942,
+          -1.3945177378741487,
+          0.18416922126368165,
+          1.791759469228055,
+          -1.6768060123242547,
+          -1.6565721297991394,
+          1.791759469228055
+        ],
+        "fun": 599.5293264860366,
+        "nit": 18,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      },
+      {
+        "theta_log": [
+          -1.2418036857971546,
+          -1.3945180670919035,
+          0.18428306804991454,
+          1.791759469228055,
+          -1.676793211498857,
+          -1.6565917705247513,
+          1.791759469228055
+        ],
+        "fun": 599.5293258849006,
+        "nit": 23,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      },
+      {
+        "theta_log": [
+          -1.2418096476353486,
+          -1.3945448797789928,
+          0.18422860131662616,
+          1.791759469228055,
+          -1.6767757443762337,
+          -1.6565606567881308,
+          1.791759469228055
+        ],
+        "fun": 599.529326549213,
+        "nit": 22,
+        "status": 0,
+        "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH"
+      }
+    ],
+    "seconds": 848.4118377,
+    "length_scale_bound_report": {
+      "cost": "free",
+      "carbon": "free",
+      "peak": "free",
+      "discomfort": "upper",
+      "degradation": "free",
+      "ramping": "free",
+      "resilience": "upper"
+    }
+  },
+  "artifacts": {
+    "model.pkl": "纯 numpy 数组字典（pickle protocol 4）；加载见 modellib.py"
+  },
+  "notes": "变体 1a/1b/1c/1d：多起点 + 更多迭代 + 上界 6；参数级差异见 config.json。"
+}

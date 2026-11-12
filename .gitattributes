@@ -10,3 +10,5 @@ analysis/v33_protocol/release_v2/*.csv text eol=lf
 analysis/v33_protocol/** -text whitespace=cr-at-eol
 # Course-provided solver files: keep their original bytes (run.py has CRLF).
 solver/** -text
+# Online surrogate packages pin their exact bytes in CHECKSUMS.json; never apply eol conversion.
+analysis/online_models/** -text
