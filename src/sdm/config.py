@@ -47,14 +47,16 @@ class OnlineSettings:
     seed: int = 2026                # passed to the policy through OnlineState
     candidate_margin: int = 25      # ask the policy for batch_size + margin candidates, then screen
     max_rounds: int = 3             # if too few pass, ask again with twice as many, up to this many times
-    max_retries: int = 1            # resend a failed batch at most this often per call; each try costs a call
+    max_failures: int = 2           # stop after this many failed attempts in a row; a failed batch is never
+                                    # resent (decision 28), so each further attempt sends a new batch
     dedupe_atol: float = 1e-9       # renormalised points this close (max abs) count as the same point
 
     def __post_init__(self):
         if not 1 <= self.batch_size <= 50 or self.calls < 1:
             raise ValueError("[online] needs calls >= 1 and 1 <= batch_size <= 50")
-        if self.candidate_margin < 0 or self.max_rounds < 1 or self.max_retries < 0 or self.dedupe_atol < 0:
-            raise ValueError("[online] candidate_margin, max_retries and dedupe_atol must be >= 0, max_rounds >= 1")
+        if self.candidate_margin < 0 or self.max_rounds < 1 or self.max_failures < 1 or self.dedupe_atol < 0:
+            raise ValueError("[online] candidate_margin and dedupe_atol must be >= 0, max_rounds and "
+                             "max_failures >= 1")
 
 
 @dataclass(frozen=True)

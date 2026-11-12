@@ -71,7 +71,8 @@ class OnlineState:
 
     `X_online` / `y_online` hold the points of successful calls in the order they were sent, and
     `online_call[i]` is the call that measured row i. Before call 1 they are empty, so the first batch can
-    only depend on the 2048 training rows (decision 19).
+    only depend on the 2048 training rows (decision 19). `X_unmeasured` holds the points of failed attempts;
+    `X_sent` is both together, which the pre-submit check excludes.
     """
 
     call: int                      # 1-based number of the successful call about to be made
@@ -84,6 +85,14 @@ class OnlineState:
     X_online: np.ndarray
     y_online: np.ndarray
     online_call: np.ndarray
+    # Points of failed or lost attempts: sent to the solver but without an R value. They count as sent and
+    # are never proposed again (decision 28), but they are not observations.
+    X_unmeasured: np.ndarray = field(default_factory=lambda: np.empty((0, 21)))
+
+    @property
+    def X_sent(self) -> np.ndarray:
+        """Every point sent to the evaluator so far, measured or not: none of them may be sent again."""
+        return np.vstack([self.X_online.reshape(-1, 21), self.X_unmeasured.reshape(-1, 21)])
 
     @property
     def X(self) -> np.ndarray:

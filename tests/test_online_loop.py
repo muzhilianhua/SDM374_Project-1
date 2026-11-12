@@ -177,27 +177,53 @@ def test_no_valid_candidates_stops_without_calling(session_factory):
     assert json.loads(session.call_path(1).read_text())["status"] == "not_sent"
 
 
-def test_failed_attempt_is_retried_and_charged(session_factory):
-    session = session_factory(evaluator=Truth(fail=1), calls=3)
+def _same_points(a, b):
+    a, b = renormalise(np.asarray(a).reshape(-1, 21)), renormalise(np.asarray(b).reshape(-1, 21))
+    return sum(bool((np.abs(b - row).max(axis=1) <= 1e-12).any()) for row in a)
+
+
+def test_failed_batch_is_charged_and_never_resent(session_factory):
+    # Decision 28: once the solver started, the batch counts as sent even without R.
+    policy = Sampler()
+    session = session_factory(policy=policy, evaluator=Truth(fail=1), calls=3)
     summary = session.run()
     events = [(item["attempt"], item["call"], item["event"]) for item in journal(session.run_folder)]
     assert events == [(1, 1, "started"), (1, 1, "failed"), (2, 1, "started"), (2, 1, "ok"),
                       (3, 2, "started"), (3, 2, "ok")]
     assert summary["calls_completed"] == 2 and summary["attempts"] == 3 and summary["calls_left"] == 0
-    record = json.loads(session.call_path(1).read_text())
-    assert [item["event"] for item in record["attempts"]] == ["failed", "ok"]
-    assert record["attempts"][0]["stderr"] == "worker died"
+
+    failed = json.loads(session.failed_attempt_path(1, 1).read_text())
+    assert failed["status"] == "failed" and failed["attempts"][0]["stderr"] == "worker died"
+    failed_points = np.asarray(failed["weights"]).reshape(-1, 21)
+    sent_later = np.array([row.weights for row in session.log.rows()])
+    assert _same_points(failed_points, sent_later) == 0
+    # The policy proposed the same points again (it is deterministic per call); the screen dropped them.
+    retry = json.loads(session.call_path(1).read_text())
+    assert retry["status"] == "measured" and retry["rounds"][0]["rejected"]["sent_before"] == 5
+    # Later calls see the failed points as sent but not as observations.
+    later = policy.states[-1]
+    assert len(later.X_unmeasured) == 5 and len(later.X_sent) == len(later.X_online) + 5
+    assert len(later.y) == len(later.y_train) + len(later.y_online)
 
 
 def test_repeated_failure_stops_the_run(session_factory):
-    session = session_factory(evaluator=Truth(fail=5), calls=5, max_retries=1)
+    session = session_factory(evaluator=Truth(fail=5), calls=5, max_failures=2)
     summary = session.run()
     assert summary["attempts"] == 2 and summary["calls_completed"] == 0
     assert session.run_folder.read_json("metrics.json")["stop_reason"] == "evaluator_failed"
+    first, second = (json.loads(session.failed_attempt_path(1, k).read_text())["weights"] for k in (1, 2))
+    assert _same_points(first, second) == 0
+
+
+def test_failures_stop_at_the_budget(session_factory):
+    session = session_factory(evaluator=Truth(fail=5), calls=2, max_failures=5)
+    summary = session.run()
+    assert summary["attempts"] == 2 and summary["calls_left"] == 0
+    assert session.run_folder.read_json("metrics.json")["stop_reason"] == "budget_used"
 
 
 def test_quota_message_stops_at_once(session_factory):
-    session = session_factory(evaluator=Truth(fail=1, error=QuotaExhausted), max_retries=3)
+    session = session_factory(evaluator=Truth(fail=1, error=QuotaExhausted), max_failures=3)
     session.run()
     assert session.run_folder.read_json("metrics.json")["stop_reason"] == "quota_exhausted"
     assert session.journal().used == 1
@@ -206,13 +232,29 @@ def test_quota_message_stops_at_once(session_factory):
 def test_attempt_without_outcome_needs_the_operator(session_factory):
     session = session_factory(calls=3)
     session.run(max_calls=1)
+    # The process died while the solver ran call 2: the journal has the batch, the log has no R for it.
+    batch, record = session.propose(session.state())
+    loop._write_json_atomic(session.call_path(2), record)
     with open(session.journal_path, "a", encoding="utf-8") as stream:
-        stream.write(json.dumps({"attempt": 2, "call": 2, "event": "started", "n": 5, "batch_sha256": "x"}) + "\n")
+        stream.write(json.dumps({"attempt": 2, "call": 2, "event": "started", "n": len(batch),
+                                 "batch_sha256": record["batch_sha256"], "weights": batch.tolist()}) + "\n")
     with pytest.raises(loop.OnlineRunError, match="accept-lost-attempt"):
         session.run()
     assert session.accept_lost_attempts() == 1
+    assert json.loads(session.failed_attempt_path(2, 2).read_text())["status"] == "lost"
     summary = session.run()
     assert summary["attempts"] == 3 and summary["calls_completed"] == 2 and summary["calls_left"] == 0
+    # The lost batch is not resent after the restart.
+    assert _same_points(batch, [row.weights for row in session.log.rows()]) == 0
+
+
+def test_lost_attempt_without_its_batch_is_refused(session_factory):
+    session = session_factory(calls=3)
+    session.run(max_calls=1)
+    with open(session.journal_path, "a", encoding="utf-8") as stream:
+        stream.write(json.dumps({"attempt": 2, "call": 2, "event": "started", "n": 5, "batch_sha256": "x"}) + "\n")
+    with pytest.raises(loop.OnlineRunError, match="no batch in the journal"):
+        session.accept_lost_attempts()
 
 
 def test_measured_values_survive_a_crash_before_logging(session_factory, monkeypatch):

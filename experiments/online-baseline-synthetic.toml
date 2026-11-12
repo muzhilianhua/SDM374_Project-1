@@ -28,5 +28,5 @@ batch_size = 50
 seed = 2026
 candidate_margin = 25
 max_rounds = 3
-max_retries = 1
+max_failures = 2
 dedupe_atol = 1e-9

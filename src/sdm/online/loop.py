@@ -13,9 +13,12 @@ One run folder (`runs/<id>-online-<config>/`) holds the whole session and is the
 | `metrics.json` | progress summary, rewritten after every call |
 
 The call budget counts attempts, not successful calls: the solver may charge a call that fails or is killed,
-so every `started` line uses one of the calls. A `started` line without an outcome means the process died
-during a call; resuming then needs an explicit `accept_lost_attempt`, which records it as `lost` (the call
-may or may not have been charged) before the same deterministic batch is proposed again.
+so every `started` line uses one of the calls. A failed batch is never resent (decision 28): the solver had
+started, so its points count as sent (decision 20) even though no R came back. They go to
+`OnlineState.X_unmeasured`, the pre-submit check excludes them, and the next attempt sends a new batch.
+A `started` line without an outcome means the process died during a call; resuming then needs an explicit
+`accept_lost_attempt`, which records it as `lost` (the call may or may not have been charged) and treats
+its points the same way. Each `started` line carries its batch, so the journal alone says what was sent.
 """
 from __future__ import annotations
 
@@ -113,6 +116,19 @@ class Journal:
     def used(self) -> int:
         return len(self.started)
 
+    def unmeasured(self) -> np.ndarray:
+        """Points of attempts that ended `failed` or `lost`: sent, never measured, never to be sent again."""
+        ended = {record["attempt"] for record in self.records if record["event"] in ("failed", "lost")}
+        batches = []
+        for record in self.started:
+            if record["attempt"] not in ended:
+                continue
+            if "weights" not in record:
+                raise OnlineRunError(f"attempt {record['attempt']} has no batch in the journal, so its points "
+                                     "cannot be excluded from later calls")
+            batches.append(np.asarray(record["weights"], dtype=float).reshape(-1, DIM))
+        return np.vstack(batches) if batches else np.empty((0, DIM))
+
 
 class OnlineSession:
     """One run folder and the objects that act on it; `run()` advances it call by call."""
@@ -139,11 +155,12 @@ class OnlineSession:
         X_online = np.array([row.weights for row in rows], dtype=float).reshape(-1, DIM)
         y_online = np.array([row.R for row in rows], dtype=float)
         calls = np.array([row.call for row in rows], dtype=int)
-        used = self.journal().used
+        journal = self.journal()
         return OnlineState(call=(int(calls.max()) + 1 if len(calls) else 1), calls_total=self.settings.calls,
-                           calls_left=self.settings.calls - used, batch_size=self.settings.batch_size,
+                           calls_left=self.settings.calls - journal.used, batch_size=self.settings.batch_size,
                            seed=self.settings.seed, X_train=self.dataset.X, y_train=self.dataset.y,
-                           X_online=X_online, y_online=y_online, online_call=calls)
+                           X_online=X_online, y_online=y_online, online_call=calls,
+                           X_unmeasured=journal.unmeasured())
 
     def call_path(self, call: int) -> Path:
         return self.run_folder.path / "calls" / f"call_{call:02d}.json"
@@ -168,12 +185,22 @@ class OnlineSession:
         return recovered
 
     def accept_lost_attempts(self) -> int:
-        """Close every pending attempt as `lost`; it stays charged against the budget."""
+        """Close every pending attempt as `lost`: it stays charged and its points count as sent (decision 28)."""
         pending = self.journal().pending
         for record in pending:
+            if "weights" not in record:
+                raise OnlineRunError(f"attempt {record['attempt']} has no batch in the journal, so its points "
+                                     "cannot be excluded from later calls")
             _append_jsonl(self.journal_path, {"attempt": record["attempt"], "call": record["call"], "event": "lost",
                                               "time": _now(), "message": "process ended during the call; "
                                               "outcome unknown, accepted by the operator"})
+            path = self.call_path(record["call"])
+            if path.exists():
+                saved = json.loads(path.read_text(encoding="utf-8"))
+                if saved.get("batch_sha256") == record["batch_sha256"]:
+                    saved.update(status="lost", attempt=record["attempt"])
+                    _write_json_atomic(self.failed_attempt_path(record["call"], record["attempt"]), saved)
+                    path.unlink()
         return len(pending)
 
     # ----- one call ------------------------------------------------------------------------------------
@@ -182,7 +209,7 @@ class OnlineSession:
         settings = self.settings
         n = settings.batch_size
         requested = n + settings.candidate_margin
-        sent = state.X_online
+        sent = state.X_sent
         rounds = []
         for round_number in range(1, settings.max_rounds + 1):
             start = time.perf_counter()
@@ -211,46 +238,49 @@ class OnlineSession:
         return batch, record
 
     def send(self, call: int, batch: np.ndarray, record: dict) -> np.ndarray | None:
-        """Call the evaluator, retrying failures within budget; returns R, or None when the call failed."""
-        for _ in range(self.settings.max_retries + 1):
-            journal = self.journal()
-            if journal.used >= self.settings.calls:
-                record["stop_reason"] = "budget_used"
-                return None
-            attempt = journal.used + 1
-            _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "started", "time": _now(),
-                                              "n": len(batch), "batch_sha256": record["batch_sha256"]})
-            start = time.perf_counter()
-            try:
-                R = self.evaluator.evaluate(batch)
-            except (EvaluatorError, EvaluatorTimeout) as error:
-                outcome = {"attempt": attempt, "call": call, "event": "failed", "time": _now(),
-                           "seconds": time.perf_counter() - start, "error": type(error).__name__,
-                           "message": str(error), "stderr": error.stderr[-2000:], "returncode": error.returncode}
-                _append_jsonl(self.journal_path, outcome)
-                record["attempts"].append(outcome)
-                self.echo(f"call {call}: attempt {attempt} failed: {error}")
-                if isinstance(error, QuotaExhausted):
-                    record["stop_reason"] = "quota_exhausted"
-                    return None
-                continue
-            except BaseException as error:
-                # Anything else (a bug, PointNotInTable, Ctrl-C) leaves no doubt that no R was recorded.
-                _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "failed",
-                                                  "time": _now(), "error": type(error).__name__, "message": str(error)})
-                raise
-            outcome = {"attempt": attempt, "call": call, "event": "ok", "time": _now(),
-                       "seconds": time.perf_counter() - start}
-            # The R values reach disk in the call record first, so a crash before the log append loses
-            # nothing: recover_measured() finishes the bookkeeping on resume.
-            record["attempts"].append(outcome)
-            record.update(status="measured", R=R.tolist(), min_R=float(R.min()))
-            _write_json_atomic(self.call_path(call), record)
-            self.log.append(batch, R, source=self.policy.name, run_id=self.run_folder.id, call=call)
+        """Make one evaluator attempt with this batch; returns R, or None when it failed.
+
+        A failed batch is never resent (decision 28): its points stay in the journal and count as sent.
+        """
+        journal = self.journal()
+        if journal.used >= self.settings.calls:
+            record["stop_reason"] = "budget_used"
+            return None
+        attempt = journal.used + 1
+        record["attempt"] = attempt
+        _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "started", "time": _now(),
+                                          "n": len(batch), "batch_sha256": record["batch_sha256"],
+                                          "weights": batch.tolist()})
+        start = time.perf_counter()
+        try:
+            R = self.evaluator.evaluate(batch)
+        except (EvaluatorError, EvaluatorTimeout) as error:
+            outcome = {"attempt": attempt, "call": call, "event": "failed", "time": _now(),
+                       "seconds": time.perf_counter() - start, "error": type(error).__name__,
+                       "message": str(error), "stderr": error.stderr[-2000:], "returncode": error.returncode}
             _append_jsonl(self.journal_path, outcome)
-            return R
-        record["stop_reason"] = "evaluator_failed"
-        return None
+            record["attempts"].append(outcome)
+            self.echo(f"call {call}: attempt {attempt} failed: {error}; its {len(batch)} points count as sent")
+            record["stop_reason"] = "quota_exhausted" if isinstance(error, QuotaExhausted) else None
+            return None
+        except BaseException as error:
+            # Anything else (a bug, PointNotInTable, Ctrl-C) leaves no doubt that no R was recorded.
+            _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "failed",
+                                              "time": _now(), "error": type(error).__name__, "message": str(error)})
+            raise
+        outcome = {"attempt": attempt, "call": call, "event": "ok", "time": _now(),
+                   "seconds": time.perf_counter() - start}
+        # The R values reach disk in the call record first, so a crash before the log append loses
+        # nothing: recover_measured() finishes the bookkeeping on resume.
+        record["attempts"].append(outcome)
+        record.update(status="measured", R=R.tolist(), min_R=float(R.min()))
+        _write_json_atomic(self.call_path(call), record)
+        self.log.append(batch, R, source=self.policy.name, run_id=self.run_folder.id, call=call)
+        _append_jsonl(self.journal_path, outcome)
+        return R
+
+    def failed_attempt_path(self, call: int, attempt: int) -> Path:
+        return self.run_folder.path / "calls" / f"call_{call:02d}_attempt_{attempt:02d}_failed.json"
 
     # ----- the loop ------------------------------------------------------------------------------------
     def run(self, *, max_calls: int | None = None, dry_run: bool = False) -> dict:
@@ -265,6 +295,7 @@ class OnlineSession:
                 "charged it. Resume with --accept-lost-attempt to count it as used and propose again.")
         stop_reason = None
         made = 0
+        failures_in_a_row = 0
         while stop_reason is None:
             state = self.state()
             if state.call > self.settings.calls or state.calls_left <= 0:
@@ -292,10 +323,21 @@ class OnlineSession:
                 self.evaluator = self.evaluator_factory(state.calls_left)
             R = self.send(state.call, batch, record)
             if R is None:
+                if record.get("stop_reason") == "budget_used":
+                    stop_reason = "budget_used"
+                    break
+                # Keep the failed batch under its attempt number; the next proposal for this call number
+                # writes call_NN.json afresh, with the failed points screened out as already sent.
                 record["status"] = "failed"
-                _write_json_atomic(path, record)
-                stop_reason = record["stop_reason"]
-                break
+                _write_json_atomic(self.failed_attempt_path(state.call, record["attempt"]), record)
+                path.unlink(missing_ok=True)
+                failures_in_a_row += 1
+                if record["stop_reason"] is not None:
+                    stop_reason = record["stop_reason"]
+                elif failures_in_a_row >= self.settings.max_failures:
+                    stop_reason = "evaluator_failed"
+                continue
+            failures_in_a_row = 0
             made += 1
             self.write_outputs(stop_reason=None)
             summary = self.summary()

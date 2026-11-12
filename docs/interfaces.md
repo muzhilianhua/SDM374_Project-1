@@ -122,8 +122,9 @@ Shared rules, from the Windows smoke test (decisions.md, Resolved):
   costs one of the 20 calls:
   - `InvalidBatch`: nothing ran and no quota was used; fix the batch, never resend it unchanged.
   - `QuotaExhausted`: stop; there are no calls left.
-  - `EvaluatorTimeout`, `EvaluatorError`: the solver is deterministic, so the same batch may be resent,
-    but only within the remaining quota and after logging the failed attempt.
+  - `EvaluatorTimeout`, `EvaluatorError`: the solver had started, and it charges a call when it starts
+    (a call killed by a timeout leaves `usage.count` behind), so the batch counts as sent. Never resend it
+    (decisions 20 and 28): record its points as sent without R and send a new batch, within the quota.
   - `PointNotInTable` (table stand-in only): the policy proposed a point outside the replay pool.
 - Known extensions for the replay (T17), to be added there by wrapping these classes rather than here: a
   table with a surrogate fallback for points outside the pool, and an evaluator that injects failures to
@@ -180,7 +181,8 @@ Run folder `runs/<id>-online-<config>/`:
 | `config.toml`, `meta.json` | config and provenance; `meta.kind` is `online` |
 | `online_log.csv` | successful calls (T07 format above); `source` is the policy name |
 | `attempts.jsonl` | evaluator attempts: `started` (written before launching), then `ok`, `failed` or `lost` |
-| `calls/call_NN.json` | status (`proposed`, `measured`, `failed`, `not_sent`), screening rounds and rejections, the batch, predicted mean / std, tags, policy diagnostics, attempts, R |
+| `calls/call_NN.json` | status (`proposed`, `measured`, `not_sent`), screening rounds and rejections, the batch, predicted mean / std, tags, policy diagnostics, attempts, R |
+| `calls/call_NN_attempt_MM_failed.json` | the same record for a failed (`failed`) or lost (`lost`) attempt MM; its points count as sent |
 | `calls/call_NN_dry_run.json` | what `--dry-run` would send |
 | `predictions.csv` | `call,point,predicted_R` for every logged point (T26 sidecar), when the policy predicts |
 | `sessions.jsonl` | one line per invocation (git state, options) plus the evaluator's `describe()` at exit |
@@ -190,13 +192,17 @@ Budget and failures:
 
 - The budget is `[online] calls` attempts: every `started` line counts, because the solver may charge a call
   that fails or is killed. The evaluator is built with `quota = calls - attempts so far`.
-- `EvaluatorError` / `EvaluatorTimeout`: logged as `failed`, and the same deterministic batch is resent up
-  to `max_retries` times within the budget; then the run stops with `evaluator_failed` (exit code 1).
-  `QuotaExhausted` stops at once. Any other exception is logged as `failed` and re-raised.
+- A failed batch is never resent (decision 28). Each `started` line carries the batch it sent. After
+  `EvaluatorError` / `EvaluatorTimeout` the attempt is logged as `failed`; its points go to
+  `OnlineState.X_unmeasured` (sent, no R: not observations), the pre-submit check rejects them as
+  `sent_before`, and the loop asks the policy for a new batch for the same call number. After
+  `max_failures` failed attempts in a row the run stops with `evaluator_failed` (exit code 1).
+  `QuotaExhausted` stops at once. Any other exception is logged as `failed` (its points count as sent too)
+  and re-raised.
 - A `started` line with no outcome means the process died during a call. If `calls/call_NN.json` already
   holds the R values (status `measured`, same `batch_sha256`), resume finishes the logging by itself.
   Otherwise resume refuses until the operator passes `--accept-lost-attempt`, which records the attempt as
-  `lost` (still charged) and continues.
+  `lost` (still charged, its points count as sent) and continues with a new batch.
 - Resume refuses when the code differs from the run's recorded commit or either is dirty (decision 22),
   unless `--allow-code-change`. The dataset sha256 must match.
 - `--dev-reset-usage` deletes `solver/usage.count` before every call (needs `SDM_DEV_RESET_USAGE=1`; never
@@ -221,7 +227,7 @@ batch_size = 50
 seed = 2026                   # OnlineState.seed
 candidate_margin = 25
 max_rounds = 3
-max_retries = 1
+max_failures = 2              # failed attempts in a row before the run stops
 dedupe_atol = 1e-9
 ```
 
