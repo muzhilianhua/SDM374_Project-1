@@ -1,0 +1,16 @@
+# Course baseline surrogate (quadratic ridge) scored on the frozen 2x5 splits with the v3.2 score.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "ridge2"
+
+[model.params]
+alphas = [0.1, 1.0, 10.0, 100.0, 1000.0]
+folds = 5
+seed = 2026
+
+[evaluate]
+protocol = "frozen-v32"  # folds and seed come from frozen_data/; do not set them here
+top_k = 50
