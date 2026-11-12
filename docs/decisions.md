@@ -170,13 +170,15 @@ and record the new decision here with a date.
   decision 19 admits only the 2048 training rows before the first call and T03 is unanswered, so no value
   measured with the real evaluator may enter the first batch. The log stays in `analysis/replay/evidence/`
   as a search history only. Re-run on the replay (20 calls × up to 50 points, 1600-row holdout pool, 448
-  known rows, 5 seeds, `table` and `semi-synthetic` truth), with curves scoring submitted points only
+  initial rows, 5 seeds, `table` and `semi-synthetic` truth), with curves scoring submitted points only
   and the training incumbent kept as a separate reference: under `semi-synthetic` every setting reaches
   the truth minimum (128.175) in one call, so that arm cannot rank settings. Under `table` only the first
   batch separates: exploit ≥ 0.5 puts each seed's pool minimum in the first batch (117.350 / 117.507),
   while pure exploration starts at 126.937 ± 2.833 and needs a median of 5 calls; every exploit ≥ 0.5 run
   then exhausts its eligible pool, so later calls and the final value (117.350 ± 1.957) cannot rank those
-  settings. The radius is **not** separated by this replay: under `table` it only filters a fixed pool
+  settings. Those pool rows are training rows and the online pre-submit drops duplicates (decisions 20
+  and 26), so 117.350 / 117.507 are selection tests on the table, not achievable online scores. The
+  radius is **not** separated by this replay: under `table` it only filters a fixed pool
   (seed 0 / `histgb` / exploit 0.5 submits 10 points at radius 0.5 against 501 at 1.0), and under
   `semi-synthetic`, which uses the real `bayes-pool` proposer, both radii give the same result
   (128.263 after call 1, 128.175 final), so radius 1.0 is a judgment call.

@@ -27,20 +27,20 @@ tool; the protocol below is what that run has to reproduce.
 |---|---|
 | calls × batch | 20 × up to 50 (the online budget: 1000 points) |
 | truth sources | `table` (held-out rows scored by lookup) and `semi-synthetic` (`histgb` fitted on all 2048 rows, following `analysis/coupling/`) |
-| candidate pool | 1600 rows; the other 448 rows are the policy's known data |
+| candidate pool | 1600 rows; the other 448 rows are the policy's initial data |
 | seeds | 0–4 (policy RNG and model seed); the pool split is per seed |
 | policies | exploit share 0.0 / 0.5 / 1.0, trust radius 1.0 (and 0.5 for the strongest surrogate) |
 | surrogates | `ridge2`, `histgb` (replay-cheap settings) |
 | evaluator calls | none |
 
-**Scoring.** Curves record the best R among *submitted points only*. The best of the 448 known rows
+**Scoring.** Curves record the best R among *submitted points only*. The best of the 448 initial rows
 (the training incumbent) is reported as a separate reference line and never enters the curve. The
-first version of this study took the minimum over known + submitted, so first-call and final scores
+first version of this study took the minimum over initial + submitted, so first-call and final scores
 quoted a row the policy never submitted; that bug made every table-truth setting appear to tie at
 115.765.
 
 **Trust-radius rule (table truth).** A pool row is eligible only within `median spacing × radius` of
-the known data. When fewer rows qualify than the batch needs, the batch is simply smaller — the
+the initial data. When fewer rows qualify than the batch needs, the batch is simply smaller — the
 radius is never widened silently. Every call logs the eligible count, the submitted count and the
 actual distance ratios (`runs.jsonl` → `call_log`); the results table carries mean points per call
 and the worst observed distance ratio so the constraint is auditable. (The first version filled
@@ -85,7 +85,8 @@ Reading:
 - **Under `table`, the exploit share separates at call 1 only.** Exploit ≥ 0.5 puts each seed's pool
   minimum in the first batch (best after call 1: 117.350 for 1.0 / histgb, 117.507 for ridge2 at
   0.5; mean final 117.350 ± 1.957, i.e. 115.765 for seeds 0/3/4 and 120.119 / 119.334 for seeds
-  1/2, where `p01969` sits in the known rows). These pool rows are training rows (see Limits). Pure
+  1/2, where `p01969` sits in the initial 448 rows). These pool rows are all training rows, so
+  117.350 is a selection test on the table, not an achievable online score (see Limits). Pure
   exploration starts at 126.937 ± 2.833 and needs a median of 5 calls to reach the same value. Past
   call 1 this truth cannot rank the exploit ≥ 0.5 settings: each run exhausts its eligible pool, so
   every final value is that pool's minimum.
@@ -99,15 +100,15 @@ Reading:
   replay gives no evidence for 1.0 over 0.5.
 - **Surrogate.** ridge2 and histgb are indistinguishable under both truths. T12 owns model
   selection; this replay does not.
-- The training incumbent is reference only. For seeds 1 and 2 it equals 115.765 (`p01969` already
-  known), which no submission can beat; the submitted curve then converges to the pool minimum
+- The training incumbent is reference only. For seeds 1 and 2 it equals 115.765 (`p01969` is in the
+  initial 448), which no submission can beat; the submitted curve then converges to the pool minimum
   instead.
 
 ## Recommendation (defaults for T15; the online policy input stays D's)
 
 | parameter | value | source |
 |---|---|---|
-| exploit share | 0.5 | tied with 1.0 under both truths (final 117.350 already at call 1 under table); 0.5 keeps half the batch exploring. Judgment call, not a measured gain |
+| exploit share | 0.5 | the only separation is a selection test on the table: exploit ≥ 0.5 puts each seed's pool minimum in the first batch, but those rows are training rows, so 117.350 is not an achievable online score. 0.5 keeps half the batch exploring; judgment call, not a measured gain |
 | trust radius | 1.0 (max distance ratio) | judgment call: this replay cannot separate 0.5 from 1.0 (identical under semi-synthetic truth; the table arm is limited by fixed-pool supply) |
 | batch composition | 25 acquisition + 25 exploration points, no repeats | decision 19 / T15 |
 | surrogate | whatever T12 selects | this replay cannot rank models |
@@ -158,7 +159,7 @@ table and figures; the markdown table above is `results/20261109/summary.md`.
   that row being submitted. The online pre-submit check (decisions 20 and 26, T08) drops points that
   duplicate a training row, so no table-arm number is an achievable online submission. Read the
   call-1 comparison as a selection test on the table, not as a first-batch score.
-- The table pool holds few rows near the known data: even radius 1.0 exhausts its in-radius supply
+- The table pool holds few rows near the initial data: even radius 1.0 exhausts its in-radius supply
   after ~550 submissions, so mean points/call is ~27 rather than 50. The real policy proposes points
   from a continuous space and has no such supply limit, so this arm cannot measure a radius effect
   at all — it only ranks how much supply each radius leaves.
