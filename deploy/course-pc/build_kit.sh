@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Build the offline course-computer kit (T10, temporary version for the 2026-11-12 test).
 #
-#   deploy/course-pc/build_kit.sh <python-3.11-windows-install_only.tar.gz> <wheels dir> <output dir>
+#   deploy/course-pc/build_kit.sh <python-3.11-windows-install_only.tar.gz> <wheels dir> <output dir> [bat|script]
+#
+# bat (default): numbered .bat steps. script: a single run.py in the shape of the course solver/run.py.
 #
 # The Python archive is python-build-standalone's cpython-3.11.x-x86_64-pc-windows-msvc-install_only
 # build (the one `uv python install` uses). Wheels: on any machine,
@@ -16,9 +18,12 @@ set -euo pipefail
 python_archive=$1
 wheels=$2
 out=$3
+mode=${4:-bat}
 repo=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 commit=$(git -C "$repo" rev-parse HEAD)
-name="sdm374-course-pc-${commit:0:7}"
+suffix=""
+[ "$mode" = script ] && suffix="-script"
+name="sdm374-course-pc${suffix}-${commit:0:7}"
 kit="$out/$name"
 
 if [ -e "$kit" ]; then
@@ -32,7 +37,11 @@ tar -xzf "$python_archive" -C "$kit"            # creates python/ with python.ex
 test -f "$kit/python/python.exe"
 mkdir -p "$kit/wheels"
 cp "$wheels"/*.whl "$kit/wheels/"
-cp "$repo"/deploy/course-pc/bat/*.bat "$kit/"
+if [ "$mode" = script ]; then
+  cp "$repo/deploy/course-pc/run.py" "$kit/run.py"
+else
+  cp "$repo"/deploy/course-pc/bat/*.bat "$kit/"
+fi
 cp "$repo/deploy/course-pc/README.md" "$kit/README.md"
 (cd "$out" && rm -f "$name.zip" && zip -qr -X "$name.zip" "$name")
 echo "kit: $kit"

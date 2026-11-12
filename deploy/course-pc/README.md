@@ -37,6 +37,26 @@ Unzip to any folder (Chinese characters and spaces in the path are fine: the cod
 The run refuses a `solver.exe` whose sha256 differs from `repo/solver/CHECKSUMS.sha256`; the probe shows
 whether the course copy matches before anything runs.
 
+## Script form (`run.py`)
+
+`build_kit.sh ... script` builds `sdm374-course-pc-script-<commit>/` with a single `run.py` in place of the
+.bat files, shaped like the course's `solver/run.py` (20 calls to `solver.exe`) with its todo filled by
+`sdm online`. It needs only the standard library, so any Python on the course computer (3.14 included)
+can start it; the online program runs in the bundled Python 3.11. Its default config is `online-histgb`
+(histgb surrogate + the same pure-exploit pool, about 2 s to refit per call against the GP's 2.5 min).
+
+| Command | Same as | Calls solver.exe |
+|---|---|---|
+| `python run.py check` | `00_probe` + `01_setup` + `02_selftest` | no |
+| `python run.py probe` / `setup` / `selftest` | one of the three | no |
+| `python run.py [--solver PATH] [--max-calls N]` | `03_run_online` (asks for `YES`) | **yes** |
+| `python run.py --yes` | unattended graded-run form | **yes** |
+| `python run.py resume [RUN]` | `05_resume` | **yes** |
+| `python run.py collect` | `04_collect` | no |
+
+`solver.exe` is looked up in this order: `--solver`, `SOLVER_EXE` at the top of `run.py`, next to `run.py`,
+`repo/solver/`. Every step's output is also written to `results/*.log`.
+
 ## What to bring back
 
 The zip from `04_collect.bat`. Compare on a development machine:

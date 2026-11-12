@@ -1,0 +1,47 @@
+# Temporary online policy for the course-computer test (course-pc kit, run.py), until T12/T15/T18 land.
+# histgb (B's histgb_low80_full settings, as in histgb-v32.toml) refits in seconds instead of the GP's
+# minutes; the optimizer is the same pure-exploit pool with a wide trust region as online-gp-wide.toml.
+# Graded-style run: python run.py (calls solver.exe; every call uses quota).
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "histgb"
+
+[model.params]
+max_leaf_nodes = 15
+learning_rate = 0.05
+max_iter = 600
+l2_regularization = 0.0
+low_fraction = 0.2
+low_weight = 1.0
+seed = 2026
+
+[optimizer]
+name = "bayes-pool"
+
+[optimizer.params]
+acquisition = "mean"
+samples = 6000
+max_distance_ratio = 1.0
+separation_ratio = 0.1
+seed = 2026
+
+[policy]
+name = "surrogate"   # refit [model] on all observations each call, then ask [optimizer] for a batch
+
+[evaluator]
+kind = "solver"
+
+[evaluator.params]
+timeout = 3600.0     # seconds per call; 50 sets took about 290 s on A's PC
+
+[online]
+calls = 20
+batch_size = 50
+seed = 2026
+candidate_margin = 25
+max_rounds = 3
+max_failures = 2
+dedupe_atol = 1e-9
