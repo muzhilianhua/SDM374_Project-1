@@ -38,6 +38,20 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **The GP-ARD ranks well near the data but cannot see the low region away from it** (2026-11-12, T35,
+  [study](../analysis/gp_assumptions/README.md), `analysis/gp_assumptions/delivery/20261112/`, built on `08b77c8`
+  with `study.py` sha256 `a1e8bbad…`, no evaluator calls). Checked on 3 random 1400/648 splits of the training
+  table and scored on the 6,548 distinct points of the local solver log (`analysis/replay/evidence/`, used only to
+  choose the model under decision 27). The team kernel (`bayes-search`, `additive-ard`) beats generic 21-dim ARD
+  kernels (held-out MAE 3.40 vs 4.74–5.98), so additivity over buildings holds; the solver is deterministic
+  (7 repeated points, spread 0); in-distribution 95 % coverage is 0.948. Two assumptions fail: the constant prior
+  mean (far from data real R is below the prediction, z mean −1.48; the log's 200 lowest points, R ≈ 105.1 at
+  about 1.9 spacings on the simplex boundary, are predicted 124.4 ± 8.8) and small-scale stationarity (ripples of
+  about 1 R at scales 0.01–0.025 near that region). On optimizer-chosen points near the data the `std` is about half
+  the real error (z sd 1.90). Of three changes, a quadratic trend and a log target hurt local ranking;
+  per-building length scales help slightly (near MAE 3.63 vs 3.74) but did not converge in 18 iterations. No kernel
+  change makes the surrogate predict the low region, so reaching it is an exploration question (T15, T18).
+
 - **Offline submission 2 met the bar; the online target is 115.68** (submitted 2026-11-05, recorded
   2026-11-09). Real R = **115.68**, below the bar 115.7648 (`p01969`, decision 17) by about 0.08. The
   exact value returned by the evaluator is still to be added. The best offline result is therefore
