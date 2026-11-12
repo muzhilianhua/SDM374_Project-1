@@ -1,6 +1,8 @@
 """Read-only dashboard for the append-only online evaluator log."""
 from __future__ import annotations
 
+from datetime import datetime
+
 import altair as alt
 import streamlit as st
 
@@ -19,7 +21,12 @@ st.caption("每 2 秒读取最新日志。" if auto_refresh else "自动刷新�
 @st.fragment(run_every="2s" if auto_refresh else None)
 def online_panel():
     log_path = common.runs_root() / "online_log.csv"
-    st.caption(f"日志位置：`{log_path}`")
+    try:
+        updated = datetime.fromtimestamp(log_path.stat().st_mtime).astimezone().strftime(
+            "%Y-%m-%d %H:%M:%S %Z")
+    except OSError:
+        updated = "不可用"
+    st.caption(f"日志位置：`{log_path}` · 最后更新：{updated}")
     log, error = read_online_log(log_path)
     if error:
         st.error(error)
