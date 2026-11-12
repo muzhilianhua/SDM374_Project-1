@@ -42,6 +42,7 @@ uv run sdm train    -c experiments/<name>.toml    # fit on all rows, save model.
 uv run sdm optimize -c experiments/<name>.toml -n 50 [--model-run <train-run-id>]
 uv run sdm predict  --model-run <run-id> --weights weights.json   # or --weights - (stdin)
 uv run sdm runs --json                    # all recorded runs with metrics
+uv run sdm online -c experiments/online-baseline-synthetic.toml   # online loop (T08); --resume <run-id>
 uv run sdm reproduce <run-id>             # re-execute and compare; exit 1 if outputs differ
 uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbench (humans)
 ```
@@ -52,6 +53,8 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 |---|---|---|
 | `src/sdm/models/` | Surrogate plugins, one file per model | 刘润泽 (B) |
 | `src/sdm/optimizers/` | Optimizer plugins, one file per algorithm | 艾子齐 (C) |
+| `src/sdm/policies/` | Online batch policies (`BatchPolicy`), one file per policy | 艾子齐 (C) |
+| `src/sdm/online/` | Online evaluator, call log, pre-submit check and main loop (`sdm online`) | 张子木 (A); `log.py` 武韵扬 (E) |
 | `src/sdm/replay.py`, `analysis/mechanism/` | Offline replay of the online loop; mechanism studies | 胡馨澜 (D) |
 | `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | 张子木 (A), 胡馨澜 (D) |
 | `analysis/v33_protocol/` | Frozen V3.3 model-evaluation protocol and releases | 刘润泽 (B) |
