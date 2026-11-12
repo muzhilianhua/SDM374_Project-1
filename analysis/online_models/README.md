@@ -72,7 +72,27 @@ The script (1) checks every sha256 in `hp_noise001/CHECKSUMS.json`, and (2) reco
 metrics on the 2048 `dataset_same8/train.csv` rows, comparing against `metrics.json`
 (RMSE `0.578354`, MAE `0.403200`, tolerance 1e-6).
 
-## 6. Known limitations
+## 6. Reproduce the training from scratch (untrained spec)
+
+`hp_noise001_untrained/train_config.json` freezes every ingredient of the model and contains **no
+weights**: the 7 length scales, the global interaction weight, noise `0.01`, jitter `1e-8`, unit sample
+weights, the target scaler rule (`loc = mean(y)`, `scale = std(y, ddof=0)`), the dataset
+(`dataset_same8/train.csv`, 2048 rows, sha256 `877b5f8e...`, frozen split
+`sdm374.same8.splits.2x5x3.frozen.v1`) and the environment pins.
+
+With all parameters fixed there is nothing to optimise, so training is a single Cholesky solve:
+
+```bash
+.venv/Scripts/python analysis/online_models/train_hp_noise001.py
+.venv/Scripts/python analysis/online_models/train_hp_noise001.py --write out/model.pkl  # optional dump
+```
+
+The script verifies the dataset sha256 and row count, re-derives `loc`/`scale`, rebuilds `alpha` from the
+fixed kernel, and compares against the committed `hp_noise001/model.pkl`. Expected agreement is within
+`1e-8`; the observed round-off is `6.9e-12` for `alpha` and `4.1e-12` for the 2048 training predictions.
+No RNG is used; `seed = 2026` only records the offline multi-start search.
+
+## 7. Known limitations
 
 - Training labels lie in R in [110, 243]. For far points with R >= 180 (about 4% of `eval_log`) all six
   candidates have RMSE above 25 and R2 < 0: that is an out-of-distribution region, do not use this model
@@ -80,7 +100,7 @@ metrics on the 2048 `dataset_same8/train.csv` rows, comparing against `metrics.j
 - The GP predictive std is optimistic: in the largest-std bin `mean|resid| / mean_std` is about 1.4-1.9,
   so inflate it when std drives the exploration budget.
 
-## 7. Provenance
+## 8. Provenance
 
 Offline workspace `外推方案/模型库/hp_noise001` (an untracked local directory that was never committed).
 Training script: the `hp_noise001` config in `外推方案/gp提分/run_variant.py`; per-fold summary:
