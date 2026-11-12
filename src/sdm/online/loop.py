@@ -146,6 +146,26 @@ class Journal:
         return sum(record["attempt"] not in rejected for record in self.started)
 
     @property
+    def next_attempt(self) -> int:
+        """Id for the next `started` line. Ids are never reused: outcomes are matched to starts by id, so a
+        reused id would close a new attempt by an old outcome. A `rejected` attempt keeps its id but costs
+        no call, so this can run ahead of `used + 1`."""
+        return max((record["attempt"] for record in self.started), default=0) + 1
+
+    def check(self) -> None:
+        """Each attempt id has exactly one `started` line, before any outcome for it."""
+        seen: set[int] = set()
+        for record in self.records:
+            attempt = record["attempt"]
+            if record["event"] == "started":
+                if attempt in seen:
+                    raise OnlineRunError(f"attempt id {attempt} is started twice in the journal; outcomes cannot "
+                                         "be matched to attempts (journal written by an older loop?)")
+                seen.add(attempt)
+            elif attempt not in seen:
+                raise OnlineRunError(f"journal has a {record['event']!r} line for attempt {attempt} before it started")
+
+    @property
     def last_outcome(self) -> str | None:
         """Event of the latest closed attempt (`ok`, `failed`, `lost`, `rejected`), or None."""
         outcomes = [record["event"] for record in self.records if record["event"] != "started"]
@@ -183,7 +203,9 @@ class OnlineSession:
 
     # ----- state on disk -------------------------------------------------------------------------------
     def journal(self) -> Journal:
-        return Journal(tuple(_read_jsonl(self.journal_path)))
+        journal = Journal(tuple(_read_jsonl(self.journal_path)))
+        journal.check()
+        return journal
 
     def state(self) -> OnlineState:
         rows = self.log.rows()
@@ -296,7 +318,7 @@ class OnlineSession:
         if journal.used >= self.settings.calls:
             record["stop_reason"] = "budget_used"
             return None
-        attempt = journal.used + 1
+        attempt = journal.next_attempt
         record["attempt"] = attempt
         _append_jsonl(self.journal_path, {"attempt": attempt, "call": call, "event": "started", "time": _now(),
                                           "n": len(batch), "batch_sha256": record["batch_sha256"],

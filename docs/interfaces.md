@@ -202,7 +202,9 @@ Budget and failures:
   `max_failures` failed attempts in a row the run stops with `evaluator_failed` (exit code 1); so does a
   run whose budget runs out right after a failed or lost attempt. `QuotaExhausted` stops at once.
   `InvalidBatch` and `PointNotInTable` are raised before anything is evaluated: the attempt is closed as
-  `rejected`, not charged, its points do not count as sent, and the exception is re-raised.
+  `rejected`, not charged, its points do not count as sent, and the exception is re-raised. Attempt ids are
+  never reused (the next id is the largest so far + 1), so after a `rejected` attempt the id runs ahead of
+  the charged count; a journal with an id started twice, or an outcome before its start, stops the run.
 - Any other exception during a call (Ctrl-C, `SystemExit`, a bug) may arrive after the solver used the call
   and computed R, so the attempt is left `started` with no outcome and the exception is re-raised;
   `SolverEvaluator` kills the solver's process tree first (it runs in its own process group and does not

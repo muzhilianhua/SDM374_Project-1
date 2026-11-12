@@ -322,6 +322,55 @@ def test_rejected_attempt_is_not_charged(session_factory):
     assert len(session.state().X_sent) == 0
 
 
+class RejectsOnce(Truth):
+    """First call: a point outside the replay pool (rejected, not charged); second: Ctrl-C mid-call."""
+
+    def __init__(self):
+        super().__init__()
+        self.step = 0
+
+    def _run(self, W):
+        from sdm.online import PointNotInTable
+        self.step += 1
+        if self.step == 1:
+            raise PointNotInTable("not a table row")
+        if self.step == 2:
+            raise KeyboardInterrupt
+        return truth(W), "", {}
+
+
+def test_attempt_ids_are_not_reused_after_a_rejection(session_factory):
+    # PR #21 re-review: an id reused after `rejected` closed the next start, so a crash went unnoticed.
+    from sdm.online import PointNotInTable
+    session = session_factory(evaluator=RejectsOnce(), calls=3, batch=2)
+    with pytest.raises(PointNotInTable):
+        session.run()
+    with pytest.raises(KeyboardInterrupt):
+        session.run()
+    events = [(item["attempt"], item["event"]) for item in journal(session.run_folder)]
+    assert events == [(1, "started"), (1, "rejected"), (2, "started")]
+    assert [item["attempt"] for item in session.journal().pending] == [2] and session.journal().used == 1
+    with pytest.raises(loop.OnlineRunError, match="accept-lost-attempt"):
+        session.run()
+    crashed = np.asarray(journal(session.run_folder)[-1]["weights"])
+    assert session.accept_lost_attempts() == 1
+    summary = session.run()
+    assert summary["attempts"] == 3 and summary["calls_completed"] == 2 and summary["calls_left"] == 0
+    assert _same_points(crashed, [row.weights for row in session.log.rows()]) == 0
+    # The rejected batch was never sent, so it is not excluded as sent; only the lost one is.
+    assert len(session.state().X_unmeasured) == 2
+
+
+def test_journal_with_a_reused_attempt_id_is_refused(session_factory):
+    session = session_factory(calls=3)
+    session.run(max_calls=1)
+    with open(session.journal_path, "a", encoding="utf-8") as stream:
+        stream.write(json.dumps({"attempt": 1, "call": 2, "event": "started", "n": 1, "batch_sha256": "x",
+                                 "weights": [[1 / 7] * 21]}) + "\n")
+    with pytest.raises(loop.OnlineRunError, match="started twice"):
+        session.run()
+
+
 def test_solver_process_tree_is_killed_on_ctrl_c(tmp_path, monkeypatch):
     import subprocess
     from sdm.online import evaluator as evaluator_module
