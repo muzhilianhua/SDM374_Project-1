@@ -1,0 +1,24 @@
+{
+  "purpose": "development-only warm-start search; not an official graded policy",
+  "calls": 4,
+  "new_points": 200,
+  "failures": [],
+  "historical_best_R": 104.85173345124349,
+  "best_R": 104.82363781426102,
+  "improvement_vs_historical": 0.02809563698247075,
+  "batch_minima": [
+    104.84841013047844,
+    104.84841013047844,
+    104.82363781426102,
+    104.82363781426102
+  ],
+  "best_weights_3x7": [
+    [0.0003855940280853773, 0.045, 0.0, 0.0, 0.25760783455547365, 0.687006571416441, 0.01],
+    [0.0, 0.010000000000000002, 0.0, 0.00039537335553845715, 0.21029005469622036, 0.6492697850133666, 0.13004478693487453],
+    [0.0, 0.0, 0.010203889879216995, 0.0, 0.24635139398101458, 0.7322436592497638, 0.011201056890004769]
+  ],
+  "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+  "full_records": "analysis/development_search/results/20261112-local-search/summary.json",
+  "provenance": "analysis/development_search/results/20261112-local-search/provenance.json",
+  "note": "The full records are local ignored artifacts. The candidate is warm-started from historical measurements and must not be embedded in the formal cold-start online policy."
+}

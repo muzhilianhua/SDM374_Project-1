@@ -54,7 +54,7 @@
 | ID | 任务 | 负责人 | 工作量 | 优先级 | 依赖 | 状态 | 证据 |
 |---|---|---|---|---|---|---|---|
 | T06 | 评估器接口：统一封装真实 `solver.exe`（stdin JSON、解析 R、退出码 2、超时、正式模式下不重置 `usage.count`），以及测试和回放用的替身（表格查值、半合成真值） | 张子木 | M | P0 | — | 待审 | PR #17 |
-| T07 | 调用日志 `online_log.csv`（调用号、21 个权重、R、来源策略、run id）及只追加写入 | 武韵扬 | M | P0 | — | 待审 | PR #18; `tests/test_online_log.py` |
+| T07 | 调用日志 `online_log.csv`（调用号、21 个权重、R、来源策略、run id）及只追加写入 | 武韵扬 | M | P0 | — | 完成 | PR #18; `tests/test_online_log.py` |
 | T08 | 在线主程序（如 `sdm online -c <配置>`）：读 2048 行 → 策略提议 → 提交前检查（单纯形约束、与训练行和已发送点去重、≤ 50 组、额度）→ 调用评估器 → 写日志 → 并入 `X, y` 重训 → 下一次；中断后从日志续跑，不重复调用 | 张子木 | L | P0 | T06 T07 | 待审 | PR #21；`tests/test_online_loop.py` |
 | T09 | 跨机器确定性：同一配置在两台机器上生成的每一批点逐位一致（注意 xgboost 的跨平台差异），否则固定线程数或换用确定的模型 | 刘润泽 | M | P0 | T08 | 待办 | |
 | T10 | 课程电脑运行包：在 Python 3.14、可能没有 uv、可能是中文路径的环境下，一条命令即可运行（锁定依赖或打包环境），并写清步骤 | 武韵扬 | M | P0 | T03 | 待办 | |
@@ -95,10 +95,10 @@
 
 | ID | 任务 | 负责人 | 工作量 | 优先级 | 依赖 | 状态 | 证据 |
 |---|---|---|---|---|---|---|---|
-| T23 | 用 CLI 复现 baseline（`baseline-v32.toml`、`baseline.toml`），记录 run id | 武韵扬 | S | P1 | — | 待审 | PR #16；`20261109-222524-evaluate-baseline-v32`、`20261109-222557-evaluate-baseline`；紧凑证据 `analysis/ablation/evidence/` |
+| T23 | 用 CLI 复现 baseline（`baseline-v32.toml`、`baseline.toml`），记录 run id | 武韵扬 | S | P1 | — | 完成 | PR #16；`20261109-222524-evaluate-baseline-v32`、`20261109-222557-evaluate-baseline`；紧凑证据 `analysis/ablation/evidence/` |
 | T24 | 消融框架：用 `sdm.catalog` 从运行记录生成"模型 × 特征 × 优化器"表格，一条命令重建所有图 | 武韵扬 | M | P1 | T23 | 进行中 | PR #16 只交付评估表；特征与优化器联结、消融图仍待完成 |
-| T25 | 报告模板：IEEE LaTeX 工程、统一绘图风格和各章篇幅预算；起草 Introduction | 武韵扬 | S | P1 | — | 待审 | PR #16；`report/main.tex`、`report/style.mplstyle` |
-| T26 | 20 次调用的逐次最优值曲线，以及每次调用的预测与实测 R 对比 | 武韵扬 | M | P1 | T07 | 待审 | PR #19; `analysis/online_results/plot.py` |
+| T25 | 报告模板：IEEE LaTeX 工程、统一绘图风格和各章篇幅预算；起草 Introduction | 武韵扬 | S | P1 | — | 完成 | PR #16；`report/main.tex`、`report/style.mplstyle` |
+| T26 | 20 次调用的逐次最优值曲线，以及每次调用的预测与实测 R 对比 | 武韵扬 | M | P1 | T07 | 完成 | PR #19; `analysis/online_results/plot.py` |
 | T27 | 本人章节与幻灯片：系统框架、评估器接口、在线主程序、冻结与正式运行（T06、T08、T21、T22） | 张子木 | M | P0 | T08 | 待办 | |
 | T28 | 本人章节与幻灯片：代理模型选择、在线重训与不确定度校准（T12–T14、T19） | 刘润泽 | M | P0 | T12 | 待办 | |
 | T29 | 本人章节与幻灯片：批量提议策略与信赖域自适应（T15、T16） | 艾子齐 | M | P0 | T15 | 待办 | |
