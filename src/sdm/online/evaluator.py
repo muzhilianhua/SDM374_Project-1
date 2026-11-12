@@ -264,6 +264,11 @@ class SolverEvaluator(Evaluator):
                 stderr = ""
             raise EvaluatorTimeout(f"solver did not finish within {self.timeout:g} s and was killed",
                                    stderr=(stderr or "").strip(), returncode=process.poll()) from None
+        except BaseException:
+            # Ctrl-C or another interruption: the solver runs in its own process group and would not see
+            # it, so kill the tree before passing the interruption on.
+            kill_process_tree(process)
+            raise
         return process.returncode, stdout, stderr
 
     def describe(self):

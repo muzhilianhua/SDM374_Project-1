@@ -34,6 +34,8 @@ and record the new decision here with a date.
 | 25 | `solver/` is in the repository with its course files unchanged; `solver.exe` (182 MB, above GitHub's 100 MB limit) and `usage.count` are git-ignored. Everyone copies the exe from the course `solver.zip` and checks it against `solver/CHECKSUMS.sha256` (sha256 `293867b8…a077247`) | User, 2026-11-08 |
 | 26 | Online framework design (T06, T08). Every source of R implements one `Evaluator` interface (`sdm.online`): the real `solver.exe`, a table of measured rows and a synthetic truth, with the solver's input rules and a per-object 20-call quota; the graded run never touches `usage.count`. The online loop (T08) will: drive proposals through a new `BatchPolicy` interface that receives the whole online state (call number, quota left, every sent point and result) and wraps existing optimizers; keep its state in a run folder `runs/<id>-online-<config>/` and resume with `sdm online --resume <run-id>` after checking the config and code version; when the pre-submit check drops points (duplicates of training rows or sent points, simplex violations), ask the policy for more candidates and send the first 50 that pass in the policy's order, logging the reasons, and stop without calling only when none pass | User, 2026-11-10 |
 | 27 | Local evaluator runs may be used to choose the model, the policy and their hyperparameters (replay and real `solver.exe` alike). The only constraint is no data leakage into the submitted code: before its first call it uses only the 2048 training rows, and it never embeds points or R values measured locally (as data, warm starts or exclusion lists); tuned settings in its config are allowed | User, 2026-11-11, from the rule that only the training rows may be used before the first call (decision 19); not yet confirmed by the TA. Supersedes the open question on tuning |
+| 28 | A failed or interrupted evaluator call is never resent. Once `solver.exe` has started, its batch counts as sent (decision 20) even when no R came back: the online loop records those points as sent without R, never proposes them again and sends a new batch within the remaining calls. Only a batch rejected before anything is evaluated may be fixed and sent: `InvalidBatch` (the solver's input rules, checked locally) or, in replay only, `PointNotInTable` (a point outside the table stand-in's pool); such an attempt is closed as `rejected` and costs no call | User, 2026-11-12, the default until the TA says whether a failed call may be resent (Open questions). Measured on a copy of `solver.exe`: a 50-set call killed by a timeout after 8 s leaves `usage.count` behind, so the solver charges a call when it starts; an input it rejects (exit 2) does not; it accepts a repeated point and returns the same R. Supersedes the 2026-11-11 T06 note that a failed batch may be resent |
+| 29 | The online code does not exclude the offline submissions' weights (submission 1, submission 2) from its batches, and never writes those weights or their R into code, configs or exclusion lists. Before its first call it uses only the 2048 training rows (decision 19), and the pre-submit check screens only training rows and points this run has sent. A policy proposing a submission's exact W again (within `dedupe_atol`) is practically impossible and would only cost one point | User, 2026-11-12, answering the PR #21 review; supersedes the 2026-11-05 note that graded online calls must not resend submission 2 |
 
 ## Findings
 
@@ -63,7 +65,7 @@ and record the new decision here with a date.
    [0.2503591199835666, 0.13676967852502162, 0.08313656511837968, 0.0604233371724592, 0.12222408788989679, 0.28509901488585504, 0.06198819642482098],
    [0.15385821627102042, 0.024476314274646253, 0.04676748001670422, 0.07253577354819109, 0.10757230502504825, 0.36784761044033554, 0.22694230042405422]]
   ```
-  This W and its R count as known points: graded online calls must not resend it (decision 19).
+  This W and its R are known points, but the online code neither excludes nor embeds them (decision 29).
 - **Offline submission 2 recommendation** (2026-11-05, [study](../analysis/offline_submission2/README.md),
   commit `e4fa38f`, no solver calls). The PR #9 research lead (r06 line, distance 0.08, ARD gain −2.63) is
   rejected by a second smooth judge, the new `local-gp` (`20261105-145418-evaluate-local-gp-v32`):
@@ -223,8 +225,7 @@ and record the new decision here with a date.
   in what form (repository, zip, single script), is not settled (owner: A). Working assumption (user,
   2026-11-11): the TA runs our code, so the package must start with one documented command, run unattended
   and leave its logs where they can be sent back (T10, T22).
-- Schema of the policy's call log and how each call's result is merged into `X, y` (owner: A, after the
-  evaluator format is known).
+- May a failed call be resent? A call that fails or is killed after `solver.exe` started has been charged, but returned no R. Decision 28 treats its points as sent and never resends them; ask the TA whether resending the same batch after such a failure is allowed (owner: A, with T03).
 
 ## Resolved
 
@@ -236,6 +237,10 @@ and record the new decision here with a date.
     stdin directly.
   - Teams may come and test on the course computer on Thursday 2026-11-12 (class 9).
   - Teams may send their code to the TA, who will run a test for them.
+- Call log schema and how results reach `X, y` (2026-11-11): `online_log.csv` (T07, `sdm.online.log`) holds
+  every successful call; the online loop (T08) rebuilds `OnlineState` from the 2048 training rows plus the
+  log before each call, so a policy refits on `state.X = [X_train; X_online]`. Attempts, including failed
+  and interrupted ones, are journalled separately in `attempts.jsonl` (docs/interfaces.md, Online loop).
 - Evaluator determinism: deterministic (decision 20, 2026-10-31).
 - Submitting a training row offline: allowed but only ties the bar (decision 17, 2026-10-31).
 - Whether weights must sum to 1: no, non-negative with one positive per building (decision 21, 2026-10-31).
