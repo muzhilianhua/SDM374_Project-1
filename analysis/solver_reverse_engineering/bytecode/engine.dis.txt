@@ -1,0 +1,1099 @@
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 ('Joint-distribution diagnostic. Unchanged stable_v2 controller and ramping metric.')
+              4 STORE_NAME               0 (__doc__)
+
+  2           6 LOAD_CONST               1 (0)
+              8 LOAD_CONST               2 (('Path',))
+             10 IMPORT_NAME              1 (pathlib)
+             12 IMPORT_FROM              2 (Path)
+             14 STORE_NAME               2 (Path)
+             16 POP_TOP
+
+  3          18 LOAD_CONST               1 (0)
+             20 LOAD_CONST               3 (None)
+             22 IMPORT_NAME              3 (os)
+             24 STORE_NAME               3 (os)
+
+  4          26 LOAD_CONST               4 (('OMP_NUM_THREADS', 'MKL_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'NUMEXPR_NUM_THREADS'))
+             28 GET_ITER
+        >>   30 FOR_ITER                12 (to 56)
+             32 STORE_NAME               4 (name)
+
+  5          34 LOAD_CONST               5 ('1')
+             36 LOAD_NAME                3 (os)
+             38 LOAD_ATTR                5 (environ)
+             48 LOAD_NAME                4 (name)
+             50 STORE_SUBSCR
+             54 JUMP_BACKWARD           13 (to 30)
+
+  6     >>   56 LOAD_CONST               1 (0)
+             58 LOAD_CONST               3 (None)
+             60 IMPORT_NAME              6 (sys)
+             62 STORE_NAME               6 (sys)
+             64 LOAD_CONST               1 (0)
+             66 LOAD_CONST               3 (None)
+             68 IMPORT_NAME              7 (json)
+             70 STORE_NAME               7 (json)
+             72 LOAD_CONST               1 (0)
+             74 LOAD_CONST               3 (None)
+             76 IMPORT_NAME              8 (hashlib)
+             78 STORE_NAME               8 (hashlib)
+             80 LOAD_CONST               1 (0)
+             82 LOAD_CONST               3 (None)
+             84 IMPORT_NAME              9 (time)
+             86 STORE_NAME               9 (time)
+             88 LOAD_CONST               1 (0)
+             90 LOAD_CONST               3 (None)
+             92 IMPORT_NAME             10 (datetime)
+             94 STORE_NAME              10 (datetime)
+             96 LOAD_CONST               1 (0)
+             98 LOAD_CONST               3 (None)
+            100 IMPORT_NAME             11 (concurrent.futures)
+            102 IMPORT_FROM             12 (futures)
+            104 STORE_NAME              13 (cf)
+            106 POP_TOP
+            108 LOAD_CONST               1 (0)
+            110 LOAD_CONST               3 (None)
+            112 IMPORT_NAME             14 (multiprocessing)
+            114 STORE_NAME              14 (multiprocessing)
+            116 LOAD_CONST               1 (0)
+            118 LOAD_CONST               3 (None)
+            120 IMPORT_NAME             15 (traceback)
+            122 STORE_NAME              15 (traceback)
+
+  7         124 LOAD_CONST               1 (0)
+            126 LOAD_CONST               3 (None)
+            128 IMPORT_NAME             16 (numpy)
+            130 STORE_NAME              17 (np)
+
+  8         132 PUSH_NULL
+            134 LOAD_NAME                2 (Path)
+            136 LOAD_NAME               18 (__file__)
+            138 PRECALL                  1
+            142 CALL                     1
+            152 LOAD_METHOD             19 (resolve)
+            174 PRECALL                  0
+            178 CALL                     0
+            188 LOAD_ATTR               20 (parent)
+            198 STORE_NAME              21 (HERE)
+
+  9         200 LOAD_NAME               21 (HERE)
+            202 STORE_NAME              22 (TEAMS)
+
+ 10         204 LOAD_CONST               6 (<code object read at 0x0000026431DE9920, file "engine.py", line 10>)
+            206 MAKE_FUNCTION            0
+            208 STORE_NAME              23 (read)
+
+ 11         210 LOAD_CONST               7 (<code object dump at 0x0000026431BC3690, file "engine.py", line 11>)
+            212 MAKE_FUNCTION            0
+            214 STORE_NAME              24 (dump)
+
+ 14         216 LOAD_CONST               8 (<code object sha at 0x000002643D8C4030, file "engine.py", line 14>)
+            218 MAKE_FUNCTION            0
+            220 STORE_NAME              25 (sha)
+
+ 15         222 LOAD_CONST               9 (<code object stamp at 0x0000026431F70B70, file "engine.py", line 15>)
+            224 MAKE_FUNCTION            0
+            226 STORE_NAME              26 (stamp)
+
+ 16         228 LOAD_CONST              10 (<code object valid at 0x0000026431802A70, file "engine.py", line 16>)
+            230 MAKE_FUNCTION            0
+            232 STORE_NAME              27 (valid)
+
+ 20         234 LOAD_CONST              11 (<code object rawkey at 0x0000026431F80760, file "engine.py", line 20>)
+            236 MAKE_FUNCTION            0
+            238 STORE_NAME              28 (rawkey)
+
+ 21         240 LOAD_CONST              12 (<code object initializer at 0x0000026431F2A930, file "engine.py", line 21>)
+            242 MAKE_FUNCTION            0
+            244 STORE_NAME              29 (initializer)
+
+ 36         246 LOAD_CONST              13 (<code object worker at 0x0000026431F2C490, file "engine.py", line 36>)
+            248 MAKE_FUNCTION            0
+            250 STORE_NAME              30 (worker)
+            252 LOAD_CONST               3 (None)
+            254 RETURN_VALUE
+
+Disassembly of <code object read at 0x0000026431DE9920, file "engine.py", line 10>:
+ 10           0 RESUME                   0
+              2 LOAD_GLOBAL              1 (NULL + json)
+             14 LOAD_ATTR                1 (loads)
+             24 LOAD_GLOBAL              5 (NULL + Path)
+             36 LOAD_FAST                0 (p)
+             38 PRECALL                  1
+             42 CALL                     1
+             52 LOAD_METHOD              3 (read_text)
+             74 LOAD_CONST               1 ('utf-8')
+             76 KW_NAMES                 2
+             78 PRECALL                  1
+             82 CALL                     1
+             92 PRECALL                  1
+             96 CALL                     1
+            106 RETURN_VALUE
+
+Disassembly of <code object dump at 0x0000026431BC3690, file "engine.py", line 11>:
+ 11           0 RESUME                   0
+
+ 12           2 LOAD_GLOBAL              1 (NULL + Path)
+             14 LOAD_FAST                0 (p)
+             16 PRECALL                  1
+             20 CALL                     1
+             30 STORE_FAST               0 (p)
+             32 LOAD_FAST                0 (p)
+             34 LOAD_ATTR                1 (parent)
+             44 LOAD_METHOD              2 (mkdir)
+             66 LOAD_CONST               1 (True)
+             68 LOAD_CONST               1 (True)
+             70 KW_NAMES                 2
+             72 PRECALL                  2
+             76 CALL                     2
+             86 POP_TOP
+
+ 13          88 LOAD_FAST                0 (p)
+             90 LOAD_METHOD              3 (with_suffix)
+            112 LOAD_FAST                0 (p)
+            114 LOAD_ATTR                4 (suffix)
+            124 LOAD_CONST               3 ('.tmp')
+            126 BINARY_OP                0 (+)
+            130 PRECALL                  1
+            134 CALL                     1
+            144 STORE_FAST               2 (temp)
+            146 LOAD_FAST                2 (temp)
+            148 LOAD_METHOD              5 (write_text)
+            170 LOAD_GLOBAL             13 (NULL + json)
+            182 LOAD_ATTR                7 (dumps)
+            192 LOAD_FAST                1 (value)
+            194 LOAD_CONST               4 (False)
+            196 LOAD_CONST               5 (2)
+            198 LOAD_CONST               4 (False)
+            200 KW_NAMES                 6
+            202 PRECALL                  4
+            206 CALL                     4
+            216 LOAD_CONST               7 ('\n')
+            218 BINARY_OP                0 (+)
+            222 LOAD_CONST               8 ('utf-8')
+            224 KW_NAMES                 9
+            226 PRECALL                  2
+            230 CALL                     2
+            240 POP_TOP
+            242 LOAD_FAST                2 (temp)
+            244 LOAD_METHOD              8 (replace)
+            266 LOAD_FAST                0 (p)
+            268 PRECALL                  1
+            272 CALL                     1
+            282 POP_TOP
+            284 LOAD_CONST               0 (None)
+            286 RETURN_VALUE
+
+Disassembly of <code object sha at 0x000002643D8C4030, file "engine.py", line 14>:
+ 14           0 RESUME                   0
+              2 LOAD_GLOBAL              1 (NULL + hashlib)
+             14 LOAD_ATTR                1 (sha256)
+             24 LOAD_GLOBAL              5 (NULL + Path)
+             36 LOAD_FAST                0 (p)
+             38 PRECALL                  1
+             42 CALL                     1
+             52 LOAD_METHOD              3 (read_bytes)
+             74 PRECALL                  0
+             78 CALL                     0
+             88 PRECALL                  1
+             92 CALL                     1
+            102 LOAD_METHOD              4 (hexdigest)
+            124 PRECALL                  0
+            128 CALL                     0
+            138 RETURN_VALUE
+
+Disassembly of <code object stamp at 0x0000026431F70B70, file "engine.py", line 15>:
+ 15           0 RESUME                   0
+              2 LOAD_GLOBAL              0 (datetime)
+             14 LOAD_ATTR                0 (datetime)
+             24 LOAD_METHOD              1 (now)
+             46 LOAD_GLOBAL              0 (datetime)
+             58 LOAD_ATTR                2 (timezone)
+             68 LOAD_ATTR                3 (utc)
+             78 PRECALL                  1
+             82 CALL                     1
+             92 LOAD_METHOD              4 (isoformat)
+            114 PRECALL                  0
+            118 CALL                     0
+            128 RETURN_VALUE
+
+Disassembly of <code object valid at 0x0000026431802A70, file "engine.py", line 16>:
+ 16           0 RESUME                   0
+
+ 17           2 LOAD_GLOBAL              1 (NULL + np)
+             14 LOAD_ATTR                1 (asarray)
+             24 LOAD_FAST                0 (w)
+             26 LOAD_GLOBAL              4 (float)
+             38 KW_NAMES                 1
+             40 PRECALL                  2
+             44 CALL                     2
+             54 STORE_FAST               1 (a)
+
+ 18          56 LOAD_FAST                1 (a)
+             58 LOAD_ATTR                3 (shape)
+             68 LOAD_CONST               2 ((3, 7))
+             70 COMPARE_OP               2 (==)
+             76 POP_JUMP_FORWARD_IF_FALSE   106 (to 290)
+             78 LOAD_GLOBAL              1 (NULL + np)
+             90 LOAD_ATTR                4 (isfinite)
+            100 LOAD_FAST                1 (a)
+            102 PRECALL                  1
+            106 CALL                     1
+            116 LOAD_METHOD              5 (all)
+            138 PRECALL                  0
+            142 CALL                     0
+            152 POP_JUMP_FORWARD_IF_FALSE    68 (to 290)
+            154 LOAD_FAST                1 (a)
+            156 LOAD_CONST               3 (0)
+            158 COMPARE_OP               5 (>=)
+            164 LOAD_METHOD              5 (all)
+            186 PRECALL                  0
+            190 CALL                     0
+            200 POP_JUMP_FORWARD_IF_FALSE    44 (to 290)
+            202 LOAD_FAST                1 (a)
+            204 LOAD_METHOD              6 (sum)
+            226 LOAD_CONST               4 (1)
+            228 KW_NAMES                 5
+            230 PRECALL                  1
+            234 CALL                     1
+            244 LOAD_CONST               3 (0)
+            246 COMPARE_OP               4 (>)
+            252 LOAD_METHOD              5 (all)
+            274 PRECALL                  0
+            278 CALL                     0
+            288 POP_JUMP_FORWARD_IF_TRUE     2 (to 294)
+        >>  290 LOAD_ASSERTION_ERROR
+            292 RAISE_VARARGS            1
+
+ 19     >>  294 LOAD_FAST                1 (a)
+            296 LOAD_METHOD              7 (tolist)
+            318 PRECALL                  0
+            322 CALL                     0
+            332 RETURN_VALUE
+
+Disassembly of <code object rawkey at 0x0000026431F80760, file "engine.py", line 20>:
+ 20           0 RESUME                   0
+              2 LOAD_GLOBAL              1 (NULL + hashlib)
+             14 LOAD_ATTR                1 (sha256)
+             24 LOAD_GLOBAL              5 (NULL + np)
+             36 LOAD_ATTR                3 (asarray)
+             46 LOAD_GLOBAL              9 (NULL + valid)
+             58 LOAD_FAST                0 (w)
+             60 PRECALL                  1
+             64 CALL                     1
+             74 LOAD_CONST               1 ('<f8')
+             76 KW_NAMES                 2
+             78 PRECALL                  2
+             82 CALL                     2
+             92 LOAD_METHOD              5 (tobytes)
+            114 PRECALL                  0
+            118 CALL                     0
+            128 PRECALL                  1
+            132 CALL                     1
+            142 LOAD_METHOD              6 (hexdigest)
+            164 PRECALL                  0
+            168 CALL                     0
+            178 RETURN_VALUE
+
+Disassembly of <code object initializer at 0x0000026431F2A930, file "engine.py", line 21>:
+ 21           0 RESUME                   0
+
+ 22           2 LOAD_CONST               1 (0)
+              4 LOAD_CONST               0 (None)
+              6 IMPORT_NAME              0 (torch)
+              8 STORE_FAST               1 (torch)
+             10 LOAD_CONST               1 (0)
+             12 LOAD_CONST               0 (None)
+             14 IMPORT_NAME              1 (warnings)
+             16 STORE_FAST               2 (warnings)
+
+ 23          18 LOAD_FAST                1 (torch)
+             20 LOAD_METHOD              2 (set_num_threads)
+             42 LOAD_CONST               2 (1)
+             44 PRECALL                  1
+             48 CALL                     1
+             58 POP_TOP
+             60 LOAD_FAST                1 (torch)
+             62 LOAD_METHOD              3 (set_num_interop_threads)
+             84 LOAD_CONST               2 (1)
+             86 PRECALL                  1
+             90 CALL                     1
+            100 POP_TOP
+
+ 24         102 LOAD_FAST                2 (warnings)
+            104 LOAD_METHOD              4 (filterwarnings)
+            126 LOAD_CONST               3 ('ignore')
+            128 LOAD_CONST               4 ('You are using `torch.load`')
+            130 LOAD_GLOBAL             10 (FutureWarning)
+            142 KW_NAMES                 5
+            144 PRECALL                  3
+            148 CALL                     3
+            158 POP_TOP
+
+ 25         160 LOAD_CONST               1 (0)
+            162 LOAD_CONST               6 (('DataSet',))
+            164 IMPORT_NAME              6 (citylearn.data)
+            166 IMPORT_FROM              7 (DataSet)
+            168 STORE_FAST               3 (DataSet)
+            170 POP_TOP
+
+ 29         172 LOAD_CONST               1 (0)
+            174 LOAD_CONST               7 (('PV', 'Battery'))
+            176 IMPORT_NAME              8 (citylearn.energy_model)
+            178 IMPORT_FROM              9 (PV)
+            180 STORE_FAST               4 (PV)
+            182 IMPORT_FROM             10 (Battery)
+            184 STORE_FAST               5 (Battery)
+            186 POP_TOP
+
+ 30         188 LOAD_CONST               8 (<code object forbidden_autosize at 0x0000026431E4EE90, file "engine.py", line 30>)
+            190 MAKE_FUNCTION            0
+            192 STORE_FAST               6 (forbidden_autosize)
+
+ 31         194 LOAD_FAST                6 (forbidden_autosize)
+            196 LOAD_FAST                4 (PV)
+            198 STORE_ATTR              11 (autosize)
+            208 LOAD_FAST                6 (forbidden_autosize)
+            210 LOAD_FAST                5 (Battery)
+            212 STORE_ATTR              11 (autosize)
+
+ 32         222 LOAD_CONST               9 (<code object <lambda> at 0x0000026431F64DB0, file "engine.py", line 32>)
+            224 MAKE_FUNCTION            0
+            226 LOAD_FAST                3 (DataSet)
+            228 STORE_ATTR              12 (get_pv_sizing_data)
+
+ 33         238 LOAD_CONST              10 (<code object <lambda> at 0x0000026431F649F0, file "engine.py", line 33>)
+            240 MAKE_FUNCTION            0
+            242 LOAD_FAST                3 (DataSet)
+            244 STORE_ATTR              13 (get_battery_sizing_data)
+
+ 34         254 LOAD_CONST               1 (0)
+            256 LOAD_CONST               0 (None)
+            258 IMPORT_NAME             14 (controller)
+            260 STORE_FAST               7 (controller)
+
+ 35         262 LOAD_GLOBAL             31 (NULL + Path)
+            274 LOAD_FAST                7 (controller)
+            276 LOAD_ATTR               16 (__file__)
+            286 PRECALL                  1
+            290 CALL                     1
+            300 LOAD_METHOD             17 (resolve)
+            322 PRECALL                  0
+            326 CALL                     0
+            336 LOAD_GLOBAL             36 (HERE)
+            348 LOAD_CONST              11 ('controller.py')
+            350 BINARY_OP               11 (/)
+            354 LOAD_METHOD             17 (resolve)
+            376 PRECALL                  0
+            380 CALL                     0
+            390 COMPARE_OP               2 (==)
+            396 POP_JUMP_FORWARD_IF_TRUE     2 (to 402)
+            398 LOAD_ASSERTION_ERROR
+            400 RAISE_VARARGS            1
+        >>  402 LOAD_CONST               0 (None)
+            404 RETURN_VALUE
+
+Disassembly of <code object forbidden_autosize at 0x0000026431E4EE90, file "engine.py", line 30>:
+ 30           0 RESUME                   0
+              2 LOAD_GLOBAL              1 (NULL + RuntimeError)
+             14 LOAD_CONST               1 ('Autosizing is forbidden in this fixed-equipment task')
+             16 PRECALL                  1
+             20 CALL                     1
+             30 RAISE_VARARGS            1
+
+Disassembly of <code object <lambda> at 0x0000026431F64DB0, file "engine.py", line 32>:
+ 32           0 RESUME                   0
+              2 LOAD_CONST               0 (None)
+              4 RETURN_VALUE
+
+Disassembly of <code object <lambda> at 0x0000026431F649F0, file "engine.py", line 33>:
+ 33           0 RESUME                   0
+              2 LOAD_CONST               0 (None)
+              4 RETURN_VALUE
+
+Disassembly of <code object worker at 0x0000026431F2C490, file "engine.py", line 36>:
+              0 MAKE_CELL               19 (trace)
+
+ 36           2 RESUME                   0
+
+ 37           4 LOAD_GLOBAL              1 (NULL + time)
+             16 LOAD_ATTR                1 (perf_counter)
+             26 PRECALL                  0
+             30 CALL                     0
+             40 STORE_FAST               1 (start)
+
+ 38          42 NOP
+
+ 39          44 LOAD_GLOBAL              5 (NULL + read)
+             56 LOAD_FAST                0 (job)
+             58 LOAD_CONST               1 ('scenario_path')
+             60 BINARY_SUBSCR
+             70 PRECALL                  1
+             74 CALL                     1
+             84 STORE_FAST               2 (spec)
+             86 LOAD_GLOBAL              7 (NULL + Path)
+             98 LOAD_FAST                0 (job)
+            100 LOAD_CONST               1 ('scenario_path')
+            102 BINARY_SUBSCR
+            112 PRECALL                  1
+            116 CALL                     1
+            126 LOAD_ATTR                4 (parent)
+            136 LOAD_FAST                2 (spec)
+            138 LOAD_CONST               2 ('dataset_dir')
+            140 BINARY_SUBSCR
+            150 BINARY_OP               11 (/)
+            154 LOAD_METHOD              5 (resolve)
+            176 PRECALL                  0
+            180 CALL                     0
+            190 STORE_FAST               3 (data)
+            192 LOAD_GLOBAL              5 (NULL + read)
+            204 LOAD_FAST                3 (data)
+            206 LOAD_CONST               3 ('schema.json')
+            208 BINARY_OP               11 (/)
+            212 PRECALL                  1
+            216 CALL                     1
+            226 STORE_FAST               4 (schema)
+
+ 40         228 LOAD_FAST                2 (spec)
+            230 LOAD_CONST               4 ('buildings')
+            232 BINARY_SUBSCR
+            242 GET_ITER
+        >>  244 FOR_ITER                59 (to 364)
+            246 STORE_FAST               5 (name)
+
+ 41         248 LOAD_GLOBAL             13 (NULL + all)
+            260 LOAD_CONST               5 (<code object <genexpr> at 0x0000026431DE9B80, file "engine.py", line 41>)
+            262 MAKE_FUNCTION            0
+            264 LOAD_FAST                4 (schema)
+            266 LOAD_CONST               4 ('buildings')
+            268 BINARY_SUBSCR
+            278 LOAD_FAST                5 (name)
+            280 BINARY_SUBSCR
+            290 LOAD_METHOD              7 (values)
+            312 PRECALL                  0
+            316 CALL                     0
+            326 GET_ITER
+            328 PRECALL                  0
+            332 CALL                     0
+            342 PRECALL                  1
+            346 CALL                     1
+            356 POP_JUMP_FORWARD_IF_TRUE     2 (to 362)
+            358 LOAD_ASSERTION_ERROR
+            360 RAISE_VARARGS            1
+        >>  362 JUMP_BACKWARD           60 (to 244)
+
+ 42     >>  364 LOAD_CONST               6 (0)
+            366 LOAD_CONST               7 (('evaluate_probe',))
+            368 IMPORT_NAME              8 (evaluate)
+            370 IMPORT_FROM              9 (evaluate_probe)
+            372 STORE_FAST               6 (evaluate_probe)
+            374 POP_TOP
+
+ 43         376 LOAD_GLOBAL              7 (NULL + Path)
+            388 LOAD_GLOBAL             20 (sys)
+            400 LOAD_ATTR               11 (modules)
+            410 LOAD_CONST               8 ('evaluate')
+            412 BINARY_SUBSCR
+            422 LOAD_ATTR               12 (__file__)
+            432 PRECALL                  1
+            436 CALL                     1
+            446 LOAD_METHOD              5 (resolve)
+            468 PRECALL                  0
+            472 CALL                     0
+            482 LOAD_GLOBAL             26 (TEAMS)
+            494 LOAD_CONST               9 ('evaluate.py')
+            496 BINARY_OP               11 (/)
+            500 LOAD_METHOD              5 (resolve)
+            522 PRECALL                  0
+            526 CALL                     0
+            536 COMPARE_OP               2 (==)
+            542 POP_JUMP_FORWARD_IF_TRUE     2 (to 548)
+            544 LOAD_ASSERTION_ERROR
+            546 RAISE_VARARGS            1
+
+ 44     >>  548 PUSH_NULL
+            550 LOAD_FAST                6 (evaluate_probe)
+            552 LOAD_FAST                0 (job)
+            554 LOAD_CONST              10 ('weights')
+            556 BINARY_SUBSCR
+            566 LOAD_FAST                0 (job)
+            568 LOAD_CONST               1 ('scenario_path')
+            570 BINARY_SUBSCR
+            580 LOAD_CONST              11 ('load_pv')
+            582 LOAD_CONST               6 (0)
+            584 LOAD_CONST               6 (0)
+            586 LOAD_CONST              12 (True)
+            588 KW_NAMES                13
+            590 PRECALL                  6
+            594 CALL                     6
+            604 STORE_FAST               7 (result)
+
+ 45         606 LOAD_GLOBAL             29 (NULL + np)
+            618 LOAD_ATTR               15 (asarray)
+            628 LOAD_FAST                7 (result)
+            630 LOAD_CONST              14 ('net')
+            632 BINARY_SUBSCR
+            642 LOAD_GLOBAL             32 (float)
+            654 KW_NAMES                15
+            656 PRECALL                  2
+            660 CALL                     2
+            670 STORE_FAST               8 (net)
+
+ 46         672 LOAD_FAST                7 (result)
+            674 LOAD_CONST              16 ('steps')
+            676 BINARY_SUBSCR
+            686 LOAD_GLOBAL             35 (NULL + len)
+            698 LOAD_FAST                8 (net)
+            700 PRECALL                  1
+            704 CALL                     1
+            714 SWAP                     2
+            716 COPY                     2
+            718 COMPARE_OP               2 (==)
+            724 POP_JUMP_FORWARD_IF_FALSE     6 (to 738)
+            726 LOAD_CONST              17 (168)
+            728 COMPARE_OP               2 (==)
+            734 POP_JUMP_FORWARD_IF_FALSE    41 (to 818)
+            736 JUMP_FORWARD             2 (to 742)
+        >>  738 POP_TOP
+            740 JUMP_FORWARD            38 (to 818)
+        >>  742 LOAD_GLOBAL             29 (NULL + np)
+            754 LOAD_ATTR               18 (isfinite)
+            764 LOAD_FAST                8 (net)
+            766 PRECALL                  1
+            770 CALL                     1
+            780 LOAD_METHOD              6 (all)
+            802 PRECALL                  0
+            806 CALL                     0
+            816 POP_JUMP_FORWARD_IF_TRUE     2 (to 822)
+        >>  818 LOAD_ASSERTION_ERROR
+            820 RAISE_VARARGS            1
+
+ 47     >>  822 LOAD_GLOBAL             29 (NULL + np)
+            834 LOAD_ATTR               19 (isclose)
+            844 LOAD_FAST                7 (result)
+            846 LOAD_CONST              18 ('ramping')
+            848 BINARY_SUBSCR
+            858 LOAD_GLOBAL             41 (NULL + abs)
+            870 LOAD_GLOBAL             29 (NULL + np)
+            882 LOAD_ATTR               21 (diff)
+            892 LOAD_FAST                8 (net)
+            894 PRECALL                  1
+            898 CALL                     1
+            908 PRECALL                  1
+            912 CALL                     1
+            922 LOAD_METHOD             22 (sum)
+            944 PRECALL                  0
+            948 CALL                     0
+            958 LOAD_CONST              19 (1e-12)
+            960 KW_NAMES                20
+            962 PRECALL                  3
+            966 CALL                     3
+            976 POP_JUMP_FORWARD_IF_TRUE     2 (to 982)
+            978 LOAD_ASSERTION_ERROR
+            980 RAISE_VARARGS            1
+
+ 48     >>  982 LOAD_GLOBAL             13 (NULL + all)
+            994 LOAD_CONST              21 (<code object <genexpr> at 0x0000026431DF72D0, file "engine.py", line 48>)
+            996 MAKE_FUNCTION            0
+            998 LOAD_FAST                7 (result)
+           1000 LOAD_CONST              22 ('diagnostics')
+           1002 BINARY_SUBSCR
+           1012 GET_ITER
+           1014 PRECALL                  0
+           1018 CALL                     0
+           1028 PRECALL                  1
+           1032 CALL                     1
+           1042 POP_JUMP_FORWARD_IF_TRUE     2 (to 1048)
+           1044 LOAD_ASSERTION_ERROR
+           1046 RAISE_VARARGS            1
+
+ 49     >> 1048 LOAD_GLOBAL             13 (NULL + all)
+           1060 LOAD_CONST              23 (<code object <genexpr> at 0x0000026431F70CB0, file "engine.py", line 49>)
+           1062 MAKE_FUNCTION            0
+           1064 LOAD_FAST                7 (result)
+           1066 LOAD_CONST              22 ('diagnostics')
+           1068 BINARY_SUBSCR
+           1078 GET_ITER
+           1080 PRECALL                  0
+           1084 CALL                     0
+           1094 PRECALL                  1
+           1098 CALL                     1
+           1108 POP_JUMP_FORWARD_IF_TRUE     2 (to 1114)
+           1110 LOAD_ASSERTION_ERROR
+           1112 RAISE_VARARGS            1
+
+ 50     >> 1114 BUILD_LIST               0
+           1116 STORE_FAST               9 (runtime_audit)
+
+ 51        1118 LOAD_FAST                7 (result)
+           1120 LOAD_CONST              24 ('building_traces')
+           1122 BINARY_SUBSCR
+           1132 GET_ITER
+        >> 1134 EXTENDED_ARG             2
+           1136 FOR_ITER               706 (to 2550)
+           1138 STORE_DEREF             19 (trace)
+
+ 52        1140 LOAD_FAST                4 (schema)
+           1142 LOAD_CONST               4 ('buildings')
+           1144 BINARY_SUBSCR
+           1154 LOAD_DEREF              19 (trace)
+           1156 LOAD_CONST              25 ('building')
+           1158 BINARY_SUBSCR
+           1168 BINARY_SUBSCR
+           1178 LOAD_CONST              26 ('dynamics')
+           1180 BINARY_SUBSCR
+           1190 LOAD_CONST              27 ('attributes')
+           1192 BINARY_SUBSCR
+           1202 STORE_FAST              10 (attrs)
+
+ 53        1204 LOAD_FAST               10 (attrs)
+           1206 LOAD_CONST              28 ('input_observation_names')
+           1208 BINARY_SUBSCR
+           1218 LOAD_METHOD             23 (index)
+           1240 LOAD_CONST              29 ('indoor_dry_bulb_temperature')
+           1242 PRECALL                  1
+           1246 CALL                     1
+           1256 STORE_FAST              11 (position)
+
+ 54        1258 LOAD_FAST               10 (attrs)
+           1260 LOAD_CONST              30 ('input_normalization_minimum')
+           1262 BINARY_SUBSCR
+           1272 LOAD_FAST               11 (position)
+           1274 BINARY_SUBSCR
+           1284 STORE_FAST              12 (lo)
+           1286 LOAD_FAST               10 (attrs)
+           1288 LOAD_CONST              31 ('input_normalization_maximum')
+           1290 BINARY_SUBSCR
+           1300 LOAD_FAST               11 (position)
+           1302 BINARY_SUBSCR
+           1312 STORE_FAST              13 (hi)
+
+ 55        1314 LOAD_GLOBAL             29 (NULL + np)
+           1326 LOAD_ATTR               15 (asarray)
+           1336 LOAD_DEREF              19 (trace)
+           1338 LOAD_CONST              32 ('temp')
+           1340 BINARY_SUBSCR
+           1350 PRECALL                  1
+           1354 CALL                     1
+           1364 STORE_FAST              14 (temp)
+           1366 LOAD_GLOBAL             29 (NULL + np)
+           1378 LOAD_ATTR               15 (asarray)
+           1388 LOAD_DEREF              19 (trace)
+           1390 LOAD_CONST              33 ('soc')
+           1392 BINARY_SUBSCR
+           1402 PRECALL                  1
+           1406 CALL                     1
+           1416 STORE_FAST              15 (soc)
+
+ 56        1418 LOAD_GLOBAL             29 (NULL + np)
+           1430 LOAD_ATTR               15 (asarray)
+           1440 LOAD_DEREF              19 (trace)
+           1442 LOAD_CONST              34 ('reference_cooling')
+           1444 BINARY_SUBSCR
+           1454 PRECALL                  1
+           1458 CALL                     1
+           1468 STORE_FAST              16 (ref)
+           1470 LOAD_GLOBAL             29 (NULL + np)
+           1482 LOAD_ATTR               15 (asarray)
+           1492 LOAD_DEREF              19 (trace)
+           1494 LOAD_CONST              35 ('delivered_cooling')
+           1496 BINARY_SUBSCR
+           1506 PRECALL                  1
+           1510 CALL                     1
+           1520 STORE_FAST              17 (actual)
+
+ 57        1522 LOAD_GLOBAL             13 (NULL + all)
+           1534 LOAD_CLOSURE            19 (trace)
+           1536 BUILD_TUPLE              1
+           1538 LOAD_CONST              36 (<code object <genexpr> at 0x000002643D8C4180, file "engine.py", line 57>)
+           1540 MAKE_FUNCTION            8 (closure)
+           1542 LOAD_CONST              37 (('temp', 'setpoint', 'reference_cooling', 'delivered_cooling', 'cooling_kwh', 'soc', 'net'))
+           1544 GET_ITER
+           1546 PRECALL                  0
+           1550 CALL                     0
+           1560 PRECALL                  1
+           1564 CALL                     1
+           1574 POP_JUMP_FORWARD_IF_TRUE     2 (to 1580)
+           1576 LOAD_ASSERTION_ERROR
+           1578 RAISE_VARARGS            1
+
+ 58     >> 1580 LOAD_GLOBAL             35 (NULL + len)
+           1592 LOAD_FAST               14 (temp)
+           1594 PRECALL                  1
+           1598 CALL                     1
+           1608 LOAD_GLOBAL             35 (NULL + len)
+           1620 LOAD_FAST               15 (soc)
+           1622 PRECALL                  1
+           1626 CALL                     1
+           1636 SWAP                     2
+           1638 COPY                     2
+           1640 COMPARE_OP               2 (==)
+           1646 POP_JUMP_FORWARD_IF_FALSE    46 (to 1740)
+           1648 LOAD_GLOBAL             35 (NULL + len)
+           1660 LOAD_FAST               16 (ref)
+           1662 PRECALL                  1
+           1666 CALL                     1
+           1676 SWAP                     2
+           1678 COPY                     2
+           1680 COMPARE_OP               2 (==)
+           1686 POP_JUMP_FORWARD_IF_FALSE    26 (to 1740)
+           1688 LOAD_GLOBAL             35 (NULL + len)
+           1700 LOAD_FAST               17 (actual)
+           1702 PRECALL                  1
+           1706 CALL                     1
+           1716 SWAP                     2
+           1718 COPY                     2
+           1720 COMPARE_OP               2 (==)
+           1726 POP_JUMP_FORWARD_IF_FALSE     6 (to 1740)
+           1728 LOAD_CONST              17 (168)
+           1730 COMPARE_OP               2 (==)
+           1736 POP_JUMP_FORWARD_IF_TRUE     4 (to 1746)
+           1738 JUMP_FORWARD             1 (to 1742)
+        >> 1740 POP_TOP
+        >> 1742 LOAD_ASSERTION_ERROR
+           1744 RAISE_VARARGS            1
+
+ 59     >> 1746 LOAD_GLOBAL             29 (NULL + np)
+           1758 LOAD_ATTR               24 (min)
+           1768 LOAD_FAST               15 (soc)
+           1770 PRECALL                  1
+           1774 CALL                     1
+           1784 LOAD_CONST              38 (-1e-07)
+           1786 COMPARE_OP               5 (>=)
+           1792 POP_JUMP_FORWARD_IF_FALSE    24 (to 1842)
+           1794 LOAD_GLOBAL             29 (NULL + np)
+           1806 LOAD_ATTR               25 (max)
+           1816 LOAD_FAST               15 (soc)
+           1818 PRECALL                  1
+           1822 CALL                     1
+           1832 LOAD_CONST              39 (1.0000001)
+           1834 COMPARE_OP               1 (<=)
+           1840 POP_JUMP_FORWARD_IF_TRUE     2 (to 1846)
+        >> 1842 LOAD_ASSERTION_ERROR
+           1844 RAISE_VARARGS            1
+
+ 60     >> 1846 LOAD_GLOBAL             29 (NULL + np)
+           1858 LOAD_ATTR               25 (max)
+           1868 LOAD_FAST               16 (ref)
+           1870 LOAD_FAST               17 (actual)
+           1872 BINARY_OP               10 (-)
+           1876 PRECALL                  1
+           1880 CALL                     1
+           1890 LOAD_CONST              40 (0.0002)
+           1892 COMPARE_OP               0 (<)
+           1898 POP_JUMP_FORWARD_IF_FALSE    30 (to 1960)
+           1900 LOAD_GLOBAL             29 (NULL + np)
+           1912 LOAD_ATTR               25 (max)
+           1922 LOAD_FAST               17 (actual)
+           1924 LOAD_CONST              41 (1.1)
+           1926 LOAD_FAST               16 (ref)
+           1928 BINARY_OP                5 (*)
+           1932 BINARY_OP               10 (-)
+           1936 PRECALL                  1
+           1940 CALL                     1
+           1950 LOAD_CONST              40 (0.0002)
+           1952 COMPARE_OP               0 (<)
+           1958 POP_JUMP_FORWARD_IF_TRUE     2 (to 1964)
+        >> 1960 LOAD_ASSERTION_ERROR
+           1962 RAISE_VARARGS            1
+
+ 61     >> 1964 LOAD_FAST                9 (runtime_audit)
+           1966 LOAD_METHOD             26 (append)
+           1988 LOAD_GLOBAL             55 (NULL + dict)
+           2000 LOAD_DEREF              19 (trace)
+           2002 LOAD_CONST              25 ('building')
+           2004 BINARY_SUBSCR
+           2014 LOAD_GLOBAL             57 (NULL + int)
+           2026 LOAD_GLOBAL             29 (NULL + np)
+           2038 LOAD_ATTR               29 (count_nonzero)
+           2048 LOAD_FAST               14 (temp)
+           2050 LOAD_FAST               12 (lo)
+           2052 COMPARE_OP               0 (<)
+           2058 PRECALL                  1
+           2062 CALL                     1
+           2072 PRECALL                  1
+           2076 CALL                     1
+
+ 62        2086 LOAD_GLOBAL             57 (NULL + int)
+           2098 LOAD_GLOBAL             29 (NULL + np)
+           2110 LOAD_ATTR               29 (count_nonzero)
+           2120 LOAD_FAST               14 (temp)
+           2122 LOAD_FAST               13 (hi)
+           2124 COMPARE_OP               4 (>)
+           2130 PRECALL                  1
+           2134 CALL                     1
+           2144 PRECALL                  1
+           2148 CALL                     1
+           2158 LOAD_FAST               12 (lo)
+           2160 LOAD_FAST               13 (hi)
+           2162 BUILD_LIST               2
+
+ 63        2164 LOAD_GLOBAL             33 (NULL + float)
+           2176 LOAD_FAST               15 (soc)
+           2178 LOAD_METHOD             24 (min)
+           2200 PRECALL                  0
+           2204 CALL                     0
+           2214 PRECALL                  1
+           2218 CALL                     1
+           2228 LOAD_GLOBAL             33 (NULL + float)
+           2240 LOAD_FAST               15 (soc)
+           2242 LOAD_METHOD             25 (max)
+           2264 PRECALL                  0
+           2268 CALL                     0
+           2278 PRECALL                  1
+           2282 CALL                     1
+           2292 LOAD_GLOBAL             33 (NULL + float)
+           2304 LOAD_GLOBAL             29 (NULL + np)
+           2316 LOAD_ATTR               30 (maximum)
+           2326 LOAD_FAST               16 (ref)
+           2328 LOAD_FAST               17 (actual)
+           2330 BINARY_OP               10 (-)
+           2334 LOAD_CONST               6 (0)
+           2336 PRECALL                  2
+           2340 CALL                     2
+           2350 LOAD_METHOD             25 (max)
+           2372 PRECALL                  0
+           2376 CALL                     0
+           2386 PRECALL                  1
+           2390 CALL                     1
+
+ 64        2400 LOAD_GLOBAL             33 (NULL + float)
+           2412 LOAD_GLOBAL             29 (NULL + np)
+           2424 LOAD_ATTR               30 (maximum)
+           2434 LOAD_FAST               17 (actual)
+           2436 LOAD_CONST              41 (1.1)
+           2438 LOAD_FAST               16 (ref)
+           2440 BINARY_OP                5 (*)
+           2444 BINARY_OP               10 (-)
+           2448 LOAD_CONST               6 (0)
+           2450 PRECALL                  2
+           2454 CALL                     2
+           2464 LOAD_METHOD             25 (max)
+           2486 PRECALL                  0
+           2490 CALL                     0
+           2500 PRECALL                  1
+           2504 CALL                     1
+
+ 61        2514 KW_NAMES                42
+           2516 PRECALL                  8
+           2520 CALL                     8
+           2530 PRECALL                  1
+           2534 CALL                     1
+           2544 POP_TOP
+           2546 EXTENDED_ARG             2
+           2548 JUMP_BACKWARD          708 (to 1134)
+
+ 65     >> 2550 LOAD_CONST               6 (0)
+           2552 LOAD_CONST               0 (None)
+           2554 IMPORT_NAME             31 (controller)
+           2556 STORE_FAST              18 (controller)
+
+ 66        2558 LOAD_GLOBAL             55 (NULL + dict)
+           2570 LOAD_CONST              48 (())
+           2572 BUILD_MAP                0
+           2574 LOAD_FAST                0 (job)
+           2576 DICT_MERGE               1
+           2578 LOAD_FAST                7 (result)
+           2580 LOAD_CONST              18 ('ramping')
+           2582 BINARY_SUBSCR
+           2592 LOAD_FAST                7 (result)
+           2594 LOAD_CONST              43 ('peak')
+           2596 BINARY_SUBSCR
+           2606 LOAD_FAST                8 (net)
+           2608 LOAD_METHOD             32 (tolist)
+           2630 PRECALL                  0
+           2634 CALL                     0
+           2644 LOAD_FAST                7 (result)
+           2646 LOAD_CONST              22 ('diagnostics')
+           2648 BINARY_SUBSCR
+
+ 67        2658 LOAD_FAST                7 (result)
+           2660 LOAD_CONST              16 ('steps')
+           2662 BINARY_SUBSCR
+           2672 LOAD_FAST                7 (result)
+           2674 LOAD_CONST              44 ('hourly_accounting')
+           2676 BINARY_SUBSCR
+           2686 LOAD_FAST                7 (result)
+           2688 LOAD_CONST              45 ('initial_accounting')
+           2690 BINARY_SUBSCR
+
+ 68        2700 LOAD_FAST                7 (result)
+           2702 LOAD_CONST              24 ('building_traces')
+           2704 BINARY_SUBSCR
+           2714 LOAD_FAST                9 (runtime_audit)
+
+ 69        2716 LOAD_GLOBAL              1 (NULL + time)
+           2728 LOAD_ATTR                1 (perf_counter)
+           2738 PRECALL                  0
+           2742 CALL                     0
+           2752 LOAD_FAST                1 (start)
+           2754 BINARY_OP               10 (-)
+           2758 LOAD_GLOBAL             67 (NULL + stamp)
+           2770 PRECALL                  0
+           2774 CALL                     0
+           2784 LOAD_FAST               18 (controller)
+           2786 LOAD_ATTR               34 (PROBE_CONTROLLER_VERSION)
+
+ 66        2796 LOAD_CONST              46 (('ramping', 'peak', 'net', 'diagnostics', 'steps', 'hourly_accounting', 'initial_accounting', 'building_traces', 'runtime_audit', 'runtime_seconds', 'completed_at', 'controller_version'))
+           2798 BUILD_CONST_KEY_MAP     12
+           2800 DICT_MERGE               1
+           2802 CALL_FUNCTION_EX         1
+           2804 RETURN_VALUE
+        >> 2806 PUSH_EXC_INFO
+
+ 70        2808 LOAD_GLOBAL             70 (Exception)
+           2820 CHECK_EXC_MATCH
+           2822 POP_JUMP_FORWARD_IF_FALSE    57 (to 2938)
+           2824 POP_TOP
+           2826 LOAD_GLOBAL             55 (NULL + dict)
+           2838 LOAD_CONST              48 (())
+           2840 BUILD_MAP                0
+           2842 LOAD_FAST                0 (job)
+           2844 DICT_MERGE               1
+           2846 LOAD_GLOBAL             73 (NULL + traceback)
+           2858 LOAD_ATTR               37 (format_exc)
+           2868 PRECALL                  0
+           2872 CALL                     0
+           2882 LOAD_GLOBAL              1 (NULL + time)
+           2894 LOAD_ATTR                1 (perf_counter)
+           2904 PRECALL                  0
+           2908 CALL                     0
+           2918 LOAD_FAST                1 (start)
+           2920 BINARY_OP               10 (-)
+           2924 LOAD_CONST              47 (('error', 'runtime_seconds'))
+           2926 BUILD_CONST_KEY_MAP      2
+           2928 DICT_MERGE               1
+           2930 CALL_FUNCTION_EX         1
+           2932 SWAP                     2
+           2934 POP_EXCEPT
+           2936 RETURN_VALUE
+        >> 2938 RERAISE                  0
+        >> 2940 COPY                     3
+           2942 POP_EXCEPT
+           2944 RERAISE                  1
+ExceptionTable:
+  44 to 2802 -> 2806 [0]
+  2806 to 2932 -> 2940 [1] lasti
+  2938 to 2938 -> 2940 [1] lasti
+
+Disassembly of <code object <genexpr> at 0x0000026431DE9B80, file "engine.py", line 41>:
+ 41           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                52 (to 114)
+             10 STORE_FAST               1 (v)
+             12 LOAD_GLOBAL              1 (NULL + isinstance)
+             24 LOAD_FAST                1 (v)
+             26 LOAD_GLOBAL              2 (dict)
+             38 PRECALL                  2
+             42 CALL                     2
+             52 POP_JUMP_BACKWARD_IF_FALSE    23 (to 8)
+             54 LOAD_CONST               0 ('autosize')
+             56 LOAD_FAST                1 (v)
+             58 CONTAINS_OP              0
+             60 POP_JUMP_BACKWARD_IF_FALSE    27 (to 8)
+             62 LOAD_FAST                1 (v)
+             64 LOAD_METHOD              2 (get)
+             86 LOAD_CONST               0 ('autosize')
+             88 PRECALL                  1
+             92 CALL                     1
+            102 LOAD_CONST               1 (False)
+            104 IS_OP                    0
+            106 YIELD_VALUE
+            108 RESUME                   1
+            110 POP_TOP
+            112 JUMP_BACKWARD           53 (to 8)
+        >>  114 LOAD_CONST               2 (None)
+            116 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x0000026431DF72D0, file "engine.py", line 48>:
+ 48           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                40 (to 90)
+             10 STORE_FAST               1 (d)
+             12 LOAD_FAST                1 (d)
+             14 LOAD_CONST               0 ('outage_hours')
+             16 BINARY_SUBSCR
+             26 LOAD_CONST               1 (0)
+             28 COMPARE_OP               2 (==)
+             34 JUMP_IF_FALSE_OR_POP    23 (to 82)
+             36 LOAD_FAST                1 (d)
+             38 LOAD_CONST               2 ('unserved_non_shiftable_kwh')
+             40 BINARY_SUBSCR
+             50 LOAD_CONST               3 (1e-06)
+             52 COMPARE_OP               0 (<)
+             58 JUMP_IF_FALSE_OR_POP    11 (to 82)
+             60 LOAD_FAST                1 (d)
+             62 LOAD_CONST               4 ('unmet_reference_kwh')
+             64 BINARY_SUBSCR
+             74 LOAD_CONST               5 (0.01)
+             76 COMPARE_OP               0 (<)
+        >>   82 YIELD_VALUE
+             84 RESUME                   1
+             86 POP_TOP
+             88 JUMP_BACKWARD           41 (to 8)
+        >>   90 LOAD_CONST               6 (None)
+             92 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x0000026431F70CB0, file "engine.py", line 49>:
+ 49           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                56 (to 122)
+             10 STORE_FAST               1 (d)
+             12 LOAD_GLOBAL              1 (NULL + np)
+             24 LOAD_ATTR                1 (isfinite)
+             34 LOAD_FAST                1 (d)
+             36 LOAD_CONST               0 ('min_temp')
+             38 BINARY_SUBSCR
+             48 LOAD_FAST                1 (d)
+             50 LOAD_CONST               1 ('max_temp')
+             52 BINARY_SUBSCR
+             62 BUILD_LIST               2
+             64 PRECALL                  1
+             68 CALL                     1
+             78 LOAD_METHOD              2 (all)
+            100 PRECALL                  0
+            104 CALL                     0
+            114 YIELD_VALUE
+            116 RESUME                   1
+            118 POP_TOP
+            120 JUMP_BACKWARD           57 (to 8)
+        >>  122 LOAD_CONST               2 (None)
+            124 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002643D8C4180, file "engine.py", line 57>:
+              0 COPY_FREE_VARS           1
+
+ 57           2 RETURN_GENERATOR
+              4 POP_TOP
+              6 RESUME                   0
+              8 LOAD_FAST                0 (.0)
+        >>   10 FOR_ITER                66 (to 144)
+             12 STORE_FAST               1 (k)
+             14 LOAD_GLOBAL              1 (NULL + np)
+             26 LOAD_ATTR                1 (isfinite)
+             36 LOAD_GLOBAL              1 (NULL + np)
+             48 LOAD_ATTR                2 (asarray)
+             58 LOAD_DEREF               2 (trace)
+             60 LOAD_FAST                1 (k)
+             62 BINARY_SUBSCR
+             72 PRECALL                  1
+             76 CALL                     1
+             86 PRECALL                  1
+             90 CALL                     1
+            100 LOAD_METHOD              3 (all)
+            122 PRECALL                  0
+            126 CALL                     0
+            136 YIELD_VALUE
+            138 RESUME                   1
+            140 POP_TOP
+            142 JUMP_BACKWARD           67 (to 10)
+        >>  144 LOAD_CONST               0 (None)
+            146 RETURN_VALUE

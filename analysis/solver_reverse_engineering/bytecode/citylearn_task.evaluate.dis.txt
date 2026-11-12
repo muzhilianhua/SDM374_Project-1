@@ -1,0 +1,1493 @@
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 ('Evaluate one fixed 3 x 7 weight matrix on an immutable scenario.\n\nA fresh environment and controller are created for every evaluation. Only schema\nJSON is cached; mutable environments, batteries and policy history are not reused.\n')
+              4 STORE_NAME               0 (__doc__)
+
+  6           6 LOAD_CONST               1 (0)
+              8 LOAD_CONST               2 (('annotations',))
+             10 IMPORT_NAME              1 (__future__)
+             12 IMPORT_FROM              2 (annotations)
+             14 STORE_NAME               2 (annotations)
+             16 POP_TOP
+
+  8          18 LOAD_CONST               1 (0)
+             20 LOAD_CONST               3 (('deepcopy',))
+             22 IMPORT_NAME              3 (copy)
+             24 IMPORT_FROM              4 (deepcopy)
+             26 STORE_NAME               4 (deepcopy)
+             28 POP_TOP
+
+  9          30 LOAD_CONST               1 (0)
+             32 LOAD_CONST               4 (('dataclass',))
+             34 IMPORT_NAME              5 (dataclasses)
+             36 IMPORT_FROM              6 (dataclass)
+             38 STORE_NAME               6 (dataclass)
+             40 POP_TOP
+
+ 10          42 LOAD_CONST               1 (0)
+             44 LOAD_CONST               5 (('lru_cache',))
+             46 IMPORT_NAME              7 (functools)
+             48 IMPORT_FROM              8 (lru_cache)
+             50 STORE_NAME               8 (lru_cache)
+             52 POP_TOP
+
+ 11          54 LOAD_CONST               1 (0)
+             56 LOAD_CONST               6 (('version',))
+             58 IMPORT_NAME              9 (importlib.metadata)
+             60 IMPORT_FROM             10 (version)
+             62 STORE_NAME              10 (version)
+             64 POP_TOP
+
+ 12          66 LOAD_CONST               1 (0)
+             68 LOAD_CONST               7 (None)
+             70 IMPORT_NAME             11 (json)
+             72 STORE_NAME              11 (json)
+
+ 13          74 LOAD_CONST               1 (0)
+             76 LOAD_CONST               8 (('Path',))
+             78 IMPORT_NAME             12 (pathlib)
+             80 IMPORT_FROM             13 (Path)
+             82 STORE_NAME              13 (Path)
+             84 POP_TOP
+
+ 14          86 LOAD_CONST               1 (0)
+             88 LOAD_CONST               7 (None)
+             90 IMPORT_NAME             14 (time)
+             92 STORE_NAME              14 (time)
+
+ 15          94 LOAD_CONST               1 (0)
+             96 LOAD_CONST               9 (('Any', 'Mapping'))
+             98 IMPORT_NAME             15 (typing)
+            100 IMPORT_FROM             16 (Any)
+            102 STORE_NAME              16 (Any)
+            104 IMPORT_FROM             17 (Mapping)
+            106 STORE_NAME              17 (Mapping)
+            108 POP_TOP
+
+ 17         110 LOAD_CONST               1 (0)
+            112 LOAD_CONST               7 (None)
+            114 IMPORT_NAME             18 (numpy)
+            116 STORE_NAME              19 (np)
+
+ 19         118 LOAD_CONST              10 ('2026.10.13.v2')
+            120 STORE_NAME              20 (EVALUATOR_VERSION)
+
+ 20         122 LOAD_CONST              11 ('executed_hours_v2')
+            124 STORE_NAME              21 (TIMING_PROTOCOL)
+
+ 23         126 PUSH_NULL
+            128 LOAD_NAME                6 (dataclass)
+            130 LOAD_CONST              12 (True)
+            132 KW_NAMES                13
+            134 PRECALL                  1
+            138 CALL                     1
+
+ 24         148 PUSH_NULL
+            150 LOAD_BUILD_CLASS
+            152 LOAD_CONST              14 (<code object Scenario at 0x000002307B5609C0, file "citylearn_task\evaluate.py", line 23>)
+            154 MAKE_FUNCTION            0
+            156 LOAD_CONST              15 ('Scenario')
+            158 PRECALL                  2
+            162 CALL                     2
+
+ 23         172 PRECALL                  0
+            176 CALL                     0
+
+ 24         186 STORE_NAME              22 (Scenario)
+
+ 33         188 LOAD_CONST              42 (('value', 'Any', 'key', 'str', 'return', 'int'))
+            190 LOAD_CONST              22 (<code object _integer at 0x000002307B530760, file "citylearn_task\evaluate.py", line 33>)
+            192 MAKE_FUNCTION            4 (annotations)
+            194 STORE_NAME              23 (_integer)
+
+ 39         196 LOAD_CONST              43 (('value', 'Scenario | Mapping[str, Any] | str | Path', 'return', 'Scenario'))
+            198 LOAD_CONST              24 (<code object load_scenario at 0x000002307B4AB170, file "citylearn_task\evaluate.py", line 39>)
+            200 MAKE_FUNCTION            4 (annotations)
+            202 STORE_NAME              24 (load_scenario)
+
+ 83         204 LOAD_CONST              44 (('weights', 'Any', 'return', 'np.ndarray'))
+            206 LOAD_CONST              27 (<code object normalize_weights at 0x000002307B4A9D80, file "citylearn_task\evaluate.py", line 83>)
+            208 MAKE_FUNCTION            4 (annotations)
+            210 STORE_NAME              25 (normalize_weights)
+
+112         212 PUSH_NULL
+            214 LOAD_NAME                8 (lru_cache)
+            216 LOAD_CONST              28 (32)
+            218 KW_NAMES                29
+            220 PRECALL                  1
+            224 CALL                     1
+
+113         234 LOAD_CONST              45 (('path', 'str', 'mtime_ns', 'int', 'size', 'int', 'return', 'dict'))
+            236 LOAD_CONST              34 (<code object _read_schema at 0x000002307B331920, file "citylearn_task\evaluate.py", line 112>)
+            238 MAKE_FUNCTION            4 (annotations)
+
+112         240 PRECALL                  0
+            244 CALL                     0
+
+113         254 STORE_NAME              26 (_read_schema)
+
+118         256 LOAD_CONST              46 (('scenario', 'Scenario', 'return', 'dict'))
+            258 LOAD_CONST              36 (<code object _scenario_schema at 0x000002307B4AA590, file "citylearn_task\evaluate.py", line 118>)
+            260 MAKE_FUNCTION            4 (annotations)
+            262 STORE_NAME              27 (_scenario_schema)
+
+142         264 LOAD_CONST              37 (False)
+
+141         266 LOAD_CONST              38 (('include_timeseries',))
+            268 BUILD_CONST_KEY_MAP      1
+            270 LOAD_CONST              47 (('weights', 'Any', 'scenario', 'Scenario | Mapping[str, Any] | str | Path', 'include_timeseries', 'bool', 'return', 'dict'))
+            272 LOAD_CONST              41 (<code object evaluate at 0x000002307B4BD6A0, file "citylearn_task\evaluate.py", line 141>)
+            274 MAKE_FUNCTION            6 (kwdefaults, annotations)
+            276 STORE_NAME              28 (evaluate)
+            278 LOAD_CONST               7 (None)
+            280 RETURN_VALUE
+
+Disassembly of <code object Scenario at 0x000002307B5609C0, file "citylearn_task\evaluate.py", line 23>:
+ 23           0 RESUME                   0
+              2 LOAD_NAME                0 (__name__)
+              4 STORE_NAME               1 (__module__)
+              6 LOAD_CONST               0 ('Scenario')
+              8 STORE_NAME               2 (__qualname__)
+             10 SETUP_ANNOTATIONS
+
+ 25          12 LOAD_CONST               1 ('str')
+             14 LOAD_NAME                3 (__annotations__)
+             16 LOAD_CONST               2 ('id')
+             18 STORE_SUBSCR
+
+ 26          22 LOAD_CONST               3 ('Path')
+             24 LOAD_NAME                3 (__annotations__)
+             26 LOAD_CONST               4 ('dataset_dir')
+             28 STORE_SUBSCR
+
+ 27          32 LOAD_CONST               5 ('tuple[str, str, str]')
+             34 LOAD_NAME                3 (__annotations__)
+             36 LOAD_CONST               6 ('buildings')
+             38 STORE_SUBSCR
+
+ 28          42 LOAD_CONST               7 ('int')
+             44 LOAD_NAME                3 (__annotations__)
+             46 LOAD_CONST               8 ('start')
+             48 STORE_SUBSCR
+
+ 29          52 LOAD_CONST               7 ('int')
+             54 LOAD_NAME                3 (__annotations__)
+             56 LOAD_CONST               9 ('end')
+             58 STORE_SUBSCR
+
+ 30          62 LOAD_CONST               7 ('int')
+             64 LOAD_NAME                3 (__annotations__)
+             66 LOAD_CONST              10 ('seed')
+             68 STORE_SUBSCR
+             72 LOAD_CONST              11 (None)
+             74 RETURN_VALUE
+
+Disassembly of <code object _integer at 0x000002307B530760, file "citylearn_task\evaluate.py", line 33>:
+ 33           0 RESUME                   0
+
+ 34           2 LOAD_GLOBAL              1 (NULL + isinstance)
+             14 LOAD_FAST                0 (value)
+             16 LOAD_GLOBAL              2 (bool)
+             28 PRECALL                  2
+             32 CALL                     2
+             42 POP_JUMP_FORWARD_IF_TRUE    33 (to 110)
+             44 LOAD_GLOBAL              1 (NULL + isinstance)
+             56 LOAD_FAST                0 (value)
+             58 LOAD_GLOBAL              4 (int)
+             70 LOAD_GLOBAL              6 (np)
+             82 LOAD_ATTR                4 (integer)
+             92 BUILD_TUPLE              2
+             94 PRECALL                  2
+             98 CALL                     2
+            108 POP_JUMP_FORWARD_IF_TRUE    18 (to 146)
+
+ 35     >>  110 LOAD_GLOBAL             11 (NULL + ValueError)
+            122 LOAD_FAST                1 (key)
+            124 FORMAT_VALUE             0
+            126 LOAD_CONST               1 (' must be an integer')
+            128 BUILD_STRING             2
+            130 PRECALL                  1
+            134 CALL                     1
+            144 RAISE_VARARGS            1
+
+ 36     >>  146 LOAD_GLOBAL              5 (NULL + int)
+            158 LOAD_FAST                0 (value)
+            160 PRECALL                  1
+            164 CALL                     1
+            174 RETURN_VALUE
+
+Disassembly of <code object load_scenario at 0x000002307B4AB170, file "citylearn_task\evaluate.py", line 39>:
+              0 MAKE_CELL               10 (data)
+
+ 39           2 RESUME                   0
+
+ 45           4 LOAD_GLOBAL              1 (NULL + isinstance)
+             16 LOAD_FAST                0 (value)
+             18 LOAD_GLOBAL              2 (Scenario)
+             30 PRECALL                  2
+             34 CALL                     2
+             44 POP_JUMP_FORWARD_IF_FALSE    71 (to 188)
+
+ 46          46 LOAD_GLOBAL              5 (NULL + dict)
+             58 LOAD_FAST                0 (value)
+             60 LOAD_ATTR                3 (id)
+             70 LOAD_FAST                0 (value)
+             72 LOAD_ATTR                4 (dataset_dir)
+
+ 47          82 LOAD_FAST                0 (value)
+             84 LOAD_ATTR                5 (buildings)
+             94 LOAD_FAST                0 (value)
+             96 LOAD_ATTR                6 (start)
+
+ 48         106 LOAD_FAST                0 (value)
+            108 LOAD_ATTR                7 (end)
+            118 LOAD_FAST                0 (value)
+            120 LOAD_ATTR                8 (seed)
+
+ 46         130 KW_NAMES                 1
+            132 PRECALL                  6
+            136 CALL                     6
+            146 STORE_DEREF             10 (data)
+
+ 49         148 LOAD_GLOBAL             19 (NULL + Path)
+            160 LOAD_ATTR               10 (cwd)
+            170 PRECALL                  0
+            174 CALL                     0
+            184 STORE_FAST               1 (base)
+            186 JUMP_FORWARD           180 (to 548)
+
+ 50     >>  188 LOAD_GLOBAL              1 (NULL + isinstance)
+            200 LOAD_FAST                0 (value)
+            202 LOAD_GLOBAL             22 (str)
+            214 LOAD_GLOBAL             18 (Path)
+            226 BUILD_TUPLE              2
+            228 PRECALL                  2
+            232 CALL                     2
+            242 POP_JUMP_FORWARD_IF_FALSE    81 (to 406)
+
+ 51         244 LOAD_GLOBAL             19 (NULL + Path)
+            256 LOAD_FAST                0 (value)
+            258 PRECALL                  1
+            262 CALL                     1
+            272 LOAD_METHOD             12 (resolve)
+            294 PRECALL                  0
+            298 CALL                     0
+            308 STORE_FAST               2 (path)
+
+ 52         310 LOAD_GLOBAL             27 (NULL + json)
+            322 LOAD_ATTR               14 (loads)
+            332 LOAD_FAST                2 (path)
+            334 LOAD_METHOD             15 (read_text)
+            356 LOAD_CONST               2 ('utf-8-sig')
+            358 KW_NAMES                 3
+            360 PRECALL                  1
+            364 CALL                     1
+            374 PRECALL                  1
+            378 CALL                     1
+            388 STORE_DEREF             10 (data)
+
+ 53         390 LOAD_FAST                2 (path)
+            392 LOAD_ATTR               16 (parent)
+            402 STORE_FAST               1 (base)
+            404 JUMP_FORWARD            71 (to 548)
+
+ 54     >>  406 LOAD_GLOBAL              1 (NULL + isinstance)
+            418 LOAD_FAST                0 (value)
+            420 LOAD_GLOBAL             34 (Mapping)
+            432 PRECALL                  2
+            436 CALL                     2
+            446 POP_JUMP_FORWARD_IF_FALSE    35 (to 518)
+
+ 55         448 LOAD_GLOBAL              5 (NULL + dict)
+            460 LOAD_FAST                0 (value)
+            462 PRECALL                  1
+            466 CALL                     1
+            476 STORE_DEREF             10 (data)
+
+ 56         478 LOAD_GLOBAL             19 (NULL + Path)
+            490 LOAD_ATTR               10 (cwd)
+            500 PRECALL                  0
+            504 CALL                     0
+            514 STORE_FAST               1 (base)
+            516 JUMP_FORWARD            15 (to 548)
+
+ 58     >>  518 LOAD_GLOBAL             37 (NULL + ValueError)
+            530 LOAD_CONST               4 ('scenario must be a Scenario, mapping, or JSON file path')
+            532 PRECALL                  1
+            536 CALL                     1
+            546 RAISE_VARARGS            1
+
+ 59     >>  548 LOAD_GLOBAL              1 (NULL + isinstance)
+            560 LOAD_DEREF              10 (data)
+            562 LOAD_GLOBAL              4 (dict)
+            574 PRECALL                  2
+            578 CALL                     2
+            588 POP_JUMP_FORWARD_IF_TRUE    15 (to 620)
+
+ 60         590 LOAD_GLOBAL             37 (NULL + ValueError)
+            602 LOAD_CONST               5 ('scenario JSON must contain an object')
+            604 PRECALL                  1
+            608 CALL                     1
+            618 RAISE_VARARGS            1
+
+ 61     >>  620 BUILD_SET                0
+            622 LOAD_CONST               6 (frozenset({'end', 'start', 'id', 'buildings', 'dataset_dir', 'seed'}))
+            624 SET_UPDATE               1
+            626 STORE_FAST               3 (required)
+
+ 62         628 LOAD_FAST                3 (required)
+            630 LOAD_DEREF              10 (data)
+            632 LOAD_METHOD             19 (keys)
+            654 PRECALL                  0
+            658 CALL                     0
+            668 BINARY_OP               10 (-)
+            672 STORE_FAST               4 (missing)
+
+ 63         674 LOAD_FAST                4 (missing)
+            676 POP_JUMP_FORWARD_IF_FALSE    31 (to 740)
+
+ 64         678 LOAD_GLOBAL             37 (NULL + ValueError)
+            690 LOAD_CONST               7 ('scenario is missing fields: ')
+            692 LOAD_GLOBAL             41 (NULL + sorted)
+            704 LOAD_FAST                4 (missing)
+            706 PRECALL                  1
+            710 CALL                     1
+            720 FORMAT_VALUE             0
+            722 BUILD_STRING             2
+            724 PRECALL                  1
+            728 CALL                     1
+            738 RAISE_VARARGS            1
+
+ 65     >>  740 LOAD_GLOBAL              1 (NULL + isinstance)
+            752 LOAD_DEREF              10 (data)
+            754 LOAD_CONST               8 ('id')
+            756 BINARY_SUBSCR
+            766 LOAD_GLOBAL             22 (str)
+            778 PRECALL                  2
+            782 CALL                     2
+            792 POP_JUMP_FORWARD_IF_FALSE    26 (to 846)
+            794 LOAD_DEREF              10 (data)
+            796 LOAD_CONST               8 ('id')
+            798 BINARY_SUBSCR
+            808 LOAD_METHOD             21 (strip)
+            830 PRECALL                  0
+            834 CALL                     0
+            844 POP_JUMP_FORWARD_IF_TRUE    15 (to 876)
+
+ 66     >>  846 LOAD_GLOBAL             37 (NULL + ValueError)
+            858 LOAD_CONST               9 ('scenario id must be a nonempty string')
+            860 PRECALL                  1
+            864 CALL                     1
+            874 RAISE_VARARGS            1
+
+ 67     >>  876 LOAD_DEREF              10 (data)
+            878 LOAD_CONST              10 ('buildings')
+            880 BINARY_SUBSCR
+            890 STORE_FAST               5 (names)
+
+ 68         892 LOAD_GLOBAL              1 (NULL + isinstance)
+            904 LOAD_FAST                5 (names)
+            906 LOAD_GLOBAL             44 (list)
+            918 LOAD_GLOBAL             46 (tuple)
+            930 BUILD_TUPLE              2
+            932 PRECALL                  2
+            936 CALL                     2
+            946 POP_JUMP_FORWARD_IF_FALSE    76 (to 1100)
+            948 LOAD_GLOBAL             49 (NULL + len)
+            960 LOAD_FAST                5 (names)
+            962 PRECALL                  1
+            966 CALL                     1
+            976 LOAD_CONST              11 (3)
+            978 COMPARE_OP               3 (!=)
+            984 POP_JUMP_FORWARD_IF_TRUE    57 (to 1100)
+
+ 69         986 LOAD_GLOBAL             51 (NULL + any)
+            998 LOAD_CONST              12 (<code object <genexpr> at 0x000002307B392B30, file "citylearn_task\evaluate.py", line 69>)
+           1000 MAKE_FUNCTION            0
+           1002 LOAD_FAST                5 (names)
+           1004 GET_ITER
+           1006 PRECALL                  0
+           1010 CALL                     0
+           1020 PRECALL                  1
+           1024 CALL                     1
+
+ 68        1034 POP_JUMP_FORWARD_IF_TRUE    32 (to 1100)
+
+ 70        1036 LOAD_GLOBAL             49 (NULL + len)
+           1048 LOAD_GLOBAL             53 (NULL + set)
+           1060 LOAD_FAST                5 (names)
+           1062 PRECALL                  1
+           1066 CALL                     1
+           1076 PRECALL                  1
+           1080 CALL                     1
+           1090 LOAD_CONST              11 (3)
+           1092 COMPARE_OP               3 (!=)
+           1098 POP_JUMP_FORWARD_IF_FALSE    15 (to 1130)
+
+ 71     >> 1100 LOAD_GLOBAL             37 (NULL + ValueError)
+           1112 LOAD_CONST              13 ('buildings must contain exactly three distinct building names')
+           1114 PRECALL                  1
+           1118 CALL                     1
+           1128 RAISE_VARARGS            1
+
+ 72     >> 1130 LOAD_CLOSURE            10 (data)
+           1132 BUILD_TUPLE              1
+           1134 LOAD_CONST              14 (<code object <genexpr> at 0x000002307B392C30, file "citylearn_task\evaluate.py", line 72>)
+           1136 MAKE_FUNCTION            8 (closure)
+           1138 LOAD_CONST              15 (('start', 'end', 'seed'))
+           1140 GET_ITER
+           1142 PRECALL                  0
+           1146 CALL                     0
+           1156 UNPACK_SEQUENCE          3
+           1160 STORE_FAST               6 (start)
+           1162 STORE_FAST               7 (end)
+           1164 STORE_FAST               8 (seed)
+
+ 73        1166 LOAD_CONST              16 (0)
+           1168 LOAD_FAST                6 (start)
+           1170 SWAP                     2
+           1172 COPY                     2
+           1174 COMPARE_OP               1 (<=)
+           1180 POP_JUMP_FORWARD_IF_FALSE     6 (to 1194)
+           1182 LOAD_FAST                7 (end)
+           1184 COMPARE_OP               0 (<)
+           1190 POP_JUMP_FORWARD_IF_TRUE    17 (to 1226)
+           1192 JUMP_FORWARD             1 (to 1196)
+        >> 1194 POP_TOP
+
+ 74     >> 1196 LOAD_GLOBAL             37 (NULL + ValueError)
+           1208 LOAD_CONST              17 ('scenario requires 0 <= start < end (inclusive endpoints)')
+           1210 PRECALL                  1
+           1214 CALL                     1
+           1224 RAISE_VARARGS            1
+
+ 75     >> 1226 LOAD_CONST              16 (0)
+           1228 LOAD_FAST                8 (seed)
+           1230 SWAP                     2
+           1232 COPY                     2
+           1234 COMPARE_OP               1 (<=)
+           1240 POP_JUMP_FORWARD_IF_FALSE     6 (to 1254)
+           1242 LOAD_CONST              18 (4294967296)
+           1244 COMPARE_OP               0 (<)
+           1250 POP_JUMP_FORWARD_IF_TRUE    17 (to 1286)
+           1252 JUMP_FORWARD             1 (to 1256)
+        >> 1254 POP_TOP
+
+ 76     >> 1256 LOAD_GLOBAL             37 (NULL + ValueError)
+           1268 LOAD_CONST              19 ('seed must be in [0, 2**32)')
+           1270 PRECALL                  1
+           1274 CALL                     1
+           1284 RAISE_VARARGS            1
+
+ 77     >> 1286 LOAD_FAST                1 (base)
+           1288 LOAD_GLOBAL             19 (NULL + Path)
+           1300 LOAD_DEREF              10 (data)
+           1302 LOAD_CONST              20 ('dataset_dir')
+           1304 BINARY_SUBSCR
+           1314 PRECALL                  1
+           1318 CALL                     1
+           1328 BINARY_OP               11 (/)
+           1332 LOAD_METHOD             12 (resolve)
+           1354 PRECALL                  0
+           1358 CALL                     0
+           1368 STORE_FAST               9 (dataset_dir)
+
+ 78        1370 LOAD_FAST                9 (dataset_dir)
+           1372 LOAD_CONST              21 ('schema.json')
+           1374 BINARY_OP               11 (/)
+           1378 LOAD_METHOD             27 (is_file)
+           1400 PRECALL                  0
+           1404 CALL                     0
+           1414 POP_JUMP_FORWARD_IF_TRUE    21 (to 1458)
+
+ 79        1416 LOAD_GLOBAL             57 (NULL + FileNotFoundError)
+           1428 LOAD_CONST              22 ('dataset schema not found: ')
+           1430 LOAD_FAST                9 (dataset_dir)
+           1432 LOAD_CONST              21 ('schema.json')
+           1434 BINARY_OP               11 (/)
+           1438 FORMAT_VALUE             0
+           1440 BUILD_STRING             2
+           1442 PRECALL                  1
+           1446 CALL                     1
+           1456 RAISE_VARARGS            1
+
+ 80     >> 1458 LOAD_GLOBAL              3 (NULL + Scenario)
+           1470 LOAD_DEREF              10 (data)
+           1472 LOAD_CONST               8 ('id')
+           1474 BINARY_SUBSCR
+           1484 LOAD_FAST                9 (dataset_dir)
+           1486 LOAD_GLOBAL             47 (NULL + tuple)
+           1498 LOAD_FAST                5 (names)
+           1500 PRECALL                  1
+           1504 CALL                     1
+           1514 LOAD_FAST                6 (start)
+           1516 LOAD_FAST                7 (end)
+           1518 LOAD_FAST                8 (seed)
+           1520 PRECALL                  6
+           1524 CALL                     6
+           1534 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002307B392B30, file "citylearn_task\evaluate.py", line 69>:
+ 69           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                29 (to 68)
+             10 STORE_FAST               1 (n)
+             12 LOAD_GLOBAL              1 (NULL + isinstance)
+             24 LOAD_FAST                1 (n)
+             26 LOAD_GLOBAL              2 (str)
+             38 PRECALL                  2
+             42 CALL                     2
+             52 UNARY_NOT
+             54 JUMP_IF_TRUE_OR_POP      2 (to 60)
+             56 LOAD_FAST                1 (n)
+             58 UNARY_NOT
+        >>   60 YIELD_VALUE
+             62 RESUME                   1
+             64 POP_TOP
+             66 JUMP_BACKWARD           30 (to 8)
+        >>   68 LOAD_CONST               0 (None)
+             70 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002307B392C30, file "citylearn_task\evaluate.py", line 72>:
+              0 COPY_FREE_VARS           1
+
+ 72           2 RETURN_GENERATOR
+              4 POP_TOP
+              6 RESUME                   0
+              8 LOAD_FAST                0 (.0)
+        >>   10 FOR_ITER                26 (to 64)
+             12 STORE_FAST               1 (k)
+             14 LOAD_GLOBAL              1 (NULL + _integer)
+             26 LOAD_DEREF               2 (data)
+             28 LOAD_FAST                1 (k)
+             30 BINARY_SUBSCR
+             40 LOAD_FAST                1 (k)
+             42 PRECALL                  2
+             46 CALL                     2
+             56 YIELD_VALUE
+             58 RESUME                   1
+             60 POP_TOP
+             62 JUMP_BACKWARD           27 (to 10)
+        >>   64 LOAD_CONST               0 (None)
+             66 RETURN_VALUE
+
+Disassembly of <code object normalize_weights at 0x000002307B4A9D80, file "citylearn_task\evaluate.py", line 83>:
+ 83           0 RESUME                   0
+
+ 90           2 LOAD_GLOBAL              1 (NULL + np)
+             14 LOAD_ATTR                1 (asarray)
+             24 LOAD_FAST                0 (weights)
+             26 LOAD_GLOBAL              4 (object)
+             38 KW_NAMES                 1
+             40 PRECALL                  2
+             44 CALL                     2
+             54 STORE_FAST               1 (objects)
+
+ 91          56 LOAD_GLOBAL              7 (NULL + any)
+             68 LOAD_CONST               2 (<code object <genexpr> at 0x000002307B560CF0, file "citylearn_task\evaluate.py", line 91>)
+             70 MAKE_FUNCTION            0
+             72 LOAD_FAST                1 (objects)
+             74 LOAD_ATTR                4 (flat)
+             84 GET_ITER
+             86 PRECALL                  0
+             90 CALL                     0
+            100 PRECALL                  1
+            104 CALL                     1
+            114 POP_JUMP_FORWARD_IF_FALSE    15 (to 146)
+
+ 92         116 LOAD_GLOBAL             11 (NULL + ValueError)
+            128 LOAD_CONST               3 ('boolean values are not valid weights')
+            130 PRECALL                  1
+            134 CALL                     1
+            144 RAISE_VARARGS            1
+
+ 93     >>  146 LOAD_GLOBAL              1 (NULL + np)
+            158 LOAD_ATTR                1 (asarray)
+            168 LOAD_FAST                0 (weights)
+            170 PRECALL                  1
+            174 CALL                     1
+            184 STORE_FAST               2 (raw)
+
+ 94         186 LOAD_FAST                2 (raw)
+            188 LOAD_ATTR                6 (shape)
+            198 LOAD_CONST               4 (((21,), (3, 7)))
+            200 CONTAINS_OP              1
+            202 POP_JUMP_FORWARD_IF_TRUE    14 (to 232)
+            204 LOAD_FAST                2 (raw)
+            206 LOAD_ATTR                7 (dtype)
+            216 LOAD_ATTR                8 (kind)
+            226 LOAD_CONST               5 ('iuf')
+            228 CONTAINS_OP              1
+            230 POP_JUMP_FORWARD_IF_FALSE    15 (to 262)
+
+ 95     >>  232 LOAD_GLOBAL             11 (NULL + ValueError)
+            244 LOAD_CONST               6 ('weights must be 21 numbers or a 3 x 7 numeric matrix')
+            246 PRECALL                  1
+            250 CALL                     1
+            260 RAISE_VARARGS            1
+
+ 96     >>  262 LOAD_GLOBAL              1 (NULL + np)
+            274 LOAD_ATTR                1 (asarray)
+            284 LOAD_FAST                2 (raw)
+            286 LOAD_GLOBAL              0 (np)
+            298 LOAD_ATTR                9 (float64)
+            308 KW_NAMES                 1
+            310 PRECALL                  2
+            314 CALL                     2
+            324 LOAD_METHOD             10 (reshape)
+            346 LOAD_CONST               7 (3)
+            348 LOAD_CONST               8 (7)
+            350 PRECALL                  2
+            354 CALL                     2
+            364 LOAD_METHOD             11 (copy)
+            386 PRECALL                  0
+            390 CALL                     0
+            400 STORE_FAST               3 (w)
+
+ 97         402 LOAD_GLOBAL              1 (NULL + np)
+            414 LOAD_ATTR               12 (isfinite)
+            424 LOAD_FAST                3 (w)
+            426 PRECALL                  1
+            430 CALL                     1
+            440 LOAD_METHOD             13 (all)
+            462 PRECALL                  0
+            466 CALL                     0
+            476 POP_JUMP_FORWARD_IF_FALSE    24 (to 526)
+            478 LOAD_FAST                3 (w)
+            480 LOAD_CONST               9 (0)
+            482 COMPARE_OP               0 (<)
+            488 LOAD_METHOD              3 (any)
+            510 PRECALL                  0
+            514 CALL                     0
+            524 POP_JUMP_FORWARD_IF_FALSE    15 (to 556)
+
+ 98     >>  526 LOAD_GLOBAL             11 (NULL + ValueError)
+            538 LOAD_CONST              10 ('all 21 weights must be finite and nonnegative')
+            540 PRECALL                  1
+            544 CALL                     1
+            554 RAISE_VARARGS            1
+
+ 99     >>  556 LOAD_GLOBAL              1 (NULL + np)
+            568 LOAD_ATTR               14 (max)
+            578 LOAD_FAST                3 (w)
+            580 LOAD_CONST              11 (1)
+            582 KW_NAMES                12
+            584 PRECALL                  2
+            588 CALL                     2
+            598 LOAD_CONST               9 (0)
+            600 COMPARE_OP               1 (<=)
+            606 LOAD_METHOD              3 (any)
+            628 PRECALL                  0
+            632 CALL                     0
+            642 POP_JUMP_FORWARD_IF_FALSE    15 (to 674)
+
+100         644 LOAD_GLOBAL             11 (NULL + ValueError)
+            656 LOAD_CONST              13 ("each building's seven weights must have a positive sum")
+            658 PRECALL                  1
+            662 CALL                     1
+            672 RAISE_VARARGS            1
+
+103     >>  674 LOAD_GLOBAL              1 (NULL + np)
+            686 LOAD_ATTR               15 (errstate)
+            696 LOAD_CONST              14 ('ignore')
+            698 KW_NAMES                15
+            700 PRECALL                  1
+            704 CALL                     1
+            714 BEFORE_WITH
+            716 POP_TOP
+
+104         718 LOAD_FAST                3 (w)
+            720 LOAD_METHOD             16 (sum)
+            742 LOAD_CONST              11 (1)
+            744 KW_NAMES                12
+            746 PRECALL                  1
+            750 CALL                     1
+            760 STORE_FAST               4 (sums)
+
+103         762 LOAD_CONST              16 (None)
+            764 LOAD_CONST              16 (None)
+            766 LOAD_CONST              16 (None)
+            768 PRECALL                  2
+            772 CALL                     2
+            782 POP_TOP
+            784 JUMP_FORWARD            11 (to 808)
+        >>  786 PUSH_EXC_INFO
+            788 WITH_EXCEPT_START
+            790 POP_JUMP_FORWARD_IF_TRUE     4 (to 800)
+            792 RERAISE                  2
+        >>  794 COPY                     3
+            796 POP_EXCEPT
+            798 RERAISE                  1
+        >>  800 POP_TOP
+            802 POP_EXCEPT
+            804 POP_TOP
+            806 POP_TOP
+
+105     >>  808 LOAD_GLOBAL             35 (NULL + range)
+            820 LOAD_CONST               7 (3)
+            822 PRECALL                  1
+            826 CALL                     1
+            836 GET_ITER
+        >>  838 FOR_ITER                97 (to 1034)
+            840 STORE_FAST               5 (i)
+
+106         842 LOAD_GLOBAL              1 (NULL + np)
+            854 LOAD_ATTR               12 (isfinite)
+            864 LOAD_FAST                4 (sums)
+            866 LOAD_FAST                5 (i)
+            868 BINARY_SUBSCR
+            878 PRECALL                  1
+            882 CALL                     1
+            892 POP_JUMP_FORWARD_IF_TRUE    69 (to 1032)
+
+107         894 LOAD_FAST                3 (w)
+            896 LOAD_FAST                5 (i)
+            898 COPY                     2
+            900 COPY                     2
+            902 BINARY_SUBSCR
+            912 LOAD_FAST                3 (w)
+            914 LOAD_FAST                5 (i)
+            916 BINARY_SUBSCR
+            926 LOAD_METHOD             14 (max)
+            948 PRECALL                  0
+            952 CALL                     0
+            962 BINARY_OP               24 (/=)
+            966 SWAP                     3
+            968 SWAP                     2
+            970 STORE_SUBSCR
+
+108         974 LOAD_FAST                3 (w)
+            976 LOAD_FAST                5 (i)
+            978 BINARY_SUBSCR
+            988 LOAD_METHOD             16 (sum)
+           1010 PRECALL                  0
+           1014 CALL                     0
+           1024 LOAD_FAST                4 (sums)
+           1026 LOAD_FAST                5 (i)
+           1028 STORE_SUBSCR
+        >> 1032 JUMP_BACKWARD           98 (to 838)
+
+109     >> 1034 LOAD_FAST                3 (w)
+           1036 LOAD_FAST                4 (sums)
+           1038 LOAD_CONST              16 (None)
+           1040 LOAD_CONST              16 (None)
+           1042 BUILD_SLICE              2
+           1044 LOAD_CONST              16 (None)
+           1046 BUILD_TUPLE              2
+           1048 BINARY_SUBSCR
+           1058 BINARY_OP               11 (/)
+           1062 RETURN_VALUE
+ExceptionTable:
+  716 to 760 -> 786 [1] lasti
+  786 to 792 -> 794 [3] lasti
+  800 to 800 -> 794 [3] lasti
+
+Disassembly of <code object <genexpr> at 0x000002307B560CF0, file "citylearn_task\evaluate.py", line 91>:
+ 91           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                37 (to 84)
+             10 STORE_FAST               1 (v)
+             12 LOAD_GLOBAL              1 (NULL + isinstance)
+             24 LOAD_FAST                1 (v)
+             26 LOAD_GLOBAL              2 (bool)
+             38 LOAD_GLOBAL              4 (np)
+             50 LOAD_ATTR                3 (bool_)
+             60 BUILD_TUPLE              2
+             62 PRECALL                  2
+             66 CALL                     2
+             76 YIELD_VALUE
+             78 RESUME                   1
+             80 POP_TOP
+             82 JUMP_BACKWARD           38 (to 8)
+        >>   84 LOAD_CONST               0 (None)
+             86 RETURN_VALUE
+
+Disassembly of <code object _read_schema at 0x000002307B331920, file "citylearn_task\evaluate.py", line 112>:
+112           0 RESUME                   0
+
+115           2 LOAD_GLOBAL              1 (NULL + json)
+             14 LOAD_ATTR                1 (loads)
+             24 LOAD_GLOBAL              5 (NULL + Path)
+             36 LOAD_FAST                0 (path)
+             38 PRECALL                  1
+             42 CALL                     1
+             52 LOAD_METHOD              3 (read_text)
+             74 LOAD_CONST               1 ('utf-8-sig')
+             76 KW_NAMES                 2
+             78 PRECALL                  1
+             82 CALL                     1
+             92 PRECALL                  1
+             96 CALL                     1
+            106 RETURN_VALUE
+
+Disassembly of <code object _scenario_schema at 0x000002307B4AA590, file "citylearn_task\evaluate.py", line 118>:
+              0 MAKE_CELL                6 (schema)
+
+118           2 RESUME                   0
+
+119           4 LOAD_FAST                0 (scenario)
+              6 LOAD_ATTR                0 (dataset_dir)
+             16 LOAD_CONST               1 ('schema.json')
+             18 BINARY_OP               11 (/)
+             22 STORE_FAST               1 (path)
+
+120          24 LOAD_FAST                1 (path)
+             26 LOAD_METHOD              1 (stat)
+             48 PRECALL                  0
+             52 CALL                     0
+             62 STORE_FAST               2 (stat)
+
+121          64 LOAD_GLOBAL              5 (NULL + deepcopy)
+             76 LOAD_GLOBAL              7 (NULL + _read_schema)
+             88 LOAD_GLOBAL              9 (NULL + str)
+            100 LOAD_FAST                1 (path)
+            102 PRECALL                  1
+            106 CALL                     1
+            116 LOAD_FAST                2 (stat)
+            118 LOAD_ATTR                5 (st_mtime_ns)
+            128 LOAD_FAST                2 (stat)
+            130 LOAD_ATTR                6 (st_size)
+            140 PRECALL                  3
+            144 CALL                     3
+            154 PRECALL                  1
+            158 CALL                     1
+            168 STORE_DEREF              6 (schema)
+
+122         170 LOAD_GLOBAL             15 (NULL + set)
+            182 LOAD_FAST                0 (scenario)
+            184 LOAD_ATTR                8 (buildings)
+            194 PRECALL                  1
+            198 CALL                     1
+            208 LOAD_DEREF               6 (schema)
+            210 LOAD_CONST               2 ('buildings')
+            212 BINARY_SUBSCR
+            222 LOAD_METHOD              9 (keys)
+            244 PRECALL                  0
+            248 CALL                     0
+            258 BINARY_OP               10 (-)
+            262 STORE_FAST               3 (missing)
+
+123         264 LOAD_FAST                3 (missing)
+            266 POP_JUMP_FORWARD_IF_FALSE    34 (to 336)
+
+124         268 LOAD_GLOBAL             21 (NULL + ValueError)
+            280 LOAD_CONST               3 ('unknown buildings in ')
+            282 LOAD_FAST                1 (path)
+            284 FORMAT_VALUE             0
+            286 LOAD_CONST               4 (': ')
+            288 LOAD_GLOBAL             23 (NULL + sorted)
+            300 LOAD_FAST                3 (missing)
+            302 PRECALL                  1
+            306 CALL                     1
+            316 FORMAT_VALUE             0
+            318 BUILD_STRING             4
+            320 PRECALL                  1
+            324 CALL                     1
+            334 RAISE_VARARGS            1
+
+125     >>  336 LOAD_GLOBAL             25 (NULL + int)
+            348 LOAD_DEREF               6 (schema)
+            350 LOAD_METHOD             13 (get)
+            372 LOAD_CONST               5 ('simulation_start_time_step')
+            374 LOAD_CONST               6 (0)
+            376 PRECALL                  2
+            380 CALL                     2
+            390 PRECALL                  1
+            394 CALL                     1
+            404 STORE_FAST               4 (source_start)
+
+126         406 LOAD_GLOBAL             25 (NULL + int)
+            418 LOAD_DEREF               6 (schema)
+            420 LOAD_CONST               7 ('simulation_end_time_step')
+            422 BINARY_SUBSCR
+            432 PRECALL                  1
+            436 CALL                     1
+            446 STORE_FAST               5 (source_end)
+
+127         448 LOAD_FAST                0 (scenario)
+            450 LOAD_ATTR               14 (start)
+            460 LOAD_FAST                4 (source_start)
+            462 COMPARE_OP               0 (<)
+            468 POP_JUMP_FORWARD_IF_TRUE    11 (to 492)
+            470 LOAD_FAST                0 (scenario)
+            472 LOAD_ATTR               15 (end)
+            482 LOAD_FAST                5 (source_end)
+            484 COMPARE_OP               4 (>)
+            490 POP_JUMP_FORWARD_IF_FALSE    21 (to 534)
+
+128     >>  492 LOAD_GLOBAL             21 (NULL + ValueError)
+            504 LOAD_CONST               8 ('scenario window is outside dataset range ')
+            506 LOAD_FAST                4 (source_start)
+            508 FORMAT_VALUE             0
+            510 LOAD_CONST               9 ('..')
+            512 LOAD_FAST                5 (source_end)
+            514 FORMAT_VALUE             0
+            516 BUILD_STRING             4
+            518 PRECALL                  1
+            522 CALL                     1
+            532 RAISE_VARARGS            1
+
+129     >>  534 LOAD_GLOBAL             33 (NULL + float)
+            546 LOAD_DEREF               6 (schema)
+            548 LOAD_METHOD             13 (get)
+            570 LOAD_CONST              10 ('seconds_per_time_step')
+            572 LOAD_CONST              11 (3600)
+            574 PRECALL                  2
+            578 CALL                     2
+            588 PRECALL                  1
+            592 CALL                     1
+            602 LOAD_CONST              11 (3600)
+            604 COMPARE_OP               3 (!=)
+            610 POP_JUMP_FORWARD_IF_FALSE    15 (to 642)
+
+130         612 LOAD_GLOBAL             21 (NULL + ValueError)
+            624 LOAD_CONST              12 ('this task requires hourly data (seconds_per_time_step=3600)')
+            626 PRECALL                  1
+            630 CALL                     1
+            640 RAISE_VARARGS            1
+
+131     >>  642 LOAD_GLOBAL              9 (NULL + str)
+            654 LOAD_FAST                0 (scenario)
+            656 LOAD_ATTR                0 (dataset_dir)
+            666 PRECALL                  1
+            670 CALL                     1
+            680 LOAD_DEREF               6 (schema)
+            682 LOAD_CONST              13 ('root_directory')
+            684 STORE_SUBSCR
+
+134         688 LOAD_FAST                0 (scenario)
+            690 LOAD_ATTR               17 (seed)
+            700 LOAD_DEREF               6 (schema)
+            702 LOAD_CONST              14 ('random_seed')
+            704 STORE_SUBSCR
+
+137         708 LOAD_CLOSURE             6 (schema)
+            710 BUILD_TUPLE              1
+            712 LOAD_CONST              15 (<code object <dictcomp> at 0x000002307B894300, file "citylearn_task\evaluate.py", line 137>)
+            714 MAKE_FUNCTION            8 (closure)
+            716 LOAD_FAST                0 (scenario)
+            718 LOAD_ATTR                8 (buildings)
+            728 GET_ITER
+            730 PRECALL                  0
+            734 CALL                     0
+            744 LOAD_DEREF               6 (schema)
+            746 LOAD_CONST               2 ('buildings')
+            748 STORE_SUBSCR
+
+138         752 LOAD_DEREF               6 (schema)
+            754 RETURN_VALUE
+
+Disassembly of <code object <dictcomp> at 0x000002307B894300, file "citylearn_task\evaluate.py", line 137>:
+              0 COPY_FREE_VARS           1
+
+137           2 RESUME                   0
+              4 BUILD_MAP                0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                17 (to 44)
+             10 STORE_FAST               1 (name)
+             12 LOAD_FAST                1 (name)
+             14 LOAD_DEREF               2 (schema)
+             16 LOAD_CONST               0 ('buildings')
+             18 BINARY_SUBSCR
+             28 LOAD_FAST                1 (name)
+             30 BINARY_SUBSCR
+             40 MAP_ADD                  2
+             42 JUMP_BACKWARD           18 (to 8)
+        >>   44 RETURN_VALUE
+
+Disassembly of <code object evaluate at 0x000002307B4BD6A0, file "citylearn_task\evaluate.py", line 141>:
+              0 MAKE_CELL               26 (expected_length)
+              2 MAKE_CELL               27 (steps)
+
+141           4 RESUME                   0
+
+149           6 LOAD_GLOBAL              1 (NULL + normalize_weights)
+             18 LOAD_FAST                0 (weights)
+             20 PRECALL                  1
+             24 CALL                     1
+             34 STORE_FAST               3 (w)
+
+150          36 LOAD_GLOBAL              3 (NULL + load_scenario)
+             48 LOAD_FAST                1 (scenario)
+             50 PRECALL                  1
+             54 CALL                     1
+             64 STORE_FAST               4 (spec)
+
+151          66 LOAD_GLOBAL              5 (NULL + _scenario_schema)
+             78 LOAD_FAST                4 (spec)
+             80 PRECALL                  1
+             84 CALL                     1
+             94 STORE_FAST               5 (schema)
+
+152          96 LOAD_GLOBAL              7 (NULL + version)
+            108 LOAD_CONST               1 ('CityLearn')
+            110 PRECALL                  1
+            114 CALL                     1
+            124 LOAD_CONST               2 ('2.5.0')
+            126 COMPARE_OP               3 (!=)
+            132 POP_JUMP_FORWARD_IF_FALSE    15 (to 164)
+
+153         134 LOAD_GLOBAL              9 (NULL + RuntimeError)
+            146 LOAD_CONST               3 ('This task requires CityLearn==2.5.0')
+            148 PRECALL                  1
+            152 CALL                     1
+            162 RAISE_VARARGS            1
+
+154     >>  164 LOAD_CONST               4 (0)
+            166 LOAD_CONST               5 (('CityLearnEnv',))
+            168 IMPORT_NAME              5 (citylearn.citylearn)
+            170 IMPORT_FROM              6 (CityLearnEnv)
+            172 STORE_FAST               6 (CityLearnEnv)
+            174 POP_TOP
+
+155         176 LOAD_CONST               6 (1)
+            178 LOAD_CONST               7 (('WeightedMyopicBatteryAgent',))
+            180 IMPORT_NAME              7 (lower)
+            182 IMPORT_FROM              8 (WeightedMyopicBatteryAgent)
+            184 STORE_FAST               7 (WeightedMyopicBatteryAgent)
+            186 POP_TOP
+
+157         188 LOAD_CONST               6 (1)
+            190 LOAD_CONST               8 (('padded_schema', 'decision_observations'))
+            192 IMPORT_NAME              9 (temporal)
+            194 IMPORT_FROM             10 (padded_schema)
+            196 STORE_FAST               8 (padded_schema)
+            198 IMPORT_FROM             11 (decision_observations)
+            200 STORE_FAST               9 (decision_observations)
+            202 POP_TOP
+
+158         204 LOAD_GLOBAL             25 (NULL + time)
+            216 LOAD_ATTR               13 (perf_counter)
+            226 PRECALL                  0
+            230 CALL                     0
+            240 STORE_FAST              10 (started)
+
+159         242 LOAD_FAST                4 (spec)
+            244 LOAD_ATTR               14 (end)
+            254 LOAD_FAST                4 (spec)
+            256 LOAD_ATTR               15 (start)
+            266 BINARY_OP               10 (-)
+            270 LOAD_CONST               6 (1)
+            272 BINARY_OP                0 (+)
+            276 STORE_DEREF             26 (expected_length)
+
+160         278 PUSH_NULL
+            280 LOAD_FAST                8 (padded_schema)
+            282 LOAD_FAST                5 (schema)
+            284 LOAD_FAST                4 (spec)
+            286 PRECALL                  2
+            290 CALL                     2
+            300 BEFORE_WITH
+            302 STORE_FAST               5 (schema)
+
+161         304 PUSH_NULL
+            306 LOAD_FAST                6 (CityLearnEnv)
+
+162         308 LOAD_FAST                5 (schema)
+            310 LOAD_GLOBAL             33 (NULL + list)
+            322 LOAD_GLOBAL             35 (NULL + range)
+            334 LOAD_CONST               9 (3)
+            336 PRECALL                  1
+            340 CALL                     1
+            350 PRECALL                  1
+            354 CALL                     1
+
+163         364 LOAD_CONST               4 (0)
+
+164         366 LOAD_FAST                5 (schema)
+            368 LOAD_CONST              10 ('simulation_end_time_step')
+            370 BINARY_SUBSCR
+
+165         380 LOAD_FAST                4 (spec)
+            382 LOAD_ATTR               18 (seed)
+            392 LOAD_CONST              11 (False)
+
+166         394 LOAD_CONST              12 ('electrical_storage')
+            396 LOAD_CONST              13 ('cooling_device')
+            398 BUILD_LIST               2
+
+161         400 KW_NAMES                14
+            402 PRECALL                  7
+            406 CALL                     7
+            416 STORE_FAST              11 (env)
+
+160         418 LOAD_CONST              15 (None)
+            420 LOAD_CONST              15 (None)
+            422 LOAD_CONST              15 (None)
+            424 PRECALL                  2
+            428 CALL                     2
+            438 POP_TOP
+            440 JUMP_FORWARD            11 (to 464)
+        >>  442 PUSH_EXC_INFO
+            444 WITH_EXCEPT_START
+            446 POP_JUMP_FORWARD_IF_TRUE     4 (to 456)
+            448 RERAISE                  2
+        >>  450 COPY                     3
+            452 POP_EXCEPT
+            454 RERAISE                  1
+        >>  456 POP_TOP
+            458 POP_EXCEPT
+            460 POP_TOP
+            462 POP_TOP
+
+168     >>  464 LOAD_CONST              16 (<code object <listcomp> at 0x000002307B38F3D0, file "citylearn_task\evaluate.py", line 168>)
+            466 MAKE_FUNCTION            0
+            468 LOAD_FAST               11 (env)
+            470 LOAD_ATTR               19 (buildings)
+            480 GET_ITER
+            482 PRECALL                  0
+            486 CALL                     0
+            496 STORE_FAST              12 (actual_names)
+
+169         498 LOAD_FAST               12 (actual_names)
+            500 LOAD_GLOBAL             33 (NULL + list)
+            512 LOAD_FAST                4 (spec)
+            514 LOAD_ATTR               19 (buildings)
+            524 PRECALL                  1
+            528 CALL                     1
+            538 COMPARE_OP               3 (!=)
+            544 POP_JUMP_FORWARD_IF_FALSE    18 (to 582)
+
+170         546 LOAD_GLOBAL              9 (NULL + RuntimeError)
+            558 LOAD_CONST              17 ('building order differs from scenario: ')
+            560 LOAD_FAST               12 (actual_names)
+            562 FORMAT_VALUE             0
+            564 BUILD_STRING             2
+            566 PRECALL                  1
+            570 CALL                     1
+            580 RAISE_VARARGS            1
+
+171     >>  582 LOAD_FAST               11 (env)
+            584 LOAD_ATTR               20 (action_names)
+            594 GET_ITER
+        >>  596 FOR_ITER                60 (to 718)
+            598 STORE_FAST              13 (names)
+
+172         600 LOAD_GLOBAL             43 (NULL + len)
+            612 LOAD_FAST               13 (names)
+            614 PRECALL                  1
+            618 CALL                     1
+            628 LOAD_CONST              18 (2)
+            630 COMPARE_OP               3 (!=)
+            636 POP_JUMP_FORWARD_IF_TRUE    21 (to 680)
+            638 LOAD_GLOBAL             45 (NULL + set)
+            650 LOAD_FAST               13 (names)
+            652 PRECALL                  1
+            656 CALL                     1
+            666 LOAD_CONST              12 ('electrical_storage')
+            668 LOAD_CONST              13 ('cooling_device')
+            670 BUILD_SET                2
+            672 COMPARE_OP               3 (!=)
+            678 POP_JUMP_FORWARD_IF_FALSE    18 (to 716)
+
+173     >>  680 LOAD_GLOBAL              9 (NULL + RuntimeError)
+            692 LOAD_CONST              19 ('scenario must expose battery and cooling actions: ')
+            694 LOAD_FAST               13 (names)
+            696 FORMAT_VALUE             0
+            698 BUILD_STRING             2
+            700 PRECALL                  1
+            704 CALL                     1
+            714 RAISE_VARARGS            1
+
+172     >>  716 JUMP_BACKWARD           61 (to 596)
+
+174     >>  718 LOAD_FAST               11 (env)
+            720 LOAD_ATTR               19 (buildings)
+            730 GET_ITER
+        >>  732 FOR_ITER                33 (to 800)
+            734 STORE_FAST              14 (building)
+
+175         736 LOAD_GLOBAL             47 (NULL + getattr)
+            748 LOAD_FAST               14 (building)
+            750 LOAD_CONST              20 ('stochastic_power_outage_model')
+            752 LOAD_CONST              15 (None)
+            754 PRECALL                  3
+            758 CALL                     3
+            768 STORE_FAST              15 (outage_model)
+
+176         770 LOAD_FAST               15 (outage_model)
+            772 POP_JUMP_FORWARD_IF_NONE    12 (to 798)
+
+177         774 LOAD_FAST                4 (spec)
+            776 LOAD_ATTR               18 (seed)
+            786 LOAD_FAST               15 (outage_model)
+            788 STORE_ATTR              24 (random_seed)
+        >>  798 JUMP_BACKWARD           34 (to 732)
+
+180     >>  800 PUSH_NULL
+            802 LOAD_FAST                7 (WeightedMyopicBatteryAgent)
+            804 LOAD_FAST               11 (env)
+            806 LOAD_FAST                3 (w)
+            808 PRECALL                  2
+            812 CALL                     2
+            822 STORE_FAST              16 (agent)
+
+181         824 LOAD_FAST               11 (env)
+            826 LOAD_METHOD             25 (reset)
+            848 PRECALL                  0
+            852 CALL                     0
+            862 UNPACK_SEQUENCE          2
+            866 STORE_FAST              17 (obs)
+            868 STORE_FAST              18 (_)
+
+182         870 LOAD_CONST               4 (0)
+            872 STORE_DEREF             27 (steps)
+
+183         874 LOAD_GLOBAL             35 (NULL + range)
+            886 LOAD_DEREF              26 (expected_length)
+            888 PRECALL                  1
+            892 CALL                     1
+            902 GET_ITER
+        >>  904 FOR_ITER                92 (to 1090)
+            906 STORE_FAST              18 (_)
+
+184         908 LOAD_FAST               16 (agent)
+            910 LOAD_METHOD             26 (predict)
+            932 PUSH_NULL
+            934 LOAD_FAST                9 (decision_observations)
+            936 LOAD_FAST               11 (env)
+            938 LOAD_FAST               17 (obs)
+            940 PRECALL                  2
+            944 CALL                     2
+            954 LOAD_CONST              21 (True)
+            956 KW_NAMES                22
+            958 PRECALL                  2
+            962 CALL                     2
+            972 STORE_FAST              19 (actions)
+
+185         974 LOAD_FAST               11 (env)
+            976 LOAD_METHOD             27 (step)
+            998 LOAD_FAST               19 (actions)
+           1000 PRECALL                  1
+           1004 CALL                     1
+           1014 UNPACK_SEQUENCE          5
+           1018 STORE_FAST              17 (obs)
+           1020 STORE_FAST              18 (_)
+           1022 STORE_FAST              20 (terminated)
+           1024 STORE_FAST              21 (truncated)
+           1026 STORE_FAST              18 (_)
+
+186        1028 LOAD_DEREF              27 (steps)
+           1030 LOAD_CONST               6 (1)
+           1032 BINARY_OP               13 (+=)
+           1036 STORE_DEREF             27 (steps)
+
+187        1038 LOAD_FAST               20 (terminated)
+           1040 POP_JUMP_FORWARD_IF_TRUE     2 (to 1046)
+           1042 LOAD_FAST               21 (truncated)
+           1044 POP_JUMP_FORWARD_IF_FALSE    21 (to 1088)
+        >> 1046 LOAD_DEREF              27 (steps)
+           1048 LOAD_DEREF              26 (expected_length)
+           1050 COMPARE_OP               0 (<)
+           1056 POP_JUMP_FORWARD_IF_FALSE    15 (to 1088)
+
+188        1058 LOAD_GLOBAL              9 (NULL + RuntimeError)
+           1070 LOAD_CONST              23 ('environment ended before every real hour was executed')
+           1072 PRECALL                  1
+           1076 CALL                     1
+           1086 RAISE_VARARGS            1
+        >> 1088 JUMP_BACKWARD           93 (to 904)
+
+189     >> 1090 LOAD_CONST              24 (<code object <listcomp> at 0x000002307B560E00, file "citylearn_task\evaluate.py", line 189>)
+           1092 MAKE_FUNCTION            0
+           1094 LOAD_FAST               11 (env)
+           1096 LOAD_ATTR               19 (buildings)
+           1106 GET_ITER
+           1108 PRECALL                  0
+           1112 CALL                     0
+           1122 STORE_FAST              22 (traces)
+
+190        1124 LOAD_DEREF              27 (steps)
+           1126 LOAD_DEREF              26 (expected_length)
+           1128 COMPARE_OP               3 (!=)
+           1134 POP_JUMP_FORWARD_IF_TRUE    27 (to 1190)
+           1136 LOAD_GLOBAL             57 (NULL + any)
+           1148 LOAD_CLOSURE            26 (expected_length)
+           1150 BUILD_TUPLE              1
+           1152 LOAD_CONST              25 (<code object <genexpr> at 0x000002307B392D30, file "citylearn_task\evaluate.py", line 190>)
+           1154 MAKE_FUNCTION            8 (closure)
+           1156 LOAD_FAST               22 (traces)
+           1158 GET_ITER
+           1160 PRECALL                  0
+           1164 CALL                     0
+           1174 PRECALL                  1
+           1178 CALL                     1
+           1188 POP_JUMP_FORWARD_IF_FALSE    15 (to 1220)
+
+191     >> 1190 LOAD_GLOBAL              9 (NULL + RuntimeError)
+           1202 LOAD_CONST              26 ('environment episode length differs from the declared scenario')
+           1204 PRECALL                  1
+           1208 CALL                     1
+           1218 RAISE_VARARGS            1
+
+194     >> 1220 LOAD_GLOBAL             59 (NULL + np)
+           1232 LOAD_ATTR               30 (sum)
+           1242 LOAD_GLOBAL             59 (NULL + np)
+           1254 LOAD_ATTR               31 (vstack)
+           1264 LOAD_CLOSURE            27 (steps)
+           1266 BUILD_TUPLE              1
+           1268 LOAD_CONST              27 (<code object <listcomp> at 0x000002307B38F210, file "citylearn_task\evaluate.py", line 194>)
+           1270 MAKE_FUNCTION            8 (closure)
+           1272 LOAD_FAST               22 (traces)
+           1274 GET_ITER
+           1276 PRECALL                  0
+           1280 CALL                     0
+           1290 PRECALL                  1
+           1294 CALL                     1
+           1304 LOAD_CONST               4 (0)
+           1306 KW_NAMES                28
+           1308 PRECALL                  2
+           1312 CALL                     2
+           1322 STORE_FAST              23 (district_net)
+
+195        1324 LOAD_GLOBAL             59 (NULL + np)
+           1336 LOAD_ATTR               32 (isfinite)
+           1346 LOAD_FAST               23 (district_net)
+           1348 PRECALL                  1
+           1352 CALL                     1
+           1362 LOAD_METHOD             33 (all)
+           1384 PRECALL                  0
+           1388 CALL                     0
+           1398 POP_JUMP_FORWARD_IF_TRUE    15 (to 1430)
+
+196        1400 LOAD_GLOBAL              9 (NULL + RuntimeError)
+           1412 LOAD_CONST              29 ('simulation returned a nonfinite net-electricity trace')
+           1414 PRECALL                  1
+           1418 CALL                     1
+           1428 RAISE_VARARGS            1
+
+197     >> 1430 LOAD_GLOBAL             69 (NULL + float)
+           1442 LOAD_GLOBAL             59 (NULL + np)
+           1454 LOAD_ATTR               30 (sum)
+           1464 LOAD_GLOBAL             59 (NULL + np)
+           1476 LOAD_ATTR               35 (abs)
+           1486 LOAD_GLOBAL             59 (NULL + np)
+           1498 LOAD_ATTR               36 (diff)
+           1508 LOAD_FAST               23 (district_net)
+           1510 PRECALL                  1
+           1514 CALL                     1
+           1524 PRECALL                  1
+           1528 CALL                     1
+           1538 PRECALL                  1
+           1542 CALL                     1
+           1552 PRECALL                  1
+           1556 CALL                     1
+           1566 STORE_FAST              24 (ramping)
+
+199        1568 LOAD_FAST                4 (spec)
+           1570 LOAD_ATTR               37 (id)
+           1580 LOAD_FAST               24 (ramping)
+
+200        1582 LOAD_GLOBAL             25 (NULL + time)
+           1594 LOAD_ATTR               13 (perf_counter)
+           1604 PRECALL                  0
+           1608 CALL                     0
+           1618 LOAD_FAST               10 (started)
+           1620 BINARY_OP               10 (-)
+
+201        1624 LOAD_DEREF              27 (steps)
+           1626 LOAD_FAST                3 (w)
+           1628 LOAD_METHOD             38 (tolist)
+           1650 PRECALL                  0
+           1654 CALL                     0
+
+202        1664 LOAD_GLOBAL             78 (TIMING_PROTOCOL)
+
+203        1676 LOAD_GLOBAL             80 (EVALUATOR_VERSION)
+
+198        1688 LOAD_CONST              30 (('scenario_id', 'ramping', 'runtime_seconds', 'steps', 'weights', 'timing_protocol', 'evaluator_version'))
+           1690 BUILD_CONST_KEY_MAP      7
+           1692 STORE_FAST              25 (result)
+
+205        1694 LOAD_FAST                2 (include_timeseries)
+           1696 POP_JUMP_FORWARD_IF_FALSE    23 (to 1744)
+
+206        1698 LOAD_FAST               23 (district_net)
+           1700 LOAD_METHOD             38 (tolist)
+           1722 PRECALL                  0
+           1726 CALL                     0
+           1736 LOAD_FAST               25 (result)
+           1738 LOAD_CONST              31 ('district_net_electricity')
+           1740 STORE_SUBSCR
+
+207     >> 1744 LOAD_FAST               25 (result)
+           1746 RETURN_VALUE
+ExceptionTable:
+  302 to 416 -> 442 [1] lasti
+  442 to 448 -> 450 [3] lasti
+  456 to 456 -> 450 [3] lasti
+
+Disassembly of <code object <listcomp> at 0x000002307B38F3D0, file "citylearn_task\evaluate.py", line 168>:
+168           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 9 (to 26)
+              8 STORE_FAST               1 (b)
+             10 LOAD_FAST                1 (b)
+             12 LOAD_ATTR                0 (name)
+             22 LIST_APPEND              2
+             24 JUMP_BACKWARD           10 (to 6)
+        >>   26 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B560E00, file "citylearn_task\evaluate.py", line 189>:
+189           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                34 (to 76)
+              8 STORE_FAST               1 (b)
+             10 LOAD_GLOBAL              1 (NULL + np)
+             22 LOAD_ATTR                1 (asarray)
+             32 LOAD_FAST                1 (b)
+             34 LOAD_ATTR                2 (net_electricity_consumption)
+             44 LOAD_GLOBAL              6 (float)
+             56 KW_NAMES                 0
+             58 PRECALL                  2
+             62 CALL                     2
+             72 LIST_APPEND              2
+             74 JUMP_BACKWARD           35 (to 6)
+        >>   76 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002307B392D30, file "citylearn_task\evaluate.py", line 190>:
+              0 COPY_FREE_VARS           1
+
+190           2 RETURN_GENERATOR
+              4 POP_TOP
+              6 RESUME                   0
+              8 LOAD_FAST                0 (.0)
+        >>   10 FOR_ITER                26 (to 64)
+             12 STORE_FAST               1 (a)
+             14 LOAD_GLOBAL              1 (NULL + len)
+             26 LOAD_FAST                1 (a)
+             28 PRECALL                  1
+             32 CALL                     1
+             42 LOAD_DEREF               2 (expected_length)
+             44 LOAD_CONST               0 (1)
+             46 BINARY_OP                0 (+)
+             50 COMPARE_OP               3 (!=)
+             56 YIELD_VALUE
+             58 RESUME                   1
+             60 POP_TOP
+             62 JUMP_BACKWARD           27 (to 10)
+        >>   64 LOAD_CONST               1 (None)
+             66 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B38F210, file "citylearn_task\evaluate.py", line 194>:
+              0 COPY_FREE_VARS           1
+
+194           2 RESUME                   0
+              4 BUILD_LIST               0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                12 (to 34)
+             10 STORE_FAST               1 (a)
+             12 LOAD_FAST                1 (a)
+             14 LOAD_CONST               0 (None)
+             16 LOAD_DEREF               2 (steps)
+             18 BUILD_SLICE              2
+             20 BINARY_SUBSCR
+             30 LIST_APPEND              2
+             32 JUMP_BACKWARD           13 (to 8)
+        >>   34 RETURN_VALUE

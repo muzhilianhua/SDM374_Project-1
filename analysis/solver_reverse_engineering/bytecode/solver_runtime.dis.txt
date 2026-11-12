@@ -1,0 +1,342 @@
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 ('Portable orchestration around the frozen, independently reset eight weeks.')
+              4 STORE_NAME               0 (__doc__)
+
+  2           6 LOAD_CONST               1 (0)
+              8 LOAD_CONST               2 (('Path',))
+             10 IMPORT_NAME              1 (pathlib)
+             12 IMPORT_FROM              2 (Path)
+             14 STORE_NAME               2 (Path)
+             16 POP_TOP
+
+  3          18 LOAD_CONST               1 (0)
+             20 LOAD_CONST               3 (None)
+             22 IMPORT_NAME              3 (concurrent.futures)
+             24 STORE_NAME               4 (concurrent)
+
+  4          26 LOAD_CONST               1 (0)
+             28 LOAD_CONST               3 (None)
+             30 IMPORT_NAME              5 (contextlib)
+             32 STORE_NAME               5 (contextlib)
+
+  5          34 LOAD_CONST               1 (0)
+             36 LOAD_CONST               3 (None)
+             38 IMPORT_NAME              6 (multiprocessing)
+             40 STORE_NAME               6 (multiprocessing)
+
+  6          42 LOAD_CONST               1 (0)
+             44 LOAD_CONST               3 (None)
+             46 IMPORT_NAME              7 (sys)
+             48 STORE_NAME               7 (sys)
+
+  9          50 LOAD_CONST               4 (<code object run_week at 0x000002307B39F230, file "solver_runtime.py", line 9>)
+             52 MAKE_FUNCTION            0
+             54 STORE_NAME               8 (run_week)
+
+ 19          56 PUSH_NULL
+             58 LOAD_BUILD_CLASS
+             60 LOAD_CONST               5 (<code object Solver at 0x000002307B38F830, file "solver_runtime.py", line 19>)
+             62 MAKE_FUNCTION            0
+             64 LOAD_CONST               6 ('Solver')
+             66 PRECALL                  2
+             70 CALL                     2
+             80 STORE_NAME               9 (Solver)
+             82 LOAD_CONST               3 (None)
+             84 RETURN_VALUE
+
+Disassembly of <code object run_week at 0x000002307B39F230, file "solver_runtime.py", line 9>:
+  9           0 RESUME                   0
+
+ 11           2 LOAD_GLOBAL              1 (NULL + contextlib)
+             14 LOAD_ATTR                1 (redirect_stdout)
+             24 LOAD_GLOBAL              4 (sys)
+             36 LOAD_ATTR                3 (stderr)
+             46 PRECALL                  1
+             50 CALL                     1
+             60 BEFORE_WITH
+             62 POP_TOP
+
+ 12          64 LOAD_CONST               1 (0)
+             66 LOAD_CONST               2 (('worker',))
+             68 IMPORT_NAME              4 (engine)
+             70 IMPORT_FROM              5 (worker)
+             72 STORE_FAST               1 (worker)
+             74 POP_TOP
+
+ 13          76 PUSH_NULL
+             78 LOAD_FAST                1 (worker)
+             80 LOAD_FAST                0 (job)
+             82 PRECALL                  1
+             86 CALL                     1
+             96 STORE_FAST               2 (result)
+
+ 11          98 LOAD_CONST               0 (None)
+            100 LOAD_CONST               0 (None)
+            102 LOAD_CONST               0 (None)
+            104 PRECALL                  2
+            108 CALL                     2
+            118 POP_TOP
+            120 JUMP_FORWARD            11 (to 144)
+        >>  122 PUSH_EXC_INFO
+            124 WITH_EXCEPT_START
+            126 POP_JUMP_FORWARD_IF_TRUE     4 (to 136)
+            128 RERAISE                  2
+        >>  130 COPY                     3
+            132 POP_EXCEPT
+            134 RERAISE                  1
+        >>  136 POP_TOP
+            138 POP_EXCEPT
+            140 POP_TOP
+            142 POP_TOP
+
+ 14     >>  144 LOAD_CONST               3 ('error')
+            146 LOAD_FAST                2 (result)
+            148 CONTAINS_OP              0
+            150 POP_JUMP_FORWARD_IF_FALSE    21 (to 194)
+
+ 15         152 LOAD_GLOBAL             13 (NULL + RuntimeError)
+            164 LOAD_FAST                2 (result)
+            166 LOAD_CONST               3 ('error')
+            168 BINARY_SUBSCR
+            178 PRECALL                  1
+            182 CALL                     1
+            192 RAISE_VARARGS            1
+
+ 16     >>  194 LOAD_FAST                2 (result)
+            196 LOAD_CONST               4 ('ramping')
+            198 BINARY_SUBSCR
+            208 RETURN_VALUE
+ExceptionTable:
+  62 to 96 -> 122 [1] lasti
+  122 to 128 -> 130 [3] lasti
+  136 to 136 -> 130 [3] lasti
+
+Disassembly of <code object Solver at 0x000002307B38F830, file "solver_runtime.py", line 19>:
+ 19           0 RESUME                   0
+              2 LOAD_NAME                0 (__name__)
+              4 STORE_NAME               1 (__module__)
+              6 LOAD_CONST               0 ('Solver')
+              8 STORE_NAME               2 (__qualname__)
+
+ 20          10 LOAD_CONST               6 ((2,))
+             12 LOAD_CONST               2 (<code object __init__ at 0x000002307B2D3630, file "solver_runtime.py", line 20>)
+             14 MAKE_FUNCTION            1 (defaults)
+             16 STORE_NAME               3 (__init__)
+
+ 30          18 LOAD_CONST               3 (<code object evaluate at 0x000002307B4AAE50, file "solver_runtime.py", line 30>)
+             20 MAKE_FUNCTION            0
+             22 STORE_NAME               4 (evaluate)
+
+ 43          24 LOAD_CONST               4 (<code object close at 0x000002307B561020, file "solver_runtime.py", line 43>)
+             26 MAKE_FUNCTION            0
+             28 STORE_NAME               5 (close)
+             30 LOAD_CONST               5 (None)
+             32 RETURN_VALUE
+
+Disassembly of <code object __init__ at 0x000002307B2D3630, file "solver_runtime.py", line 20>:
+ 20           0 RESUME                   0
+
+ 21           2 LOAD_CONST               1 (0)
+              4 LOAD_CONST               2 (('initializer',))
+              6 IMPORT_NAME              0 (engine)
+              8 IMPORT_FROM              1 (initializer)
+             10 STORE_FAST               2 (initializer)
+             12 POP_TOP
+
+ 22          14 LOAD_CONST               0 (None)
+             16 LOAD_FAST                0 (self)
+             18 STORE_ATTR               2 (pool)
+
+ 23          28 LOAD_FAST                1 (workers)
+             30 LOAD_CONST               3 (1)
+             32 COMPARE_OP               2 (==)
+             38 POP_JUMP_FORWARD_IF_FALSE    13 (to 66)
+
+ 24          40 PUSH_NULL
+             42 LOAD_FAST                2 (initializer)
+             44 LOAD_CONST               0 (None)
+             46 PRECALL                  1
+             50 CALL                     1
+             60 POP_TOP
+             62 LOAD_CONST               0 (None)
+             64 RETURN_VALUE
+
+ 26     >>   66 LOAD_GLOBAL              6 (concurrent)
+             78 LOAD_ATTR                4 (futures)
+             88 LOAD_METHOD              5 (ProcessPoolExecutor)
+
+ 27         110 LOAD_FAST                1 (workers)
+            112 LOAD_GLOBAL             13 (NULL + multiprocessing)
+            124 LOAD_ATTR                7 (get_context)
+            134 LOAD_CONST               4 ('spawn')
+            136 PRECALL                  1
+            140 CALL                     1
+
+ 28         150 LOAD_FAST                2 (initializer)
+            152 LOAD_CONST               5 ((None,))
+
+ 26         154 KW_NAMES                 6
+            156 PRECALL                  4
+            160 CALL                     4
+            170 LOAD_FAST                0 (self)
+            172 STORE_ATTR               2 (pool)
+            182 LOAD_CONST               0 (None)
+            184 RETURN_VALUE
+
+Disassembly of <code object evaluate at 0x000002307B4AAE50, file "solver_runtime.py", line 30>:
+              0 MAKE_CELL                6 (folder)
+              2 MAKE_CELL                7 (raw)
+
+ 30           4 RESUME                   0
+
+ 31           6 LOAD_CONST               1 (0)
+              8 LOAD_CONST               0 (None)
+             10 IMPORT_NAME              0 (numpy)
+             12 STORE_FAST               2 (np)
+
+ 32          14 LOAD_CONST               1 (0)
+             16 LOAD_CONST               2 (('normalize_weights',))
+             18 IMPORT_NAME              1 (citylearn_task.evaluate)
+             20 IMPORT_FROM              2 (normalize_weights)
+             22 STORE_FAST               3 (normalize_weights)
+             24 POP_TOP
+
+ 35          26 PUSH_NULL
+             28 LOAD_FAST                3 (normalize_weights)
+             30 LOAD_FAST                1 (weights)
+             32 PRECALL                  1
+             36 CALL                     1
+             46 POP_TOP
+
+ 36          48 LOAD_FAST                2 (np)
+             50 LOAD_METHOD              3 (asarray)
+             72 LOAD_FAST                1 (weights)
+             74 LOAD_GLOBAL              8 (float)
+             86 KW_NAMES                 3
+             88 PRECALL                  2
+             92 CALL                     2
+            102 LOAD_METHOD              5 (reshape)
+            124 LOAD_CONST               4 (3)
+            126 LOAD_CONST               5 (7)
+            128 PRECALL                  2
+            132 CALL                     2
+            142 LOAD_METHOD              6 (tolist)
+            164 PRECALL                  0
+            168 CALL                     0
+            178 STORE_DEREF              7 (raw)
+
+ 37         180 LOAD_GLOBAL             15 (NULL + Path)
+            192 LOAD_GLOBAL             16 (__file__)
+            204 PRECALL                  1
+            208 CALL                     1
+            218 LOAD_METHOD              9 (resolve)
+            240 PRECALL                  0
+            244 CALL                     0
+            254 LOAD_ATTR               10 (parent)
+            264 LOAD_CONST               6 ('environment/scenarios')
+            266 BINARY_OP               11 (/)
+            270 STORE_DEREF              6 (folder)
+
+ 38         272 LOAD_CLOSURE             6 (folder)
+            274 LOAD_CLOSURE             7 (raw)
+            276 BUILD_TUPLE              2
+            278 LOAD_CONST               7 (<code object <listcomp> at 0x000002307B337750, file "solver_runtime.py", line 38>)
+            280 MAKE_FUNCTION            8 (closure)
+
+ 39         282 LOAD_GLOBAL             23 (NULL + range)
+            294 LOAD_CONST               8 (1)
+            296 LOAD_CONST               9 (9)
+            298 PRECALL                  2
+            302 CALL                     2
+
+ 38         312 GET_ITER
+            314 PRECALL                  0
+            318 CALL                     0
+            328 STORE_FAST               4 (jobs)
+
+ 40         330 LOAD_FAST                0 (self)
+            332 LOAD_ATTR               12 (pool)
+            342 POP_JUMP_FORWARD_IF_FALSE    45 (to 434)
+            344 LOAD_GLOBAL             27 (NULL + list)
+            356 LOAD_FAST                0 (self)
+            358 LOAD_ATTR               12 (pool)
+            368 LOAD_METHOD             14 (map)
+            390 LOAD_GLOBAL             30 (run_week)
+            402 LOAD_FAST                4 (jobs)
+            404 PRECALL                  2
+            408 CALL                     2
+            418 PRECALL                  1
+            422 CALL                     1
+            432 JUMP_FORWARD            33 (to 500)
+        >>  434 LOAD_GLOBAL             27 (NULL + list)
+            446 LOAD_GLOBAL             29 (NULL + map)
+            458 LOAD_GLOBAL             30 (run_week)
+            470 LOAD_FAST                4 (jobs)
+            472 PRECALL                  2
+            476 CALL                     2
+            486 PRECALL                  1
+            490 CALL                     1
+        >>  500 STORE_FAST               5 (results)
+
+ 41         502 LOAD_GLOBAL              9 (NULL + float)
+            514 LOAD_FAST                2 (np)
+            516 LOAD_METHOD             16 (mean)
+            538 LOAD_FAST                5 (results)
+            540 PRECALL                  1
+            544 CALL                     1
+            554 PRECALL                  1
+            558 CALL                     1
+            568 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B337750, file "solver_runtime.py", line 38>:
+              0 COPY_FREE_VARS           2
+
+ 38           2 RESUME                   0
+              4 BUILD_LIST               0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                40 (to 90)
+
+ 39          10 STORE_FAST               1 (i)
+
+ 38          12 LOAD_GLOBAL              1 (NULL + dict)
+             24 LOAD_DEREF               3 (raw)
+             26 LOAD_GLOBAL              3 (NULL + str)
+             38 LOAD_DEREF               2 (folder)
+             40 LOAD_CONST               0 ('week_')
+             42 LOAD_FAST                1 (i)
+             44 LOAD_CONST               1 ('02d')
+             46 FORMAT_VALUE             4 (with format)
+             48 LOAD_CONST               2 ('.json')
+             50 BUILD_STRING             3
+             52 BINARY_OP               11 (/)
+             56 PRECALL                  1
+             60 CALL                     1
+             70 KW_NAMES                 3
+             72 PRECALL                  2
+             76 CALL                     2
+             86 LIST_APPEND              2
+             88 JUMP_BACKWARD           41 (to 8)
+        >>   90 RETURN_VALUE
+
+Disassembly of <code object close at 0x000002307B561020, file "solver_runtime.py", line 43>:
+ 43           0 RESUME                   0
+
+ 44           2 LOAD_FAST                0 (self)
+              4 LOAD_ATTR                0 (pool)
+             14 POP_JUMP_FORWARD_IF_FALSE    30 (to 76)
+
+ 45          16 LOAD_FAST                0 (self)
+             18 LOAD_ATTR                0 (pool)
+             28 LOAD_METHOD              1 (shutdown)
+             50 LOAD_CONST               1 (True)
+             52 LOAD_CONST               1 (True)
+             54 KW_NAMES                 2
+             56 PRECALL                  2
+             60 CALL                     2
+             70 POP_TOP
+             72 LOAD_CONST               0 (None)
+             74 RETURN_VALUE
+
+ 44     >>   76 LOAD_CONST               0 (None)
+             78 RETURN_VALUE

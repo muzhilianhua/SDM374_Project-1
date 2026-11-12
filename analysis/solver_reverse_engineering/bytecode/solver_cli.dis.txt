@@ -1,0 +1,682 @@
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 ('Windows CLI: one weight matrix in, the fixed eight-week mean R out.')
+              4 STORE_NAME               0 (__doc__)
+
+  2           6 LOAD_CONST               1 (0)
+              8 LOAD_CONST               2 (None)
+             10 IMPORT_NAME              1 (argparse)
+             12 STORE_NAME               1 (argparse)
+
+  3          14 LOAD_CONST               1 (0)
+             16 LOAD_CONST               2 (None)
+             18 IMPORT_NAME              2 (json)
+             20 STORE_NAME               2 (json)
+
+  4          22 LOAD_CONST               1 (0)
+             24 LOAD_CONST               2 (None)
+             26 IMPORT_NAME              3 (math)
+             28 STORE_NAME               3 (math)
+
+  5          30 LOAD_CONST               1 (0)
+             32 LOAD_CONST               2 (None)
+             34 IMPORT_NAME              4 (multiprocessing)
+             36 STORE_NAME               4 (multiprocessing)
+
+  6          38 LOAD_CONST               1 (0)
+             40 LOAD_CONST               2 (None)
+             42 IMPORT_NAME              5 (os)
+             44 STORE_NAME               5 (os)
+
+  7          46 LOAD_CONST               1 (0)
+             48 LOAD_CONST               3 (('Path',))
+             50 IMPORT_NAME              6 (pathlib)
+             52 IMPORT_FROM              7 (Path)
+             54 STORE_NAME               7 (Path)
+             56 POP_TOP
+
+  8          58 LOAD_CONST               1 (0)
+             60 LOAD_CONST               2 (None)
+             62 IMPORT_NAME              8 (sys)
+             64 STORE_NAME               8 (sys)
+
+ 10          66 LOAD_CONST               4 ('same8-20261021.1')
+             68 STORE_NAME               9 (VERSION)
+
+ 11          70 LOAD_CONST               5 (('OMP_NUM_THREADS', 'MKL_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'NUMEXPR_NUM_THREADS'))
+             72 GET_ITER
+        >>   74 FOR_ITER                12 (to 100)
+             76 STORE_NAME              10 (name)
+
+ 12          78 LOAD_CONST               6 ('1')
+             80 LOAD_NAME                5 (os)
+             82 LOAD_ATTR               11 (environ)
+             92 LOAD_NAME               10 (name)
+             94 STORE_SUBSCR
+             98 JUMP_BACKWARD           13 (to 74)
+
+ 15     >>  100 LOAD_CONST               7 (<code object parse_weights at 0x000002041FBC0800, file "solver_cli.py", line 15>)
+            102 MAKE_FUNCTION            0
+            104 STORE_NAME              12 (parse_weights)
+
+ 37         106 LOAD_CONST               8 (<code object main at 0x000002041FC38AA0, file "solver_cli.py", line 37>)
+            108 MAKE_FUNCTION            0
+            110 STORE_NAME              13 (main)
+
+ 78         112 LOAD_NAME               14 (__name__)
+            114 LOAD_CONST               9 ('__main__')
+            116 COMPARE_OP               2 (==)
+            122 POP_JUMP_FORWARD_IF_FALSE    34 (to 192)
+
+ 79         124 PUSH_NULL
+            126 LOAD_NAME                4 (multiprocessing)
+            128 LOAD_ATTR               15 (freeze_support)
+            138 PRECALL                  0
+            142 CALL                     0
+            152 POP_TOP
+
+ 80         154 PUSH_NULL
+            156 LOAD_NAME               16 (SystemExit)
+            158 PUSH_NULL
+            160 LOAD_NAME               13 (main)
+            162 PRECALL                  0
+            166 CALL                     0
+            176 PRECALL                  1
+            180 CALL                     1
+            190 RAISE_VARARGS            1
+
+ 78     >>  192 LOAD_CONST               2 (None)
+            194 RETURN_VALUE
+
+Disassembly of <code object parse_weights at 0x000002041FBC0800, file "solver_cli.py", line 15>:
+              0 MAKE_CELL                3 (value)
+
+ 15           2 RESUME                   0
+
+ 16           4 LOAD_GLOBAL              1 (NULL + json)
+             16 LOAD_ATTR                1 (loads)
+             26 LOAD_FAST                0 (text)
+             28 PRECALL                  1
+             32 CALL                     1
+             42 STORE_DEREF              3 (value)
+
+ 17          44 LOAD_GLOBAL              5 (NULL + isinstance)
+             56 LOAD_DEREF               3 (value)
+             58 LOAD_GLOBAL              6 (dict)
+             70 PRECALL                  2
+             74 CALL                     2
+             84 POP_JUMP_FORWARD_IF_FALSE    43 (to 172)
+
+ 18          86 LOAD_GLOBAL              9 (NULL + set)
+             98 LOAD_DEREF               3 (value)
+            100 PRECALL                  1
+            104 CALL                     1
+            114 LOAD_CONST               1 ('weights')
+            116 BUILD_SET                1
+            118 COMPARE_OP               3 (!=)
+            124 POP_JUMP_FORWARD_IF_FALSE    15 (to 156)
+
+ 19         126 LOAD_GLOBAL             11 (NULL + ValueError)
+            138 LOAD_CONST               2 ('JSON object must have exactly one key: weights')
+            140 PRECALL                  1
+            144 CALL                     1
+            154 RAISE_VARARGS            1
+
+ 20     >>  156 LOAD_DEREF               3 (value)
+            158 LOAD_CONST               1 ('weights')
+            160 BINARY_SUBSCR
+            170 STORE_DEREF              3 (value)
+
+ 21     >>  172 LOAD_GLOBAL              5 (NULL + isinstance)
+            184 LOAD_DEREF               3 (value)
+            186 LOAD_GLOBAL             12 (list)
+            198 PRECALL                  2
+            202 CALL                     2
+            212 POP_JUMP_FORWARD_IF_TRUE    15 (to 244)
+
+ 22         214 LOAD_GLOBAL             11 (NULL + ValueError)
+            226 LOAD_CONST               3 ('Expected 21 numbers or a 3 x 7 matrix')
+            228 PRECALL                  1
+            232 CALL                     1
+            242 RAISE_VARARGS            1
+
+ 23     >>  244 LOAD_GLOBAL             15 (NULL + len)
+            256 LOAD_DEREF               3 (value)
+            258 PRECALL                  1
+            262 CALL                     1
+            272 LOAD_CONST               4 (21)
+            274 COMPARE_OP               2 (==)
+            280 POP_JUMP_FORWARD_IF_FALSE    30 (to 342)
+
+ 24         282 LOAD_CLOSURE             3 (value)
+            284 BUILD_TUPLE              1
+            286 LOAD_CONST               5 (<code object <listcomp> at 0x000002041FAE43F0, file "solver_cli.py", line 24>)
+            288 MAKE_FUNCTION            8 (closure)
+            290 LOAD_GLOBAL             17 (NULL + range)
+            302 LOAD_CONST               6 (0)
+            304 LOAD_CONST               4 (21)
+            306 LOAD_CONST               7 (7)
+            308 PRECALL                  3
+            312 CALL                     3
+            322 GET_ITER
+            324 PRECALL                  0
+            328 CALL                     0
+            338 STORE_FAST               1 (rows)
+            340 JUMP_FORWARD            62 (to 466)
+
+ 25     >>  342 LOAD_GLOBAL             15 (NULL + len)
+            354 LOAD_DEREF               3 (value)
+            356 PRECALL                  1
+            360 CALL                     1
+            370 LOAD_CONST               8 (3)
+            372 COMPARE_OP               2 (==)
+            378 POP_JUMP_FORWARD_IF_FALSE    28 (to 436)
+            380 LOAD_GLOBAL             19 (NULL + all)
+            392 LOAD_CONST               9 (<code object <genexpr> at 0x000002041F89F750, file "solver_cli.py", line 25>)
+            394 MAKE_FUNCTION            0
+            396 LOAD_DEREF               3 (value)
+            398 GET_ITER
+            400 PRECALL                  0
+            404 CALL                     0
+            414 PRECALL                  1
+            418 CALL                     1
+            428 POP_JUMP_FORWARD_IF_FALSE     3 (to 436)
+
+ 26         430 LOAD_DEREF               3 (value)
+            432 STORE_FAST               1 (rows)
+            434 JUMP_FORWARD            15 (to 466)
+
+ 28     >>  436 LOAD_GLOBAL             11 (NULL + ValueError)
+            448 LOAD_CONST               3 ('Expected 21 numbers or a 3 x 7 matrix')
+            450 PRECALL                  1
+            454 CALL                     1
+            464 RAISE_VARARGS            1
+
+ 29     >>  466 LOAD_FAST                1 (rows)
+            468 GET_ITER
+        >>  470 FOR_ITER                82 (to 636)
+            472 STORE_FAST               2 (row)
+
+ 30         474 LOAD_GLOBAL             21 (NULL + any)
+            486 LOAD_CONST              10 (<code object <genexpr> at 0x000002041FA84B70, file "solver_cli.py", line 30>)
+            488 MAKE_FUNCTION            0
+            490 LOAD_FAST                2 (row)
+            492 GET_ITER
+            494 PRECALL                  0
+            498 CALL                     0
+            508 PRECALL                  1
+            512 CALL                     1
+            522 POP_JUMP_FORWARD_IF_FALSE    15 (to 554)
+
+ 31         524 LOAD_GLOBAL             11 (NULL + ValueError)
+            536 LOAD_CONST              11 ('Weights must be finite, nonnegative numbers; booleans are invalid')
+            538 PRECALL                  1
+            542 CALL                     1
+            552 RAISE_VARARGS            1
+
+ 32     >>  554 LOAD_GLOBAL             21 (NULL + any)
+            566 LOAD_CONST              12 (<code object <genexpr> at 0x000002041F8F3910, file "solver_cli.py", line 32>)
+            568 MAKE_FUNCTION            0
+            570 LOAD_FAST                2 (row)
+            572 GET_ITER
+            574 PRECALL                  0
+            578 CALL                     0
+            588 PRECALL                  1
+            592 CALL                     1
+            602 POP_JUMP_FORWARD_IF_TRUE    15 (to 634)
+
+ 33         604 LOAD_GLOBAL             11 (NULL + ValueError)
+            616 LOAD_CONST              13 ('Each building row needs at least one positive weight')
+            618 PRECALL                  1
+            622 CALL                     1
+            632 RAISE_VARARGS            1
+
+ 32     >>  634 JUMP_BACKWARD           83 (to 470)
+
+ 34     >>  636 LOAD_FAST                1 (rows)
+            638 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002041FAE43F0, file "solver_cli.py", line 24>:
+              0 COPY_FREE_VARS           1
+
+ 24           2 RESUME                   0
+              4 BUILD_LIST               0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                15 (to 40)
+             10 STORE_FAST               1 (i)
+             12 LOAD_DEREF               2 (value)
+             14 LOAD_FAST                1 (i)
+             16 LOAD_FAST                1 (i)
+             18 LOAD_CONST               0 (7)
+             20 BINARY_OP                0 (+)
+             24 BUILD_SLICE              2
+             26 BINARY_SUBSCR
+             36 LIST_APPEND              2
+             38 JUMP_BACKWARD           16 (to 8)
+        >>   40 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002041F89F750, file "solver_cli.py", line 25>:
+ 25           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                44 (to 98)
+             10 STORE_FAST               1 (row)
+             12 LOAD_GLOBAL              1 (NULL + isinstance)
+             24 LOAD_FAST                1 (row)
+             26 LOAD_GLOBAL              2 (list)
+             38 PRECALL                  2
+             42 CALL                     2
+             52 JUMP_IF_FALSE_OR_POP    18 (to 90)
+             54 LOAD_GLOBAL              5 (NULL + len)
+             66 LOAD_FAST                1 (row)
+             68 PRECALL                  1
+             72 CALL                     1
+             82 LOAD_CONST               0 (7)
+             84 COMPARE_OP               2 (==)
+        >>   90 YIELD_VALUE
+             92 RESUME                   1
+             94 POP_TOP
+             96 JUMP_BACKWARD           45 (to 8)
+        >>   98 LOAD_CONST               1 (None)
+            100 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002041FA84B70, file "solver_cli.py", line 30>:
+ 30           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                60 (to 130)
+             10 STORE_FAST               1 (x)
+             12 LOAD_GLOBAL              1 (NULL + type)
+             24 LOAD_FAST                1 (x)
+             26 PRECALL                  1
+             30 CALL                     1
+             40 LOAD_GLOBAL              2 (int)
+             52 LOAD_GLOBAL              4 (float)
+             64 BUILD_TUPLE              2
+             66 CONTAINS_OP              1
+             68 JUMP_IF_TRUE_OR_POP     26 (to 122)
+             70 LOAD_GLOBAL              7 (NULL + math)
+             82 LOAD_ATTR                4 (isfinite)
+             92 LOAD_FAST                1 (x)
+             94 PRECALL                  1
+             98 CALL                     1
+            108 UNARY_NOT
+            110 JUMP_IF_TRUE_OR_POP      5 (to 122)
+            112 LOAD_FAST                1 (x)
+            114 LOAD_CONST               0 (0)
+            116 COMPARE_OP               0 (<)
+        >>  122 YIELD_VALUE
+            124 RESUME                   1
+            126 POP_TOP
+            128 JUMP_BACKWARD           61 (to 8)
+        >>  130 LOAD_CONST               1 (None)
+            132 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002041F8F3910, file "solver_cli.py", line 32>:
+ 32           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                10 (to 30)
+             10 STORE_FAST               1 (x)
+             12 LOAD_FAST                1 (x)
+             14 LOAD_CONST               0 (0)
+             16 COMPARE_OP               4 (>)
+             22 YIELD_VALUE
+             24 RESUME                   1
+             26 POP_TOP
+             28 JUMP_BACKWARD           11 (to 8)
+        >>   30 LOAD_CONST               1 (None)
+             32 RETURN_VALUE
+
+Disassembly of <code object main at 0x000002041FC38AA0, file "solver_cli.py", line 37>:
+ 37           0 RESUME                   0
+
+ 38           2 LOAD_GLOBAL              1 (NULL + argparse)
+             14 LOAD_ATTR                1 (ArgumentParser)
+             24 LOAD_CONST               1 ('Evaluate 21 weights on the fixed first eight weeks. Smaller R is better.')
+             26 KW_NAMES                 2
+             28 PRECALL                  1
+             32 CALL                     1
+             42 STORE_FAST               0 (parser)
+
+ 39          44 LOAD_FAST                0 (parser)
+             46 LOAD_METHOD              2 (add_argument)
+             68 LOAD_CONST               3 ('--version')
+             70 LOAD_CONST               4 ('version')
+             72 LOAD_GLOBAL              6 (VERSION)
+             84 KW_NAMES                 5
+             86 PRECALL                  3
+             90 CALL                     3
+            100 POP_TOP
+
+ 40         102 LOAD_FAST                0 (parser)
+            104 LOAD_METHOD              4 (add_mutually_exclusive_group)
+            126 LOAD_CONST               6 (True)
+            128 KW_NAMES                 7
+            130 PRECALL                  1
+            134 CALL                     1
+            144 STORE_FAST               1 (group)
+
+ 41         146 LOAD_FAST                1 (group)
+            148 LOAD_METHOD              2 (add_argument)
+            170 LOAD_CONST               8 ('--weights')
+            172 LOAD_GLOBAL             10 (Path)
+            184 LOAD_CONST               9 ('JSON file containing a 3 x 7 matrix or 21 numbers')
+            186 KW_NAMES                10
+            188 PRECALL                  3
+            192 CALL                     3
+            202 POP_TOP
+
+ 42         204 LOAD_FAST                1 (group)
+            206 LOAD_METHOD              2 (add_argument)
+            228 LOAD_CONST              11 ('--json')
+            230 LOAD_CONST              12 ('Weights encoded as a JSON string')
+            232 KW_NAMES                13
+            234 PRECALL                  2
+            238 CALL                     2
+            248 POP_TOP
+
+ 43         250 LOAD_FAST                1 (group)
+            252 LOAD_METHOD              2 (add_argument)
+            274 LOAD_CONST              14 ('--stdin')
+            276 LOAD_CONST              15 ('store_true')
+            278 LOAD_CONST              16 ('Read one complete JSON input from stdin')
+            280 KW_NAMES                17
+            282 PRECALL                  3
+            286 CALL                     3
+            296 POP_TOP
+
+ 44         298 LOAD_FAST                1 (group)
+            300 LOAD_METHOD              2 (add_argument)
+            322 LOAD_CONST              18 ('--serve')
+            324 LOAD_CONST              15 ('store_true')
+            326 LOAD_CONST              19 ('Read JSON lines; reply with one {"R": number} per line until EOF')
+            328 KW_NAMES                17
+            330 PRECALL                  3
+            334 CALL                     3
+            344 POP_TOP
+
+ 45         346 LOAD_FAST                0 (parser)
+            348 LOAD_METHOD              2 (add_argument)
+            370 LOAD_CONST              20 ('--workers')
+            372 LOAD_GLOBAL             12 (int)
+            384 LOAD_GLOBAL             15 (NULL + range)
+            396 LOAD_CONST              21 (1)
+            398 LOAD_CONST              22 (9)
+            400 PRECALL                  2
+            404 CALL                     2
+            414 LOAD_CONST              23 (2)
+            416 LOAD_CONST              24 ('CPU worker processes (default: 2)')
+            418 KW_NAMES                25
+            420 PRECALL                  5
+            424 CALL                     5
+            434 POP_TOP
+
+ 46         436 LOAD_FAST                0 (parser)
+            438 LOAD_METHOD              8 (parse_args)
+            460 PRECALL                  0
+            464 CALL                     0
+            474 STORE_FAST               2 (args)
+
+ 47         476 LOAD_CONST               0 (None)
+            478 STORE_FAST               3 (solver)
+
+ 48         480 NOP
+
+ 49         482 LOAD_FAST                2 (args)
+            484 LOAD_ATTR                9 (serve)
+            494 POP_JUMP_FORWARD_IF_FALSE   178 (to 852)
+
+ 50         496 LOAD_GLOBAL             20 (sys)
+            508 LOAD_ATTR               11 (stdin)
+            518 GET_ITER
+        >>  520 FOR_ITER               164 (to 850)
+            522 STORE_FAST               4 (line)
+
+ 51         524 LOAD_FAST                4 (line)
+            526 LOAD_METHOD             12 (strip)
+            548 PRECALL                  0
+            552 CALL                     0
+            562 POP_JUMP_FORWARD_IF_TRUE     1 (to 566)
+
+ 52         564 JUMP_BACKWARD           23 (to 520)
+
+ 53     >>  566 NOP
+
+ 54         568 LOAD_GLOBAL             27 (NULL + parse_weights)
+            580 LOAD_FAST                4 (line)
+            582 PRECALL                  1
+            586 CALL                     1
+            596 STORE_FAST               5 (weights)
+
+ 55         598 LOAD_FAST                3 (solver)
+            600 POP_JUMP_FORWARD_IF_NOT_NONE    22 (to 646)
+
+ 56         602 LOAD_CONST              26 (0)
+            604 LOAD_CONST              27 (('Solver',))
+            606 IMPORT_NAME             14 (solver_runtime)
+            608 IMPORT_FROM             15 (Solver)
+            610 STORE_FAST               6 (Solver)
+            612 POP_TOP
+
+ 57         614 PUSH_NULL
+            616 LOAD_FAST                6 (Solver)
+            618 LOAD_FAST                2 (args)
+            620 LOAD_ATTR               16 (workers)
+            630 PRECALL                  1
+            634 CALL                     1
+            644 STORE_FAST               3 (solver)
+
+ 58     >>  646 LOAD_CONST              28 ('R')
+            648 LOAD_FAST                3 (solver)
+            650 LOAD_METHOD             17 (evaluate)
+            672 LOAD_FAST                5 (weights)
+            674 PRECALL                  1
+            678 CALL                     1
+            688 BUILD_MAP                1
+            690 STORE_FAST               7 (response)
+            692 JUMP_FORWARD            40 (to 774)
+        >>  694 PUSH_EXC_INFO
+
+ 59         696 LOAD_GLOBAL             36 (Exception)
+            708 CHECK_EXC_MATCH
+            710 POP_JUMP_FORWARD_IF_FALSE    27 (to 766)
+            712 STORE_FAST               8 (exc)
+
+ 60         714 LOAD_CONST              29 ('error')
+            716 LOAD_GLOBAL             39 (NULL + str)
+            728 LOAD_FAST                8 (exc)
+            730 PRECALL                  1
+            734 CALL                     1
+            744 BUILD_MAP                1
+            746 STORE_FAST               7 (response)
+            748 POP_EXCEPT
+            750 LOAD_CONST               0 (None)
+            752 STORE_FAST               8 (exc)
+            754 DELETE_FAST              8 (exc)
+            756 JUMP_FORWARD             8 (to 774)
+        >>  758 LOAD_CONST               0 (None)
+            760 STORE_FAST               8 (exc)
+            762 DELETE_FAST              8 (exc)
+            764 RERAISE                  1
+
+ 59     >>  766 RERAISE                  0
+        >>  768 COPY                     3
+            770 POP_EXCEPT
+            772 RERAISE                  1
+
+ 61     >>  774 LOAD_GLOBAL             41 (NULL + print)
+            786 LOAD_GLOBAL             43 (NULL + json)
+            798 LOAD_ATTR               22 (dumps)
+            808 LOAD_FAST                7 (response)
+            810 LOAD_CONST              30 (False)
+            812 KW_NAMES                31
+            814 PRECALL                  2
+            818 CALL                     2
+            828 LOAD_CONST               6 (True)
+            830 KW_NAMES                32
+            832 PRECALL                  2
+            836 CALL                     2
+            846 POP_TOP
+            848 JUMP_BACKWARD          165 (to 520)
+
+ 50     >>  850 JUMP_FORWARD           164 (to 1180)
+
+ 63     >>  852 LOAD_FAST                2 (args)
+            854 LOAD_ATTR               23 (weights)
+            864 POP_JUMP_FORWARD_IF_FALSE    27 (to 920)
+            866 LOAD_FAST                2 (args)
+            868 LOAD_ATTR               23 (weights)
+            878 LOAD_METHOD             24 (read_text)
+            900 LOAD_CONST              33 ('utf-8-sig')
+            902 KW_NAMES                34
+            904 PRECALL                  1
+            908 CALL                     1
+            918 JUMP_FORWARD            43 (to 1006)
+
+ 64     >>  920 LOAD_FAST                2 (args)
+            922 LOAD_ATTR               21 (json)
+            932 POP_JUMP_FORWARD_IF_NONE     7 (to 948)
+            934 LOAD_FAST                2 (args)
+            936 LOAD_ATTR               21 (json)
+            946 JUMP_FORWARD            29 (to 1006)
+        >>  948 LOAD_GLOBAL             20 (sys)
+            960 LOAD_ATTR               11 (stdin)
+            970 LOAD_METHOD             25 (read)
+            992 PRECALL                  0
+            996 CALL                     0
+
+ 63     >> 1006 STORE_FAST               9 (text)
+
+ 65        1008 LOAD_GLOBAL             27 (NULL + parse_weights)
+           1020 LOAD_FAST                9 (text)
+           1022 PRECALL                  1
+           1026 CALL                     1
+           1036 STORE_FAST               5 (weights)
+
+ 66        1038 LOAD_CONST              26 (0)
+           1040 LOAD_CONST              27 (('Solver',))
+           1042 IMPORT_NAME             14 (solver_runtime)
+           1044 IMPORT_FROM             15 (Solver)
+           1046 STORE_FAST               6 (Solver)
+           1048 POP_TOP
+
+ 67        1050 PUSH_NULL
+           1052 LOAD_FAST                6 (Solver)
+           1054 LOAD_FAST                2 (args)
+           1056 LOAD_ATTR               16 (workers)
+           1066 PRECALL                  1
+           1070 CALL                     1
+           1080 STORE_FAST               3 (solver)
+
+ 68        1082 LOAD_GLOBAL             41 (NULL + print)
+           1094 LOAD_GLOBAL             53 (NULL + repr)
+           1106 LOAD_FAST                3 (solver)
+           1108 LOAD_METHOD             17 (evaluate)
+           1130 LOAD_FAST                5 (weights)
+           1132 PRECALL                  1
+           1136 CALL                     1
+           1146 PRECALL                  1
+           1150 CALL                     1
+           1160 LOAD_CONST               6 (True)
+           1162 KW_NAMES                32
+           1164 PRECALL                  2
+           1168 CALL                     2
+           1178 POP_TOP
+
+ 69     >> 1180 NOP
+
+ 74        1182 LOAD_FAST                3 (solver)
+           1184 POP_JUMP_FORWARD_IF_NONE    22 (to 1230)
+
+ 75        1186 LOAD_FAST                3 (solver)
+           1188 LOAD_METHOD             27 (close)
+           1210 PRECALL                  0
+           1214 CALL                     0
+           1224 POP_TOP
+           1226 LOAD_CONST              26 (0)
+           1228 RETURN_VALUE
+
+ 74     >> 1230 LOAD_CONST              26 (0)
+           1232 RETURN_VALUE
+        >> 1234 PUSH_EXC_INFO
+
+ 70        1236 LOAD_GLOBAL             36 (Exception)
+           1248 CHECK_EXC_MATCH
+           1250 POP_JUMP_FORWARD_IF_FALSE    66 (to 1384)
+           1252 STORE_FAST               8 (exc)
+
+ 71        1254 LOAD_GLOBAL             41 (NULL + print)
+           1266 LOAD_CONST              35 ('ERROR: ')
+           1268 LOAD_FAST                8 (exc)
+           1270 FORMAT_VALUE             0
+           1272 BUILD_STRING             2
+           1274 LOAD_GLOBAL             20 (sys)
+           1286 LOAD_ATTR               28 (stderr)
+           1296 LOAD_CONST               6 (True)
+           1298 KW_NAMES                36
+           1300 PRECALL                  3
+           1304 CALL                     3
+           1314 POP_TOP
+
+ 72        1316 POP_EXCEPT
+           1318 LOAD_CONST               0 (None)
+           1320 STORE_FAST               8 (exc)
+           1322 DELETE_FAST              8 (exc)
+
+ 74        1324 LOAD_FAST                3 (solver)
+           1326 POP_JUMP_FORWARD_IF_NONE    22 (to 1372)
+
+ 75        1328 LOAD_FAST                3 (solver)
+           1330 LOAD_METHOD             27 (close)
+           1352 PRECALL                  0
+           1356 CALL                     0
+           1366 POP_TOP
+           1368 LOAD_CONST              23 (2)
+           1370 RETURN_VALUE
+
+ 74     >> 1372 LOAD_CONST              23 (2)
+           1374 RETURN_VALUE
+        >> 1376 LOAD_CONST               0 (None)
+           1378 STORE_FAST               8 (exc)
+           1380 DELETE_FAST              8 (exc)
+           1382 RERAISE                  1
+
+ 70     >> 1384 RERAISE                  0
+        >> 1386 COPY                     3
+           1388 POP_EXCEPT
+           1390 RERAISE                  1
+        >> 1392 PUSH_EXC_INFO
+
+ 74        1394 LOAD_FAST                3 (solver)
+           1396 POP_JUMP_FORWARD_IF_NONE    21 (to 1440)
+
+ 75        1398 LOAD_FAST                3 (solver)
+           1400 LOAD_METHOD             27 (close)
+           1422 PRECALL                  0
+           1426 CALL                     0
+           1436 POP_TOP
+           1438 RERAISE                  0
+
+ 74     >> 1440 RERAISE                  0
+        >> 1442 COPY                     3
+           1444 POP_EXCEPT
+           1446 RERAISE                  1
+ExceptionTable:
+  482 to 564 -> 1234 [0]
+  568 to 690 -> 694 [1]
+  692 to 692 -> 1234 [0]
+  694 to 712 -> 768 [2] lasti
+  714 to 746 -> 758 [2] lasti
+  748 to 756 -> 1234 [0]
+  758 to 766 -> 768 [2] lasti
+  768 to 1178 -> 1234 [0]
+  1234 to 1252 -> 1386 [1] lasti
+  1254 to 1314 -> 1376 [1] lasti
+  1316 to 1322 -> 1392 [0]
+  1376 to 1384 -> 1386 [1] lasti
+  1386 to 1390 -> 1392 [0]
+  1392 to 1440 -> 1442 [1] lasti

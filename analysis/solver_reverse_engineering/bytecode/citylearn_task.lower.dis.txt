@@ -1,0 +1,2408 @@
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 (0)
+              4 LOAD_CONST               1 (('annotations',))
+              6 IMPORT_NAME              0 (__future__)
+              8 IMPORT_FROM              1 (annotations)
+             10 STORE_NAME               1 (annotations)
+             12 POP_TOP
+
+  3          14 LOAD_CONST               0 (0)
+             16 LOAD_CONST               2 (('dataclass',))
+             18 IMPORT_NAME              2 (dataclasses)
+             20 IMPORT_FROM              3 (dataclass)
+             22 STORE_NAME               3 (dataclass)
+             24 POP_TOP
+
+  4          26 LOAD_CONST               0 (0)
+             28 LOAD_CONST               3 (('Sequence',))
+             30 IMPORT_NAME              4 (typing)
+             32 IMPORT_FROM              5 (Sequence)
+             34 STORE_NAME               5 (Sequence)
+             36 POP_TOP
+
+  6          38 LOAD_CONST               0 (0)
+             40 LOAD_CONST               4 (None)
+             42 IMPORT_NAME              6 (numpy)
+             44 STORE_NAME               7 (np)
+
+  7          46 LOAD_CONST               0 (0)
+             48 LOAD_CONST               5 (('Agent',))
+             50 IMPORT_NAME              8 (citylearn.agents.base)
+             52 IMPORT_FROM              9 (Agent)
+             54 STORE_NAME               9 (Agent)
+             56 POP_TOP
+
+  8          58 LOAD_CONST               0 (0)
+             60 LOAD_CONST               6 (('CityLearnEnv',))
+             62 IMPORT_NAME             10 (citylearn.citylearn)
+             64 IMPORT_FROM             11 (CityLearnEnv)
+             66 STORE_NAME              11 (CityLearnEnv)
+             68 POP_TOP
+
+ 10          70 LOAD_CONST               7 (1)
+             72 LOAD_CONST               8 (('build_observation_index', 'get_cooling_device_nominal_power', 'get_electrical_storage_nominal_power'))
+             74 IMPORT_NAME             12 (env)
+             76 IMPORT_FROM             13 (build_observation_index)
+             78 STORE_NAME              13 (build_observation_index)
+             80 IMPORT_FROM             14 (get_cooling_device_nominal_power)
+             82 STORE_NAME              14 (get_cooling_device_nominal_power)
+             84 IMPORT_FROM             15 (get_electrical_storage_nominal_power)
+             86 STORE_NAME              15 (get_electrical_storage_nominal_power)
+             88 POP_TOP
+
+ 17          90 PUSH_NULL
+             92 LOAD_NAME                3 (dataclass)
+             94 LOAD_CONST               9 (True)
+             96 KW_NAMES                10
+             98 PRECALL                  1
+            102 CALL                     1
+
+ 18         112 PUSH_NULL
+            114 LOAD_BUILD_CLASS
+            116 LOAD_CONST              11 (<code object LowerLevelConfig at 0x000002307B132C10, file "citylearn_task\lower.py", line 17>)
+            118 MAKE_FUNCTION            0
+            120 LOAD_CONST              12 ('LowerLevelConfig')
+            122 PRECALL                  2
+            126 CALL                     2
+
+ 17         136 PRECALL                  0
+            140 CALL                     0
+
+ 18         150 STORE_NAME              16 (LowerLevelConfig)
+
+ 98         152 LOAD_CONST              35 (('w', 'Sequence[float]', 'return', 'np.ndarray'))
+            154 LOAD_CONST              17 (<code object normalize_building_weights at 0x000002307B1866B0, file "citylearn_task\lower.py", line 98>)
+            156 MAKE_FUNCTION            4 (annotations)
+            158 STORE_NAME              17 (normalize_building_weights)
+
+107         160 LOAD_CONST              36 ((7,))
+            162 LOAD_CONST              37 (('w', 'Sequence[float]', 'n_objectives', 'int', 'return', 'np.ndarray'))
+            164 LOAD_CONST              21 (<code object canonicalize_weights at 0x000002307AD9F090, file "citylearn_task\lower.py", line 107>)
+            166 MAKE_FUNCTION            5 (defaults, annotations)
+            168 STORE_NAME              18 (canonicalize_weights)
+
+127         170 LOAD_CONST              38 (('values', 'Sequence[float]', 'lo', 'float', 'hi', 'float', 'return', 'list[float]'))
+            172 LOAD_CONST              27 (<code object _unique_sorted at 0x000002307B520DF0, file "citylearn_task\lower.py", line 127>)
+            174 MAKE_FUNCTION            4 (annotations)
+            176 STORE_NAME              19 (_unique_sorted)
+
+133         178 LOAD_CONST              39 (('center', 'float', 'step', 'float', 'radius', 'float', 'points', 'int', 'return', 'list[float]'))
+            180 LOAD_CONST              32 (<code object _build_local_refine_points at 0x000002307B2D3630, file "citylearn_task\lower.py", line 133>)
+            182 MAKE_FUNCTION            4 (annotations)
+            184 STORE_NAME              20 (_build_local_refine_points)
+
+148         186 PUSH_NULL
+            188 LOAD_BUILD_CLASS
+            190 LOAD_CONST              33 (<code object WeightedMyopicBatteryAgent at 0x000002307B391F30, file "citylearn_task\lower.py", line 148>)
+            192 MAKE_FUNCTION            0
+            194 LOAD_CONST              34 ('WeightedMyopicBatteryAgent')
+            196 LOAD_NAME                9 (Agent)
+            198 PRECALL                  3
+            202 CALL                     3
+            212 STORE_NAME              21 (WeightedMyopicBatteryAgent)
+            214 LOAD_CONST               4 (None)
+            216 RETURN_VALUE
+
+Disassembly of <code object LowerLevelConfig at 0x000002307B132C10, file "citylearn_task\lower.py", line 17>:
+ 17           0 RESUME                   0
+              2 LOAD_NAME                0 (__name__)
+              4 STORE_NAME               1 (__module__)
+              6 LOAD_CONST               0 ('LowerLevelConfig')
+              8 STORE_NAME               2 (__qualname__)
+             10 SETUP_ANNOTATIONS
+
+ 20          12 LOAD_CONST               1 ((-1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0))
+             14 STORE_NAME               3 (action_candidates)
+             16 LOAD_CONST               2 ('tuple[float, ...]')
+             18 LOAD_NAME                4 (__annotations__)
+             20 LOAD_CONST               3 ('action_candidates')
+             22 STORE_SUBSCR
+
+ 45          26 LOAD_CONST               4 ((0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0))
+             28 STORE_NAME               5 (cooling_action_candidates)
+             30 LOAD_CONST               2 ('tuple[float, ...]')
+             32 LOAD_NAME                4 (__annotations__)
+             34 LOAD_CONST               5 ('cooling_action_candidates')
+             36 STORE_SUBSCR
+
+ 60          40 LOAD_CONST               6 (1.0)
+             42 STORE_NAME               6 (cooling_sensitivity)
+             44 LOAD_CONST               7 ('float')
+             46 LOAD_NAME                4 (__annotations__)
+             48 LOAD_CONST               8 ('cooling_sensitivity')
+             50 STORE_SUBSCR
+
+ 63          54 LOAD_CONST               9 (0.4)
+             56 STORE_NAME               7 (max_battery_action_delta)
+             58 LOAD_CONST               7 ('float')
+             60 LOAD_NAME                4 (__annotations__)
+             62 LOAD_CONST              10 ('max_battery_action_delta')
+             64 STORE_SUBSCR
+
+ 64          68 LOAD_CONST              11 (0.5)
+             70 STORE_NAME               8 (max_cooling_action_delta)
+             72 LOAD_CONST               7 ('float')
+             74 LOAD_NAME                4 (__annotations__)
+             76 LOAD_CONST              12 ('max_cooling_action_delta')
+             78 STORE_SUBSCR
+
+ 67          82 LOAD_CONST              13 (0.05)
+             84 STORE_NAME               9 (min_soc_reserve_normal)
+             86 LOAD_CONST               7 ('float')
+             88 LOAD_NAME                4 (__annotations__)
+             90 LOAD_CONST              14 ('min_soc_reserve_normal')
+             92 STORE_SUBSCR
+
+ 68          96 LOAD_CONST              15 (0.15)
+             98 STORE_NAME              10 (min_soc_reserve_outage)
+            100 LOAD_CONST               7 ('float')
+            102 LOAD_NAME                4 (__annotations__)
+            104 LOAD_CONST              16 ('min_soc_reserve_outage')
+            106 STORE_SUBSCR
+
+ 72         110 LOAD_CONST              17 (True)
+            112 STORE_NAME              11 (use_price_lookahead)
+            114 LOAD_CONST              18 ('bool')
+            116 LOAD_NAME                4 (__annotations__)
+            118 LOAD_CONST              19 ('use_price_lookahead')
+            120 STORE_SUBSCR
+
+ 76         124 LOAD_CONST               6 (1.0)
+            126 STORE_NAME              12 (lookahead_gamma)
+            128 LOAD_CONST               7 ('float')
+            130 LOAD_NAME                4 (__annotations__)
+            132 LOAD_CONST              20 ('lookahead_gamma')
+            134 STORE_SUBSCR
+
+ 81         138 LOAD_CONST              17 (True)
+            140 STORE_NAME              13 (normalize_candidate_objectives)
+            142 LOAD_CONST              18 ('bool')
+            144 LOAD_NAME                4 (__annotations__)
+            146 LOAD_CONST              21 ('normalize_candidate_objectives')
+            148 STORE_SUBSCR
+
+ 84         152 LOAD_CONST              22 (0.01)
+            154 STORE_NAME              14 (soc_min)
+            156 LOAD_CONST               7 ('float')
+            158 LOAD_NAME                4 (__annotations__)
+            160 LOAD_CONST              23 ('soc_min')
+            162 STORE_SUBSCR
+
+ 85         166 LOAD_CONST              24 (0.99)
+            168 STORE_NAME              15 (soc_max)
+            170 LOAD_CONST               7 ('float')
+            172 LOAD_NAME                4 (__annotations__)
+            174 LOAD_CONST              25 ('soc_max')
+            176 STORE_SUBSCR
+
+ 89         180 LOAD_CONST              26 (0.2)
+            182 STORE_NAME              16 (soc_action_gain)
+            184 LOAD_CONST               7 ('float')
+            186 LOAD_NAME                4 (__annotations__)
+            188 LOAD_CONST              27 ('soc_action_gain')
+            190 STORE_SUBSCR
+
+ 93         194 LOAD_CONST              13 (0.05)
+            196 STORE_NAME              17 (local_refine_step)
+            198 LOAD_CONST               7 ('float')
+            200 LOAD_NAME                4 (__annotations__)
+            202 LOAD_CONST              28 ('local_refine_step')
+            204 STORE_SUBSCR
+
+ 94         208 LOAD_CONST              29 (0.25)
+            210 STORE_NAME              18 (local_refine_radius)
+            212 LOAD_CONST               7 ('float')
+            214 LOAD_NAME                4 (__annotations__)
+            216 LOAD_CONST              30 ('local_refine_radius')
+            218 STORE_SUBSCR
+
+ 95         222 LOAD_CONST              31 (9)
+            224 STORE_NAME              19 (local_refine_points)
+            226 LOAD_CONST              32 ('int')
+            228 LOAD_NAME                4 (__annotations__)
+            230 LOAD_CONST              33 ('local_refine_points')
+            232 STORE_SUBSCR
+            236 LOAD_CONST              34 (None)
+            238 RETURN_VALUE
+
+Disassembly of <code object normalize_building_weights at 0x000002307B1866B0, file "citylearn_task\lower.py", line 98>:
+ 98           0 RESUME                   0
+
+ 99           2 LOAD_GLOBAL              1 (NULL + np)
+             14 LOAD_ATTR                1 (asarray)
+             24 LOAD_FAST                0 (w)
+             26 LOAD_GLOBAL              4 (float)
+             38 KW_NAMES                 1
+             40 PRECALL                  2
+             44 CALL                     2
+             54 STORE_FAST               1 (w_arr)
+
+100          56 LOAD_GLOBAL              1 (NULL + np)
+             68 LOAD_ATTR                3 (clip)
+             78 LOAD_FAST                1 (w_arr)
+             80 LOAD_CONST               2 (0.0)
+             82 LOAD_CONST               0 (None)
+             84 PRECALL                  3
+             88 CALL                     3
+             98 STORE_FAST               1 (w_arr)
+
+101         100 LOAD_GLOBAL              5 (NULL + float)
+            112 LOAD_FAST                1 (w_arr)
+            114 LOAD_METHOD              4 (sum)
+            136 PRECALL                  0
+            140 CALL                     0
+            150 PRECALL                  1
+            154 CALL                     1
+            164 STORE_FAST               2 (s)
+
+102         166 LOAD_FAST                2 (s)
+            168 LOAD_CONST               2 (0.0)
+            170 COMPARE_OP               1 (<=)
+            176 POP_JUMP_FORWARD_IF_FALSE    36 (to 250)
+
+103         178 LOAD_GLOBAL              1 (NULL + np)
+            190 LOAD_ATTR                5 (ones_like)
+            200 LOAD_FAST                1 (w_arr)
+            202 PRECALL                  1
+            206 CALL                     1
+            216 LOAD_GLOBAL             13 (NULL + len)
+            228 LOAD_FAST                1 (w_arr)
+            230 PRECALL                  1
+            234 CALL                     1
+            244 BINARY_OP               11 (/)
+            248 RETURN_VALUE
+
+104     >>  250 LOAD_FAST                1 (w_arr)
+            252 LOAD_FAST                2 (s)
+            254 BINARY_OP               11 (/)
+            258 RETURN_VALUE
+
+Disassembly of <code object canonicalize_weights at 0x000002307AD9F090, file "citylearn_task\lower.py", line 107>:
+107           0 RESUME                   0
+
+114           2 LOAD_GLOBAL              1 (NULL + np)
+             14 LOAD_ATTR                1 (asarray)
+             24 LOAD_FAST                0 (w)
+             26 LOAD_GLOBAL              4 (float)
+             38 KW_NAMES                 1
+             40 PRECALL                  2
+             44 CALL                     2
+             54 STORE_FAST               2 (w_arr)
+
+115          56 LOAD_FAST                2 (w_arr)
+             58 LOAD_ATTR                3 (ndim)
+             68 LOAD_CONST               2 (1)
+             70 COMPARE_OP               3 (!=)
+             76 POP_JUMP_FORWARD_IF_FALSE    21 (to 120)
+
+116          78 LOAD_FAST                2 (w_arr)
+             80 LOAD_METHOD              4 (reshape)
+            102 LOAD_CONST               3 (-1)
+            104 PRECALL                  1
+            108 CALL                     1
+            118 STORE_FAST               2 (w_arr)
+
+118     >>  120 LOAD_GLOBAL             11 (NULL + len)
+            132 LOAD_FAST                2 (w_arr)
+            134 PRECALL                  1
+            138 CALL                     1
+            148 LOAD_FAST                1 (n_objectives)
+            150 COMPARE_OP               2 (==)
+            156 POP_JUMP_FORWARD_IF_FALSE    15 (to 188)
+
+119         158 LOAD_GLOBAL             13 (NULL + normalize_building_weights)
+            170 LOAD_FAST                2 (w_arr)
+            172 PRECALL                  1
+            176 CALL                     1
+            186 RETURN_VALUE
+
+120     >>  188 LOAD_GLOBAL             11 (NULL + len)
+            200 LOAD_FAST                2 (w_arr)
+            202 PRECALL                  1
+            206 CALL                     1
+            216 LOAD_CONST               4 (4)
+            218 COMPARE_OP               2 (==)
+            224 POP_JUMP_FORWARD_IF_FALSE    68 (to 362)
+            226 LOAD_FAST                1 (n_objectives)
+            228 LOAD_CONST               5 (7)
+            230 COMPARE_OP               2 (==)
+            236 POP_JUMP_FORWARD_IF_FALSE    62 (to 362)
+
+121         238 LOAD_GLOBAL              1 (NULL + np)
+            250 LOAD_ATTR                7 (concatenate)
+            260 LOAD_FAST                2 (w_arr)
+            262 LOAD_GLOBAL              1 (NULL + np)
+            274 LOAD_ATTR                8 (zeros)
+            284 LOAD_CONST               6 (3)
+            286 LOAD_GLOBAL              4 (float)
+            298 KW_NAMES                 1
+            300 PRECALL                  2
+            304 CALL                     2
+            314 BUILD_LIST               2
+            316 PRECALL                  1
+            320 CALL                     1
+            330 STORE_FAST               2 (w_arr)
+
+122         332 LOAD_GLOBAL             13 (NULL + normalize_building_weights)
+            344 LOAD_FAST                2 (w_arr)
+            346 PRECALL                  1
+            350 CALL                     1
+            360 RETURN_VALUE
+
+124     >>  362 LOAD_GLOBAL             19 (NULL + ValueError)
+            374 LOAD_CONST               7 ('weights length must be 4 or ')
+            376 LOAD_FAST                1 (n_objectives)
+            378 FORMAT_VALUE             0
+            380 LOAD_CONST               8 (', got ')
+            382 LOAD_GLOBAL             11 (NULL + len)
+            394 LOAD_FAST                2 (w_arr)
+            396 PRECALL                  1
+            400 CALL                     1
+            410 FORMAT_VALUE             0
+            412 BUILD_STRING             4
+            414 PRECALL                  1
+            418 CALL                     1
+            428 RAISE_VARARGS            1
+
+Disassembly of <code object _unique_sorted at 0x000002307B520DF0, file "citylearn_task\lower.py", line 127>:
+              0 MAKE_CELL                1 (lo)
+              2 MAKE_CELL                2 (hi)
+
+127           4 RESUME                   0
+
+128           6 LOAD_CLOSURE             2 (hi)
+              8 LOAD_CLOSURE             1 (lo)
+             10 BUILD_TUPLE              2
+             12 LOAD_CONST               1 (<code object <listcomp> at 0x000002307B5608B0, file "citylearn_task\lower.py", line 128>)
+             14 MAKE_FUNCTION            8 (closure)
+             16 LOAD_FAST                0 (values)
+             18 GET_ITER
+             20 PRECALL                  0
+             24 CALL                     0
+             34 STORE_FAST               3 (clipped)
+
+129          36 LOAD_GLOBAL              1 (NULL + sorted)
+             48 LOAD_GLOBAL              3 (NULL + set)
+             60 LOAD_CONST               2 (<code object <genexpr> at 0x000002307B894210, file "citylearn_task\lower.py", line 129>)
+             62 MAKE_FUNCTION            0
+             64 LOAD_FAST                3 (clipped)
+             66 GET_ITER
+             68 PRECALL                  0
+             72 CALL                     0
+             82 PRECALL                  1
+             86 CALL                     1
+             96 PRECALL                  1
+            100 CALL                     1
+            110 STORE_FAST               4 (rounded)
+
+130         112 LOAD_CONST               3 (<code object <listcomp> at 0x000002307B894030, file "citylearn_task\lower.py", line 130>)
+            114 MAKE_FUNCTION            0
+            116 LOAD_FAST                4 (rounded)
+            118 GET_ITER
+            120 PRECALL                  0
+            124 CALL                     0
+            134 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B5608B0, file "citylearn_task\lower.py", line 128>:
+              0 COPY_FREE_VARS           2
+
+128           2 RESUME                   0
+              4 BUILD_LIST               0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                37 (to 84)
+             10 STORE_FAST               1 (v)
+             12 LOAD_GLOBAL              1 (NULL + float)
+             24 LOAD_GLOBAL              3 (NULL + np)
+             36 LOAD_ATTR                2 (clip)
+             46 LOAD_FAST                1 (v)
+             48 LOAD_DEREF               3 (lo)
+             50 LOAD_DEREF               2 (hi)
+             52 PRECALL                  3
+             56 CALL                     3
+             66 PRECALL                  1
+             70 CALL                     1
+             80 LIST_APPEND              2
+             82 JUMP_BACKWARD           38 (to 8)
+        >>   84 RETURN_VALUE
+
+Disassembly of <code object <genexpr> at 0x000002307B894210, file "citylearn_task\lower.py", line 129>:
+129           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                20 (to 50)
+             10 STORE_FAST               1 (v)
+             12 LOAD_GLOBAL              1 (NULL + round)
+             24 LOAD_FAST                1 (v)
+             26 LOAD_CONST               0 (6)
+             28 PRECALL                  2
+             32 CALL                     2
+             42 YIELD_VALUE
+             44 RESUME                   1
+             46 POP_TOP
+             48 JUMP_BACKWARD           21 (to 8)
+        >>   50 LOAD_CONST               1 (None)
+             52 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B894030, file "citylearn_task\lower.py", line 130>:
+130           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                17 (to 42)
+              8 STORE_FAST               1 (v)
+             10 LOAD_GLOBAL              1 (NULL + float)
+             22 LOAD_FAST                1 (v)
+             24 PRECALL                  1
+             28 CALL                     1
+             38 LIST_APPEND              2
+             40 JUMP_BACKWARD           18 (to 6)
+        >>   42 RETURN_VALUE
+
+Disassembly of <code object _build_local_refine_points at 0x000002307B2D3630, file "citylearn_task\lower.py", line 133>:
+133           0 RESUME                   0
+
+139           2 LOAD_FAST                1 (step)
+              4 LOAD_CONST               1 (0.0)
+              6 COMPARE_OP               1 (<=)
+             12 POP_JUMP_FORWARD_IF_TRUE    12 (to 38)
+             14 LOAD_FAST                2 (radius)
+             16 LOAD_CONST               1 (0.0)
+             18 COMPARE_OP               1 (<=)
+             24 POP_JUMP_FORWARD_IF_TRUE     6 (to 38)
+             26 LOAD_FAST                3 (points)
+             28 LOAD_CONST               2 (2)
+             30 COMPARE_OP               0 (<)
+             36 POP_JUMP_FORWARD_IF_FALSE     3 (to 44)
+
+140     >>   38 LOAD_FAST                0 (center)
+             40 BUILD_LIST               1
+             42 RETURN_VALUE
+
+142     >>   44 LOAD_GLOBAL              1 (NULL + min)
+             56 LOAD_FAST                2 (radius)
+             58 LOAD_FAST                1 (step)
+             60 LOAD_GLOBAL              3 (NULL + max)
+             72 LOAD_CONST               3 (1)
+             74 LOAD_FAST                3 (points)
+             76 LOAD_CONST               2 (2)
+             78 BINARY_OP                2 (//)
+             82 PRECALL                  2
+             86 CALL                     2
+             96 BINARY_OP                5 (*)
+            100 PRECALL                  2
+            104 CALL                     2
+            114 STORE_FAST               4 (half_span)
+
+143         116 LOAD_CONST               4 (<code object <listcomp> at 0x000002307B8944E0, file "citylearn_task\lower.py", line 143>)
+            118 MAKE_FUNCTION            0
+
+144         120 LOAD_GLOBAL              5 (NULL + np)
+            132 LOAD_ATTR                3 (linspace)
+            142 LOAD_FAST                0 (center)
+            144 LOAD_FAST                4 (half_span)
+            146 BINARY_OP               10 (-)
+            150 LOAD_FAST                0 (center)
+            152 LOAD_FAST                4 (half_span)
+            154 BINARY_OP                0 (+)
+            158 LOAD_FAST                3 (points)
+            160 PRECALL                  3
+            164 CALL                     3
+
+143         174 GET_ITER
+            176 PRECALL                  0
+            180 CALL                     0
+            190 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B8944E0, file "citylearn_task\lower.py", line 143>:
+143           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                17 (to 42)
+
+144           8 STORE_FAST               1 (v)
+             10 LOAD_GLOBAL              1 (NULL + float)
+             22 LOAD_FAST                1 (v)
+             24 PRECALL                  1
+             28 CALL                     1
+
+143          38 LIST_APPEND              2
+             40 JUMP_BACKWARD           18 (to 6)
+        >>   42 RETURN_VALUE
+
+Disassembly of <code object WeightedMyopicBatteryAgent at 0x000002307B391F30, file "citylearn_task\lower.py", line 148>:
+              0 MAKE_CELL                0 (__class__)
+
+148           2 RESUME                   0
+              4 LOAD_NAME                0 (__name__)
+              6 STORE_NAME               1 (__module__)
+              8 LOAD_CONST               0 ('WeightedMyopicBatteryAgent')
+             10 STORE_NAME               2 (__qualname__)
+
+149          12 LOAD_CONST               1 ('Lower-level controller.\n\n    For each building i, given weights w_i over local objectives, it selects\n    electrical storage and cooling actions each time step to minimize a weighted\n    sum of approximated local objectives.\n\n    Notes:\n        - Supports 4-weight legacy input (cost/carbon/peak/discomfort) and extended\n            7-weight input that additionally includes degradation/ramping/resilience.\n        - Uses dataset-aware constraints: SOC reserve, action slew-rate limits,\n            outage-mode restrictions, and cooling-demand caps.\n    ')
+             14 STORE_NAME               3 (__doc__)
+
+166          16 NOP
+
+162          18 LOAD_CONST              18 ((None,))
+             20 LOAD_CONST              19 (('env', 'CityLearnEnv', 'weights', 'Sequence[Sequence[float]]', 'config', 'LowerLevelConfig | None'))
+             22 LOAD_CLOSURE             0 (__class__)
+             24 BUILD_TUPLE              1
+             26 LOAD_CONST               9 (<code object __init__ at 0x000002307B43D710, file "citylearn_task\lower.py", line 162>)
+             28 MAKE_FUNCTION           13 (defaults, annotations, closure)
+             30 STORE_NAME               4 (__init__)
+
+183          32 LOAD_CONST              20 (('return', 'None'))
+             34 LOAD_CLOSURE             0 (__class__)
+             36 BUILD_TUPLE              1
+             38 LOAD_CONST              12 (<code object reset at 0x000002307B662990, file "citylearn_task\lower.py", line 183>)
+             40 MAKE_FUNCTION           12 (annotations, closure)
+             42 STORE_NAME               5 (reset)
+
+190          44 NOP
+
+189          46 LOAD_CONST              18 ((None,))
+             48 LOAD_CONST              21 (('observations', 'list[list[float]]', 'deterministic', 'bool', 'return', 'list[list[float]]'))
+             50 LOAD_CONST              17 (<code object predict at 0x000002307B4E0480, file "citylearn_task\lower.py", line 189>)
+             52 MAKE_FUNCTION            5 (defaults, annotations)
+             54 STORE_NAME               6 (predict)
+             56 LOAD_CLOSURE             0 (__class__)
+             58 COPY                     1
+             60 STORE_NAME               7 (__classcell__)
+             62 RETURN_VALUE
+
+Disassembly of <code object __init__ at 0x000002307B43D710, file "citylearn_task\lower.py", line 162>:
+              0 COPY_FREE_VARS           1
+              2 MAKE_CELL                1 (env)
+
+162           4 RESUME                   0
+
+168           6 LOAD_GLOBAL              1 (NULL + super)
+             18 PRECALL                  0
+             22 CALL                     0
+             32 LOAD_METHOD              1 (__init__)
+             54 LOAD_DEREF               1 (env)
+             56 PRECALL                  1
+             60 CALL                     1
+             70 POP_TOP
+
+169          72 LOAD_FAST                3 (config)
+             74 JUMP_IF_TRUE_OR_POP     13 (to 102)
+             76 LOAD_GLOBAL              5 (NULL + LowerLevelConfig)
+             88 PRECALL                  0
+             92 CALL                     0
+        >>  102 LOAD_FAST                0 (self)
+            104 STORE_ATTR               3 (config)
+
+170         114 LOAD_CONST               1 (<code object <listcomp> at 0x000002307B8945D0, file "citylearn_task\lower.py", line 170>)
+            116 MAKE_FUNCTION            0
+            118 LOAD_FAST                2 (weights)
+            120 GET_ITER
+            122 PRECALL                  0
+            126 CALL                     0
+            136 LOAD_FAST                0 (self)
+            138 STORE_ATTR               4 (weights)
+
+171         148 LOAD_GLOBAL             11 (NULL + build_observation_index)
+            160 LOAD_DEREF               1 (env)
+            162 PRECALL                  1
+            166 CALL                     1
+            176 LOAD_FAST                0 (self)
+            178 STORE_ATTR               6 (obs_index)
+
+172         188 LOAD_CLOSURE             1 (env)
+            190 BUILD_TUPLE              1
+            192 LOAD_CONST               2 (<code object <listcomp> at 0x000002307B8946C0, file "citylearn_task\lower.py", line 172>)
+            194 MAKE_FUNCTION            8 (closure)
+
+174         196 LOAD_GLOBAL             15 (NULL + range)
+            208 LOAD_GLOBAL             17 (NULL + len)
+            220 LOAD_DEREF               1 (env)
+            222 LOAD_ATTR                9 (buildings)
+            232 PRECALL                  1
+            236 CALL                     1
+            246 PRECALL                  1
+            250 CALL                     1
+
+172         260 GET_ITER
+            262 PRECALL                  0
+            266 CALL                     0
+            276 LOAD_FAST                0 (self)
+            278 STORE_ATTR              10 (nominal_power)
+
+176         288 LOAD_CLOSURE             1 (env)
+            290 BUILD_TUPLE              1
+            292 LOAD_CONST               3 (<code object <listcomp> at 0x000002307B8947B0, file "citylearn_task\lower.py", line 176>)
+            294 MAKE_FUNCTION            8 (closure)
+
+177         296 LOAD_GLOBAL             15 (NULL + range)
+            308 LOAD_GLOBAL             17 (NULL + len)
+            320 LOAD_DEREF               1 (env)
+            322 LOAD_ATTR                9 (buildings)
+            332 PRECALL                  1
+            336 CALL                     1
+            346 PRECALL                  1
+            350 CALL                     1
+
+176         360 GET_ITER
+            362 PRECALL                  0
+            366 CALL                     0
+            376 LOAD_FAST                0 (self)
+            378 STORE_ATTR              11 (cooling_nominal_power)
+
+179         388 LOAD_CONST               4 (<code object <listcomp> at 0x000002307B56C510, file "citylearn_task\lower.py", line 179>)
+            390 MAKE_FUNCTION            0
+            392 LOAD_GLOBAL             15 (NULL + range)
+            404 LOAD_GLOBAL             17 (NULL + len)
+            416 LOAD_DEREF               1 (env)
+            418 LOAD_ATTR                9 (buildings)
+            428 PRECALL                  1
+            432 CALL                     1
+            442 PRECALL                  1
+            446 CALL                     1
+            456 GET_ITER
+            458 PRECALL                  0
+            462 CALL                     0
+            472 LOAD_FAST                0 (self)
+            474 STORE_ATTR              12 (prev_battery_action)
+
+180         484 LOAD_CONST               5 (<code object <listcomp> at 0x000002307B56C5E0, file "citylearn_task\lower.py", line 180>)
+            486 MAKE_FUNCTION            0
+            488 LOAD_GLOBAL             15 (NULL + range)
+            500 LOAD_GLOBAL             17 (NULL + len)
+            512 LOAD_DEREF               1 (env)
+            514 LOAD_ATTR                9 (buildings)
+            524 PRECALL                  1
+            528 CALL                     1
+            538 PRECALL                  1
+            542 CALL                     1
+            552 GET_ITER
+            554 PRECALL                  0
+            558 CALL                     0
+            568 LOAD_FAST                0 (self)
+            570 STORE_ATTR              13 (prev_cooling_action)
+
+181         580 LOAD_CONST               6 (<code object <listcomp> at 0x000002307B56C6B0, file "citylearn_task\lower.py", line 181>)
+            582 MAKE_FUNCTION            0
+            584 LOAD_GLOBAL             15 (NULL + range)
+            596 LOAD_GLOBAL             17 (NULL + len)
+            608 LOAD_DEREF               1 (env)
+            610 LOAD_ATTR                9 (buildings)
+            620 PRECALL                  1
+            624 CALL                     1
+            634 PRECALL                  1
+            638 CALL                     1
+            648 GET_ITER
+            650 PRECALL                  0
+            654 CALL                     0
+            664 LOAD_FAST                0 (self)
+            666 STORE_ATTR              14 (prev_net)
+            676 LOAD_CONST               0 (None)
+            678 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B8945D0, file "citylearn_task\lower.py", line 170>:
+170           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                19 (to 46)
+              8 STORE_FAST               1 (w)
+             10 LOAD_GLOBAL              1 (NULL + canonicalize_weights)
+             22 LOAD_FAST                1 (w)
+             24 LOAD_CONST               0 (7)
+             26 KW_NAMES                 1
+             28 PRECALL                  2
+             32 CALL                     2
+             42 LIST_APPEND              2
+             44 JUMP_BACKWARD           20 (to 6)
+        >>   46 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B8946C0, file "citylearn_task\lower.py", line 172>:
+              0 COPY_FREE_VARS           1
+
+172           2 RESUME                   0
+              4 BUILD_LIST               0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                18 (to 46)
+
+174          10 STORE_FAST               1 (i)
+
+173          12 LOAD_GLOBAL              1 (NULL + get_electrical_storage_nominal_power)
+             24 LOAD_DEREF               2 (env)
+             26 LOAD_FAST                1 (i)
+             28 PRECALL                  2
+             32 CALL                     2
+
+172          42 LIST_APPEND              2
+             44 JUMP_BACKWARD           19 (to 8)
+        >>   46 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B8947B0, file "citylearn_task\lower.py", line 176>:
+              0 COPY_FREE_VARS           1
+
+176           2 RESUME                   0
+              4 BUILD_LIST               0
+              6 LOAD_FAST                0 (.0)
+        >>    8 FOR_ITER                18 (to 46)
+
+177          10 STORE_FAST               1 (i)
+             12 LOAD_GLOBAL              1 (NULL + get_cooling_device_nominal_power)
+             24 LOAD_DEREF               2 (env)
+             26 LOAD_FAST                1 (i)
+             28 PRECALL                  2
+             32 CALL                     2
+
+176          42 LIST_APPEND              2
+             44 JUMP_BACKWARD           19 (to 8)
+        >>   46 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B56C510, file "citylearn_task\lower.py", line 179>:
+179           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (0.0)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B56C5E0, file "citylearn_task\lower.py", line 180>:
+180           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (0.0)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B56C6B0, file "citylearn_task\lower.py", line 181>:
+181           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (None)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object reset at 0x000002307B662990, file "citylearn_task\lower.py", line 183>:
+              0 COPY_FREE_VARS           1
+
+183           2 RESUME                   0
+
+184           4 LOAD_GLOBAL              1 (NULL + super)
+             16 PRECALL                  0
+             20 CALL                     0
+             30 LOAD_METHOD              1 (reset)
+             52 PRECALL                  0
+             56 CALL                     0
+             66 POP_TOP
+
+185          68 LOAD_CONST               1 (<code object <listcomp> at 0x000002307B56C780, file "citylearn_task\lower.py", line 185>)
+             70 MAKE_FUNCTION            0
+             72 LOAD_GLOBAL              5 (NULL + range)
+             84 LOAD_GLOBAL              7 (NULL + len)
+             96 LOAD_FAST                0 (self)
+             98 LOAD_ATTR                4 (env)
+            108 LOAD_ATTR                5 (buildings)
+            118 PRECALL                  1
+            122 CALL                     1
+            132 PRECALL                  1
+            136 CALL                     1
+            146 GET_ITER
+            148 PRECALL                  0
+            152 CALL                     0
+            162 LOAD_FAST                0 (self)
+            164 STORE_ATTR               6 (prev_battery_action)
+
+186         174 LOAD_CONST               2 (<code object <listcomp> at 0x000002307B56C850, file "citylearn_task\lower.py", line 186>)
+            176 MAKE_FUNCTION            0
+            178 LOAD_GLOBAL              5 (NULL + range)
+            190 LOAD_GLOBAL              7 (NULL + len)
+            202 LOAD_FAST                0 (self)
+            204 LOAD_ATTR                4 (env)
+            214 LOAD_ATTR                5 (buildings)
+            224 PRECALL                  1
+            228 CALL                     1
+            238 PRECALL                  1
+            242 CALL                     1
+            252 GET_ITER
+            254 PRECALL                  0
+            258 CALL                     0
+            268 LOAD_FAST                0 (self)
+            270 STORE_ATTR               7 (prev_cooling_action)
+
+187         280 LOAD_CONST               3 (<code object <listcomp> at 0x000002307B56C920, file "citylearn_task\lower.py", line 187>)
+            282 MAKE_FUNCTION            0
+            284 LOAD_GLOBAL              5 (NULL + range)
+            296 LOAD_GLOBAL              7 (NULL + len)
+            308 LOAD_FAST                0 (self)
+            310 LOAD_ATTR                4 (env)
+            320 LOAD_ATTR                5 (buildings)
+            330 PRECALL                  1
+            334 CALL                     1
+            344 PRECALL                  1
+            348 CALL                     1
+            358 GET_ITER
+            360 PRECALL                  0
+            364 CALL                     0
+            374 LOAD_FAST                0 (self)
+            376 STORE_ATTR               8 (prev_net)
+            386 LOAD_CONST               0 (None)
+            388 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B56C780, file "citylearn_task\lower.py", line 185>:
+185           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (0.0)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B56C850, file "citylearn_task\lower.py", line 186>:
+186           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (0.0)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B56C920, file "citylearn_task\lower.py", line 187>:
+187           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (None)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object predict at 0x000002307B4E0480, file "citylearn_task\lower.py", line 189>:
+189           0 RESUME                   0
+
+192           2 BUILD_LIST               0
+              4 STORE_FAST               3 (actions)
+
+194           6 LOAD_GLOBAL              1 (NULL + enumerate)
+             18 LOAD_FAST                1 (observations)
+             20 PRECALL                  1
+             24 CALL                     1
+             34 GET_ITER
+        >>   36 EXTENDED_ARG            11
+             38 FOR_ITER              2862 (to 5764)
+             40 UNPACK_SEQUENCE          2
+             44 STORE_FAST               4 (i)
+             46 STORE_FAST               5 (obs)
+
+195          48 LOAD_FAST                0 (self)
+             50 LOAD_ATTR                1 (obs_index)
+             60 LOAD_FAST                4 (i)
+             62 BINARY_SUBSCR
+             72 STORE_FAST               6 (idx)
+
+204          74 LOAD_FAST                0 (self)
+             76 LOAD_ATTR                2 (weights)
+             86 LOAD_FAST                4 (i)
+             88 BINARY_SUBSCR
+
+196          98 UNPACK_SEQUENCE          7
+
+197         102 STORE_FAST               7 (w_cost)
+
+198         104 STORE_FAST               8 (w_carbon)
+
+199         106 STORE_FAST               9 (w_peak)
+
+200         108 STORE_FAST              10 (w_discomfort)
+
+201         110 STORE_FAST              11 (w_degradation)
+
+202         112 STORE_FAST              12 (w_ramping)
+
+203         114 STORE_FAST              13 (w_resilience)
+
+205         116 LOAD_FAST                0 (self)
+            118 LOAD_ATTR                3 (env)
+            128 LOAD_ATTR                4 (action_names)
+            138 LOAD_FAST                4 (i)
+            140 BINARY_SUBSCR
+            150 STORE_FAST              14 (action_names)
+
+208         152 LOAD_CONST               1 (<code object <listcomp> at 0x000002307B56C9F0, file "citylearn_task\lower.py", line 208>)
+            154 MAKE_FUNCTION            0
+            156 LOAD_GLOBAL             11 (NULL + range)
+            168 LOAD_GLOBAL             13 (NULL + len)
+            180 LOAD_FAST               14 (action_names)
+            182 PRECALL                  1
+            186 CALL                     1
+            196 PRECALL                  1
+            200 CALL                     1
+            210 GET_ITER
+            212 PRECALL                  0
+            216 CALL                     0
+            226 STORE_FAST              15 (action_vector)
+
+209         228 NOP
+
+210         230 LOAD_FAST               14 (action_names)
+            232 LOAD_METHOD              7 (index)
+            254 LOAD_CONST               2 ('electrical_storage')
+            256 PRECALL                  1
+            260 CALL                     1
+            270 STORE_FAST              16 (es_idx)
+            272 JUMP_FORWARD            18 (to 310)
+        >>  274 PUSH_EXC_INFO
+
+211         276 LOAD_GLOBAL             16 (ValueError)
+            288 CHECK_EXC_MATCH
+            290 POP_JUMP_FORWARD_IF_FALSE     5 (to 302)
+            292 POP_TOP
+
+212         294 LOAD_CONST               0 (None)
+            296 STORE_FAST              16 (es_idx)
+            298 POP_EXCEPT
+            300 JUMP_FORWARD             4 (to 310)
+
+211     >>  302 RERAISE                  0
+        >>  304 COPY                     3
+            306 POP_EXCEPT
+            308 RERAISE                  1
+
+213     >>  310 NOP
+
+214         312 LOAD_FAST               14 (action_names)
+            314 LOAD_METHOD              7 (index)
+            336 LOAD_CONST               3 ('cooling_device')
+            338 PRECALL                  1
+            342 CALL                     1
+            352 STORE_FAST              17 (cooling_idx)
+            354 JUMP_FORWARD            18 (to 392)
+        >>  356 PUSH_EXC_INFO
+
+215         358 LOAD_GLOBAL             16 (ValueError)
+            370 CHECK_EXC_MATCH
+            372 POP_JUMP_FORWARD_IF_FALSE     5 (to 384)
+            374 POP_TOP
+
+216         376 LOAD_CONST               0 (None)
+            378 STORE_FAST              17 (cooling_idx)
+            380 POP_EXCEPT
+            382 JUMP_FORWARD             4 (to 392)
+
+215     >>  384 RERAISE                  0
+        >>  386 COPY                     3
+            388 POP_EXCEPT
+            390 RERAISE                  1
+
+218     >>  392 LOAD_CONST               4 ('price')
+            394 LOAD_FAST                6 (idx)
+            396 CONTAINS_OP              0
+            398 POP_JUMP_FORWARD_IF_FALSE    27 (to 454)
+            400 LOAD_GLOBAL             19 (NULL + float)
+            412 LOAD_FAST                5 (obs)
+            414 LOAD_FAST                6 (idx)
+            416 LOAD_CONST               4 ('price')
+            418 BINARY_SUBSCR
+            428 BINARY_SUBSCR
+            438 PRECALL                  1
+            442 CALL                     1
+            452 JUMP_FORWARD             1 (to 456)
+        >>  454 LOAD_CONST               5 (0.0)
+        >>  456 STORE_FAST              18 (price)
+
+219         458 LOAD_FAST                0 (self)
+            460 LOAD_ATTR               10 (config)
+            470 LOAD_ATTR               11 (use_price_lookahead)
+            480 POP_JUMP_FORWARD_IF_FALSE    77 (to 636)
+
+220         482 BUILD_LIST               0
+            484 STORE_FAST              19 (pred_prices)
+
+221         486 LOAD_CONST               6 (('price_pred_1', 'price_pred_2', 'price_pred_3'))
+            488 GET_ITER
+        >>  490 FOR_ITER                52 (to 596)
+            492 STORE_FAST              20 (key)
+
+222         494 LOAD_FAST               20 (key)
+            496 LOAD_FAST                6 (idx)
+            498 CONTAINS_OP              0
+            500 POP_JUMP_FORWARD_IF_FALSE    46 (to 594)
+
+223         502 LOAD_FAST               19 (pred_prices)
+            504 LOAD_METHOD             12 (append)
+            526 LOAD_GLOBAL             19 (NULL + float)
+            538 LOAD_FAST                5 (obs)
+            540 LOAD_FAST                6 (idx)
+            542 LOAD_FAST               20 (key)
+            544 BINARY_SUBSCR
+            554 BINARY_SUBSCR
+            564 PRECALL                  1
+            568 CALL                     1
+            578 PRECALL                  1
+            582 CALL                     1
+            592 POP_TOP
+        >>  594 JUMP_BACKWARD           53 (to 490)
+
+224     >>  596 LOAD_FAST               19 (pred_prices)
+            598 POP_JUMP_FORWARD_IF_FALSE    15 (to 630)
+            600 LOAD_GLOBAL             27 (NULL + max)
+            612 LOAD_FAST               19 (pred_prices)
+            614 PRECALL                  1
+            618 CALL                     1
+            628 JUMP_FORWARD             1 (to 632)
+        >>  630 LOAD_FAST               18 (price)
+        >>  632 STORE_FAST              21 (future_price)
+            634 JUMP_FORWARD             2 (to 640)
+
+226     >>  636 LOAD_FAST               18 (price)
+            638 STORE_FAST              21 (future_price)
+
+228     >>  640 LOAD_CONST               7 ('carbon')
+            642 LOAD_FAST                6 (idx)
+            644 CONTAINS_OP              0
+            646 POP_JUMP_FORWARD_IF_FALSE    27 (to 702)
+            648 LOAD_GLOBAL             19 (NULL + float)
+            660 LOAD_FAST                5 (obs)
+            662 LOAD_FAST                6 (idx)
+            664 LOAD_CONST               7 ('carbon')
+            666 BINARY_SUBSCR
+            676 BINARY_SUBSCR
+            686 PRECALL                  1
+            690 CALL                     1
+            700 JUMP_FORWARD             1 (to 704)
+        >>  702 LOAD_CONST               5 (0.0)
+        >>  704 STORE_FAST              22 (carbon)
+
+229         706 LOAD_CONST               8 ('power_outage')
+            708 LOAD_FAST                6 (idx)
+            710 CONTAINS_OP              0
+            712 POP_JUMP_FORWARD_IF_FALSE    27 (to 768)
+            714 LOAD_GLOBAL             19 (NULL + float)
+            726 LOAD_FAST                5 (obs)
+            728 LOAD_FAST                6 (idx)
+            730 LOAD_CONST               8 ('power_outage')
+            732 BINARY_SUBSCR
+            742 BINARY_SUBSCR
+            752 PRECALL                  1
+            756 CALL                     1
+            766 JUMP_FORWARD             1 (to 770)
+        >>  768 LOAD_CONST               5 (0.0)
+        >>  770 STORE_FAST              23 (outage)
+
+231         772 LOAD_CONST               9 ('occupant_count')
+            774 LOAD_FAST                6 (idx)
+            776 CONTAINS_OP              0
+            778 POP_JUMP_FORWARD_IF_FALSE    27 (to 834)
+            780 LOAD_GLOBAL             19 (NULL + float)
+            792 LOAD_FAST                5 (obs)
+            794 LOAD_FAST                6 (idx)
+            796 LOAD_CONST               9 ('occupant_count')
+            798 BINARY_SUBSCR
+            808 BINARY_SUBSCR
+            818 PRECALL                  1
+            822 CALL                     1
+            832 JUMP_FORWARD             1 (to 836)
+        >>  834 LOAD_CONST               5 (0.0)
+
+230     >>  836 STORE_FAST              24 (occupant_count)
+
+234         838 LOAD_CONST              10 ('net_electricity')
+            840 LOAD_FAST                6 (idx)
+            842 CONTAINS_OP              0
+            844 POP_JUMP_FORWARD_IF_FALSE    28 (to 902)
+
+235         846 LOAD_GLOBAL             19 (NULL + float)
+            858 LOAD_FAST                5 (obs)
+            860 LOAD_FAST                6 (idx)
+            862 LOAD_CONST              10 ('net_electricity')
+            864 BINARY_SUBSCR
+            874 BINARY_SUBSCR
+            884 PRECALL                  1
+            888 CALL                     1
+            898 STORE_FAST              25 (baseline_net)
+            900 JUMP_FORWARD            71 (to 1044)
+
+239     >>  902 LOAD_CONST              11 ('non_shiftable_load')
+            904 LOAD_FAST                6 (idx)
+            906 CONTAINS_OP              0
+            908 POP_JUMP_FORWARD_IF_FALSE    27 (to 964)
+
+238         910 LOAD_GLOBAL             19 (NULL + float)
+            922 LOAD_FAST                5 (obs)
+            924 LOAD_FAST                6 (idx)
+            926 LOAD_CONST              11 ('non_shiftable_load')
+            928 BINARY_SUBSCR
+            938 BINARY_SUBSCR
+            948 PRECALL                  1
+            952 CALL                     1
+            962 JUMP_FORWARD             1 (to 966)
+
+240     >>  964 LOAD_CONST               5 (0.0)
+
+237     >>  966 STORE_FAST              26 (nsl)
+
+244         968 LOAD_CONST              12 ('solar_generation')
+            970 LOAD_FAST                6 (idx)
+            972 CONTAINS_OP              0
+            974 POP_JUMP_FORWARD_IF_FALSE    27 (to 1030)
+
+243         976 LOAD_GLOBAL             19 (NULL + float)
+            988 LOAD_FAST                5 (obs)
+            990 LOAD_FAST                6 (idx)
+            992 LOAD_CONST              12 ('solar_generation')
+            994 BINARY_SUBSCR
+           1004 BINARY_SUBSCR
+           1014 PRECALL                  1
+           1018 CALL                     1
+           1028 JUMP_FORWARD             1 (to 1032)
+
+245     >> 1030 LOAD_CONST               5 (0.0)
+
+242     >> 1032 STORE_FAST              27 (solar)
+
+247        1034 LOAD_FAST               26 (nsl)
+           1036 LOAD_FAST               27 (solar)
+           1038 BINARY_OP               10 (-)
+           1042 STORE_FAST              25 (baseline_net)
+
+251     >> 1044 LOAD_CONST              11 ('non_shiftable_load')
+           1046 LOAD_FAST                6 (idx)
+           1048 CONTAINS_OP              0
+           1050 POP_JUMP_FORWARD_IF_FALSE    27 (to 1106)
+
+250        1052 LOAD_GLOBAL             19 (NULL + float)
+           1064 LOAD_FAST                5 (obs)
+           1066 LOAD_FAST                6 (idx)
+           1068 LOAD_CONST              11 ('non_shiftable_load')
+           1070 BINARY_SUBSCR
+           1080 BINARY_SUBSCR
+           1090 PRECALL                  1
+           1094 CALL                     1
+           1104 JUMP_FORWARD            15 (to 1136)
+
+252     >> 1106 LOAD_GLOBAL             27 (NULL + max)
+           1118 LOAD_FAST               25 (baseline_net)
+           1120 LOAD_CONST               5 (0.0)
+           1122 PRECALL                  2
+           1126 CALL                     2
+
+249     >> 1136 STORE_FAST              26 (nsl)
+
+256        1138 LOAD_CONST              12 ('solar_generation')
+           1140 LOAD_FAST                6 (idx)
+           1142 CONTAINS_OP              0
+           1144 POP_JUMP_FORWARD_IF_FALSE    27 (to 1200)
+
+255        1146 LOAD_GLOBAL             19 (NULL + float)
+           1158 LOAD_FAST                5 (obs)
+           1160 LOAD_FAST                6 (idx)
+           1162 LOAD_CONST              12 ('solar_generation')
+           1164 BINARY_SUBSCR
+           1174 BINARY_SUBSCR
+           1184 PRECALL                  1
+           1188 CALL                     1
+           1198 JUMP_FORWARD             1 (to 1202)
+
+257     >> 1200 LOAD_CONST               5 (0.0)
+
+254     >> 1202 STORE_FAST              27 (solar)
+
+260        1204 LOAD_CONST              13 ('indoor_temp')
+           1206 LOAD_FAST                6 (idx)
+           1208 CONTAINS_OP              0
+           1210 POP_JUMP_FORWARD_IF_FALSE    27 (to 1266)
+           1212 LOAD_GLOBAL             19 (NULL + float)
+           1224 LOAD_FAST                5 (obs)
+           1226 LOAD_FAST                6 (idx)
+           1228 LOAD_CONST              13 ('indoor_temp')
+           1230 BINARY_SUBSCR
+           1240 BINARY_SUBSCR
+           1250 PRECALL                  1
+           1254 CALL                     1
+           1264 JUMP_FORWARD             1 (to 1268)
+        >> 1266 LOAD_CONST               5 (0.0)
+        >> 1268 STORE_FAST              28 (indoor)
+
+261        1270 LOAD_CONST              14 ('setpoint')
+           1272 LOAD_FAST                6 (idx)
+           1274 CONTAINS_OP              0
+           1276 POP_JUMP_FORWARD_IF_FALSE    27 (to 1332)
+           1278 LOAD_GLOBAL             19 (NULL + float)
+           1290 LOAD_FAST                5 (obs)
+           1292 LOAD_FAST                6 (idx)
+           1294 LOAD_CONST              14 ('setpoint')
+           1296 BINARY_SUBSCR
+           1306 BINARY_SUBSCR
+           1316 PRECALL                  1
+           1320 CALL                     1
+           1330 JUMP_FORWARD             1 (to 1334)
+        >> 1332 LOAD_FAST               28 (indoor)
+        >> 1334 STORE_FAST              29 (setpoint)
+
+262        1336 LOAD_GLOBAL             29 (NULL + abs)
+           1348 LOAD_FAST               28 (indoor)
+           1350 LOAD_FAST               29 (setpoint)
+           1352 BINARY_OP               10 (-)
+           1356 PRECALL                  1
+           1360 CALL                     1
+           1370 STORE_FAST              30 (discomfort)
+
+263        1372 LOAD_GLOBAL             27 (NULL + max)
+           1384 LOAD_FAST               28 (indoor)
+           1386 LOAD_FAST               29 (setpoint)
+           1388 BINARY_OP               10 (-)
+           1392 LOAD_CONST               5 (0.0)
+           1394 PRECALL                  2
+           1398 CALL                     2
+           1408 STORE_FAST              31 (overheat)
+
+265        1410 LOAD_CONST              15 ('soc')
+           1412 LOAD_FAST                6 (idx)
+           1414 CONTAINS_OP              0
+           1416 POP_JUMP_FORWARD_IF_FALSE    27 (to 1472)
+           1418 LOAD_GLOBAL             19 (NULL + float)
+           1430 LOAD_FAST                5 (obs)
+           1432 LOAD_FAST                6 (idx)
+           1434 LOAD_CONST              15 ('soc')
+           1436 BINARY_SUBSCR
+           1446 BINARY_SUBSCR
+           1456 PRECALL                  1
+           1460 CALL                     1
+           1470 JUMP_FORWARD             1 (to 1474)
+        >> 1472 LOAD_CONST               0 (None)
+        >> 1474 STORE_FAST              32 (soc)
+
+266        1476 LOAD_GLOBAL             31 (NULL + list)
+           1488 LOAD_FAST                0 (self)
+           1490 LOAD_ATTR               10 (config)
+           1500 LOAD_ATTR               16 (action_candidates)
+           1510 PRECALL                  1
+           1514 CALL                     1
+           1524 STORE_FAST              33 (candidates)
+
+267        1526 LOAD_FAST               32 (soc)
+           1528 POP_JUMP_FORWARD_IF_NONE   120 (to 1770)
+
+270        1530 LOAD_FAST               23 (outage)
+           1532 LOAD_CONST              16 (0.5)
+           1534 COMPARE_OP               4 (>)
+           1540 POP_JUMP_FORWARD_IF_FALSE    12 (to 1566)
+
+269        1542 LOAD_FAST                0 (self)
+           1544 LOAD_ATTR               10 (config)
+           1554 LOAD_ATTR               17 (min_soc_reserve_outage)
+           1564 JUMP_FORWARD            11 (to 1588)
+
+271     >> 1566 LOAD_FAST                0 (self)
+           1568 LOAD_ATTR               10 (config)
+           1578 LOAD_ATTR               18 (min_soc_reserve_normal)
+
+268     >> 1588 STORE_FAST              34 (reserve)
+
+274        1590 LOAD_GLOBAL             27 (NULL + max)
+           1602 LOAD_GLOBAL             19 (NULL + float)
+           1614 LOAD_FAST                0 (self)
+           1616 LOAD_ATTR               10 (config)
+           1626 LOAD_ATTR               19 (soc_action_gain)
+           1636 PRECALL                  1
+           1640 CALL                     1
+           1650 LOAD_CONST              17 (1e-06)
+           1652 PRECALL                  2
+           1656 CALL                     2
+           1666 STORE_FAST              35 (soc_gain)
+
+275        1668 LOAD_GLOBAL             27 (NULL + max)
+           1680 LOAD_FAST                0 (self)
+           1682 LOAD_ATTR               10 (config)
+           1692 LOAD_ATTR               20 (soc_min)
+           1702 LOAD_FAST               34 (reserve)
+           1704 PRECALL                  2
+           1708 CALL                     2
+           1718 LOAD_FAST               32 (soc)
+           1720 BINARY_OP               10 (-)
+           1724 LOAD_FAST               35 (soc_gain)
+           1726 BINARY_OP               11 (/)
+           1730 STORE_FAST              36 (x_min_soc)
+
+276        1732 LOAD_FAST                0 (self)
+           1734 LOAD_ATTR               10 (config)
+           1744 LOAD_ATTR               21 (soc_max)
+           1754 LOAD_FAST               32 (soc)
+           1756 BINARY_OP               10 (-)
+           1760 LOAD_FAST               35 (soc_gain)
+           1762 BINARY_OP               11 (/)
+           1766 STORE_FAST              37 (x_max_soc)
+           1768 JUMP_FORWARD             4 (to 1778)
+
+278     >> 1770 LOAD_CONST              18 (-1.0)
+           1772 STORE_FAST              36 (x_min_soc)
+
+279        1774 LOAD_CONST              19 (1.0)
+           1776 STORE_FAST              37 (x_max_soc)
+
+282     >> 1778 LOAD_CONST              18 (-1.0)
+           1780 STORE_FAST              38 (x_lo)
+
+283        1782 LOAD_CONST              19 (1.0)
+           1784 STORE_FAST              39 (x_hi)
+
+284        1786 LOAD_GLOBAL             27 (NULL + max)
+           1798 LOAD_FAST               38 (x_lo)
+           1800 LOAD_FAST               36 (x_min_soc)
+           1802 PRECALL                  2
+           1806 CALL                     2
+           1816 STORE_FAST              38 (x_lo)
+
+285        1818 LOAD_GLOBAL             45 (NULL + min)
+           1830 LOAD_FAST               39 (x_hi)
+           1832 LOAD_FAST               37 (x_max_soc)
+           1834 PRECALL                  2
+           1838 CALL                     2
+           1848 STORE_FAST              39 (x_hi)
+
+286        1850 LOAD_FAST               23 (outage)
+           1852 LOAD_CONST              16 (0.5)
+           1854 COMPARE_OP               4 (>)
+           1860 POP_JUMP_FORWARD_IF_FALSE    16 (to 1894)
+
+287        1862 LOAD_GLOBAL             45 (NULL + min)
+           1874 LOAD_FAST               39 (x_hi)
+           1876 LOAD_CONST               5 (0.0)
+           1878 PRECALL                  2
+           1882 CALL                     2
+           1892 STORE_FAST              39 (x_hi)
+
+290     >> 1894 LOAD_FAST                0 (self)
+           1896 LOAD_ATTR               23 (prev_battery_action)
+           1906 LOAD_FAST                4 (i)
+           1908 BINARY_SUBSCR
+           1918 STORE_FAST              40 (prev_batt)
+
+291        1920 LOAD_GLOBAL             27 (NULL + max)
+           1932 LOAD_FAST               38 (x_lo)
+           1934 LOAD_FAST               40 (prev_batt)
+           1936 LOAD_FAST                0 (self)
+           1938 LOAD_ATTR               10 (config)
+           1948 LOAD_ATTR               24 (max_battery_action_delta)
+           1958 BINARY_OP               10 (-)
+           1962 PRECALL                  2
+           1966 CALL                     2
+           1976 STORE_FAST              38 (x_lo)
+
+292        1978 LOAD_GLOBAL             45 (NULL + min)
+           1990 LOAD_FAST               39 (x_hi)
+           1992 LOAD_FAST               40 (prev_batt)
+           1994 LOAD_FAST                0 (self)
+           1996 LOAD_ATTR               10 (config)
+           2006 LOAD_ATTR               24 (max_battery_action_delta)
+           2016 BINARY_OP                0 (+)
+           2020 PRECALL                  2
+           2024 CALL                     2
+           2034 STORE_FAST              39 (x_hi)
+
+294        2036 LOAD_GLOBAL             51 (NULL + _build_local_refine_points)
+
+295        2048 LOAD_FAST               40 (prev_batt)
+
+296        2050 LOAD_FAST                0 (self)
+           2052 LOAD_ATTR               10 (config)
+           2062 LOAD_ATTR               26 (local_refine_step)
+
+297        2072 LOAD_FAST                0 (self)
+           2074 LOAD_ATTR               10 (config)
+           2084 LOAD_ATTR               27 (local_refine_radius)
+
+298        2094 LOAD_FAST                0 (self)
+           2096 LOAD_ATTR               10 (config)
+           2106 LOAD_ATTR               28 (local_refine_points)
+
+294        2116 KW_NAMES                20
+           2118 PRECALL                  4
+           2122 CALL                     4
+           2132 STORE_FAST              41 (local_batt)
+
+300        2134 LOAD_GLOBAL             59 (NULL + _unique_sorted)
+           2146 LOAD_FAST               33 (candidates)
+           2148 LOAD_FAST               41 (local_batt)
+           2150 BINARY_OP                0 (+)
+           2154 LOAD_FAST               38 (x_lo)
+           2156 LOAD_FAST               39 (x_hi)
+           2158 PRECALL                  3
+           2162 CALL                     3
+           2172 STORE_FAST              33 (candidates)
+
+301        2174 LOAD_FAST               33 (candidates)
+           2176 POP_JUMP_FORWARD_IF_TRUE     3 (to 2184)
+
+302        2178 LOAD_FAST               40 (prev_batt)
+           2180 BUILD_LIST               1
+           2182 STORE_FAST              33 (candidates)
+
+305     >> 2184 LOAD_CONST               0 (None)
+           2186 STORE_FAST              42 (peak_so_far)
+
+306        2188 NOP
+
+307        2190 LOAD_GLOBAL             61 (NULL + getattr)
+
+308        2202 LOAD_FAST                0 (self)
+           2204 LOAD_ATTR                3 (env)
+           2214 LOAD_ATTR               31 (buildings)
+           2224 LOAD_FAST                4 (i)
+           2226 BINARY_SUBSCR
+           2236 LOAD_CONST              21 ('net_electricity_consumption')
+           2238 LOAD_CONST               0 (None)
+
+307        2240 PRECALL                  3
+           2244 CALL                     3
+           2254 STORE_FAST              43 (hist)
+
+310        2256 LOAD_FAST               43 (hist)
+           2258 POP_JUMP_FORWARD_IF_NONE    73 (to 2406)
+           2260 LOAD_GLOBAL             13 (NULL + len)
+           2272 LOAD_FAST               43 (hist)
+           2274 PRECALL                  1
+           2278 CALL                     1
+           2288 LOAD_CONST              22 (0)
+           2290 COMPARE_OP               4 (>)
+           2296 POP_JUMP_FORWARD_IF_FALSE    54 (to 2406)
+
+311        2298 LOAD_GLOBAL             19 (NULL + float)
+           2310 LOAD_GLOBAL             65 (NULL + np)
+           2322 LOAD_ATTR               13 (max)
+           2332 LOAD_FAST               43 (hist)
+           2334 LOAD_CONST               0 (None)
+           2336 LOAD_FAST                0 (self)
+           2338 LOAD_ATTR                3 (env)
+           2348 LOAD_ATTR               33 (time_step)
+           2358 LOAD_CONST              23 (1)
+           2360 BINARY_OP                0 (+)
+           2364 BUILD_SLICE              2
+           2366 BINARY_SUBSCR
+           2376 PRECALL                  1
+           2380 CALL                     1
+           2390 PRECALL                  1
+           2394 CALL                     1
+           2404 STORE_FAST              42 (peak_so_far)
+        >> 2406 JUMP_FORWARD            18 (to 2444)
+        >> 2408 PUSH_EXC_INFO
+
+312        2410 LOAD_GLOBAL             68 (Exception)
+           2422 CHECK_EXC_MATCH
+           2424 POP_JUMP_FORWARD_IF_FALSE     5 (to 2436)
+           2426 POP_TOP
+
+313        2428 LOAD_CONST               0 (None)
+           2430 STORE_FAST              42 (peak_so_far)
+           2432 POP_EXCEPT
+           2434 JUMP_FORWARD             4 (to 2444)
+
+312     >> 2436 RERAISE                  0
+        >> 2438 COPY                     3
+           2440 POP_EXCEPT
+           2442 RERAISE                  1
+
+316     >> 2444 LOAD_FAST                0 (self)
+           2446 LOAD_ATTR               35 (nominal_power)
+           2456 LOAD_FAST                4 (i)
+           2458 BINARY_SUBSCR
+           2468 POP_JUMP_FORWARD_IF_NONE    13 (to 2496)
+           2470 LOAD_FAST                0 (self)
+           2472 LOAD_ATTR               35 (nominal_power)
+           2482 LOAD_FAST                4 (i)
+           2484 BINARY_SUBSCR
+           2494 JUMP_FORWARD             1 (to 2498)
+        >> 2496 LOAD_CONST              19 (1.0)
+
+315     >> 2498 STORE_FAST              44 (power_scale)
+
+320        2500 LOAD_FAST                0 (self)
+           2502 LOAD_ATTR               36 (cooling_nominal_power)
+           2512 LOAD_FAST                4 (i)
+           2514 BINARY_SUBSCR
+           2524 POP_JUMP_FORWARD_IF_NONE    13 (to 2552)
+
+319        2526 LOAD_FAST                0 (self)
+           2528 LOAD_ATTR               36 (cooling_nominal_power)
+           2538 LOAD_FAST                4 (i)
+           2540 BINARY_SUBSCR
+           2550 JUMP_FORWARD             1 (to 2554)
+
+321     >> 2552 LOAD_CONST              19 (1.0)
+
+318     >> 2554 STORE_FAST              45 (cooling_power_scale)
+
+326        2556 LOAD_FAST               17 (cooling_idx)
+           2558 POP_JUMP_FORWARD_IF_NONE    25 (to 2610)
+
+325        2560 LOAD_GLOBAL             31 (NULL + list)
+           2572 LOAD_FAST                0 (self)
+           2574 LOAD_ATTR               10 (config)
+           2584 LOAD_ATTR               37 (cooling_action_candidates)
+           2594 PRECALL                  1
+           2598 CALL                     1
+           2608 JUMP_FORWARD             2 (to 2614)
+
+327     >> 2610 LOAD_CONST               5 (0.0)
+           2612 BUILD_LIST               1
+
+324     >> 2614 STORE_FAST              46 (cooling_candidates)
+
+330        2616 LOAD_CONST               5 (0.0)
+           2618 STORE_FAST              47 (c_lo)
+
+331        2620 LOAD_CONST              19 (1.0)
+           2622 STORE_FAST              48 (c_hi)
+
+334        2624 LOAD_CONST              24 ('cooling_demand')
+           2626 LOAD_FAST                6 (idx)
+           2628 CONTAINS_OP              0
+           2630 POP_JUMP_FORWARD_IF_FALSE    85 (to 2802)
+           2632 LOAD_FAST               45 (cooling_power_scale)
+           2634 LOAD_CONST              22 (0)
+           2636 COMPARE_OP               4 (>)
+           2642 POP_JUMP_FORWARD_IF_FALSE    79 (to 2802)
+
+335        2644 LOAD_GLOBAL             27 (NULL + max)
+           2656 LOAD_GLOBAL             19 (NULL + float)
+           2668 LOAD_FAST                5 (obs)
+           2670 LOAD_FAST                6 (idx)
+           2672 LOAD_CONST              24 ('cooling_demand')
+           2674 BINARY_SUBSCR
+           2684 BINARY_SUBSCR
+           2694 PRECALL                  1
+           2698 CALL                     1
+           2708 LOAD_CONST               5 (0.0)
+           2710 PRECALL                  2
+           2714 CALL                     2
+           2724 STORE_FAST              49 (cooling_demand)
+
+336        2726 LOAD_GLOBAL             45 (NULL + min)
+           2738 LOAD_CONST              19 (1.0)
+           2740 LOAD_FAST               49 (cooling_demand)
+           2742 LOAD_FAST               45 (cooling_power_scale)
+           2744 BINARY_OP               11 (/)
+           2748 LOAD_CONST              25 (0.2)
+           2750 BINARY_OP                0 (+)
+           2754 PRECALL                  2
+           2758 CALL                     2
+           2768 STORE_FAST              50 (demand_cap)
+
+337        2770 LOAD_GLOBAL             45 (NULL + min)
+           2782 LOAD_FAST               48 (c_hi)
+           2784 LOAD_FAST               50 (demand_cap)
+           2786 PRECALL                  2
+           2790 CALL                     2
+           2800 STORE_FAST              48 (c_hi)
+
+339     >> 2802 LOAD_FAST               23 (outage)
+           2804 LOAD_CONST              16 (0.5)
+           2806 COMPARE_OP               4 (>)
+           2812 POP_JUMP_FORWARD_IF_FALSE    26 (to 2866)
+
+340        2814 LOAD_FAST               31 (overheat)
+           2816 LOAD_CONST              19 (1.0)
+           2818 COMPARE_OP               4 (>)
+           2824 POP_JUMP_FORWARD_IF_FALSE     2 (to 2830)
+           2826 LOAD_CONST              26 (0.6)
+           2828 JUMP_FORWARD             1 (to 2832)
+        >> 2830 LOAD_CONST              27 (0.4)
+        >> 2832 STORE_FAST              51 (cooling_cap_outage)
+
+341        2834 LOAD_GLOBAL             45 (NULL + min)
+           2846 LOAD_FAST               48 (c_hi)
+           2848 LOAD_FAST               51 (cooling_cap_outage)
+           2850 PRECALL                  2
+           2854 CALL                     2
+           2864 STORE_FAST              48 (c_hi)
+
+343     >> 2866 LOAD_FAST                0 (self)
+           2868 LOAD_ATTR               38 (prev_cooling_action)
+           2878 LOAD_FAST                4 (i)
+           2880 BINARY_SUBSCR
+           2890 STORE_FAST              52 (prev_cooling)
+
+344        2892 LOAD_GLOBAL             27 (NULL + max)
+           2904 LOAD_FAST               47 (c_lo)
+           2906 LOAD_FAST               52 (prev_cooling)
+           2908 LOAD_FAST                0 (self)
+           2910 LOAD_ATTR               10 (config)
+           2920 LOAD_ATTR               39 (max_cooling_action_delta)
+           2930 BINARY_OP               10 (-)
+           2934 PRECALL                  2
+           2938 CALL                     2
+           2948 STORE_FAST              47 (c_lo)
+
+345        2950 LOAD_GLOBAL             45 (NULL + min)
+           2962 LOAD_FAST               48 (c_hi)
+           2964 LOAD_FAST               52 (prev_cooling)
+           2966 LOAD_FAST                0 (self)
+           2968 LOAD_ATTR               10 (config)
+           2978 LOAD_ATTR               39 (max_cooling_action_delta)
+           2988 BINARY_OP                0 (+)
+           2992 PRECALL                  2
+           2996 CALL                     2
+           3006 STORE_FAST              48 (c_hi)
+
+347        3008 LOAD_GLOBAL             51 (NULL + _build_local_refine_points)
+
+348        3020 LOAD_FAST               52 (prev_cooling)
+
+349        3022 LOAD_FAST                0 (self)
+           3024 LOAD_ATTR               10 (config)
+           3034 LOAD_ATTR               26 (local_refine_step)
+
+350        3044 LOAD_FAST                0 (self)
+           3046 LOAD_ATTR               10 (config)
+           3056 LOAD_ATTR               27 (local_refine_radius)
+
+351        3066 LOAD_FAST                0 (self)
+           3068 LOAD_ATTR               10 (config)
+           3078 LOAD_ATTR               28 (local_refine_points)
+
+347        3088 KW_NAMES                20
+           3090 PRECALL                  4
+           3094 CALL                     4
+           3104 STORE_FAST              53 (local_cooling)
+
+353        3106 LOAD_GLOBAL             59 (NULL + _unique_sorted)
+
+354        3118 LOAD_FAST               46 (cooling_candidates)
+           3120 LOAD_FAST               53 (local_cooling)
+           3122 BINARY_OP                0 (+)
+           3126 LOAD_FAST               47 (c_lo)
+           3128 LOAD_FAST               48 (c_hi)
+
+353        3130 PRECALL                  3
+           3134 CALL                     3
+           3144 STORE_FAST              46 (cooling_candidates)
+
+356        3146 LOAD_FAST               46 (cooling_candidates)
+           3148 POP_JUMP_FORWARD_IF_TRUE     3 (to 3156)
+
+357        3150 LOAD_FAST               52 (prev_cooling)
+           3152 BUILD_LIST               1
+           3154 STORE_FAST              46 (cooling_candidates)
+
+359     >> 3156 LOAD_FAST               33 (candidates)
+           3158 LOAD_CONST              22 (0)
+           3160 BINARY_SUBSCR
+           3170 STORE_FAST              54 (best_x)
+
+360        3172 LOAD_CONST               5 (0.0)
+           3174 STORE_FAST              55 (best_cooling)
+
+361        3176 LOAD_GLOBAL             19 (NULL + float)
+           3188 LOAD_CONST              28 ('inf')
+           3190 PRECALL                  1
+           3194 CALL                     1
+           3204 STORE_FAST              56 (best_obj)
+
+364        3206 BUILD_LIST               0
+
+362        3208 STORE_FAST              57 (candidate_metrics)
+
+365        3210 LOAD_FAST               33 (candidates)
+           3212 GET_ITER
+        >> 3214 EXTENDED_ARG             2
+           3216 FOR_ITER               672 (to 4562)
+           3218 STORE_FAST              58 (x)
+
+366        3220 LOAD_FAST               46 (cooling_candidates)
+           3222 GET_ITER
+        >> 3224 EXTENDED_ARG             2
+           3226 FOR_ITER               665 (to 4558)
+           3228 STORE_FAST              59 (cooling_action)
+
+368        3230 LOAD_FAST               25 (baseline_net)
+
+369        3232 LOAD_GLOBAL             19 (NULL + float)
+           3244 LOAD_FAST               58 (x)
+           3246 PRECALL                  1
+           3250 CALL                     1
+           3260 LOAD_FAST               44 (power_scale)
+           3262 BINARY_OP                5 (*)
+
+368        3266 BINARY_OP                0 (+)
+
+370        3270 LOAD_GLOBAL             19 (NULL + float)
+           3282 LOAD_FAST               59 (cooling_action)
+           3284 PRECALL                  1
+           3288 CALL                     1
+           3298 LOAD_FAST               45 (cooling_power_scale)
+           3300 BINARY_OP                5 (*)
+
+368        3304 BINARY_OP                0 (+)
+
+367        3308 STORE_FAST              60 (predicted_net)
+
+378        3310 LOAD_GLOBAL             19 (NULL + float)
+           3322 LOAD_FAST               58 (x)
+           3324 PRECALL                  1
+           3328 CALL                     1
+           3338 LOAD_FAST               44 (power_scale)
+           3340 BINARY_OP                5 (*)
+           3344 STORE_FAST              61 (energy)
+
+381        3346 LOAD_FAST               18 (price)
+           3348 LOAD_FAST               60 (predicted_net)
+           3350 BINARY_OP                5 (*)
+
+382        3354 LOAD_FAST                0 (self)
+           3356 LOAD_ATTR               10 (config)
+           3366 LOAD_ATTR               40 (lookahead_gamma)
+           3376 LOAD_FAST               21 (future_price)
+           3378 BINARY_OP                5 (*)
+           3382 LOAD_FAST               61 (energy)
+           3384 BINARY_OP                5 (*)
+
+381        3388 BINARY_OP               10 (-)
+
+380        3392 STORE_FAST              62 (f1)
+
+384        3394 LOAD_FAST               22 (carbon)
+           3396 LOAD_FAST               60 (predicted_net)
+           3398 BINARY_OP                5 (*)
+           3402 STORE_FAST              63 (f2)
+
+385        3404 LOAD_FAST               42 (peak_so_far)
+           3406 POP_JUMP_FORWARD_IF_NOT_NONE     3 (to 3414)
+
+386        3408 LOAD_FAST               60 (predicted_net)
+           3410 STORE_FAST              64 (f3)
+           3412 JUMP_FORWARD            16 (to 3446)
+
+388     >> 3414 LOAD_GLOBAL             27 (NULL + max)
+           3426 LOAD_FAST               42 (peak_so_far)
+           3428 LOAD_FAST               60 (predicted_net)
+           3430 PRECALL                  2
+           3434 CALL                     2
+           3444 STORE_FAST              64 (f3)
+
+392     >> 3446 LOAD_GLOBAL             27 (NULL + max)
+
+393        3458 LOAD_FAST               31 (overheat)
+
+394        3460 LOAD_FAST                0 (self)
+           3462 LOAD_ATTR               10 (config)
+           3472 LOAD_ATTR               41 (cooling_sensitivity)
+           3482 LOAD_GLOBAL             19 (NULL + float)
+           3494 LOAD_FAST               59 (cooling_action)
+           3496 PRECALL                  1
+           3500 CALL                     1
+           3510 BINARY_OP                5 (*)
+
+393        3514 BINARY_OP               10 (-)
+
+395        3518 LOAD_CONST               5 (0.0)
+
+392        3520 PRECALL                  2
+           3524 CALL                     2
+           3534 STORE_FAST              65 (predicted_overheat)
+
+397        3536 LOAD_FAST               65 (predicted_overheat)
+           3538 LOAD_GLOBAL             27 (NULL + max)
+           3550 LOAD_FAST               29 (setpoint)
+           3552 LOAD_FAST               28 (indoor)
+           3554 BINARY_OP               10 (-)
+           3558 LOAD_CONST               5 (0.0)
+           3560 PRECALL                  2
+           3564 CALL                     2
+           3574 BINARY_OP                0 (+)
+           3578 STORE_FAST              66 (f4)
+
+400        3580 LOAD_GLOBAL             29 (NULL + abs)
+           3592 LOAD_GLOBAL             19 (NULL + float)
+           3604 LOAD_FAST               58 (x)
+           3606 PRECALL                  1
+           3610 CALL                     1
+           3620 PRECALL                  1
+           3624 CALL                     1
+           3634 LOAD_CONST              16 (0.5)
+           3636 LOAD_GLOBAL             29 (NULL + abs)
+           3648 LOAD_GLOBAL             19 (NULL + float)
+           3660 LOAD_FAST               58 (x)
+           3662 PRECALL                  1
+           3666 CALL                     1
+           3676 LOAD_FAST               40 (prev_batt)
+           3678 BINARY_OP               10 (-)
+           3682 PRECALL                  1
+           3686 CALL                     1
+           3696 BINARY_OP                5 (*)
+           3700 BINARY_OP                0 (+)
+           3704 STORE_FAST              67 (f5)
+
+403        3706 LOAD_FAST                0 (self)
+           3708 LOAD_ATTR               42 (prev_net)
+           3718 LOAD_FAST                4 (i)
+           3720 BINARY_SUBSCR
+           3730 STORE_FAST              68 (prev_net)
+
+404        3732 LOAD_FAST               68 (prev_net)
+           3734 POP_JUMP_FORWARD_IF_NONE    18 (to 3772)
+           3736 LOAD_GLOBAL             29 (NULL + abs)
+           3748 LOAD_FAST               60 (predicted_net)
+           3750 LOAD_FAST               68 (prev_net)
+           3752 BINARY_OP               10 (-)
+           3756 PRECALL                  1
+           3760 CALL                     1
+           3770 JUMP_FORWARD             1 (to 3774)
+        >> 3772 LOAD_CONST               5 (0.0)
+        >> 3774 STORE_FAST              69 (f6)
+
+408        3776 LOAD_GLOBAL             19 (NULL + float)
+
+409        3788 LOAD_GLOBAL             65 (NULL + np)
+           3800 LOAD_ATTR               43 (clip)
+           3810 LOAD_CONST              29 (0.25)
+           3812 LOAD_CONST              30 (0.05)
+           3814 LOAD_FAST               24 (occupant_count)
+           3816 BINARY_OP                5 (*)
+           3820 BINARY_OP                0 (+)
+           3824 LOAD_CONST              29 (0.25)
+           3826 LOAD_CONST              31 (0.85)
+           3828 PRECALL                  3
+           3832 CALL                     3
+
+408        3842 PRECALL                  1
+           3846 CALL                     1
+           3856 STORE_FAST              70 (critical_ratio)
+
+411        3858 LOAD_FAST               70 (critical_ratio)
+           3860 LOAD_GLOBAL             27 (NULL + max)
+           3872 LOAD_FAST               26 (nsl)
+           3874 LOAD_CONST               5 (0.0)
+           3876 PRECALL                  2
+           3880 CALL                     2
+           3890 BINARY_OP                5 (*)
+           3894 STORE_FAST              71 (critical_load)
+
+412        3896 LOAD_GLOBAL             27 (NULL + max)
+           3908 LOAD_FAST               27 (solar)
+           3910 UNARY_NEGATIVE
+           3912 LOAD_CONST               5 (0.0)
+           3914 PRECALL                  2
+           3918 CALL                     2
+           3928 STORE_FAST              72 (onsite_pv)
+
+413        3930 LOAD_GLOBAL             27 (NULL + max)
+           3942 LOAD_FAST               71 (critical_load)
+           3944 LOAD_FAST               72 (onsite_pv)
+           3946 BINARY_OP               10 (-)
+           3950 LOAD_CONST               5 (0.0)
+           3952 PRECALL                  2
+           3956 CALL                     2
+           3966 STORE_FAST              73 (critical_shortfall)
+
+414        3968 LOAD_FAST               23 (outage)
+
+415        3970 LOAD_GLOBAL             27 (NULL + max)
+           3982 LOAD_FAST               60 (predicted_net)
+           3984 LOAD_CONST               5 (0.0)
+           3986 PRECALL                  2
+           3990 CALL                     2
+           4000 LOAD_FAST               73 (critical_shortfall)
+           4002 BINARY_OP                0 (+)
+
+414        4006 BINARY_OP                5 (*)
+           4010 STORE_FAST              74 (resilience_outage)
+
+420        4012 LOAD_FAST               32 (soc)
+           4014 POP_JUMP_FORWARD_IF_NOT_NONE     3 (to 4022)
+
+421        4016 LOAD_CONST               5 (0.0)
+           4018 STORE_FAST              75 (reserve_deficit)
+           4020 JUMP_FORWARD           114 (to 4250)
+
+423     >> 4022 LOAD_GLOBAL             19 (NULL + float)
+           4034 LOAD_GLOBAL             65 (NULL + np)
+           4046 LOAD_ATTR               43 (clip)
+           4056 LOAD_FAST               32 (soc)
+           4058 LOAD_CONST              25 (0.2)
+           4060 LOAD_GLOBAL             19 (NULL + float)
+           4072 LOAD_FAST               58 (x)
+           4074 PRECALL                  1
+           4078 CALL                     1
+           4088 BINARY_OP                5 (*)
+           4092 BINARY_OP                0 (+)
+           4096 LOAD_CONST               5 (0.0)
+           4098 LOAD_CONST              19 (1.0)
+           4100 PRECALL                  3
+           4104 CALL                     3
+           4114 PRECALL                  1
+           4118 CALL                     1
+           4128 STORE_FAST              76 (soc_next)
+
+424        4130 LOAD_GLOBAL             19 (NULL + float)
+
+425        4142 LOAD_GLOBAL             65 (NULL + np)
+           4154 LOAD_ATTR               43 (clip)
+           4164 LOAD_CONST              25 (0.2)
+           4166 LOAD_CONST              32 (0.03)
+           4168 LOAD_FAST               24 (occupant_count)
+           4170 BINARY_OP                5 (*)
+           4174 BINARY_OP                0 (+)
+           4178 LOAD_CONST              25 (0.2)
+           4180 LOAD_CONST              16 (0.5)
+           4182 PRECALL                  3
+           4186 CALL                     3
+
+424        4196 PRECALL                  1
+           4200 CALL                     1
+           4210 STORE_FAST              77 (target_reserve)
+
+427        4212 LOAD_GLOBAL             27 (NULL + max)
+           4224 LOAD_FAST               77 (target_reserve)
+           4226 LOAD_FAST               76 (soc_next)
+           4228 BINARY_OP               10 (-)
+           4232 LOAD_CONST               5 (0.0)
+           4234 PRECALL                  2
+           4238 CALL                     2
+           4248 STORE_FAST              75 (reserve_deficit)
+
+429     >> 4250 LOAD_FAST               74 (resilience_outage)
+           4252 LOAD_FAST               75 (reserve_deficit)
+           4254 BINARY_OP                0 (+)
+           4258 STORE_FAST              78 (f7)
+
+431        4260 LOAD_FAST               57 (candidate_metrics)
+           4262 LOAD_METHOD             12 (append)
+
+433        4284 LOAD_GLOBAL             19 (NULL + float)
+           4296 LOAD_FAST               58 (x)
+           4298 PRECALL                  1
+           4302 CALL                     1
+
+434        4312 LOAD_GLOBAL             19 (NULL + float)
+           4324 LOAD_FAST               59 (cooling_action)
+           4326 PRECALL                  1
+           4330 CALL                     1
+
+435        4340 LOAD_GLOBAL             19 (NULL + float)
+           4352 LOAD_FAST               62 (f1)
+           4354 PRECALL                  1
+           4358 CALL                     1
+
+436        4368 LOAD_GLOBAL             19 (NULL + float)
+           4380 LOAD_FAST               63 (f2)
+           4382 PRECALL                  1
+           4386 CALL                     1
+
+437        4396 LOAD_GLOBAL             19 (NULL + float)
+           4408 LOAD_FAST               64 (f3)
+           4410 PRECALL                  1
+           4414 CALL                     1
+
+438        4424 LOAD_GLOBAL             19 (NULL + float)
+           4436 LOAD_FAST               66 (f4)
+           4438 PRECALL                  1
+           4442 CALL                     1
+
+439        4452 LOAD_GLOBAL             19 (NULL + float)
+           4464 LOAD_FAST               67 (f5)
+           4466 PRECALL                  1
+           4470 CALL                     1
+
+440        4480 LOAD_GLOBAL             19 (NULL + float)
+           4492 LOAD_FAST               69 (f6)
+           4494 PRECALL                  1
+           4498 CALL                     1
+
+441        4508 LOAD_GLOBAL             19 (NULL + float)
+           4520 LOAD_FAST               78 (f7)
+           4522 PRECALL                  1
+           4526 CALL                     1
+
+432        4536 BUILD_TUPLE              9
+
+431        4538 PRECALL                  1
+           4542 CALL                     1
+           4552 POP_TOP
+           4554 EXTENDED_ARG             2
+           4556 JUMP_BACKWARD          667 (to 3224)
+
+366     >> 4558 EXTENDED_ARG             2
+           4560 JUMP_BACKWARD          674 (to 3214)
+
+446     >> 4562 LOAD_FAST                0 (self)
+           4564 LOAD_ATTR               10 (config)
+           4574 LOAD_ATTR               44 (normalize_candidate_objectives)
+
+445        4584 EXTENDED_ARG             1
+           4586 POP_JUMP_FORWARD_IF_FALSE   348 (to 5284)
+
+447        4588 LOAD_GLOBAL             13 (NULL + len)
+           4600 LOAD_FAST               57 (candidate_metrics)
+           4602 PRECALL                  1
+           4606 CALL                     1
+           4616 LOAD_CONST              23 (1)
+           4618 COMPARE_OP               4 (>)
+           4624 EXTENDED_ARG             1
+           4626 POP_JUMP_FORWARD_IF_FALSE   328 (to 5284)
+
+449        4628 LOAD_GLOBAL             65 (NULL + np)
+           4640 LOAD_ATTR               45 (asarray)
+           4650 LOAD_CONST              33 (<code object <listcomp> at 0x000002307B38EE90, file "citylearn_task\lower.py", line 449>)
+           4652 MAKE_FUNCTION            0
+           4654 LOAD_FAST               57 (candidate_metrics)
+           4656 GET_ITER
+           4658 PRECALL                  0
+           4662 CALL                     0
+           4672 LOAD_GLOBAL             18 (float)
+           4684 KW_NAMES                34
+           4686 PRECALL                  2
+           4690 CALL                     2
+           4700 STORE_FAST              79 (values)
+
+450        4702 LOAD_GLOBAL             65 (NULL + np)
+           4714 LOAD_ATTR               22 (min)
+           4724 LOAD_FAST               79 (values)
+           4726 LOAD_CONST              22 (0)
+           4728 KW_NAMES                35
+           4730 PRECALL                  2
+           4734 CALL                     2
+           4744 STORE_FAST              80 (mins)
+
+451        4746 LOAD_GLOBAL             65 (NULL + np)
+           4758 LOAD_ATTR               13 (max)
+           4768 LOAD_FAST               79 (values)
+           4770 LOAD_CONST              22 (0)
+           4772 KW_NAMES                35
+           4774 PRECALL                  2
+           4778 CALL                     2
+           4788 STORE_FAST              81 (maxs)
+
+452        4790 LOAD_FAST               81 (maxs)
+           4792 LOAD_FAST               80 (mins)
+           4794 BINARY_OP               10 (-)
+           4798 STORE_FAST              82 (span)
+
+453        4800 LOAD_CONST              19 (1.0)
+           4802 LOAD_FAST               82 (span)
+           4804 LOAD_FAST               82 (span)
+           4806 LOAD_CONST               5 (0.0)
+           4808 COMPARE_OP               2 (==)
+           4814 STORE_SUBSCR
+
+454        4818 LOAD_FAST               79 (values)
+           4820 LOAD_FAST               80 (mins)
+           4822 BINARY_OP               10 (-)
+           4826 LOAD_FAST               82 (span)
+           4828 BINARY_OP               11 (/)
+           4832 STORE_FAST              83 (normalized)
+
+456        4834 LOAD_GLOBAL             93 (NULL + zip)
+           4846 LOAD_FAST               83 (normalized)
+           4848 LOAD_FAST               57 (candidate_metrics)
+           4850 PRECALL                  2
+           4854 CALL                     2
+           4864 GET_ITER
+        >> 4866 FOR_ITER               207 (to 5282)
+           4868 UNPACK_SEQUENCE          2
+           4872 STORE_FAST              84 (row)
+           4874 STORE_FAST              85 (metric)
+
+457        4876 LOAD_FAST               85 (metric)
+           4878 LOAD_CONST              22 (0)
+           4880 BINARY_SUBSCR
+           4890 STORE_FAST              58 (x)
+
+458        4892 LOAD_FAST               85 (metric)
+           4894 LOAD_CONST              23 (1)
+           4896 BINARY_SUBSCR
+           4906 STORE_FAST              86 (c)
+
+460        4908 LOAD_FAST                7 (w_cost)
+           4910 LOAD_GLOBAL             19 (NULL + float)
+           4922 LOAD_FAST               84 (row)
+           4924 LOAD_CONST              22 (0)
+           4926 BINARY_SUBSCR
+           4936 PRECALL                  1
+           4940 CALL                     1
+           4950 BINARY_OP                5 (*)
+
+461        4954 LOAD_FAST                8 (w_carbon)
+           4956 LOAD_GLOBAL             19 (NULL + float)
+           4968 LOAD_FAST               84 (row)
+           4970 LOAD_CONST              23 (1)
+           4972 BINARY_SUBSCR
+           4982 PRECALL                  1
+           4986 CALL                     1
+           4996 BINARY_OP                5 (*)
+
+460        5000 BINARY_OP                0 (+)
+
+462        5004 LOAD_FAST                9 (w_peak)
+           5006 LOAD_GLOBAL             19 (NULL + float)
+           5018 LOAD_FAST               84 (row)
+           5020 LOAD_CONST              36 (2)
+           5022 BINARY_SUBSCR
+           5032 PRECALL                  1
+           5036 CALL                     1
+           5046 BINARY_OP                5 (*)
+
+460        5050 BINARY_OP                0 (+)
+
+463        5054 LOAD_FAST               10 (w_discomfort)
+           5056 LOAD_GLOBAL             19 (NULL + float)
+           5068 LOAD_FAST               84 (row)
+           5070 LOAD_CONST              37 (3)
+           5072 BINARY_SUBSCR
+           5082 PRECALL                  1
+           5086 CALL                     1
+           5096 BINARY_OP                5 (*)
+
+460        5100 BINARY_OP                0 (+)
+
+464        5104 LOAD_FAST               11 (w_degradation)
+           5106 LOAD_GLOBAL             19 (NULL + float)
+           5118 LOAD_FAST               84 (row)
+           5120 LOAD_CONST              38 (4)
+           5122 BINARY_SUBSCR
+           5132 PRECALL                  1
+           5136 CALL                     1
+           5146 BINARY_OP                5 (*)
+
+460        5150 BINARY_OP                0 (+)
+
+465        5154 LOAD_FAST               12 (w_ramping)
+           5156 LOAD_GLOBAL             19 (NULL + float)
+           5168 LOAD_FAST               84 (row)
+           5170 LOAD_CONST              39 (5)
+           5172 BINARY_SUBSCR
+           5182 PRECALL                  1
+           5186 CALL                     1
+           5196 BINARY_OP                5 (*)
+
+460        5200 BINARY_OP                0 (+)
+
+466        5204 LOAD_FAST               13 (w_resilience)
+           5206 LOAD_GLOBAL             19 (NULL + float)
+           5218 LOAD_FAST               84 (row)
+           5220 LOAD_CONST              40 (6)
+           5222 BINARY_SUBSCR
+           5232 PRECALL                  1
+           5236 CALL                     1
+           5246 BINARY_OP                5 (*)
+
+460        5250 BINARY_OP                0 (+)
+
+459        5254 STORE_FAST              87 (obj)
+
+468        5256 LOAD_FAST               87 (obj)
+           5258 LOAD_FAST               56 (best_obj)
+           5260 COMPARE_OP               0 (<)
+           5266 POP_JUMP_FORWARD_IF_FALSE     6 (to 5280)
+
+469        5268 LOAD_FAST               87 (obj)
+           5270 STORE_FAST              56 (best_obj)
+
+470        5272 LOAD_FAST               58 (x)
+           5274 STORE_FAST              54 (best_x)
+
+471        5276 LOAD_FAST               86 (c)
+           5278 STORE_FAST              55 (best_cooling)
+        >> 5280 JUMP_BACKWARD          208 (to 4866)
+
+456     >> 5282 JUMP_FORWARD            70 (to 5424)
+
+473     >> 5284 LOAD_FAST               57 (candidate_metrics)
+           5286 GET_ITER
+        >> 5288 FOR_ITER                67 (to 5424)
+           5290 STORE_FAST              85 (metric)
+
+474        5292 LOAD_FAST               85 (metric)
+           5294 UNPACK_SEQUENCE          9
+           5298 STORE_FAST              58 (x)
+           5300 STORE_FAST              86 (c)
+           5302 STORE_FAST              62 (f1)
+           5304 STORE_FAST              63 (f2)
+           5306 STORE_FAST              64 (f3)
+           5308 STORE_FAST              66 (f4)
+           5310 STORE_FAST              67 (f5)
+           5312 STORE_FAST              69 (f6)
+           5314 STORE_FAST              78 (f7)
+
+476        5316 LOAD_FAST                7 (w_cost)
+           5318 LOAD_FAST               62 (f1)
+           5320 BINARY_OP                5 (*)
+
+477        5324 LOAD_FAST                8 (w_carbon)
+           5326 LOAD_FAST               63 (f2)
+           5328 BINARY_OP                5 (*)
+
+476        5332 BINARY_OP                0 (+)
+
+478        5336 LOAD_FAST                9 (w_peak)
+           5338 LOAD_FAST               64 (f3)
+           5340 BINARY_OP                5 (*)
+
+476        5344 BINARY_OP                0 (+)
+
+479        5348 LOAD_FAST               10 (w_discomfort)
+           5350 LOAD_FAST               66 (f4)
+           5352 BINARY_OP                5 (*)
+
+476        5356 BINARY_OP                0 (+)
+
+480        5360 LOAD_FAST               11 (w_degradation)
+           5362 LOAD_FAST               67 (f5)
+           5364 BINARY_OP                5 (*)
+
+476        5368 BINARY_OP                0 (+)
+
+481        5372 LOAD_FAST               12 (w_ramping)
+           5374 LOAD_FAST               69 (f6)
+           5376 BINARY_OP                5 (*)
+
+476        5380 BINARY_OP                0 (+)
+
+482        5384 LOAD_FAST               13 (w_resilience)
+           5386 LOAD_FAST               78 (f7)
+           5388 BINARY_OP                5 (*)
+
+476        5392 BINARY_OP                0 (+)
+
+475        5396 STORE_FAST              87 (obj)
+
+484        5398 LOAD_FAST               87 (obj)
+           5400 LOAD_FAST               56 (best_obj)
+           5402 COMPARE_OP               0 (<)
+           5408 POP_JUMP_FORWARD_IF_FALSE     6 (to 5422)
+
+485        5410 LOAD_FAST               87 (obj)
+           5412 STORE_FAST              56 (best_obj)
+
+486        5414 LOAD_FAST               58 (x)
+           5416 STORE_FAST              54 (best_x)
+
+487        5418 LOAD_FAST               86 (c)
+           5420 STORE_FAST              55 (best_cooling)
+        >> 5422 JUMP_BACKWARD           68 (to 5288)
+
+489     >> 5424 LOAD_FAST               16 (es_idx)
+           5426 POP_JUMP_FORWARD_IF_NONE    18 (to 5464)
+
+490        5428 LOAD_GLOBAL             19 (NULL + float)
+           5440 LOAD_FAST               54 (best_x)
+           5442 PRECALL                  1
+           5446 CALL                     1
+           5456 LOAD_FAST               15 (action_vector)
+           5458 LOAD_FAST               16 (es_idx)
+           5460 STORE_SUBSCR
+
+491     >> 5464 LOAD_FAST               17 (cooling_idx)
+           5466 POP_JUMP_FORWARD_IF_NONE    18 (to 5504)
+
+492        5468 LOAD_GLOBAL             19 (NULL + float)
+           5480 LOAD_FAST               55 (best_cooling)
+           5482 PRECALL                  1
+           5486 CALL                     1
+           5496 LOAD_FAST               15 (action_vector)
+           5498 LOAD_FAST               17 (cooling_idx)
+           5500 STORE_SUBSCR
+
+494     >> 5504 LOAD_GLOBAL             19 (NULL + float)
+           5516 LOAD_FAST               54 (best_x)
+           5518 PRECALL                  1
+           5522 CALL                     1
+           5532 LOAD_FAST                0 (self)
+           5534 LOAD_ATTR               23 (prev_battery_action)
+           5544 LOAD_FAST                4 (i)
+           5546 STORE_SUBSCR
+
+495        5550 LOAD_GLOBAL             19 (NULL + float)
+           5562 LOAD_FAST               55 (best_cooling)
+           5564 PRECALL                  1
+           5568 CALL                     1
+           5578 LOAD_FAST                0 (self)
+           5580 LOAD_ATTR               38 (prev_cooling_action)
+           5590 LOAD_FAST                4 (i)
+           5592 STORE_SUBSCR
+
+496        5596 LOAD_GLOBAL             19 (NULL + float)
+
+497        5608 LOAD_FAST               25 (baseline_net)
+
+498        5610 LOAD_GLOBAL             19 (NULL + float)
+           5622 LOAD_FAST               54 (best_x)
+           5624 PRECALL                  1
+           5628 CALL                     1
+           5638 LOAD_FAST               44 (power_scale)
+           5640 BINARY_OP                5 (*)
+
+497        5644 BINARY_OP                0 (+)
+
+499        5648 LOAD_GLOBAL             19 (NULL + float)
+           5660 LOAD_FAST               55 (best_cooling)
+           5662 PRECALL                  1
+           5666 CALL                     1
+           5676 LOAD_FAST               45 (cooling_power_scale)
+           5678 BINARY_OP                5 (*)
+
+497        5682 BINARY_OP                0 (+)
+
+496        5686 PRECALL                  1
+           5690 CALL                     1
+           5700 LOAD_FAST                0 (self)
+           5702 LOAD_ATTR               42 (prev_net)
+           5712 LOAD_FAST                4 (i)
+           5714 STORE_SUBSCR
+
+502        5718 LOAD_FAST                3 (actions)
+           5720 LOAD_METHOD             12 (append)
+           5742 LOAD_FAST               15 (action_vector)
+           5744 PRECALL                  1
+           5748 CALL                     1
+           5758 POP_TOP
+           5760 EXTENDED_ARG            11
+           5762 JUMP_BACKWARD         2864 (to 36)
+
+504     >> 5764 LOAD_FAST                3 (actions)
+           5766 RETURN_VALUE
+ExceptionTable:
+  230 to 270 -> 274 [1]
+  274 to 296 -> 304 [2] lasti
+  302 to 302 -> 304 [2] lasti
+  312 to 352 -> 356 [1]
+  356 to 378 -> 386 [2] lasti
+  384 to 384 -> 386 [2] lasti
+  2190 to 2404 -> 2408 [1]
+  2408 to 2430 -> 2438 [2] lasti
+  2436 to 2436 -> 2438 [2] lasti
+
+Disassembly of <code object <listcomp> at 0x000002307B56C9F0, file "citylearn_task\lower.py", line 208>:
+208           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                 4 (to 16)
+              8 STORE_FAST               1 (_)
+             10 LOAD_CONST               0 (0.0)
+             12 LIST_APPEND              2
+             14 JUMP_BACKWARD            5 (to 6)
+        >>   16 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B38EE90, file "citylearn_task\lower.py", line 449>:
+449           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                12 (to 32)
+              8 STORE_FAST               1 (m)
+             10 LOAD_FAST                1 (m)
+             12 LOAD_CONST               0 (2)
+             14 LOAD_CONST               1 (None)
+             16 BUILD_SLICE              2
+             18 BINARY_SUBSCR
+             28 LIST_APPEND              2
+             30 JUMP_BACKWARD           13 (to 6)
+        >>   32 RETURN_VALUE

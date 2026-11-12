@@ -1,0 +1,567 @@
+  0           0 RESUME                   0
+
+  1           2 LOAD_CONST               0 ('Align decisions and completed hourly states for CityLearn 2.5.0.')
+              4 STORE_NAME               0 (__doc__)
+
+  2           6 LOAD_CONST               1 (0)
+              8 LOAD_CONST               2 (('contextmanager',))
+             10 IMPORT_NAME              1 (contextlib)
+             12 IMPORT_FROM              2 (contextmanager)
+             14 STORE_NAME               2 (contextmanager)
+             16 POP_TOP
+
+  3          18 LOAD_CONST               1 (0)
+             20 LOAD_CONST               3 (('deepcopy',))
+             22 IMPORT_NAME              3 (copy)
+             24 IMPORT_FROM              4 (deepcopy)
+             26 STORE_NAME               4 (deepcopy)
+             28 POP_TOP
+
+  4          30 LOAD_CONST               1 (0)
+             32 LOAD_CONST               4 (None)
+             34 IMPORT_NAME              5 (csv)
+             36 STORE_NAME               5 (csv)
+
+  5          38 LOAD_CONST               1 (0)
+             40 LOAD_CONST               5 (('islice',))
+             42 IMPORT_NAME              6 (itertools)
+             44 IMPORT_FROM              7 (islice)
+             46 STORE_NAME               7 (islice)
+             48 POP_TOP
+
+  6          50 LOAD_CONST               1 (0)
+             52 LOAD_CONST               6 (('Path',))
+             54 IMPORT_NAME              8 (pathlib)
+             56 IMPORT_FROM              9 (Path)
+             58 STORE_NAME               9 (Path)
+             60 POP_TOP
+
+  7          62 LOAD_CONST               1 (0)
+             64 LOAD_CONST               7 (('TemporaryDirectory',))
+             66 IMPORT_NAME             10 (tempfile)
+             68 IMPORT_FROM             11 (TemporaryDirectory)
+             70 STORE_NAME              11 (TemporaryDirectory)
+             72 POP_TOP
+
+ 10          74 LOAD_NAME                2 (contextmanager)
+
+ 11          76 LOAD_CONST               8 (<code object padded_schema at 0x000002307B4A8250, file "citylearn_task\temporal.py", line 10>)
+             78 MAKE_FUNCTION            0
+
+ 10          80 PRECALL                  0
+             84 CALL                     0
+
+ 11          94 STORE_NAME              12 (padded_schema)
+
+ 58          96 LOAD_CONST               9 (<code object decision_observations at 0x000002307AD77C50, file "citylearn_task\temporal.py", line 58>)
+             98 MAKE_FUNCTION            0
+            100 STORE_NAME              13 (decision_observations)
+            102 LOAD_CONST               4 (None)
+            104 RETURN_VALUE
+
+Disassembly of <code object padded_schema at 0x000002307B4A8250, file "citylearn_task\temporal.py", line 10>:
+ 10           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+
+ 19           6 LOAD_GLOBAL              1 (NULL + deepcopy)
+             18 LOAD_FAST                0 (schema)
+             20 PRECALL                  1
+             24 CALL                     1
+             34 STORE_FAST               0 (schema)
+
+ 20          36 LOAD_FAST                1 (spec)
+             38 LOAD_ATTR                1 (end)
+             48 LOAD_FAST                1 (spec)
+             50 LOAD_ATTR                2 (start)
+             60 BINARY_OP               10 (-)
+             64 LOAD_CONST               1 (1)
+             66 BINARY_OP                0 (+)
+             70 STORE_FAST               2 (count)
+
+ 21          72 LOAD_FAST                2 (count)
+             74 LOAD_CONST               2 (24)
+             76 BINARY_OP                2 (//)
+             80 LOAD_CONST               1 (1)
+             82 BINARY_OP                0 (+)
+             86 LOAD_CONST               2 (24)
+             88 BINARY_OP                5 (*)
+             92 STORE_FAST               3 (allocated)
+
+ 22          94 LOAD_FAST                3 (allocated)
+             96 LOAD_FAST                2 (count)
+             98 BINARY_OP               10 (-)
+            102 STORE_FAST               4 (buffer_rows)
+
+ 23         104 LOAD_GLOBAL              7 (NULL + TemporaryDirectory)
+            116 LOAD_CONST               3 ('citylearn_timing_v2_')
+            118 KW_NAMES                 4
+            120 PRECALL                  1
+            124 CALL                     1
+            134 BEFORE_WITH
+            136 STORE_FAST               5 (temp)
+
+ 24         138 BUILD_MAP                0
+            140 STORE_FAST               6 (cache)
+
+ 25         142 LOAD_FAST                0 (schema)
+            144 LOAD_CONST               5 ('buildings')
+            146 BINARY_SUBSCR
+            156 LOAD_METHOD              4 (values)
+            178 PRECALL                  0
+            182 CALL                     0
+            192 GET_ITER
+        >>  194 EXTENDED_ARG             2
+            196 FOR_ITER               519 (to 1236)
+            198 STORE_FAST               7 (building)
+
+ 26         200 LOAD_CONST               6 (('energy_simulation', 'weather', 'carbon_intensity', 'pricing'))
+            202 GET_ITER
+        >>  204 EXTENDED_ARG             1
+            206 FOR_ITER               431 (to 1070)
+            208 STORE_FAST               8 (key)
+
+ 27         210 LOAD_FAST                7 (building)
+            212 LOAD_METHOD              5 (get)
+            234 LOAD_FAST                8 (key)
+            236 PRECALL                  1
+            240 CALL                     1
+            250 POP_JUMP_FORWARD_IF_TRUE     1 (to 254)
+
+ 28         252 JUMP_BACKWARD           25 (to 204)
+
+ 29     >>  254 LOAD_FAST                1 (spec)
+            256 LOAD_ATTR                6 (dataset_dir)
+            266 LOAD_FAST                7 (building)
+            268 LOAD_FAST                8 (key)
+            270 BINARY_SUBSCR
+            280 BINARY_OP               11 (/)
+            284 LOAD_METHOD              7 (resolve)
+            306 PRECALL                  0
+            310 CALL                     0
+            320 STORE_FAST               9 (source)
+
+ 30         322 LOAD_FAST                9 (source)
+            324 LOAD_FAST                6 (cache)
+            326 CONTAINS_OP              1
+            328 EXTENDED_ARG             1
+            330 POP_JUMP_FORWARD_IF_FALSE   356 (to 1044)
+
+ 31         332 LOAD_FAST                9 (source)
+            334 LOAD_METHOD              8 (open)
+            356 LOAD_CONST               7 ('utf-8-sig')
+            358 LOAD_CONST               8 ('')
+            360 KW_NAMES                 9
+            362 PRECALL                  2
+            366 CALL                     2
+            376 BEFORE_WITH
+            378 STORE_FAST              10 (stream)
+
+ 32         380 LOAD_GLOBAL             19 (NULL + csv)
+            392 LOAD_ATTR               10 (reader)
+            402 LOAD_FAST               10 (stream)
+            404 PRECALL                  1
+            408 CALL                     1
+            418 STORE_FAST              11 (reader)
+
+ 33         420 LOAD_GLOBAL             23 (NULL + next)
+            432 LOAD_FAST               11 (reader)
+            434 PRECALL                  1
+            438 CALL                     1
+            448 STORE_FAST              12 (header)
+
+ 34         450 LOAD_GLOBAL             25 (NULL + list)
+            462 LOAD_GLOBAL             27 (NULL + islice)
+            474 LOAD_FAST               11 (reader)
+            476 LOAD_FAST                1 (spec)
+            478 LOAD_ATTR                2 (start)
+            488 LOAD_FAST                1 (spec)
+            490 LOAD_ATTR                1 (end)
+            500 LOAD_CONST               1 (1)
+            502 BINARY_OP                0 (+)
+            506 PRECALL                  3
+            510 CALL                     3
+            520 PRECALL                  1
+            524 CALL                     1
+            534 STORE_FAST              13 (rows)
+
+ 31         536 LOAD_CONST              10 (None)
+            538 LOAD_CONST              10 (None)
+            540 LOAD_CONST              10 (None)
+            542 PRECALL                  2
+            546 CALL                     2
+            556 POP_TOP
+            558 JUMP_FORWARD            11 (to 582)
+        >>  560 PUSH_EXC_INFO
+            562 WITH_EXCEPT_START
+            564 POP_JUMP_FORWARD_IF_TRUE     4 (to 574)
+            566 RERAISE                  2
+        >>  568 COPY                     3
+            570 POP_EXCEPT
+            572 RERAISE                  1
+        >>  574 POP_TOP
+            576 POP_EXCEPT
+            578 POP_TOP
+            580 POP_TOP
+
+ 35     >>  582 LOAD_GLOBAL             29 (NULL + len)
+            594 LOAD_FAST               13 (rows)
+            596 PRECALL                  1
+            600 CALL                     1
+            610 LOAD_FAST                2 (count)
+            612 COMPARE_OP               3 (!=)
+            618 POP_JUMP_FORWARD_IF_FALSE    18 (to 656)
+
+ 36         620 LOAD_GLOBAL             31 (NULL + ValueError)
+            632 LOAD_FAST                9 (source)
+            634 FORMAT_VALUE             0
+            636 LOAD_CONST              11 (' does not cover the declared window')
+            638 BUILD_STRING             2
+            640 PRECALL                  1
+            644 CALL                     1
+            654 RAISE_VARARGS            1
+
+ 37     >>  656 LOAD_GLOBAL             33 (NULL + Path)
+            668 LOAD_FAST                5 (temp)
+            670 PRECALL                  1
+            674 CALL                     1
+            684 LOAD_CONST              12 ('series_')
+            686 LOAD_GLOBAL             29 (NULL + len)
+            698 LOAD_FAST                6 (cache)
+            700 PRECALL                  1
+            704 CALL                     1
+            714 FORMAT_VALUE             0
+            716 LOAD_CONST              13 ('.csv')
+            718 BUILD_STRING             3
+            720 BINARY_OP               11 (/)
+            724 STORE_FAST              14 (destination)
+
+ 38         726 LOAD_FAST               14 (destination)
+            728 LOAD_METHOD              8 (open)
+            750 LOAD_CONST              14 ('w')
+            752 LOAD_CONST              15 ('utf-8')
+            754 LOAD_CONST               8 ('')
+            756 KW_NAMES                 9
+            758 PRECALL                  3
+            762 CALL                     3
+            772 BEFORE_WITH
+            774 STORE_FAST              10 (stream)
+
+ 39         776 LOAD_GLOBAL             19 (NULL + csv)
+            788 LOAD_ATTR               17 (writer)
+            798 LOAD_FAST               10 (stream)
+            800 PRECALL                  1
+            804 CALL                     1
+            814 STORE_FAST              15 (writer)
+
+ 40         816 LOAD_FAST               15 (writer)
+            818 LOAD_METHOD             18 (writerow)
+            840 LOAD_FAST               12 (header)
+            842 PRECALL                  1
+            846 CALL                     1
+            856 POP_TOP
+
+ 41         858 LOAD_FAST               15 (writer)
+            860 LOAD_METHOD             19 (writerows)
+            882 LOAD_FAST               13 (rows)
+            884 PRECALL                  1
+            888 CALL                     1
+            898 POP_TOP
+
+ 42         900 LOAD_FAST               15 (writer)
+            902 LOAD_METHOD             19 (writerows)
+            924 LOAD_FAST               13 (rows)
+            926 LOAD_CONST              16 (-1)
+            928 BINARY_SUBSCR
+            938 BUILD_LIST               1
+            940 LOAD_FAST                4 (buffer_rows)
+            942 BINARY_OP                5 (*)
+            946 PRECALL                  1
+            950 CALL                     1
+            960 POP_TOP
+
+ 38         962 LOAD_CONST              10 (None)
+            964 LOAD_CONST              10 (None)
+            966 LOAD_CONST              10 (None)
+            968 PRECALL                  2
+            972 CALL                     2
+            982 POP_TOP
+            984 JUMP_FORWARD            11 (to 1008)
+        >>  986 PUSH_EXC_INFO
+            988 WITH_EXCEPT_START
+            990 POP_JUMP_FORWARD_IF_TRUE     4 (to 1000)
+            992 RERAISE                  2
+        >>  994 COPY                     3
+            996 POP_EXCEPT
+            998 RERAISE                  1
+        >> 1000 POP_TOP
+           1002 POP_EXCEPT
+           1004 POP_TOP
+           1006 POP_TOP
+
+ 43     >> 1008 LOAD_GLOBAL             41 (NULL + str)
+           1020 LOAD_FAST               14 (destination)
+           1022 PRECALL                  1
+           1026 CALL                     1
+           1036 LOAD_FAST                6 (cache)
+           1038 LOAD_FAST                9 (source)
+           1040 STORE_SUBSCR
+
+ 44     >> 1044 LOAD_FAST                6 (cache)
+           1046 LOAD_FAST                9 (source)
+           1048 BINARY_SUBSCR
+           1058 LOAD_FAST                7 (building)
+           1060 LOAD_FAST                8 (key)
+           1062 STORE_SUBSCR
+           1066 EXTENDED_ARG             1
+           1068 JUMP_BACKWARD          433 (to 204)
+
+ 45     >> 1070 LOAD_FAST                7 (building)
+           1072 LOAD_METHOD              5 (get)
+           1094 LOAD_CONST              17 ('dynamics')
+           1096 PRECALL                  1
+           1100 CALL                     1
+           1110 STORE_FAST              16 (dynamics)
+
+ 46        1112 LOAD_FAST               16 (dynamics)
+           1114 POP_JUMP_FORWARD_IF_FALSE    58 (to 1232)
+
+ 47        1116 LOAD_FAST               16 (dynamics)
+           1118 LOAD_CONST              18 ('attributes')
+           1120 BINARY_SUBSCR
+           1130 STORE_FAST              17 (attributes)
+
+ 48        1132 LOAD_GLOBAL             41 (NULL + str)
+           1144 LOAD_FAST                1 (spec)
+           1146 LOAD_ATTR                6 (dataset_dir)
+           1156 LOAD_FAST               17 (attributes)
+           1158 LOAD_CONST              19 ('filename')
+           1160 BINARY_SUBSCR
+           1170 BINARY_OP               11 (/)
+           1174 LOAD_METHOD              7 (resolve)
+           1196 PRECALL                  0
+           1200 CALL                     0
+           1210 PRECALL                  1
+           1214 CALL                     1
+           1224 LOAD_FAST               17 (attributes)
+           1226 LOAD_CONST              19 ('filename')
+           1228 STORE_SUBSCR
+        >> 1232 EXTENDED_ARG             2
+           1234 JUMP_BACKWARD          521 (to 194)
+
+ 49     >> 1236 LOAD_FAST                5 (temp)
+           1238 LOAD_FAST                0 (schema)
+           1240 LOAD_CONST              20 ('root_directory')
+           1242 STORE_SUBSCR
+
+ 50        1246 LOAD_CONST              21 (0)
+           1248 LOAD_FAST                0 (schema)
+           1250 LOAD_CONST              22 ('simulation_start_time_step')
+           1252 STORE_SUBSCR
+
+ 51        1256 LOAD_FAST                3 (allocated)
+           1258 LOAD_CONST               1 (1)
+           1260 BINARY_OP               10 (-)
+           1264 LOAD_FAST                0 (schema)
+           1266 LOAD_CONST              23 ('simulation_end_time_step')
+           1268 STORE_SUBSCR
+
+ 52        1272 LOAD_FAST                3 (allocated)
+           1274 LOAD_FAST                0 (schema)
+           1276 LOAD_CONST              24 ('episode_time_steps')
+           1278 STORE_SUBSCR
+
+ 53        1282 LOAD_CONST              25 (False)
+           1284 LOAD_FAST                0 (schema)
+           1286 LOAD_CONST              26 ('rolling_episode_split')
+           1288 STORE_SUBSCR
+
+ 54        1292 LOAD_CONST              25 (False)
+           1294 LOAD_FAST                0 (schema)
+           1296 LOAD_CONST              27 ('random_episode_split')
+           1298 STORE_SUBSCR
+
+ 55        1302 LOAD_FAST                0 (schema)
+           1304 YIELD_VALUE
+           1306 RESUME                   1
+           1308 POP_TOP
+
+ 23        1310 LOAD_CONST              10 (None)
+           1312 LOAD_CONST              10 (None)
+           1314 LOAD_CONST              10 (None)
+           1316 PRECALL                  2
+           1320 CALL                     2
+           1330 POP_TOP
+           1332 LOAD_CONST              10 (None)
+           1334 RETURN_VALUE
+        >> 1336 PUSH_EXC_INFO
+           1338 WITH_EXCEPT_START
+           1340 POP_JUMP_FORWARD_IF_TRUE     4 (to 1350)
+           1342 RERAISE                  2
+        >> 1344 COPY                     3
+           1346 POP_EXCEPT
+           1348 RERAISE                  1
+        >> 1350 POP_TOP
+           1352 POP_EXCEPT
+           1354 POP_TOP
+           1356 POP_TOP
+           1358 LOAD_CONST              10 (None)
+           1360 RETURN_VALUE
+ExceptionTable:
+  136 to 376 -> 1336 [1] lasti
+  378 to 534 -> 560 [4] lasti
+  536 to 558 -> 1336 [1] lasti
+  560 to 566 -> 568 [6] lasti
+  568 to 572 -> 1336 [1] lasti
+  574 to 574 -> 568 [6] lasti
+  576 to 772 -> 1336 [1] lasti
+  774 to 960 -> 986 [4] lasti
+  962 to 984 -> 1336 [1] lasti
+  986 to 992 -> 994 [6] lasti
+  994 to 998 -> 1336 [1] lasti
+  1000 to 1000 -> 994 [6] lasti
+  1002 to 1308 -> 1336 [1] lasti
+  1336 to 1342 -> 1344 [3] lasti
+  1350 to 1350 -> 1344 [3] lasti
+
+Disassembly of <code object decision_observations at 0x000002307AD77C50, file "citylearn_task\temporal.py", line 58>:
+ 58           0 RESUME                   0
+
+ 66           2 LOAD_FAST                0 (env)
+              4 LOAD_ATTR                0 (time_step)
+             14 LOAD_CONST               1 (0)
+             16 COMPARE_OP               2 (==)
+             22 POP_JUMP_FORWARD_IF_FALSE    12 (to 48)
+
+ 67          24 LOAD_CONST               2 (<code object <listcomp> at 0x000002307B8943F0, file "citylearn_task\temporal.py", line 67>)
+             26 MAKE_FUNCTION            0
+             28 LOAD_FAST                1 (raw_observations)
+             30 GET_ITER
+             32 PRECALL                  0
+             36 CALL                     0
+             46 RETURN_VALUE
+
+ 70     >>   48 LOAD_FAST                0 (env)
+             50 LOAD_ATTR                0 (time_step)
+             60 LOAD_CONST               3 (1)
+             62 BINARY_OP               10 (-)
+             66 STORE_FAST               2 (completed)
+
+ 71          68 LOAD_CONST               4 (<code object <listcomp> at 0x000002307B8948A0, file "citylearn_task\temporal.py", line 71>)
+             70 MAKE_FUNCTION            0
+             72 LOAD_FAST                1 (raw_observations)
+             74 GET_ITER
+             76 PRECALL                  0
+             80 CALL                     0
+             90 STORE_FAST               3 (fixed)
+
+ 72          92 LOAD_GLOBAL              3 (NULL + enumerate)
+            104 LOAD_GLOBAL              5 (NULL + zip)
+            116 LOAD_FAST                0 (env)
+            118 LOAD_ATTR                3 (buildings)
+            128 LOAD_FAST                0 (env)
+            130 LOAD_ATTR                4 (observation_names)
+            140 PRECALL                  2
+            144 CALL                     2
+            154 PRECALL                  1
+            158 CALL                     1
+            168 GET_ITER
+        >>  170 FOR_ITER               148 (to 468)
+            172 UNPACK_SEQUENCE          2
+            176 STORE_FAST               4 (i)
+            178 UNPACK_SEQUENCE          2
+            182 STORE_FAST               5 (building)
+            184 STORE_FAST               6 (names)
+
+ 74         186 LOAD_FAST                5 (building)
+            188 LOAD_ATTR                5 (electrical_storage)
+            198 LOAD_ATTR                6 (soc)
+            208 LOAD_FAST                2 (completed)
+            210 BINARY_SUBSCR
+
+ 75         220 LOAD_FAST                5 (building)
+            222 LOAD_ATTR                7 (net_electricity_consumption)
+            232 LOAD_FAST                2 (completed)
+            234 BINARY_SUBSCR
+
+ 76         244 LOAD_FAST                5 (building)
+            246 LOAD_ATTR                8 (energy_simulation)
+            256 LOAD_ATTR                9 (indoor_dry_bulb_temperature)
+            266 LOAD_FAST                2 (completed)
+            268 BINARY_SUBSCR
+
+ 73         278 LOAD_CONST               5 (('electrical_storage_soc', 'net_electricity_consumption', 'indoor_dry_bulb_temperature'))
+            280 BUILD_CONST_KEY_MAP      3
+            282 STORE_FAST               7 (values)
+
+ 78         284 LOAD_FAST                7 (values)
+            286 LOAD_METHOD             10 (items)
+            308 PRECALL                  0
+            312 CALL                     0
+            322 GET_ITER
+        >>  324 FOR_ITER                70 (to 466)
+            326 UNPACK_SEQUENCE          2
+            330 STORE_FAST               8 (name)
+            332 STORE_FAST               9 (value)
+
+ 79         334 LOAD_FAST                8 (name)
+            336 LOAD_FAST                6 (names)
+            338 CONTAINS_OP              1
+            340 POP_JUMP_FORWARD_IF_FALSE    18 (to 378)
+
+ 80         342 LOAD_GLOBAL             23 (NULL + RuntimeError)
+            354 LOAD_CONST               6 ('required controller observation missing: ')
+            356 LOAD_FAST                8 (name)
+            358 FORMAT_VALUE             0
+            360 BUILD_STRING             2
+            362 PRECALL                  1
+            366 CALL                     1
+            376 RAISE_VARARGS            1
+
+ 81     >>  378 LOAD_GLOBAL             25 (NULL + float)
+            390 LOAD_FAST                9 (value)
+            392 PRECALL                  1
+            396 CALL                     1
+            406 LOAD_FAST                3 (fixed)
+            408 LOAD_FAST                4 (i)
+            410 BINARY_SUBSCR
+            420 LOAD_FAST                6 (names)
+            422 LOAD_METHOD             13 (index)
+            444 LOAD_FAST                8 (name)
+            446 PRECALL                  1
+            450 CALL                     1
+            460 STORE_SUBSCR
+            464 JUMP_BACKWARD           71 (to 324)
+
+ 78     >>  466 JUMP_BACKWARD          149 (to 170)
+
+ 82     >>  468 LOAD_FAST                3 (fixed)
+            470 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B8943F0, file "citylearn_task\temporal.py", line 67>:
+ 67           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                17 (to 42)
+              8 STORE_FAST               1 (row)
+             10 LOAD_GLOBAL              1 (NULL + list)
+             22 LOAD_FAST                1 (row)
+             24 PRECALL                  1
+             28 CALL                     1
+             38 LIST_APPEND              2
+             40 JUMP_BACKWARD           18 (to 6)
+        >>   42 RETURN_VALUE
+
+Disassembly of <code object <listcomp> at 0x000002307B8948A0, file "citylearn_task\temporal.py", line 71>:
+ 71           0 RESUME                   0
+              2 BUILD_LIST               0
+              4 LOAD_FAST                0 (.0)
+        >>    6 FOR_ITER                17 (to 42)
+              8 STORE_FAST               1 (row)
+             10 LOAD_GLOBAL              1 (NULL + list)
+             22 LOAD_FAST                1 (row)
+             24 PRECALL                  1
+             28 CALL                     1
+             38 LIST_APPEND              2
+             40 JUMP_BACKWARD           18 (to 6)
+        >>   42 RETURN_VALUE
