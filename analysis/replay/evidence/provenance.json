@@ -1,0 +1,40 @@
+{
+  "bundle": "local evaluator exploration log (analysis/replay/evidence)",
+  "created": "2026-11-09",
+  "status": "exploration only; see analysis/replay/README.md",
+  "evaluator": {
+    "executable": "solver/solver.exe",
+    "sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+    "bytes": 190654976,
+    "checksum_verified_by": "analysis/solver_smoke (T01); exe_sha256 check passed",
+    "usage_counter": "solver/usage.count was reset between development batches; the log is not the graded 20-call record"
+  },
+  "host": {
+    "name": "DESKTOP-RD012C0",
+    "os": "Windows",
+    "python": "3.9.13 (development harness); the repo environment is uv-managed Python 3.11"
+  },
+  "repo_at_run_time": {
+    "commit": "not recorded by the ad-hoc harness; the runs predate analysis/replay",
+    "recorded_commit": "see provenance.json in this folder after the bundle commit",
+    "dirty": null
+  },
+  "generating_code": [
+    "analysis/replay/harness/optimize_weights_phaseE.py",
+    "analysis/replay/harness/optimize_weights_phaseE2.py",
+    "analysis/replay/harness/optimize_weights_phaseE5.py",
+    "analysis/replay/harness/solver_robust.py"
+  ],
+  "seeds": {
+    "optimize_weights_phaseE5.py": 20261109,
+    "batch_size": 20,
+    "budget_per_phase": 400
+  },
+  "log": {
+    "file": "eval_log.jsonl",
+    "rows": 6568,
+    "columns": ["eval_id", "phase", "weights", "R", "timestamp"],
+    "timestamp_format": "ISO-8601 with T, no timezone (local Asia/Shanghai)",
+    "note": "387 rows originally used a space separator; normalised to T on 2026-11-09, values unchanged"
+  }
+}

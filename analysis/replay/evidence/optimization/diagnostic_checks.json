@@ -1,0 +1,76 @@
+{
+  "purpose": "根因校验：dedupe_report.csv 110.557 与寻优结果 120.299 的语义/空间一致性核查",
+  "solver_call": "%TEMP%\\RampingSolver.exe --serve（从 solver.exe 内嵌资源提取的真实求解器，未修改 solver/ 与 csv）",
+  "finding_csv_structure": {
+    "columns": ["group", "n", "kept_id", "kept_source", "kept_R", "merged_sources", "member_ids", "member_sources", "max_weight_diff", "R_min", "R_max", "R_max_abs_diff"],
+    "rows": 21,
+    "has_weight_columns": false,
+    "note": "无任何 21 维参数列；且全部 21 行都是 n=2 的重复对（max_weight_diff≈1e-17，R_max_abs_diff=0.0），R_min=R_max=kept_R，无法反推出权重"
+  },
+  "top_records_by_kept_R": [
+    {"kept_id": "S3_1_2_p_05", "kept_R": 110.55695578905579, "group": 2417, "sources": ["round1_search", "other"]},
+    {"kept_id": "FF_E_1_l_2_n_05", "kept_R": 111.67996861546999, "group": 3175, "sources": ["round2_search", "other"]},
+    {"kept_id": "p01969", "kept_R": 115.76481925917324, "group": 1968, "sources": ["train_labels", "candidate_truth"]},
+    {"kept_id": "p00256", "kept_R": 117.58323827682761, "group": 255, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00786", "kept_R": 120.91401127746212, "group": 785, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00810", "kept_R": 121.80220454315713, "group": 809, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00877", "kept_R": 121.84762023814255, "group": 876, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00017", "kept_R": 122.8317813416943, "group": 16, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00473", "kept_R": 122.87519074068405, "group": 472, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00015", "kept_R": 139.42647159518674, "group": 14, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00412", "kept_R": 141.97337589180097, "group": 411, "sources": ["train_labels", "other"]},
+    {"kept_id": "p00110", "kept_R": 148.26768652889587, "group": 109, "sources": ["train_labels", "other"]}
+  ],
+  "call_path_check": {
+    "uniform_1_7_baseline": 156.245609,
+    "our_best_120.299_reevaluated": 120.299134,
+    "matches_log": true,
+    "note": "两条独立记录的复现值与 eval_log 完全一致（6 位小数），调用路径可复现"
+  },
+  "scale_invariance": {
+    "our_best_x0.01_x0.1_x2_x3_x10_x100_x1000": [120.299134, 120.299134, 120.299134, 120.299134, 120.299134, 120.299134, 120.299134],
+    "weight_json_raw": 140.34709,
+    "weight_json_rows_normalized_to_1": 140.34709,
+    "our_best_building1_x1000": 120.299134,
+    "our_best_building3_x0.001": 120.299134,
+    "conclusion": "R 对每栋楼内部的整体缩放完全不敏感；每栋楼 7 个和为 1 是无损重参数化，不是额外限制"
+  },
+  "zero_weight_boundary": {
+    "onehot_F6_exact_zero": 117.801614,
+    "onehot_F6_eps_1e-9_1e-6": [120.167416, 120.167416],
+    "onehot_F6_eps_1e-4": 120.170824,
+    "onehot_F6_eps_2e-3": 120.299134,
+    "onehot_F6_eps_1e-2": 118.379227,
+    "note": "极端稀疏处 R 不连续（精确 0 与 1e-9 相差 2.37），但最优两特征点对 eps 不敏感"
+  },
+  "interior_optimum_found": {
+    "shape": "三栋楼同构 [F6=0.75, F5=0.25, 其余=0]",
+    "R_exact_zero": 108.22227,
+    "R_eps_2e-3_MIN_W": 108.698724,
+    "R_eps_1e-2": 110.006158,
+    "legal_under_strict_positive_and_row_sum_1": true,
+    "note": "严格 >0 且 MIN_W=2e-3 下仍为 108.699，优于数据集最小值 110.557"
+  },
+  "share_sweep_F6_F5": [
+    [0.5, 167.010223], [0.55, 151.601346], [0.6, 133.964028], [0.65, 121.863003],
+    [0.7, 108.703897], [0.72, 110.121534], [0.75, 108.22227], [0.8, 110.797505],
+    [0.85, 112.49005], [0.9, 112.724463], [0.95, 114.021116]
+  ],
+  "share_sweep_F6_spread": [
+    [0.3, 116.841969], [0.5, 116.71694], [0.6, 115.299878], [0.65, 115.182329],
+    [0.7, 115.152392], [0.72, 115.498503], [0.75, 116.971884], [0.78, 116.714979],
+    [0.8, 116.137505], [0.9, 118.950691], [0.99, 120.350482], [1.0, 117.801614]
+  ],
+  "asymmetric_checks": [
+    [[0.7, 0.7, 0.6], 111.782346], [[0.7, 0.6, 0.6], 115.372121],
+    [[0.75, 0.7, 0.65], 110.58018], [[0.7, 0.7, 0.8], 109.797061],
+    [[0.65, 0.7, 0.75], 116.456258]
+  ],
+  "log_coverage": {
+    "phases": {"screen": 44, "vertex": 343, "refine": 0},
+    "screen_min": 124.59491998224985,
+    "vertex_min": 120.29913432570174,
+    "points_with_zero_weights": 0
+  },
+  "conclusion": "调用语义正确（行优先 3x7、尺度无关、可复现）；120.299 是同语义下的结果但非最优：真实最优在 F6/F5 内部两特征混合面（≈0.75/0.25），实测 108.222（严格正+MIN_W 时 108.699）。csv 的 110.557 无法复评（无参数列，标注待验证）"
+}

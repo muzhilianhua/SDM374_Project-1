@@ -1,0 +1,26 @@
+# T18 comparison arm: same as online-policy-wide.toml but with a narrow trust region
+# (max distance ratio 0.5). Kept so the radius comparison can be re-run with the online runner.
+
+[data]
+dataset = "dataset_same8"
+
+[model]
+name = "bayes-search"
+
+[model.params]
+family = "gp"
+kernel = "additive-ard"
+target = "raw"
+lengths = [0.25, 0.5, 1.0]
+noises = [0.005, 0.03]
+seed = 2026
+
+[optimizer]
+name = "bayes-pool"
+
+[optimizer.params]
+acquisition = "mean"
+samples = 6000
+max_distance_ratio = 0.5
+separation_ratio = 0.1
+seed = 2026
