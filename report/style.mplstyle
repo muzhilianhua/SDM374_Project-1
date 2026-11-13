@@ -1,0 +1,15 @@
+font.family: DejaVu Sans
+font.size: 9
+axes.titlesize: 10
+axes.labelsize: 9
+legend.fontsize: 8
+xtick.labelsize: 8
+ytick.labelsize: 8
+figure.figsize: 6.4, 3.6
+figure.dpi: 120
+savefig.dpi: 180
+axes.grid: True
+grid.alpha: 0.25
+lines.linewidth: 1.5
+pdf.fonttype: 42
+ps.fonttype: 42

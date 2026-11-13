@@ -166,7 +166,7 @@ and record the new decision here with a date.
   For reference, member B's tree models score 72.3–74.7 on the same splits (`analysis/surrogate_release` on
   branch `runze-liu`), so gradient-boosted plugins are the obvious next step.
 
-- **T18 replay defaults; earlier strategy ranking withdrawn** (2026-11-09, commit `3cabe67`,
+- **T18 replay defaults; earlier strategy ranking withdrawn** (2026-11-10, commit `3cabe67`,
   [replay](../analysis/replay/README.md), `analysis/replay/study.py`, no evaluator calls). The ranking of
   strategy families from 6,568 local `solver.exe` calls, and the structural prior handed to T15 (old
   notebook §6) and the note that T12 could adopt that ranking (old §9), are **withdrawn as policy input**:

@@ -1,0 +1,63 @@
+{
+  "purpose": "Reproducible record of how hp_noise001 was selected as the top GP candidate for the online phase (T12), so the 7 length scales are re-derivable without the untracked offline workspace.",
+  "offline_search": {
+    "source_script": "外推方案/gp提分/run_variant.py (untracked local directory; config block quoted below)",
+    "config_block_for_hp_noise001": {
+      "transform": "raw",
+      "bounds": [0.03, 6.0],
+      "n_starts": 3,
+      "maxiter": 80,
+      "noise": 0.01,
+      "noise_bounds": "fixed",
+      "notes": "Variant 'hp_noise001' (1c): fixed noise level, relaxed upper bound on length scales, multi-start L-BFGS-B. Baseline 'base' used bounds=(0.03,3.0), n_starts=1, maxiter=18, noise optimised in (0.001,0.3)."
+    },
+    "frozen_split": "sdm374.same8.splits.2x5x3.frozen.v1 (10 folds: r01_f01..r01_f05, r02_f01..r02_f05)",
+    "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+    "offline_oof_scores": {
+      "hp_noise001": {"n": 4096, "rmse": 5.230, "r2": 0.890, "v32_score_mean": 83.33},
+      "hp_noise003": {"n": 4096, "rmse": 5.271, "r2": 0.888, "v32_score_mean": 83.07},
+      "gp-ard_base": {"n": 4096, "rmse": 5.231, "r2": 0.890, "v32_score_mean": 83.15},
+      "notes": "These are OOF (frozen 2x5x3 splits, 10 folds) scores from the offline summary JSONs in the untracked workspace. The blend-tree summaries were generated separately under the offline v3.2 protocol."
+    },
+    "selection_rule": "Shortlist of six candidates ranked by offline surrogate scoring v3.2; real-data evaluation on R < 180 (see § Real-data ranking below) showed pure-GP candidates outperformed the blend-tree ones despite lower offline scores."
+  },
+  "real_data_ranking": {
+    "dataset_eval_log": {
+      "path": "user workspace: eval_log.jsonl (from github.com/muzhilianhua/SDM374_Project-1 branch origin/online, commit 33b8078, 6568 rows, 6548 unique after dedup)",
+      "sha256": "64f0aaed321b294c9b3f182ddf9e3fe9dded6028f2e011ebab9087bd5624dd18",
+      "subsetting": "filter R < 180, 6297 rows"
+    },
+    "dataset_all_real_extrap": {
+      "path": "merged offline training rows + round1_search + round2_search + candidate_truth, minus dataset_same8/train.csv",
+      "subsetting": "filter R < 180, 1257 rows"
+    },
+    "six_candidate_ranks_by_RMSE": {
+      "evalLog_Rlt180": [
+        {"model": "hp_noise001", "rank": 1, "n": 6297, "RMSE": 11.331},
+        {"model": "gp-ard", "rank": 2, "n": 6297, "RMSE": 11.479},
+        {"model": "hp_noise003", "rank": 3, "n": 6297, "RMSE": 11.510},
+        {"model": "blend_histgb_low60", "rank": 4, "n": 6297, "RMSE": 12.904},
+        {"model": "blend_xgb_w20x3", "rank": 5, "n": 6297, "RMSE": 13.189},
+        {"model": "blend_histgb_low80", "rank": 6, "n": 6297, "RMSE": 13.602}
+      ],
+      "allReal_extrap_Rlt180": [
+        {"model": "hp_noise001", "rank": 1, "n": 1257, "RMSE": 2.878},
+        {"model": "gp-ard", "rank": 2, "n": 1257, "RMSE": 2.890},
+        {"model": "hp_noise003", "rank": 3, "n": 1257, "RMSE": 2.893},
+        {"model": "blend_histgb_low60", "rank": 4, "n": 1257, "RMSE": 2.926},
+        {"model": "blend_histgb_low80", "rank": 5, "n": 1257, "RMSE": 2.977},
+        {"model": "blend_xgb_w20x3", "rank": 6, "n": 1257, "RMSE": 3.034}
+      ],
+      "cross_dataset_spearman_rho": 0.944,
+      "agreement": "4 of 6 rank positions are identical across both datasets; blend_xgb_w20x3 and blend_histgb_low80 are swapped (ranks 5<->6).",
+      "detailed_csvs": "rank_Rlt180/evalLog_Rlt180_rank.csv, rank_Rlt180/allRealData_Rlt180_rank_extrapOnly.csv, rank_Rlt180/cross_dataset_rank_comparison.csv"
+    },
+    "takeaway": "hp_noise001 (pure GP) is best-performing among the six shortlisted candidates in the R < 180 region on both independent real-data sets, outranking blend-tree models that scored higher on the offline surrogate-scoring v3.2 metric."
+  },
+  "related_decisions": {
+    "decision_21": "Each building's 7 weights must sum to 1 and be non-negative; the GP is NOT scale-invariant, so `ModelBundle.predict` enforces the simplex check.",
+    "decision_27": "Local evaluator runs, including the real-solver eval_log, may be used to choose the model (recorded with PR #20); hp_noise001 fits the frozen 2048 training rows only and embeds no locally measured point or R value.",
+    "decision_19": "Only the 2048 training rows before the first online call are legal for fitting; hp_noise001 does not violate this."
+  },
+  "provenance_timestamp": "2026-11-13"
+}
