@@ -20,7 +20,7 @@ def block(r, m):
 
 def to_ratio(w):
     w = np.asarray(w, float)
-    s = w[4] + w[5]
+    s = max(w[4] + w[5], 1e-12)       # a block may put all its weight on minor objectives
     return w[4] / s, w[MINOR] / s
 
 

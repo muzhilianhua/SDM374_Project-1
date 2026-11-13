@@ -9,6 +9,7 @@ evaluated is answered from the log (the evaluator is deterministic, decision 20)
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -40,6 +41,16 @@ def key_of(w: np.ndarray) -> str:
     return ",".join(repr(float(v)) for v in w)
 
 
+def check_exe(path: Path) -> None:
+    """Refuse to run an evaluator other than the pinned course release (solver/CHECKSUMS.sha256)."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 22), b""):
+            h.update(chunk)
+    if h.hexdigest() != EXE_SHA256:
+        raise RuntimeError(f"{path}: sha256 {h.hexdigest()} is not the pinned solver.exe {EXE_SHA256}")
+
+
 class SolverPool:
     def __init__(self, n_workers: int = 8, root: Path | None = None, log: Path = LOG):
         self.root = Path(root or HERE / "workers")
@@ -69,10 +80,13 @@ class SolverPool:
                     time.sleep(5)
 
             threading.Thread(target=watch, daemon=True).start()
+        check_exe(EXE_SRC)
         for i in range(n_workers):
             d = self.root / f"w{i:02d}"
             (d / "tmp").mkdir(parents=True, exist_ok=True)
             exe = d / "solver.exe"
+            if exe.exists() and not os.path.samefile(exe, EXE_SRC):
+                check_exe(exe)        # a copy (no hard link possible) or a link to an older exe
             if not exe.exists():
                 try:
                     os.link(EXE_SRC, exe)
@@ -107,6 +121,11 @@ class SolverPool:
         if len(R) != len(W):
             raise RuntimeError(f"solver returned {len(R)} values for {len(W)} sets")
         return [float(r) for r in R]
+
+    def call_uncached(self, W, worker: int = 0) -> list[float]:
+        """One fresh solver call on normalised W (<= 50 sets): no cache, no retry, nothing logged.
+        For re-measuring points that are already in the log (verify.py)."""
+        return self._call(worker, normalize(W))
 
     def _call_retry(self, worker: int, W: np.ndarray) -> list[float]:
         try:
