@@ -3,13 +3,13 @@
   "created_local": "2026-11-04T11:19:23",
   "train_rows": 2048,
   "data": {
-    "path": "dataset_same8\\train.csv",
+    "path": "dataset_same8/train.csv",
     "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
   },
   "protocol": {
     "id": "sdm374.same8.splits.2x5x3.frozen.v1",
     "status": "FROZEN",
-    "manifest": "外推方案\\趋势与尾部\\frozen\\split_manifest.json"
+    "manifest": "外推方案/趋势与尾部/frozen/split_manifest.json"
   },
   "environment": {
     "python": "3.13.5",
@@ -21,7 +21,7 @@
     "platform": "win32"
   },
   "fit": {
-    "method": "sklearn GPR (custom BlockARD kernel) + L-BFGS-B 多起点",
+    "method": "sklearn GPR (custom BlockARD kernel) + L-BFGS-B multi-start",
     "log_marginal_likelihood": -599.5293258849006,
     "theta_log": [
       -1.2418036857971546,
@@ -91,7 +91,8 @@
     }
   },
   "artifacts": {
-    "model.pkl": "纯 numpy 数组字典（pickle protocol 4）；加载见 modellib.py"
+    "model.npz": "Plain dict-of-arrays (.npz, no pickle, allow_pickle=False). Load via modellib.load_model.",
+    "model.pkl": "Legacy pickle; kept for backward compatibility only"
   },
-  "notes": "变体 1a/1b/1c/1d：多起点 + 更多迭代 + 上界 6；参数级差异见 config.json。"
+  "notes": "Hyper-parameter variants 1a/1b/1c/1d: multi-start + more iterations + upper bound 6. See config.json for the exact settings; the commit message records the training script location."
 }

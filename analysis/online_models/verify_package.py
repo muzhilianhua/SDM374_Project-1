@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Verify the hp_noise001 package: file hashes and the in-sample metrics from metrics.json.
+"""Verify the hp_noise001 bundle: file hashes + the in-sample metrics from metrics.json.
 
 Run from the repository root:
-    .venv/Scripts/python analysis/online_models/verify_package.py
+    uv run python analysis/online_models/verify_package.py
 """
 from __future__ import annotations
 
@@ -30,6 +30,8 @@ def sha256(path: Path) -> str:
 
 def check_files() -> None:
     expected = json.loads((PACKAGE / "CHECKSUMS.json").read_text(encoding="utf-8"))
+    # CHECKSUMS.json is the reference file itself — exclude it from the integrity check.
+    expected = {k: v for k, v in expected.items() if k != "CHECKSUMS.json"}
     for name, want in expected.items():
         got = sha256(PACKAGE / name)
         status = "OK" if got == want else "MISMATCH"

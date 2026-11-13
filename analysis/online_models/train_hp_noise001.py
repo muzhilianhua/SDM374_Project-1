@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Rebuild hp_noise001 from the frozen, untrained spec and verify it against the committed package.
+"""Rebuild hp_noise001 from the frozen, untrained spec and verify it against the committed bundle.
 
-Everything is fixed in `hp_noise001_untrained/train_config.json`: 7 length scales, the global
-interaction weight, noise (0.01), jitter (1e-8), unit sample weights, the target scaler rule and the
-dataset hash. No optimiser and no RNG are involved, so training is a single Cholesky solve.
+Everything is fixed in `hp_noise001_untrained/train_config.json`: the 7 length scales, the global
+interaction weight, noise 0.01, jitter 1e-8, unit sample weights, the target scaler rule and the
+dataset hash. No optimiser and no RNG are involved, so training is one Cholesky solve.
 
 Run from the repository root:
-    .venv/Scripts/python analysis/online_models/train_hp_noise001.py
-    .venv/Scripts/python analysis/online_models/train_hp_noise001.py --write out/model.pkl
-
-The default mode compares the freshly computed alpha vector, scaler and training predictions with
-`hp_noise001/model.pkl`; `--write` additionally dumps the freshly computed payload.
+    uv run python analysis/online_models/train_hp_noise001.py
+    uv run python analysis/online_models/train_hp_noise001.py --write out/model.npz   # optional dump
 """
 from __future__ import annotations
 
@@ -18,7 +15,6 @@ import argparse
 import csv
 import hashlib
 import json
-import pickle
 import sys
 from pathlib import Path
 
@@ -72,7 +68,7 @@ def train(spec, X, y):
     K_reg = K.copy()
     K_reg[np.diag_indices_from(K_reg)] += (kernel["noise"] + kernel["jitter"]) / weights
     alpha = cho_solve(cho_factor(K_reg), (y - loc) / scale)
-    # Predictions use the noise-free kernel, matching ModelBundle._gp_mean.
+    # Predictions use the noise-free kernel (matches ModelBundle.predict).
     pred = loc + scale * (K @ alpha)
     return {
         "schema": spec["schema"],
@@ -96,24 +92,24 @@ def train(spec, X, y):
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", type=Path, default=None,
-                        help="dump the freshly computed payload to this path")
+                        help="dump the freshly computed payload (always written as .npz)")
     args = parser.parse_args()
 
     spec = json.loads(SPEC.read_text(encoding="utf-8"))
     X, y = load_dataset(spec)
     payload, pred = train(spec, X, y)
 
-    with open(TRAINED / "model.pkl", "rb") as handle:
-        committed = pickle.load(handle)
-
     sys.path.insert(0, str(HERE))
     from modellib import load_model
 
-    committed_pred = np.asarray(load_model(TRAINED).predict(X, return_std=False), dtype=np.float64)
+    committed = load_model(TRAINED)
+    committed_pred = np.asarray(committed.predict(X, return_std=False), dtype=np.float64)
+
     checks = {
-        "loc": abs(payload["loc"] - committed["loc"]),
-        "scale": abs(payload["scale"] - committed["scale"]),
-        "alpha_max_abs_diff": float(np.max(np.abs(payload["alpha"] - committed["alpha"]))),
+        "loc": abs(payload["loc"] - committed.payload["loc"]),
+        "scale": abs(payload["scale"] - committed.payload["scale"]),
+        "alpha_max_abs_diff": float(np.max(np.abs(
+            payload["alpha"] - committed.payload["alpha"]))),
         "prediction_max_abs_diff": float(np.max(np.abs(pred - committed_pred))),
     }
 
@@ -125,8 +121,10 @@ def main() -> None:
 
     if args.write is not None:
         args.write.parent.mkdir(parents=True, exist_ok=True)
-        with open(args.write, "wb") as handle:
-            pickle.dump(payload, handle, protocol=4)
+        from modellib import save_payload
+        if args.write.suffix != ".npz":
+            args.write = args.write.with_suffix(".npz")
+        save_payload(payload, args.write)
         print(f"wrote freshly trained payload: {args.write}")
 
     print("PASS: untrained spec reproduces hp_noise001 within float round-off")

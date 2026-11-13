@@ -24,7 +24,7 @@
     "b3_ramping",
     "b3_resilience"
   ],
-  "feature_contract": "建筑1→建筑3；每栋 cost→carbon→peak→discomfort→degradation→ramping→resilience",
+  "feature_contract": "Building 1 -> Building 3; per building: cost -> carbon -> peak -> discomfort -> degradation -> ramping -> resilience",
   "target": "ramping",
   "target_transform": "raw",
   "seed": 2026,
@@ -40,7 +40,7 @@
     "noise_bounds": "fixed"
   },
   "kernel": {
-    "type": "BlockARD(Matern-5/2, ARD, 3 blocks) + 全区域交互 + WhiteKernel",
+    "type": "BlockARD(Matern-5/2, ARD, 3 blocks) + global interaction + WhiteKernel",
     "n_blocks": 3,
     "per_block": 7,
     "nu": 2.5,

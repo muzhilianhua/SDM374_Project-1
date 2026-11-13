@@ -53,7 +53,7 @@
     "noise": 0.01,
     "jitter": 1e-08,
     "sample_weights": "ones(n)",
-    "training_rule": "alpha = solve(K + (noise + jitter) * I, (y - loc) / scale), K = block_ard_cov(X_train, X_train)"
+    "training_rule": "K = block_ard_cov(X_train, X_train); K_reg = K + (noise + jitter) * I / weights; alpha = solve(K_reg, (y - loc) / scale); predictions use loc + scale * K @ alpha (noise-free kernel)."
   },
   "dataset": {
     "path": "dataset_same8/train.csv",
