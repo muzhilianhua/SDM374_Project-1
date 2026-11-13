@@ -1,0 +1,7 @@
+[init] incumbent R=104.784224; seeded blocks per building: [492, 647, 473]
+  [adopt] 104.784224 -> 104.577047 (fms_g0_adopt)
+gen   0  R*=104.577047  gain=0.2072  improving b1/b2/b3=[0, 3, 18]  evals=186  293s
+  [adopt] 104.577047 -> 104.566640 (fms_g1_adopt)
+gen   1  R*=104.566640  gain=0.0104  improving b1/b2/b3=[0, 0, 1]  evals=183  276s
+  [adopt] 104.566640 -> 104.502683 (fms_g2_adopt)
+gen   2  R*=104.502683  gain=0.0640  improving b1/b2/b3=[1, 1, 0]  evals=182  286s

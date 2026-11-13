@@ -38,6 +38,18 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **The local evaluator reaches R = 104.3726; below ~106 the landscape is needles, not a valley** (2026-11-13, T36,
+  [study](../analysis/lowr_search/README.md), `analysis/lowr_search/`, 8,763 local `solver.exe` evaluations,
+  exploration only: none of its points, R values or weights may enter the online code or configs, decisions 19, 27, 29).
+  Best point R = 104.3726098362822, reproduced bit for bit by two fresh calls, 0.479 below the team log's 104.8517.
+  One basin (degradation + ramping dominant, r = F5/(F5+F6) ≈ 0.24–0.27); R is strictly additive over buildings at
+  fine scale (error ≈ 0.03); plateaus are 0.02–0.2 % of a weight wide and a ~2 % move already looks like a random
+  basin draw. The buildings are complements, with no division-of-labour regime; the best r is a local dip, not the
+  edge of the battery switch-off band (r 0.30–0.50). Minor weights act as switches with repeatable windows, and
+  tiny weights (1e-5 to 3e-3) on unused objectives lower R by changing near-tied hourly choices; weights below 1e-6
+  equal exact zeros. The last 0.103 came from one-coordinate systematic scans that the random search had missed;
+  the final point is a coordinate-wise local minimum. Larger drops would need a white-box replay, not done.
+
 - **The GP-ARD ranks well near the data but cannot see the low region away from it** (2026-11-12, T35,
   [study](../analysis/gp_assumptions/README.md), `analysis/gp_assumptions/delivery/20261112/`, built on `08b77c8`
   with `study.py` sha256 `a1e8bbad…`, no evaluator calls). Checked on 3 random 1400/648 splits of the training

@@ -1,0 +1,84 @@
+{
+ "created": "2026-11-13",
+ "git": {
+  "branch_base_commit": "572e046f8118c80e85f4d4a1c800eb2b0ce0b8e8",
+  "note": "scripts were developed and run outside the repository (Project-1/lowR_research) on 2026-11-12/13 and copied here; only data paths were changed"
+ },
+ "solver_exe_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+ "eval_log": {
+  "path": "analysis/lowr_search/eval_log.jsonl",
+  "sha256": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
+  "evaluations": 8763,
+  "by_experiment": {
+   "E1": 125,
+   "E10": 171,
+   "E11": 117,
+   "E12": 624,
+   "E2": 342,
+   "E3": 864,
+   "E4": 328,
+   "E5": 750,
+   "E6": 206,
+   "E7": 109,
+   "E8": 1097,
+   "E9": 993,
+   "fms": 1594,
+   "run4": 1247,
+   "sanity": 2,
+   "verify": 194
+  },
+  "first": "2026-11-12T18:12:24",
+  "last": "2026-11-13T15:24:46"
+ },
+ "team_log": {
+  "path": "analysis/replay/evidence/eval_log.jsonl",
+  "sha256": "7d05cfc7566083e922b39ddee526cde0d2244bba042da969e37c13f3dc8a9b86",
+  "role": "seeds the FMS archives (fms.py init_from_logs) and E1/E2 starting points"
+ },
+ "best_point": {
+  "R": 104.3726098362822,
+  "sha256_best_point_json": "913a79c0de7602881d73242810a4b9869c835a6491978df822de28e82bdc7a2e"
+ },
+ "scripts_sha256": {
+  "an_box.py": "1cedc09d645e6753062969d2fa6d715ec78845369be69456b23b1ad2b3d7fd8a",
+  "an_generations.py": "9c7456666a3d564ea78799f952b179a3fdb2f9336912de963e5dd99007d0f25c",
+  "an_mech.py": "a6b6122dca9778ef5563edb7934b32051e360ac471ca18abf99defa0f50ff068",
+  "an_ops.py": "7bc03abeef33048c3f7a9fd0cd92ee191ae6b059625289f61c3d35ddc096d981",
+  "an_prior_log.py": "1ed13a6255c4fe69cf9dc1e1e2a0c9c7e4aba196478bd828750a46bf33bcf1cb",
+  "an_scan.py": "03038780d172ce7da79af468b84e882e1581e2413253b300800fbf2f91616c3f",
+  "common.py": "6378d3a2c60e0239c75343884bd8be18134782fc82248d0586458efd36fcb980",
+  "exp_additivity.py": "69e3d8a5aa96036273c86b00efcac68fe5d0b2031ecfdeeae0081076e4989823",
+  "exp_box.py": "c52190a3d9d4f8efd23a468055dca74ddd2d0f6906f9d7005151bd9723e2e856",
+  "exp_coord.py": "33923d4ed99cb7453473aa6c94911d7abb3372340128a52b49f56ef305b8ee53",
+  "exp_dose.py": "ffda2379aacf71f20bc181cdcecd58b69fe3c516a01301a6d318a278585b88f1",
+  "exp_followup.py": "148041723b84bb90eb88bcc270c178085391f4cc606e4dcb4a1c71ea561a0630",
+  "exp_mech.py": "741ae6fda95259067f97c4663eb03bbf4c60bea32fcc93846bf6b9ce489f2465",
+  "exp_profiles.py": "11716688176fc0fb6d535dba1c7289c9b8e11ba00b4de4d4aea4d3366e8309c4",
+  "exp_recomb.py": "dc748a1370aa478da872cd30002d4ed8ba17172ecf07b29f4059f151736a91f6",
+  "exp_regimes.py": "96c736a720aae05f752cb24fdc6bab7e2623bbc30f9a486aa15d9326c441a115",
+  "exp_rscan.py": "17cb0f80a7705c1b47d172e0249063ff0ca8f197bc4a645278dee52c5bce2fe2",
+  "exp_scan.py": "47445c9d0d05fc443aafb7b0a1b663bfb2cd1817af9fedf9430eb5fa60e51f38",
+  "exp_tiny.py": "2f1c602aff2ce6b8f156daccddf7b04d3d40558f8314ea8493519ece58a9541a",
+  "fms.py": "b1691a13a59b2b3ba6bbb8b22e89cd0340c3168d85c37aff1d8bebe5c4e1e1c1",
+  "pool.py": "76697c524e5452b701557cfc3656af07310edd6d301ca34d27242ab1cf89bccd",
+  "qos.py": "75d410be751a552c9c628b2cbc6a21a21175c94e0389d942e0efb09092988c81",
+  "report.py": "06d0a4420de7b6c5fdfcf6663991f525d76cbcc6d4c04bb9c3e468afe62b31a0",
+  "t_fms_dry.py": "d9ee185e4e512d4119de94607d1bbf449b6988fc934a10d3616b30334d5f1bea",
+  "t_sanity.py": "3ecaeac63b01e0505388f2291390be453b5786f7185b8f9a93c27035906700ae",
+  "verify.py": "64b29d186c77d535655e00fba33ea78325b8b6153caa95c61bb5c43ffe49083f"
+ },
+ "seeds": {
+  "fms.py": 20261112,
+  "exp_box.py": 55,
+  "verify.py": 7
+ },
+ "python": "3.11.16",
+ "packages": {
+  "numpy": "1.24.4",
+  "scipy": "1.10.1",
+  "scikit-learn": "1.2.2",
+  "matplotlib": "3.10.9"
+ },
+ "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads), 10 parallel solver.exe instances",
+ "evaluator_calls_graded": 0
+}
