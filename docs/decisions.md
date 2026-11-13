@@ -211,15 +211,12 @@ and record the new decision here with a date.
 
 ## Open questions
 
-- Course computer environment (OS, Python, whether uv and `libomp` are available): decision 22 requires
-  reproducing there. Seen on 2026-11-02 when submission 1 was scored: Windows, PowerShell, a conda
-  environment. The TA ran `solver/run.py` with Python 3.14 (its `__pycache__` is `cpython-314`), while this
-  repository pins 3.11 (numpy 1.24.4 has no newer wheels). Whether uv can be installed is unknown. Owner: A.
-  2026-11-08: the stdlib-only smoke test ran with Python 3.14.7 on A's Windows PC (see Resolved), so the
-  evaluator side works with the course computer's Python; the `sdm` package side is still unverified there.
-  2026-11-11 (TA): the online evaluation runs on **Windows 10**. Still unknown: the Python version used to run
-  our code, whether uv can be installed or the internet reached, and the install path. Check on the course
-  computer on 2026-11-12 (see Resolved).
+- Which `solver.exe` does the graded run use? The course computer (2026-11-12, see Resolved) holds four
+  evaluators: two copies of the pinned `solver.exe` (`293867b8…a077247`), the offline `RampingSolver.exe`, and
+  `Desktop\AIM\01Lab\Lab6\solver_v2\solver.exe` (199,092,593 bytes, sha256 `28b81344…52a6586`), which is
+  not the released one. `SolverEvaluator` refuses any exe that does not match `solver/CHECKSUMS.sha256`, so a
+  graded run on `solver_v2` would stop before its first call. Ask the TA what `solver_v2` is and which copy
+  (and whose `usage.count`) the graded run uses (owner: A, with T03).
 - Who runs the graded online run and how the code is handed over: the TA offers to test code we send
   (2026-11-11), but whether the graded run is the TA's run of our code or ours on the course computer, and
   in what form (repository, zip, single script), is not settled (owner: A). Working assumption (user,
@@ -237,6 +234,30 @@ and record the new decision here with a date.
     stdin directly.
   - Teams may come and test on the course computer on Thursday 2026-11-12 (class 9).
   - Teams may send their code to the TA, who will run a test for them.
+- Course computer environment (measured 2026-11-12, class 9, with the T10 trial kit `run.py` at commit
+  `e588dce` on branch `feat/course-pc-kit`; results archive `results-DESKTOP-RF3J378-20261112-194648.zip`,
+  kept outside the repository). Resolves the open question on the course computer:
+  - Windows 10 22H2 (10.0.19045), host `DESKTOP-RF3J378`, user `Archer`; Intel 13th-gen CPU with 20 threads
+    (the class of A's PC, so the 289 s per 50-set call measured there should carry over); 15.8 GB RAM, 3.4 GB
+    free while testing; 57 GB free disk.
+  - Python on PATH is 3.14.5 (`C:\Python314`); the `py` launcher also lists Anaconda's 3.7. uv 0.11.21, conda
+    4.5.11 and git 2.54 are installed; PyPI and GitHub are reachable. So `uv sync` (which fetches Python 3.11
+    itself) works there too; the offline kit (bundled Python 3.11 and wheels) is the fallback, not a necessity.
+  - Kit path `C:\Users\Archer\Desktop\AIM\06project1_test\…`: ASCII, no spaces. Console code page 936
+    (GBK); PowerShell execution policy RemoteSigned.
+  - The kit installed offline and ran: `pytest` 245 passed, 3 skipped, 1 xfailed, 1 failed. The failure was the
+    test helper reading `tasklist` output as UTF-8 under code page 936, not the solver code (fixed on
+    `feat/course-pc-kit`, `322e958`).
+  - Cross-machine determinism (T09): the `online-histgb` policy (histgb surrogate + pure-exploit `bayes-pool`)
+    proposed a bitwise identical first batch on the course computer and on A's Mac, and its first three
+    semi-synthetic calls (150 points, refitting in between) matched in every weight and R. Fingerprints of 6000
+    predictions also matched for `histgb` and `extratrees`; `ridge2` differed only in the last bits, `local-gp`
+    by about 1e-6, and `xgboost` visibly (180.38 vs 180.63 on the same point), so xgboost cannot be frozen as is.
+  - Fit times on 2048 rows (course computer / Mac): histgb 3.6 / 2.5 s, xgboost 2.0 / 1.7 s, extratrees 0.8 /
+    0.6 s, ridge2 0.9 / 1.0 s, local-gp 44 / 10 s.
+  - No call reached `solver.exe`: the run only used the semi-synthetic truth and a dry run. (`python run.py
+    resume` picked the self-test replay and ran it to 20 calls; resume now skips replays, `322e958`.) Per-call
+    solver time and real R on the course computer are still unmeasured.
 - Call log schema and how results reach `X, y` (2026-11-11): `online_log.csv` (T07, `sdm.online.log`) holds
   every successful call; the online loop (T08) rebuilds `OnlineState` from the 2048 training rows plus the
   log before each call, so a policy refits on `state.X = [X_train; X_online]`. Attempts, including failed
