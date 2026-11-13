@@ -65,6 +65,7 @@
   "report.py": "06d0a4420de7b6c5fdfcf6663991f525d76cbcc6d4c04bb9c3e468afe62b31a0",
   "t_fms_dry.py": "d9ee185e4e512d4119de94607d1bbf449b6988fc934a10d3616b30334d5f1bea",
   "t_sanity.py": "3ecaeac63b01e0505388f2291390be453b5786f7185b8f9a93c27035906700ae",
+  "train_priors.py": "20b2eae2073303fb20cfa2e8a5e50fa34c249706be87e924250bb5296aff8ba5",
   "verify.py": "64b29d186c77d535655e00fba33ea78325b8b6153caa95c61bb5c43ffe49083f"
  },
  "seeds": {
@@ -80,5 +81,11 @@
   "matplotlib": "3.10.9"
  },
  "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads), 10 parallel solver.exe instances",
- "evaluator_calls_graded": 0
+ "evaluator_calls_graded": 0,
+ "train_priors": {
+  "script": "train_priors.py",
+  "reads": "dataset_same8/train.csv only",
+  "output": "train_priors.log",
+  "added": "2026-11-13"
+ }
 }

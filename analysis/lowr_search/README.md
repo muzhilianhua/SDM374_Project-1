@@ -164,6 +164,10 @@ move set, not only the landscape. `fms.py` does not yet have such a deterministi
   trajectories), i.e. a white-box replay of the evaluator. That was not done; it needs the user's or the
   TA's decision first.
 
+Concrete recommendations for the surrogate, the batch policy, the pre-submit check and the policy
+comparison are in [GUIDANCE.md](GUIDANCE.md); `train_priors.py` derives the priors it cites from the
+training table alone.
+
 ## Files and reproduction
 
 | File | Content |

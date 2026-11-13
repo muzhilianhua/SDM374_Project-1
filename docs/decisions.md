@@ -235,6 +235,12 @@ and record the new decision here with a date.
 
 ## Open questions
 
+- May the online policy use structural priors that local evaluator runs revealed, such as "the low region uses
+  degradation + ramping with few other objectives"? Decision 27 forbids embedding measured points or R values,
+  but such a prior is in effect the optimum's location. Working recommendation (A, 2026-11-13,
+  [guidance](../analysis/lowr_search/GUIDANCE.md)): use only priors derivable from the 2048 training rows
+  (`analysis/lowr_search/train_priors.py`). Owner: A, with T03.
+
 - Course computer environment (OS, Python, whether uv and `libomp` are available): decision 22 requires
   reproducing there. Seen on 2026-11-02 when submission 1 was scored: Windows, PowerShell, a conda
   environment. The TA ran `solver/run.py` with Python 3.14 (its `__pycache__` is `cpython-314`), while this
