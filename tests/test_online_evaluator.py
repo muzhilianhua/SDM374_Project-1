@@ -178,8 +178,9 @@ def test_timeout_kills_the_solver(fake_solver, monkeypatch):
 
 def _alive(pid: int) -> bool:
     if sys.platform == "win32":
-        out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True, text=True).stdout
-        return str(pid) in out
+        # Bytes: tasklist prints in the console code page (cp936 on the course computer), not UTF-8.
+        out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True).stdout
+        return str(pid).encode() in out
     try:
         os.kill(pid, 0)
     except ProcessLookupError:

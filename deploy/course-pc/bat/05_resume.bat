@@ -2,9 +2,12 @@
 setlocal
 call "%~dp0_env.bat" || exit /b 1
 set "RUN=%~1"
-if "%RUN%"=="" for /f "delims=" %%D in ('dir /b /ad /o-d "%RESULTS%\runs\*-online-*" 2^>nul') do if not defined RUN set "RUN=%%D"
+rem Latest run that has attempts and whose saved config sends batches to solver.exe (replays and dry runs are skipped).
+if "%RUN%"=="" for /f "delims=" %%D in ('dir /b /ad /o-d "%RESULTS%\runs\*-online-*" 2^>nul') do (
+  if not defined RUN if exist "%RESULTS%\runs\%%D\attempts.jsonl" findstr /b /r /c:"kind *= *.solver." "%RESULTS%\runs\%%D\config.toml" >nul && set "RUN=%%D"
+)
 if "%RUN%"=="" (
-  echo [05] No online run folder in %RESULTS%\runs
+  echo [05] No solver run to continue in %RESULTS%\runs
   pause
   exit /b 1
 )

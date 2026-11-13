@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -191,15 +192,25 @@ def step_online(args) -> int:
     return code
 
 
+def calls_solver(run: Path) -> bool:
+    """True when the run folder's saved config sends batches to solver.exe (not a replay truth)."""
+    try:
+        text = (run / "config.toml").read_text(encoding="utf-8")
+    except OSError:
+        return False
+    section = re.search(r"^\[evaluator\]\s*$(.*?)(?=^\[|\Z)", text, re.M | re.S)
+    return bool(section and re.search(r'^\s*kind\s*=\s*["\']solver["\']', section.group(1), re.M))
+
+
 def step_resume(args) -> int:
     if ensure_setup():
         return 1
     run = args.run
     if not run:
         folders = sorted((p for p in (RESULTS / "runs").glob("*-online-*") if p.is_dir()
-                          and (p / "online_log.csv").exists()), key=lambda p: p.name)
+                          and (p / "attempts.jsonl").exists() and calls_solver(p)), key=lambda p: p.name)
         if not folders:
-            say(f"[resume] No online run with calls in {RESULTS / 'runs'}")
+            say(f"[resume] No solver run to continue in {RESULTS / 'runs'} (replay and dry runs are skipped)")
             return 1
         run = str(folders[-1])
     if not args.yes and input(f"Resume {Path(run).name} (calls solver.exe)? Type YES: ").strip().upper() != "YES":
