@@ -1,0 +1,51 @@
+{
+  "created": "2026-11-12T16:10:51",
+  "git": {
+    "commit": "08b77c8f6404c6f958314f967f241ea3e8b8fe9f",
+    "dirty": false
+  },
+  "study_sha256": "a1e8bbad276811798535a875c1966be252c6b2c76610a48aec7af668e0c5e88f",
+  "dataset": {
+    "version": "same8.20261020",
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "solver_log": {
+    "path": "analysis/replay/evidence/eval_log.jsonl",
+    "sha256": "7d05cfc7566083e922b39ddee526cde0d2244bba042da969e37c13f3dc8a9b86",
+    "calls": 6568,
+    "distinct": 6548,
+    "repeated_groups": 7,
+    "max_repeat_spread": 0.0
+  },
+  "packages": {
+    "numpy": "1.24.4",
+    "pandas": "1.5.3",
+    "scipy": "1.10.1",
+    "scikit-learn": "1.2.2",
+    "xgboost": "3.2.0"
+  },
+  "splits": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "fit_rows": 1400,
+    "held_out_rows": 648
+  },
+  "team_params": {
+    "family": "gp",
+    "kernel": "additive-ard",
+    "lengths": [
+      0.5
+    ],
+    "noises": [
+      0.03
+    ],
+    "seed": 2026
+  },
+  "spacing": 0.37711307211776746,
+  "bar": 115.765,
+  "basin_size": 200,
+  "evaluator_calls": 0
+}

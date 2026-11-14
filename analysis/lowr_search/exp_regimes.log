@@ -1,0 +1,45 @@
+109 new evaluations in 680s; incumbent 104.4755
+
+single-building effects (others at the incumbent)
+              inc     pure     ramp     half     idle
+  b1       +0.000   +0.937   +6.339  +21.943  +41.932
+  b2       +0.000   +1.896   +3.308   +4.283  +11.583
+  b3       +0.000   +0.696   +4.741   +4.978  +27.491
+
+pairwise interaction = R - (incumbent + the two single-building effects), third building at the incumbent
+  b1 (rows) x b2 (columns)            inc     pure     ramp     half     idle
+       inc                       +0.000   +0.000   +0.000   +0.000   +0.000
+      pure                       +0.000   +0.004   -0.068   +0.218   +0.015
+      ramp                       +0.000   +0.036   -0.281   +0.016   +0.091
+      half                       +0.000   -0.531   -0.157   -0.703   -1.208
+      idle                       +0.000   -0.683   -0.866   -1.851   -4.752
+  b1 (rows) x b3 (columns)            inc     pure     ramp     half     idle
+       inc                       +0.000   +0.000   +0.000   +0.000   +0.000
+      pure                       +0.000   -0.119   -0.161   -0.276   -0.607
+      ramp                       +0.000   +0.217   -0.184   -0.671   -1.235
+      half                       +0.000   -0.027   +0.226   -0.971   -3.714
+      idle                       +0.000   -0.018   -0.225   -1.330   -8.310
+  b2 (rows) x b3 (columns)            inc     pure     ramp     half     idle
+       inc                       +0.000   +0.000   +0.000   +0.000   +0.000
+      pure                       +0.000   -0.055   -0.362   -0.306   +0.078
+      ramp                       +0.000   -0.002   -0.734   -0.368   -0.682
+      half                       +0.000   +0.014   +0.226   -0.140   +0.016
+      idle                       +0.000   +0.187   -0.164   +0.235   -0.968
+
+all 125 combinations: interaction as a share of the additive penalty
+  interaction: min -12.855, median -0.533, max +0.533;  share of additive penalty: median -0.023, min -0.159, max +0.042
+  combinations below the incumbent: 0; positive interactions: 20, negative: 92
+  lowest combinations:
+     ['inc', 'inc', 'inc']  R - incumbent = +0.000  (additive +0.000, interaction +0.000)
+     ['inc', 'inc', 'pure']  R - incumbent = +0.696  (additive +0.696, interaction +0.000)
+     ['pure', 'inc', 'inc']  R - incumbent = +0.937  (additive +0.937, interaction +0.000)
+     ['pure', 'inc', 'pure']  R - incumbent = +1.514  (additive +1.633, interaction -0.119)
+     ['inc', 'pure', 'inc']  R - incumbent = +1.896  (additive +1.896, interaction +0.000)
+     ['inc', 'pure', 'pure']  R - incumbent = +2.538  (additive +2.593, interaction -0.055)
+     ['pure', 'pure', 'inc']  R - incumbent = +2.837  (additive +2.833, interaction +0.004)
+     ['inc', 'ramp', 'inc']  R - incumbent = +3.308  (additive +3.308, interaction +0.000)
+
+value of one building's control, depending on what the other two do (penalty of switching it to idle)
+  b1: from 30.04 (others idle/idle) to 41.93 (others inc/inc); others at incumbent 41.93, others idle 30.04
+  b2: from 6.80 (others idle/pure) to 11.90 (others ramp/pure); others at incumbent 11.58, others idle 7.04
+  b3: from 18.32 (others idle/ramp) to 27.57 (others inc/pure); others at incumbent 27.49, others idle 19.39

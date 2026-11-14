@@ -1,0 +1,29 @@
+baseline 104.475472
+step 1: fine scans
+  b1 cost: best -0.0821 on a plateau of 9 grid points; steps (m: delta) 2.00e-04:+0.0000  2.64e-04:-0.0184  1.11e-03:-0.0821  1.68e-03:-0.0264  1.92e-03:-0.0138  2.21e-03:-0.0109  2.43e-03:+0.4424  2.66e-03:+0.5033  2.92e-03:+0.5137
+  b2 discomfort: best -0.0153 on a plateau of 1 grid points; steps (m: delta) 2.00e-04:+0.0225  2.16e-04:+0.0000  2.51e-04:-0.0153  2.61e-04:-0.0152  2.71e-04:-0.0151  3.83e-04:-0.0007  4.13e-04:-0.0003
+  b3 discomfort: best -0.0002 on a plateau of 6 grid points; steps (m: delta) 2.20e-04:+0.0000  2.65e-04:-0.0002  3.49e-04:+0.0092  4.39e-04:+0.0473
+step 2: combinations of the per-building best blocks (b1 b2 b3)
+      old old old  +0.0000
+      old old new  -0.0002
+      old new old  -0.0153
+      old new new  -0.0155
+      new old old  -0.0821
+      new old new  -0.0822
+      new new old  -0.0973
+      new new new  -0.0975
+  best combination -0.0975  ->  R = 104.377940
+step 3: unused objectives at a tiny weight, from the best combination
+  b1 peak: best +0.0000 vs the combination (plateau of 13); curve +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000
+  b2 cost: best +0.0153 vs the combination (plateau of 3); curve +0.015 +0.015 +0.015 +0.129 +0.151 +0.218 +0.234 +0.234 +0.234 +0.234 +0.235 +0.265 +0.247
+  b2 peak: best +0.0000 vs the combination (plateau of 7); curve +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.349 +0.349 +0.349 +0.349 +0.349 +0.349
+  b3 cost: best -0.0051 vs the combination (plateau of 4); curve -0.005 -0.005 -0.005 -0.005 -0.005 -0.005 -0.005 -0.005 +0.137 +0.109 +0.110 +0.125 +0.110
+  b3 carbon: best +0.0000 vs the combination (plateau of 7); curve +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.000 +0.039 +0.156 +0.156 +0.200 +0.200 +0.202
+step 4: combinations again
+      old old old  -0.0975
+      old old new  -0.1027
+
+best after follow-up: R = 104.372791988  (-0.1027 vs 104.4755);  171 new evaluations in 434s
+[[0.001229 0.059745 0.       0.006142 0.249282 0.67506  0.008541]
+ [0.       0.008513 0.       0.000217 0.209794 0.651955 0.129521]
+ [0.000172 0.       0.009882 0.000294 0.242139 0.724984 0.022529]]

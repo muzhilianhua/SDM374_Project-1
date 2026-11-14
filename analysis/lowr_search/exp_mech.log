@@ -1,0 +1,60 @@
+incumbent 104.4755
+
+[vertex] one objective only
+  objective      all three   | one building (others at the incumbent): delta vs incumbent  b1       b2       b3
+  cost            176.428   |                                                       +42.730  +12.387  +29.527
+  carbon          174.092   |                                                       +42.532  +11.957  +27.871
+  peak            173.986   |                                                       +42.583  +11.882  +27.914
+  discomfort      173.474   |                                                       +42.330  +12.489  +27.611
+  degradation     172.626   |                                                       +41.932  +11.583  +27.491
+  ramping         117.802   |                                                        +6.339   +3.308   +4.741
+  resilience      172.626   |                                                       +41.932  +11.583  +27.491
+
+[knock] incumbent with a minor weight removed (the rest of the block keeps its ratios)
+  b1 carbon                     w = 0.059819   R = 105.6809  (+1.2055)
+  b1 discomfort                 w = 0.006150   R = 105.0833  (+0.6078)
+  b1 resilience                 w = 0.008552   R = 104.4755  (+0.0000)
+  b1 ALL minor                  w = 0.074520   R = 105.4122  (+0.9367)
+  b2 carbon                     w = 0.008513   R = 104.8735  (+0.3980)
+  b2 discomfort                 w = 0.000188   R = 104.5149  (+0.0394)
+  b2 resilience                 w = 0.129525   R = 106.2763  (+1.8008)
+  b2 ALL minor                  w = 0.138226   R = 106.3719  (+1.8964)
+  b3 peak                       w = 0.009887   R = 105.5787  (+1.1032)
+  b3 resilience                 w = 0.022539   R = 104.9897  (+0.5143)
+  b3 ALL minor                  w = 0.032426   R = 105.1718  (+0.6963)
+     ALL minor, all buildings   w = 0.000000   R = 107.8563  (+3.3808)
+
+[face] one building with degradation+ramping only, r = degradation share; delta vs incumbent
+  r         0.00   0.05   0.10   0.15   0.18   0.20   0.22   0.24   0.26   0.28   0.30   0.35   0.40   0.50   0.70
+  b1       +6.34  +3.49  +3.19  +3.71  +2.76  +2.75  +1.99  +1.71  +1.10  +2.33  +1.78 +10.09 +21.94 +37.69 +37.69
+  b2       +3.31  +2.87  +1.70  +1.33  +1.03  +1.19  +1.15  +1.91  +1.68  +1.84  +1.35  +2.98  +4.28 +10.78 +10.78
+  b3       +4.74  +4.00  +4.12  +3.17  +3.36  +2.41  +1.08  +0.74  +1.20  +1.89  +1.35  +3.71  +4.98 +24.43 +25.80
+
+[thresh] same face, fine grid around r = 1/3 and r = 1/2; delta vs incumbent
+  r = 0.3        +1.776   +1.346   +1.353
+  r = 0.31       +2.447   +1.962   +1.574
+  r = 0.32       +2.807   +1.927   +2.231
+  r = 0.33       +3.646   +1.509   +2.181
+  r = 0.3333     +4.216   +2.022   +2.753
+  r = 0.3334     +4.591   +2.223   +2.753
+  r = 0.335      +4.880   +2.274   +2.819
+  r = 0.34       +6.449   +2.702   +2.671
+  r = 0.36      +12.984   +3.211   +3.133
+  r = 0.38      +15.207   +3.525   +3.843
+  r = 0.42      +26.347   +4.899   +6.605
+  r = 0.45      +33.717   +7.592  +10.053
+  r = 0.48      +37.693  +10.778  +19.428
+  r = 0.49      +37.693  +10.778  +23.414
+  r = 0.4999    +37.693  +10.778  +24.430
+  r = 0.5001    +37.693  +10.778  +24.430
+  r = 0.51      +37.693  +10.778  +24.623
+  r = 0.55      +37.693  +10.778  +25.796
+  r = 0.9       +37.693  +10.778  +25.796
+  r = 0.99      +37.693  +10.778  +25.796
+  r = 0.999     +37.693  +10.778  +25.796
+
+[stale] 66 distinct negative estimates never measured against the current incumbent
+  b2: n = 40; estimated -0.100 .. -0.000; measured min +0.0225, median +0.0695, max +0.3918; truly below incumbent: 0
+  b3: n = 26; estimated -0.124 .. -0.005; measured min +0.0000, median +0.0788, max +0.1991; truly below incumbent: 0
+
+60 new evaluations in 102s

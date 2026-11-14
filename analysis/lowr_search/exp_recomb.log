@@ -1,0 +1,8 @@
+b1 deltas of the chosen blocks: [0.     0.0636 0.0665 0.0671 0.0755 0.0755 0.0769]
+b2 deltas of the chosen blocks: [0.     0.0003 0.0004 0.0019 0.0172 0.0287 0.0485]
+b3 deltas of the chosen blocks: [0.     0.0104 0.0104 0.0462 0.0464 0.0538 0.0582]
+328 new evals in 472s
+incumbent 104.502683; cross product min 104.502683 at (0, 0, 0) (gain +0.0000)
+additive R2 0.991 residual SD 0.0059 min residual -0.0126
+error of the single-block additive prediction: mean 0.0326 SD 0.0297 min -0.0
+combinations below the incumbent: 0 of 343

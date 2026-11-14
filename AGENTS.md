@@ -59,6 +59,8 @@ uv sync --group gui && uv run --group gui streamlit run app/main.py   # workbenc
 | `analysis/coupling/` | Model × optimizer coupling study (semi-synthetic benchmark) | 张子木 (A), 胡馨澜 (D) |
 | `analysis/v33_protocol/` | Frozen V3.3 model-evaluation protocol and releases | 刘润泽 (B) |
 | `analysis/solver_smoke/` | Windows smoke test of `solver.exe` (stdlib only) and its reports | 张子木 (A) |
+| `analysis/gp_assumptions/` | Checks of the GP-ARD surrogate's assumptions on the training table and the local solver log | 张子木 (A) |
+| `analysis/lowr_search/` | Exploration only: black-box search for the lowest R on a local `solver.exe` and mechanism probes; never an input to the online policy | 张子木 (A) |
 | `analysis/ablation/`, `report/` | Ablation tables and figures; IEEE report | 武韵扬 (E) |
 | `experiments/*.toml` | One config per experiment (`_template.toml` is a template) | author of the experiment |
 | `src/sdm/{interfaces,registry,config,data,simplex,evaluate,runs,catalog,cli}.py` | Core framework | 张子木 (A) (others: propose changes in an issue/PR) |
