@@ -1,0 +1,26 @@
+{
+ "evaluator": "solver",
+ "seed": 2026,
+ "variant": "v3",
+ "params": {
+  "n_combo": 6,
+  "n_jump_first": 8,
+  "scale0": 0.5,
+  "scale_up": 1.5,
+  "scale_down": 0.6,
+  "scale_min": 0.01,
+  "scale_max": 1.0,
+  "share_model": 0.5,
+  "share_random": 0.25,
+  "late_call": 13,
+  "pool": 1500,
+  "kappa": 1.0,
+  "n_elite": 6,
+  "local_rows": 600,
+  "shift_bias": true,
+  "n_nav": 3,
+  "nav_calls": 6,
+  "share_model_late": 0.2,
+  "share_random_late": 0.3
+ }
+}

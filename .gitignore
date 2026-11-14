@@ -19,3 +19,6 @@ design-variants/
 analysis/lowr_search/workers/
 analysis/lowr_search/fms_state.json
 analysis/lowr_search/STOP
+
+# analysis/online_rehearsal: solver worker folders (hard links of solver.exe + usage.count)
+analysis/online_rehearsal/workers/
