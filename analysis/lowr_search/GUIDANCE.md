@@ -84,3 +84,5 @@ check (T08). Written 2026-11-13 by 张子木 (A). Recommendations, not decisions
 - E6: all three buildings on degradation + ramping only at the best block's r gave about 107–108.
 - So 107–110 within 1,000 points is a reasonable target; 104–105 needs the local moves of section 3 and many
   points. These figures come from local runs: use them to set targets, never inside the policy.
+- Measured since (2026-11-14, T37, `analysis/online_rehearsal/`): a policy following sections 2–3 with priors from the
+  training rows only reached 105.1–107.5 in 20 × 50 points (mean about 106.5 over 6 runs); 104 was not reached.

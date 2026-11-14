@@ -1,0 +1,14 @@
+2048 training rows, best R 115.765
+
+5-fold CV (KFold shuffle, random_state 0), HistGradientBoosting max_iter 600, lr 0.05
+model      inputs                R2     MAE
+full       raw shares        0.7751   4.934
+full       ratio features    0.8439   3.967
+additive   raw shares        0.8103   4.637
+additive   ratio features    0.8459   4.153
+
+tiny-weight range (0.1 % and 10 % quantiles of weights >= 1e-6): 1.63e-06 .. 0.00723
+shift-target probabilities (v2), rows b1..b3, columns cost carbon peak discomfort degradation ramping resilience:
+[[0.021 0.021 0.103 0.105 0.021 0.626 0.104]
+ [0.065 0.108 0.146 0.102 0.034 0.425 0.119]
+ [0.025 0.025 0.187 0.108 0.054 0.514 0.087]]
