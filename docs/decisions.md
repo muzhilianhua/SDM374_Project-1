@@ -38,6 +38,15 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **A compliant policy reaches about 106.5 on the real evaluator in 20 × 50 points; 104 is out of reach**
+  (2026-11-14, T37, [study](../analysis/online_rehearsal/README.md), local `solver.exe`, under the decision-27
+  condition, not TA-confirmed). An additive block-descent policy that sees only the training rows and its own
+  results (one building changed per candidate, the next call combines the buildings' winners) beat 115.68 in
+  call 1 in all 7 runs. Final best: v1 107.026 / 107.211 / 106.425 (seeds 2026 / 7 / 11, mean 106.89),
+  v2 with a training-derived shift bias 106.951 / 105.107 / 107.490 (mean 106.52), v3 107.777 (one seed).
+  Seed spread (±1) exceeds the variant difference. Additivity holds online (combinations: measured − predicted
+  median +0.013, MAE 0.22, 214 points); the surrogate's multi-building jumps in call 1 were 9–12 worse than
+  predicted. The committed code reproduces the logged batches (`check_replay.log`).
 - **The local evaluator reaches R = 104.3726; below ~106 the landscape is needles, not a valley** (2026-11-13, T36,
   [study](../analysis/lowr_search/README.md), `analysis/lowr_search/`, 8,763 local `solver.exe` evaluations,
   exploration only: none of its points, R values or weights may enter the online code or configs, decisions 19, 27, 29).
@@ -251,6 +260,10 @@ and record the new decision here with a date.
 - How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
   graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
   Ask the TA whether that is allowed (owner: A).
+  Concrete case (2026-11-14, T37): freezing the v2 policy of `analysis/online_rehearsal/` with seed 7 would
+  reproduce its local 105.107 bit for bit, against about 106.5 expected for an unpicked seed. It also needs
+  identical batches on the course computer (T09) and the same `solver.exe` (decision 30). Not done; the user
+  or the TA decides.
 
 ## Resolved
 

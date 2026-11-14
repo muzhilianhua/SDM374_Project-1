@@ -1,0 +1,89 @@
+{
+ "created": "2026-11-14",
+ "task": "T37",
+ "git": {
+  "branch_base_commit": "f7e8fe787d8cbef4a245047d5a7a918a99d83fe7",
+  "note": "developed and run outside the repository (Project-1/online_rehearsal) on 2026-11-14 and copied here; only paths changed (repo root, analysis/lowr_search pool, rehearsals/ folder). check_replay.log shows the copied code reproduces the logged batches."
+ },
+ "dataset": {
+  "path": "dataset_same8/train.csv",
+  "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+ },
+ "solver_exe_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+ "evaluator_calls_graded": 0,
+ "evaluator": "local solver.exe through analysis/lowr_search/pool.py, 10 workers, own worker folders and per-run logs; usage.count reset only inside analysis/online_rehearsal/workers/",
+ "runs": {
+  "v1_s11": {
+   "variant": "v1",
+   "seed": 11,
+   "calls": 20,
+   "points": 995,
+   "final_best": 106.42477142839924,
+   "online_log_sha256_lf": "4f537e4f7fecc59651d515ec90d18493552416beb8ff9a0716201377e232684e"
+  },
+  "v1_s2026": {
+   "variant": "v1",
+   "seed": 2026,
+   "calls": 20,
+   "points": 991,
+   "final_best": 107.02612145945022,
+   "online_log_sha256_lf": "063583d9210c1c7b737e263777d1b9844fbda5c17e6a569195a942b32c40dcf7"
+  },
+  "v1_s7": {
+   "variant": "v1",
+   "seed": 7,
+   "calls": 20,
+   "points": 963,
+   "final_best": 107.21112272726896,
+   "online_log_sha256_lf": "cc857d1baec9383a0377b43b75cffe5510edf6b149b9dc465a18cb5ed752e2a3"
+  },
+  "v2_s11": {
+   "variant": "v2",
+   "seed": 11,
+   "calls": 20,
+   "points": 985,
+   "final_best": 107.48967504095344,
+   "online_log_sha256_lf": "7ceb1cac777b1772bc6ef8d1407b26693919f54589d137b2bf4b14c77f7860a2"
+  },
+  "v2_s2026": {
+   "variant": "v2",
+   "seed": 2026,
+   "calls": 20,
+   "points": 968,
+   "final_best": 106.95123684802093,
+   "online_log_sha256_lf": "964c4d311e3e9594d5169c310734cae6b35fa617114c2dd6b8792bec0a2c1548"
+  },
+  "v2_s7": {
+   "variant": "v2",
+   "seed": 7,
+   "calls": 20,
+   "points": 971,
+   "final_best": 105.1067539617652,
+   "online_log_sha256_lf": "17dbd13033f1645c0cf4c6e9c608ac77c8f6d28f47e32fbed7252f0daa429c56"
+  },
+  "v3_s2026": {
+   "variant": "v3",
+   "seed": 2026,
+   "calls": 20,
+   "points": 988,
+   "final_best": 107.77692430000752,
+   "online_log_sha256_lf": "8c56fd4ea97034affce72d1d04937f5bcf321df225155d26068346cae4a05ed1"
+  }
+ },
+ "scripts_sha256_lf": {
+  "policy.py": "50ae3c777e11cdc9c4bf2f6c1653ccc64e3e4cb5d1b41a8690978236018f3ecb",
+  "surrogate.py": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8",
+  "rehearse.py": "6aa4b69a8f12c18f5969646eb955ec3454a82c15c5b1ed6dc553a31a8e34decd",
+  "analyse.py": "b554e0cc392104eccba1ddef652c9d2f902554928c149c5f2a8dca70d56dfafa",
+  "check_replay.py": "3425667d4e831e533469b7a9d6b98b8d1ab07bbd255fa99162b6a38cf13c2d3f",
+  "train_checks.py": "89d7570854835da2daea2653081e1da1dd072cc6ca3841d5cc0327cbcf9112a6"
+ },
+ "python": "3.11.16",
+ "packages": {
+  "numpy": "1.24.4",
+  "scipy": "1.10.1",
+  "scikit-learn": "1.2.2",
+  "matplotlib": "3.10.9"
+ },
+ "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads)"
+}
