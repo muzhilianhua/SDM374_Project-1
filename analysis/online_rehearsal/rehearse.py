@@ -45,6 +45,30 @@ def variant_params(variant: str) -> Params:
             "v3": Params(shift_bias=True, n_nav=3, share_model_late=0.2, share_random_late=0.3)}[variant]
 
 
+def _run_config(evaluator: str, seed: int, variant: str, params: Params) -> dict:
+    """Return the immutable configuration that identifies a rehearsal trajectory."""
+    return {"evaluator": evaluator, "seed": seed, "variant": variant, "params": params.__dict__}
+
+
+def _load_or_write_config(path: Path, expected: dict, log_exists: bool) -> None:
+    """Reject accidental resume with a different policy instead of overwriting provenance."""
+    if path.exists():
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        # v1_s2026 predates the explicit variant field; its Params identify it as v1.
+        existing.setdefault("variant", "v1")
+        old_params = {**Params().__dict__, **existing.get("params", {})}
+        same = all(existing.get(key) == expected[key] for key in ("evaluator", "seed", "variant"))
+        same = same and old_params == expected["params"]
+        if not same:
+            raise SystemExit(
+                "run configuration differs from the existing log; choose a new --run name"
+            )
+        return
+    if log_exists:
+        raise SystemExit("cannot resume a run without its config.json")
+    path.write_text(json.dumps(expected, indent=1), encoding="utf-8")
+
+
 def synthetic(W):
     """Cheap additive stand-in with plateaus, only to exercise the code path."""
     W = norm_blocks(W)
@@ -84,28 +108,47 @@ def main():
     ap.add_argument("--workers", type=int, default=10)
     ap.add_argument("--variant", choices=["v1", "v2", "v3"], default="v1")
     a = ap.parse_args()
+    if not 1 <= a.calls <= 20:
+        ap.error("--calls must be between 1 and 20")
+    if a.workers < 1:
+        ap.error("--workers must be at least 1")
 
     run = HERE / "rehearsals" / a.run
     run.mkdir(parents=True, exist_ok=True)
     log = run / "online_log.jsonl"
     X_train, y_train = load_training()
     st = State(X_train, y_train)
+    params = variant_params(a.variant)
+    _load_or_write_config(run / "config.json", _run_config(a.evaluator, a.seed, a.variant, params), log.exists())
     if log.exists():                                      # resume: only fully finished calls count
         recs = [json.loads(l) for l in log.open(encoding="utf-8")]
+        types = {r.get("type") for r in recs}
+        if not types <= {"point", "call_done"}:
+            raise SystemExit("log contains an unknown record type; inspect it before resuming")
         done = {r["call"] for r in recs if r.get("type") == "call_done"}
-        for c in sorted(done):
-            st.calls.append([{"W": np.array(r["W"]).reshape(3, 7), "R": float("nan") if r["R"] is None else r["R"],
-                              "meta": r["meta"]} for r in recs if r.get("type") == "point" and r["call"] == c])
-        if len(done) != len({r["call"] for r in recs}):
+        done_records = [r for r in recs if r.get("type") == "call_done"]
+        if len(done_records) != len(done):
+            raise SystemExit("log contains duplicate call_done records; inspect it before resuming")
+        all_calls = {r["call"] for r in recs}
+        if done and done != set(range(1, max(done) + 1)):
+            raise SystemExit("log calls are not contiguous; inspect it before resuming")
+        if done and max(done) > 20:
+            raise SystemExit("log exceeds the 20-call rehearsal budget; inspect it before resuming")
+        if all_calls != done:
             raise SystemExit("log has an unfinished call; inspect it before resuming (decision 28)")
-    params = variant_params(a.variant)
-    (run / "config.json").write_text(json.dumps({"evaluator": a.evaluator, "seed": a.seed,
-                                                 "variant": a.variant, "params": params.__dict__}, indent=1), encoding="utf-8")
+        for c in sorted(done):
+            points = [r for r in recs if r.get("type") == "point" and r["call"] == c]
+            summary = next(r for r in recs if r.get("type") == "call_done" and r["call"] == c)
+            if summary.get("n") != len(points) or not 1 <= len(points) <= 50:
+                raise SystemExit(f"call {c} has an invalid point count; inspect it before resuming")
+            st.calls.append([{"W": np.array(r["W"]).reshape(3, 7),
+                              "R": float("nan") if r["R"] is None else r["R"],
+                              "meta": r["meta"]} for r in points])
 
     if a.evaluator == "solver":
         sys.path.insert(0, str(HERE.parent / "lowr_search"))
         from pool import SolverPool
-        pool = SolverPool(n_workers=a.workers, root=HERE / "workers", log=run / "pool_log.jsonl")
+        pool = SolverPool(n_workers=a.workers, root=HERE / "workers" / a.run, log=run / "pool_log.jsonl")
         evaluate = lambda W: pool.evaluate(W.reshape(-1, 21), tag=f"rehearsal:{a.run}")   # noqa: E731
     else:
         evaluate = synthetic
@@ -127,8 +170,13 @@ def main():
             batch.append(norm_blocks(W)[0])
             metas.append(meta)
         batch = np.array(batch)[:50]
+        if not 1 <= len(batch) <= 50:
+            raise SystemExit("pre-submit screen left no valid points for this call")
         t1 = time.time()
+        solver_invocations_before = getattr(pool, "n_solver_invocations", 0) if a.evaluator == "solver" else 0
         R = np.asarray(evaluate(batch), float)
+        solver_invocations = (getattr(pool, "n_solver_invocations", 0) - solver_invocations_before
+                              if a.evaluator == "solver" else 0)
         t2 = time.time()
         call = len(st.calls) + 1
         with log.open("a", encoding="utf-8") as fh:
@@ -137,7 +185,8 @@ def main():
                                      "R": None if not np.isfinite(r) else float(r), "meta": m}) + "\n")
             fh.write(json.dumps({"type": "call_done", "call": call, "n": len(batch), "dropped": dropped,
                                  "batch_min": float(np.nanmin(R)), "propose_secs": round(t1 - t0, 1),
-                                 "eval_secs": round(t2 - t1, 1), **info}) + "\n")
+                                 "eval_secs": round(t2 - t1, 1), "solver_invocations": solver_invocations,
+                                 **info}) + "\n")
         st.calls.append([{"W": W, "R": float(r), "meta": m} for W, r, m in zip(batch, R, metas)])
         best = min(best, float(np.nanmin(R)))
         kinds = {}

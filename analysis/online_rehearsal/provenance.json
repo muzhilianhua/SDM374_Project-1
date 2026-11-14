@@ -78,6 +78,11 @@
   "check_replay.py": "3425667d4e831e533469b7a9d6b98b8d1ab07bbd255fa99162b6a38cf13c2d3f",
   "train_checks.py": "89d7570854835da2daea2653081e1da1dd072cc6ca3841d5cc0327cbcf9112a6"
  },
+ "review_fix_scripts_sha256_lf": {
+  "analysis/online_rehearsal/rehearse.py": "55423a94786d7b56a87062dc21b913cdac1034fd050bb2a302767d5a451a5a9c",
+  "analysis/lowr_search/pool.py": "d908d99a0ddd52a6d53f026c31b0da65603e750190e0641a36fc9d6f384aa961"
+ },
+ "review_fix_note": "The historical runs and their scripts_sha256_lf were produced before resume/config/log-integrity fixes. review_fix_scripts_sha256_lf records the current bookkeeping-only changes; policy proposal generation is unchanged.",
  "python": "3.11.16",
  "packages": {
   "numpy": "1.24.4",

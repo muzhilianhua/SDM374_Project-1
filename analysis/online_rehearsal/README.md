@@ -29,8 +29,9 @@ real evaluator, and can it get near 104?
 | v2 | v1 + shift bias derived from the training rows | 106.951 | **105.107** | 107.490 | **106.52** | 109.51 / 107.50 / 106.69 |
 | v3 | v2 + fewer surrogate picks after call 6 | 107.777 | — | — | — | 110.03 / 108.90 / 108.61 |
 
-Each run is 20 calls of 50 points (963–995 points were sent: the screen drops proposals that repeat a sent point and the prototype does not refill them), about 40 minutes
-with 10 parallel solver instances. Curves: `convergence.png`.
+Each run is 20 policy batches of at most 50 points (963–995 points were sent: the screen drops proposals that repeat a sent point and the prototype does not refill them), about 40 minutes
+with 10 parallel solver instances. The local pool splits each policy batch into smaller worker invocations and resets quota state only inside those private worker folders; `solver_invocations` in each
+new `call_done` record reports this development-only detail (the committed historical logs predate this field). Curves: `convergence.png`.
 
 - All 7 runs beat the best offline result 115.68 in **call 1** (114.5–115.1).
 - Expect **106.5 ± 1**; about 105 in a lucky run. **104 is not reachable** within 1,000 compliant points.
@@ -106,7 +107,7 @@ that adding them left v1 unchanged.
 | `check_replay.py`, `check_replay.log` | batch-by-batch reproduction check |
 | `train_checks.py`, `train_checks.log` | additivity and feature checks, `TrainPriors` constants; training rows only |
 | `rehearsals/<variant>_s<seed>/` | `online_log.jsonl` (every point: call, weights, R, move, prediction; one summary per call), `config.json`, `console.log` |
-| `provenance.json` | git base, dataset and solver sha256, packages, file hashes |
+| `provenance.json` | git base, dataset and solver sha256, packages, file hashes; `scripts_sha256_lf` is the historical run input and `review_fix_scripts_sha256_lf` records the current bookkeeping fixes |
 
 ```powershell
 $env:PYTHONUTF8 = 1
@@ -117,7 +118,7 @@ uv run python analysis/online_rehearsal/check_replay.py v2_s7 1 7 14 20
 ```
 
 A solver run needs `solver/solver.exe` (checked against the pinned sha256 by `analysis/lowr_search/pool.py`) and
-about 40 minutes; it creates `analysis/online_rehearsal/workers/` (git-ignored) and never touches `solver/usage.count`.
+about 40 minutes; it creates an isolated `analysis/online_rehearsal/workers/<run>/` tree (git-ignored) and never touches `solver/usage.count`.
 
 ## Limits
 
