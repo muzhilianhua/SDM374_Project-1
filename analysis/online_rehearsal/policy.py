@@ -45,7 +45,7 @@ def bkey(block) -> tuple:
 @dataclass
 class TrainPriors:
     """Constants derived from the 2048 training rows only."""
-    tiny_lo: float     # smallest non-negligible weight magnitude seen in the training rows
+    tiny_lo: float     # empirical absolute-share quantile used as a minor/deg+ramp ratio
     tiny_hi: float
     favour: np.ndarray | None = None   # (3, 7) shift-target probabilities from training Spearman
 
@@ -117,10 +117,6 @@ class BlockDescentPolicy:
         blocks = [{bkey(inc[b]): inc[b].copy()} for b in range(3)]
         scale = [p.scale0] * 3
         for call in st.calls:
-            meas = {}
-            for e in call:
-                if np.isfinite(e["R"]):
-                    meas[e["meta"].get("id")] = e
             # 1) base of this call: measured (or known) R of the base point
             base_e = next((e for e in call if e["meta"]["kind"] == "base"), None)
             if base_e is not None and np.isfinite(base_e["R"]):
@@ -166,10 +162,9 @@ class BlockDescentPolicy:
             for b in range(3):
                 best_single = min((e["R"] for e in call if e["meta"]["kind"] == "single"
                                    and e["meta"]["building"] == b and np.isfinite(e["R"])), default=np.inf)
-                ref = R_base if R_base is not None else np.inf
-                if best_single < ref - 1e-9 or improved[b]:
+                if improved[b] or (R_base is not None and best_single < R_base - 1e-9):
                     scale[b] = min(p.scale_max, scale[b] * p.scale_up)
-                else:
+                elif R_base is not None:
                     scale[b] = max(p.scale_min, scale[b] * p.scale_down)
         return inc, R_inc, val, blocks, scale
 
@@ -180,6 +175,7 @@ class BlockDescentPolicy:
         if kind == "scale1":
             k = rng.integers(7)
             if w[k] == 0:
+                # A zero coordinate is revived with an absolute normalized share.
                 w[k] = np.exp(rng.uniform(np.log(priors.tiny_lo), np.log(priors.tiny_hi)))
             else:
                 w[k] *= 10 ** rng.normal(0, scale)
@@ -200,6 +196,7 @@ class BlockDescentPolicy:
             w[rng.choice(cand)] = 0.0
         elif kind == "tiny":
             k = rng.choice(MINOR)
+            # Historical rehearsal semantics use the empirical quantiles as ratios to deg+ramp mass.
             w[k] = np.exp(rng.uniform(np.log(priors.tiny_lo), np.log(priors.tiny_hi))) * w[[4, 5]].sum()
         elif kind == "grid":
             k, value = grid

@@ -79,10 +79,12 @@
   "train_checks.py": "89d7570854835da2daea2653081e1da1dd072cc6ca3841d5cc0327cbcf9112a6"
  },
  "review_fix_scripts_sha256_lf": {
-  "analysis/online_rehearsal/rehearse.py": "55423a94786d7b56a87062dc21b913cdac1034fd050bb2a302767d5a451a5a9c",
+  "analysis/online_rehearsal/policy.py": "ef0f2d8df376691b5a1311ac9cf2088fe9bbe3614b19885b8f2663f1f64b2449",
+  "analysis/online_rehearsal/analyse.py": "184306b4872fcbf7ecce35daf8bf524e1a30537e38d2b838eecde115adbfa731",
+  "analysis/online_rehearsal/rehearse.py": "fbcc6c5b0dfa3c8725359dbda1f10c2f3e8f07b30d6cdc58ec5d3d07468650a0",
   "analysis/lowr_search/pool.py": "d908d99a0ddd52a6d53f026c31b0da65603e750190e0641a36fc9d6f384aa961"
  },
- "review_fix_note": "The historical runs and their scripts_sha256_lf were produced before resume/config/log-integrity fixes. review_fix_scripts_sha256_lf records the current bookkeeping-only changes; policy proposal generation is unchanged.",
+ "review_fix_note": "The historical runs and their scripts_sha256_lf were produced before the review fixes. review_fix_scripts_sha256_lf records the current fixes; normal proposal generation is unchanged, while base-failure scale handling is now conservative and the historical tiny/grid semantics are documented for replay compatibility.",
  "python": "3.11.16",
  "packages": {
   "numpy": "1.24.4",

@@ -12,6 +12,12 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from rehearse import load_training  # noqa: E402
+
+
+def best_training_r():
+    return float(load_training()[1].min())
 
 
 def load(run):
@@ -21,7 +27,7 @@ def load(run):
 
 def details(run):
     pts, calls = load(run)
-    best, curve = 115.76481925917324, []
+    best, curve = best_training_r(), []
     wins = defaultdict(lambda: [0, 0])
     for c in calls:
         cp = [p for p in pts if p["call"] == c["call"] and p["R"] is not None]
@@ -61,7 +67,7 @@ RUNS = {"v1": ["v1_s2026", "v1_s7", "v1_s11"], "v2": ["v2_s2026", "v2_s7", "v2_s
 
 def best_curve(run):
     _, calls = load(run)
-    best, out = 115.76481925917324, []       # best training row (p01969)
+    best, out = best_training_r(), []
     for c in calls:
         best = min(best, c["batch_min"])
         out.append(best)

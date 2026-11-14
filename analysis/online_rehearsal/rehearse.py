@@ -170,6 +170,7 @@ def main():
             batch.append(norm_blocks(W)[0])
             metas.append(meta)
         batch = np.array(batch)[:50]
+        metas = metas[:len(batch)]
         if not 1 <= len(batch) <= 50:
             raise SystemExit("pre-submit screen left no valid points for this call")
         t1 = time.time()
