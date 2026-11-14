@@ -1,7 +1,7 @@
 # T18 recommendation for the online proposer (evidence: analysis/replay/README.md).
 # Exploratory: no value measured with the real evaluator was used to choose these parameters
-# (decision 19 / T03 still unanswered). The online runner (T08) and the exploit/explore split (T15)
-# are not on main yet; until they land this file loads with `sdm optimize`.
+# (decision 19; decision 27 would allow it, but none was used). The online runner (T08) and the
+# exploit/explore split (T15) are not on main yet; until they land this file loads with `sdm optimize`.
 #
 # Wide trust region (max distance ratio 1.0). Judgment call: the replay cannot separate 0.5 from
 # 1.0 - both arms are identical under semi-synthetic truth, and the table arm is limited by the

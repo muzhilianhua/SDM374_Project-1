@@ -4,9 +4,10 @@
 > (`online` branch, commits `8b4d67f` / `f47c28e`) ranked strategy families on 6,568 local
 > `solver.exe` calls and handed T15 a structural prior (old §6) plus a note that T12 could adopt the
 > same ranking directly (old §9). **Both are withdrawn.** Decision 19 allows only the 2048 training
-> rows before the first evaluator call, and T03 (whether local evaluator runs may be used to tune
-> parameters) is still unanswered, so no number measured with the real evaluator may enter the first
-> batch. Everything below comes from the replayer and uses the table only.
+> rows before the first evaluator call, so no point or R value measured with the real evaluator may
+> enter the submitted code. Decision 27 (2026-11-11, from the T03 reply; not yet confirmed by the TA)
+> now allows local evaluator runs to choose parameters, but this study does not use them: everything
+> below comes from the replayer and uses the table only.
 >
 > The 6,568-call log is kept in `evidence/` as a **search history** (what was tried, in what order).
 > It is not evidence about parameter values and is not used in any recommendation.
@@ -118,15 +119,17 @@ Delivered as `experiments/online-policy-wide.toml` (default) and `experiments/on
 (comparison arm); the T15 policy itself lands in decision 19.
 
 These are **defaults, not measured gains**: no setting here has been compared against another on the
-real objective. If T03 later allows local evaluator runs for tuning, this table must be rebuilt from
-that evidence.
+real objective. Decision 27 allows local evaluator runs for tuning, so this table should be rebuilt
+from such runs (T17 replayer, T19 dress rehearsal) before the settings are frozen.
 
 ## Search history (kept, not used as evidence)
 
 Before the withdrawal above, this folder tuned strategies on 6,568 local `solver.exe` calls and
 recommended proposals from that ranking. The log is kept in `evidence/` purely so the team can see
-what was tried and in what order. Per decision 19 / T03 it is not used for any parameter value, and
-it is not an input to the online policy. Details and checksums: `evidence/provenance.json`.
+what was tried and in what order. It is not used for any parameter value here and is not an input
+to the online policy; under decision 27 a later study may use it to compare settings, but never to
+embed its points or R values in the submitted code (decision 19). Details and checksums:
+`evidence/provenance.json`.
 
 ## Files
 

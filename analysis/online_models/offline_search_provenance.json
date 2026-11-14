@@ -56,7 +56,7 @@
   },
   "related_decisions": {
     "decision_21": "Each building's 7 weights must sum to 1 and be non-negative; the GP is NOT scale-invariant, so `ModelBundle.predict` enforces the simplex check.",
-    "decision_27": "Using real-solver eval_log for model selection (PR #20) — not yet merged; hp_noise001 fits the frozen 2048 training rows only.",
+    "decision_27": "Local evaluator runs, including the real-solver eval_log, may be used to choose the model (recorded with PR #20); hp_noise001 fits the frozen 2048 training rows only and embeds no locally measured point or R value.",
     "decision_19": "Only the 2048 training rows before the first online call are legal for fitting; hp_noise001 does not violate this."
   },
   "provenance_timestamp": "2026-11-13"

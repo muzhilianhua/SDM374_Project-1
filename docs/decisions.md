@@ -33,8 +33,10 @@ and record the new decision here with a date.
 | 24 | The offline phase is frozen at annotated tag `offline-final` (PR #11 merge, `62a2274`). Online work happens on `feat/online`, which drops the offline studies under `analysis/`, `SUBMISSION_READY/`, `artifacts/`, the offline experiment configs and their tests. It keeps `src/sdm` (every plugin), `app/`, `analysis/coupling/`, `analysis/v33_protocol/` and the two `SUBMISSION_READY` files that V3.3 reads. Rows and findings in this file that cite removed paths resolve at the tag | User, 2026-11-08: concentrate on online script development and testing |
 | 25 | `solver/` is in the repository with its course files unchanged; `solver.exe` (182 MB, above GitHub's 100 MB limit) and `usage.count` are git-ignored. Everyone copies the exe from the course `solver.zip` and checks it against `solver/CHECKSUMS.sha256` (sha256 `293867b8…a077247`) | User, 2026-11-08 |
 | 26 | Online framework design (T06, T08). Every source of R implements one `Evaluator` interface (`sdm.online`): the real `solver.exe`, a table of measured rows and a synthetic truth, with the solver's input rules and a per-object 20-call quota; the graded run never touches `usage.count`. The online loop (T08) will: drive proposals through a new `BatchPolicy` interface that receives the whole online state (call number, quota left, every sent point and result) and wraps existing optimizers; keep its state in a run folder `runs/<id>-online-<config>/` and resume with `sdm online --resume <run-id>` after checking the config and code version; when the pre-submit check drops points (duplicates of training rows or sent points, simplex violations), ask the policy for more candidates and send the first 50 that pass in the policy's order, logging the reasons, and stop without calling only when none pass | User, 2026-11-10 |
+| 27 | Local evaluator runs may be used to choose the model, the policy and their hyperparameters (replay and real `solver.exe` alike). The only constraint is no data leakage into the submitted code: before its first call it uses only the 2048 training rows, and it never embeds points or R values measured locally (as data, warm starts or exclusion lists); tuned settings in its config are allowed | User, 2026-11-11, from the rule that only the training rows may be used before the first call (decision 19); not yet confirmed by the TA. Supersedes the open question on tuning |
 | 28 | A failed or interrupted evaluator call is never resent. Once `solver.exe` has started, its batch counts as sent (decision 20) even when no R came back: the online loop records those points as sent without R, never proposes them again and sends a new batch within the remaining calls. Only a batch rejected before anything is evaluated may be fixed and sent: `InvalidBatch` (the solver's input rules, checked locally) or, in replay only, `PointNotInTable` (a point outside the table stand-in's pool); such an attempt is closed as `rejected` and costs no call | User, 2026-11-12, the default until the TA says whether a failed call may be resent (Open questions). Measured on a copy of `solver.exe`: a 50-set call killed by a timeout after 8 s leaves `usage.count` behind, so the solver charges a call when it starts; an input it rejects (exit 2) does not; it accepts a repeated point and returns the same R. Supersedes the 2026-11-11 T06 note that a failed batch may be resent |
 | 29 | The online code does not exclude the offline submissions' weights (submission 1, submission 2) from its batches, and never writes those weights or their R into code, configs or exclusion lists. Before its first call it uses only the 2048 training rows (decision 19), and the pre-submit check screens only training rows and points this run has sent. A policy proposing a submission's exact W again (within `dedupe_atol`) is practically impossible and would only cost one point | User, 2026-11-12, answering the PR #21 review; supersedes the 2026-11-05 note that graded online calls must not resend submission 2 |
+| 30 | The evaluator is the released `solver.exe` we hold locally (sha256 `293867b8…a077247`, pinned in `solver/CHECKSUMS.sha256`): every study, tuning run and the graded-run code target it, and `SolverEvaluator` keeps refusing any other build. Other builds seen on the course computer on 2026-11-12, such as `Desktop\AIM\01Lab\Lab6\solver_v2\solver.exe` (199,092,593 bytes, sha256 `28b81344…52a6586`), are not studied or supported | User, 2026-11-14: "follow the local solver"; replaces the open question of 2026-11-13 on which build the graded run uses |
 
 ## Findings
 
@@ -195,8 +197,9 @@ and record the new decision here with a date.
   [replay](../analysis/replay/README.md), `analysis/replay/study.py`, no evaluator calls). The ranking of
   strategy families from 6,568 local `solver.exe` calls, and the structural prior handed to T15 (old
   notebook §6) and the note that T12 could adopt that ranking (old §9), are **withdrawn as policy input**:
-  decision 19 admits only the 2048 training rows before the first call and T03 is unanswered, so no value
-  measured with the real evaluator may enter the first batch. The log stays in `analysis/replay/evidence/`
+  decision 19 admits only the 2048 training rows before the first call, so no value measured with the real
+  evaluator may enter the first batch (when this was written T03 was unanswered; decision 27 now allows local
+  runs for choosing parameters, but none were used here). The log stays in `analysis/replay/evidence/`
   as a search history only. Re-run on the replay (20 calls × up to 50 points, 1600-row holdout pool, 448
   initial rows, 5 seeds, `table` and `semi-synthetic` truth), with curves scoring submitted points only
   and the training incumbent kept as a separate reference: under `semi-synthetic` every setting reaches
@@ -240,20 +243,47 @@ and record the new decision here with a date.
   but such a prior is in effect the optimum's location. Working recommendation (A, 2026-11-13,
   [guidance](../analysis/lowr_search/GUIDANCE.md)): use only priors derivable from the 2048 training rows
   (`analysis/lowr_search/train_priors.py`). Owner: A, with T03.
-
-- Course computer environment (OS, Python, whether uv and `libomp` are available): decision 22 requires
-  reproducing there. Seen on 2026-11-02 when submission 1 was scored: Windows, PowerShell, a conda
-  environment. The TA ran `solver/run.py` with Python 3.14 (its `__pycache__` is `cpython-314`), while this
-  repository pins 3.11 (numpy 1.24.4 has no newer wheels). Whether uv can be installed is unknown. Owner: A.
-  2026-11-08: the stdlib-only smoke test ran with Python 3.14.7 on A's Windows PC (see Resolved), so the
-  evaluator side works with the course computer's Python; the `sdm` package side is still unverified there.
+- Who runs the graded online run and how the code is handed over: the TA offers to test code we send
+  (2026-11-11), but whether the graded run is the TA's run of our code or ours on the course computer, and
+  in what form (repository, zip, single script), is not settled (owner: A). Working assumption (user,
+  2026-11-11): the TA runs our code, so the package must start with one documented command, run unattended
+  and leave its logs where they can be sent back (T10, T22).
 - May a failed call be resent? A call that fails or is killed after `solver.exe` started has been charged, but returned no R. Decision 28 treats its points as sent and never resends them; ask the TA whether resending the same batch after such a failure is allowed (owner: A, with T03).
-- How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
-  graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
-  Ask the TA whether that is allowed (owner: A).
 
 ## Resolved
 
+- Course computer and testing (TA Archer, 2026-11-11, chat; T03, partial):
+  - The online evaluation runs on Windows 10 (our smoke test ran on Windows 11 Pro).
+  - `solver/run.py` is the harness left for teams to test with; its comments sketch the intended loop: call
+    the solver, read R, retrain the surrogate, update `weight.json`, repeat 20 times. It pipes `weight.json`
+    into `solver.exe` through PowerShell; `sdm.online.SolverEvaluator` writes the same JSON to the exe's
+    stdin directly.
+  - Teams may come and test on the course computer on Thursday 2026-11-12 (class 9).
+  - Teams may send their code to the TA, who will run a test for them.
+- Course computer environment (measured 2026-11-12, class 9, with the T10 trial kit `run.py` at commit
+  `e588dce` on branch `feat/course-pc-kit`; results archive `results-DESKTOP-RF3J378-20261112-194648.zip`,
+  kept outside the repository). Resolves the open question on the course computer:
+  - Windows 10 22H2 (10.0.19045), host `DESKTOP-RF3J378`, user `Archer`; Intel 13th-gen CPU with 20 threads
+    (the class of A's PC, so the 289 s per 50-set call measured there should carry over); 15.8 GB RAM, 3.4 GB
+    free while testing; 57 GB free disk.
+  - Python on PATH is 3.14.5 (`C:\Python314`); the `py` launcher also lists Anaconda's 3.7. uv 0.11.21, conda
+    4.5.11 and git 2.54 are installed; PyPI and GitHub are reachable. So `uv sync` (which fetches Python 3.11
+    itself) works there too; the offline kit (bundled Python 3.11 and wheels) is the fallback, not a necessity.
+  - Kit path `C:\Users\Archer\Desktop\AIM\06project1_test\…`: ASCII, no spaces. Console code page 936
+    (GBK); PowerShell execution policy RemoteSigned.
+  - The kit installed offline and ran: `pytest` 245 passed, 3 skipped, 1 xfailed, 1 failed. The failure was the
+    test helper reading `tasklist` output as UTF-8 under code page 936, not the solver code (fixed on
+    `feat/course-pc-kit`, `322e958`).
+  - Cross-machine determinism (T09): the `online-histgb` policy (histgb surrogate + pure-exploit `bayes-pool`)
+    proposed a bitwise identical first batch on the course computer and on A's Mac, and its first three
+    semi-synthetic calls (150 points, refitting in between) matched in every weight and R. Fingerprints of 6000
+    predictions also matched for `histgb` and `extratrees`; `ridge2` differed only in the last bits, `local-gp`
+    by about 1e-6, and `xgboost` visibly (180.38 vs 180.63 on the same point), so xgboost cannot be frozen as is.
+  - Fit times on 2048 rows (course computer / Mac): histgb 3.6 / 2.5 s, xgboost 2.0 / 1.7 s, extratrees 0.8 /
+    0.6 s, ridge2 0.9 / 1.0 s, local-gp 44 / 10 s.
+  - No call reached `solver.exe`: the run only used the semi-synthetic truth and a dry run. (`python run.py
+    resume` picked the self-test replay and ran it to 20 calls; resume now skips replays, `322e958`.) Per-call
+    solver time and real R on the course computer are still unmeasured.
 - Call log schema and how results reach `X, y` (2026-11-11): `online_log.csv` (T07, `sdm.online.log`) holds
   every successful call; the online loop (T08) rebuilds `OnlineState` from the 2048 training rows plus the
   log before each call, so a policy refits on `state.X = [X_train; X_online]`. Attempts, including failed
