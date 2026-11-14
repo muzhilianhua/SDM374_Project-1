@@ -1,0 +1,12 @@
+{
+  "id": "week_07",
+  "dataset_dir": "../inputs/week_07",
+  "buildings": [
+    "Building_1",
+    "Building_2",
+    "Building_3"
+  ],
+  "start": 0,
+  "end": 167,
+  "seed": 2026
+}

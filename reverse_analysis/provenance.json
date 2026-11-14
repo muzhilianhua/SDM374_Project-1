@@ -1,0 +1,109 @@
+{
+  "study_id": "20261114-source-release",
+  "recorded_on": "2026-11-14",
+  "owner": "Member C / azq",
+  "base_git_commit": "c498417e0c70c99953ac7589c2afa1e6b37f8afc",
+  "branch": "azq",
+  "dataset_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023",
+  "dataset_role": "Repository context only; train.csv is not an input to this evaluator.",
+  "seeds": {
+    "scenario": 2026,
+    "disturbance": 0,
+    "strength": 0
+  },
+  "environment": {
+    "python": "3.11.18",
+    "versions": {
+      "numpy": "1.26.4",
+      "scipy": "1.10.1",
+      "pandas": "1.5.3",
+      "scikit-learn": "1.2.2",
+      "CityLearn": "2.5.0",
+      "torch": "2.5.1+cpu"
+    },
+    "modules": {
+      "engine": "source_view/engine.py",
+      "evaluate": "source_view/evaluate.py",
+      "controller": "source_view/controller.py",
+      "initialization": "source_view/initialization.py",
+      "disturbances": "source_view/disturbances.py",
+      "citylearn_task.evaluate": "source_view/citylearn_task/evaluate.py",
+      "citylearn_task.lower": "source_view/citylearn_task/lower.py",
+      "citylearn_task.temporal": "source_view/citylearn_task/temporal.py",
+      "citylearn_task.env": "source_view/citylearn_task/env.py",
+      "citylearn.citylearn": "vendor/citylearn/citylearn.py"
+    }
+  },
+  "source_files": [
+    {
+      "path": "source_view/citylearn_task/__init__.py",
+      "sha256": "d4f5b184d2b40f3760e752305f160d8ee4dc9a6781582f5f677e090b48729a3e"
+    },
+    {
+      "path": "source_view/citylearn_task/env.py",
+      "sha256": "9a087d98a86e782a1a32973ee91ab65025f4078ca92cb1250ad367440f26993f"
+    },
+    {
+      "path": "source_view/citylearn_task/evaluate.py",
+      "sha256": "610780b2d6ba6a51048c284d606579a9078f2d0f1756ccde0c1877a808332c73"
+    },
+    {
+      "path": "source_view/citylearn_task/lower.py",
+      "sha256": "dfe8436c57900f34670c711157d9baeeb2222dd04686d293b9591b656e51f957"
+    },
+    {
+      "path": "source_view/citylearn_task/temporal.py",
+      "sha256": "30d3ff425a2149b10af864d866c9e1edc97a344bb7ba5a5b5db4c186de47ee7e"
+    },
+    {
+      "path": "source_view/controller.py",
+      "sha256": "4677319edd2cce2092c524d05909029de3f2173b3a64521b32b020bdddf9c5ec"
+    },
+    {
+      "path": "source_view/disturbances.py",
+      "sha256": "8c21598a12b80409161cfedd6eb0bd7d97f441ef73427eb4a158c5cbba522287"
+    },
+    {
+      "path": "source_view/engine.py",
+      "sha256": "7e2d06d62823f2cd5b420796f84915cafd514bfc432a3b63cc8f8e84ec4b1869"
+    },
+    {
+      "path": "source_view/evaluate.py",
+      "sha256": "57b6ee93f0ac9645e02e47531940e3f6ff272ebe1f36ecab515b3f1846e73c0b"
+    },
+    {
+      "path": "source_view/initialization.py",
+      "sha256": "8bad9f065a5d83ab8c6b6f25223a3dc14bc780addecd4464e258465e280d816f"
+    },
+    {
+      "path": "source_view/solver_cli.py",
+      "sha256": "7a82ee19c8664cc498f586b9bdb97779b284e9f121ee7f56f2fdec9471efdc80"
+    },
+    {
+      "path": "run.py",
+      "sha256": "6a730cc6f9cd1d7325370bf103a560ba29cc78ffab852c0001528efa54553f33"
+    },
+    {
+      "path": "runtime.py",
+      "sha256": "8a50a23fb9ec2eaea35f4b8018e5d3d931f95213a832f97a123e826f847d5b53"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "3294d12f5315d20b201784a711d35d946c7778e060352b7ac258a8609722a479"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "31854983cf5c221c18c483d702cd5659d559acf3be3cc9649f42107462315263"
+    }
+  ],
+  "evidence": {
+    "original_evaluator": "evidence/continued_real_validation.json",
+    "source_release": "evidence/source_release_validation.json",
+    "hourly_trace": "evidence/exact_local_best.npz"
+  },
+  "notes": [
+    "Independent reconstruction study; no surrogate leaderboard or frozen policy was changed.",
+    "Original measured outputs were preserved; no real solver invocation was made for this release.",
+    "At setup the checkout already contained an unrelated report/sections/azq_strategy.md modification; it is not part of this release."
+  ]
+}

@@ -1,5 +1,13 @@
 # SDM374 Project 1 — Data-driven Tuning of Building Energy Controllers
 
+## Reconstructed evaluator (azq)
+
+The independently runnable [reconstructed solver](reverse_analysis/README.md) includes
+readable task code, the eight-week inputs, three pretrained temperature models and a
+separate locked CPU runtime. Follow its clone/setup instructions to evaluate weights
+without the original EXE or an external extracted directory. Validation and source
+provenance are included; this study does not change the frozen online policy.
+
 ## Online phase (current)
 
 The offline phase is closed and frozen at git tag **`offline-final`** (submissions 1–2, every study,

@@ -1,0 +1,29 @@
+[project]
+name = "sdm374-reconstructed-solver"
+version = "0.1.0"
+description = "Readable reconstruction of the fixed eight-week course evaluator"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "numpy==1.26.4",
+    "scipy==1.10.1",
+    "pandas==1.5.3",
+    "scikit-learn==1.2.2",
+    "gymnasium==0.28.1",
+    "torch==2.5.1",
+    "platformdirs==4.3.6",
+    "requests==2.32.3",
+    "PyYAML==6.0.2",
+    "simplejson==3.19.3",
+]
+
+[tool.uv]
+package = false
+environments = ["sys_platform == 'win32' and platform_machine == 'AMD64'"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

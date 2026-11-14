@@ -1,0 +1,15 @@
+*.py text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+source_view/** text eol=lf
+tests/** text eol=lf
+*.md text eol=lf
+docs/** text eol=lf
+uv.lock text eol=lf
+# Original assets and upstream sources must keep the hashes in assets_manifest.json.
+# These rules come last, including for upstream .py files with original CRLF bytes.
+environment/** -text !eol whitespace=cr-at-eol
+vendor/** -text !eol -whitespace
+evidence/** -text !eol whitespace=cr-at-eol
