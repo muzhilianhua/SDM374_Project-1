@@ -36,6 +36,7 @@ and record the new decision here with a date.
 | 27 | Local evaluator runs may be used to choose the model, the policy and their hyperparameters (replay and real `solver.exe` alike). The only constraint is no data leakage into the submitted code: before its first call it uses only the 2048 training rows, and it never embeds points or R values measured locally (as data, warm starts or exclusion lists); tuned settings in its config are allowed | User, 2026-11-11, from the rule that only the training rows may be used before the first call (decision 19); not yet confirmed by the TA. Supersedes the open question on tuning |
 | 28 | A failed or interrupted evaluator call is never resent. Once `solver.exe` has started, its batch counts as sent (decision 20) even when no R came back: the online loop records those points as sent without R, never proposes them again and sends a new batch within the remaining calls. Only a batch rejected before anything is evaluated may be fixed and sent: `InvalidBatch` (the solver's input rules, checked locally) or, in replay only, `PointNotInTable` (a point outside the table stand-in's pool); such an attempt is closed as `rejected` and costs no call | User, 2026-11-12, the default until the TA says whether a failed call may be resent (Open questions). Measured on a copy of `solver.exe`: a 50-set call killed by a timeout after 8 s leaves `usage.count` behind, so the solver charges a call when it starts; an input it rejects (exit 2) does not; it accepts a repeated point and returns the same R. Supersedes the 2026-11-11 T06 note that a failed batch may be resent |
 | 29 | The online code does not exclude the offline submissions' weights (submission 1, submission 2) from its batches, and never writes those weights or their R into code, configs or exclusion lists. Before its first call it uses only the 2048 training rows (decision 19), and the pre-submit check screens only training rows and points this run has sent. A policy proposing a submission's exact W again (within `dedupe_atol`) is practically impossible and would only cost one point | User, 2026-11-12, answering the PR #21 review; supersedes the 2026-11-05 note that graded online calls must not resend submission 2 |
+| 30 | The evaluator is the released `solver.exe` we hold locally (sha256 `293867b8…a077247`, pinned in `solver/CHECKSUMS.sha256`): every study, tuning run and the graded-run code target it, and `SolverEvaluator` keeps refusing any other build. Other builds seen on the course computer on 2026-11-12, such as `Desktop\AIM\01Lab\Lab6\solver_v2\solver.exe` (199,092,593 bytes, sha256 `28b81344…52a6586`), are not studied or supported | User, 2026-11-14: "follow the local solver"; replaces the open question of 2026-11-13 on which build the graded run uses |
 
 ## Findings
 
@@ -242,12 +243,6 @@ and record the new decision here with a date.
   but such a prior is in effect the optimum's location. Working recommendation (A, 2026-11-13,
   [guidance](../analysis/lowr_search/GUIDANCE.md)): use only priors derivable from the 2048 training rows
   (`analysis/lowr_search/train_priors.py`). Owner: A, with T03.
-- Which `solver.exe` does the graded run use? The course computer (2026-11-12, see Resolved) holds four
-  evaluators: two copies of the pinned `solver.exe` (`293867b8…a077247`), the offline `RampingSolver.exe`, and
-  `Desktop\AIM\01Lab\Lab6\solver_v2\solver.exe` (199,092,593 bytes, sha256 `28b81344…52a6586`), which is
-  not the released one. `SolverEvaluator` refuses any exe that does not match `solver/CHECKSUMS.sha256`, so a
-  graded run on `solver_v2` would stop before its first call. Ask the TA what `solver_v2` is and which copy
-  (and whose `usage.count`) the graded run uses (owner: A, with T03).
 - Who runs the graded online run and how the code is handed over: the TA offers to test code we send
   (2026-11-11), but whether the graded run is the TA's run of our code or ours on the course computer, and
   in what form (repository, zip, single script), is not settled (owner: A). Working assumption (user,
