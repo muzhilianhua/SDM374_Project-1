@@ -1,7 +1,8 @@
-import json, numpy as np, collections
+import numpy as np, collections
 from pool import normalize
+from common import read_jsonl
 np.set_printoptions(linewidth=250, precision=4, suppress=True)
-rows = [json.loads(l) for l in open('../replay/evidence/eval_log.jsonl', encoding='utf-8')]
+rows = read_jsonl('../replay/evidence/eval_log.jsonl')
 W = normalize([r['weights'] for r in rows]).reshape(-1, 3, 7); R = np.array([r['R'] for r in rows]); ph = np.array([r['phase'] for r in rows])
 for p in ['vE1_b1', 'vE1_b2', 'vE1_b3', 'vE3_G', 'vE3_A', 'vertex', 'v5A_b1','vE2_A1']:
     m = np.where(ph == p)[0]

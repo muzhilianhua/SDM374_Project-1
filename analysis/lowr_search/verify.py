@@ -4,11 +4,10 @@
   2. the same weights rounded to 8 / 6 / 5 / 4 / 3 decimals (what a copy-paste would send);
   3. random multiplicative perturbations of every positive weight at 1e-6 .. 1e-2.
 """
-import json
 
 import numpy as np
 
-from common import team_best
+from common import team_best, write_json
 from pool import SolverPool, load_log, normalize
 
 W, R, tags = load_log()
@@ -37,5 +36,5 @@ print("\nrelative noise on every weight -> share of perturbed points with the sa
 for s in (1e-6, 1e-5, 1e-4, 1e-3, 1e-2):
     d = y[scale == s] - best_R
     print(f"  10^N(0,{s:g}): same R {np.mean(np.abs(d) < 1e-9):.2f}   median {np.median(d):+.4f}   worst {d.max():+.4f}   best {d.min():+.4f}")
-json.dump({"R": best_R, "alone": alone, "batch": batch[1], "weights": best.reshape(3, 7).tolist()},
-          open("verification.json", "w"), indent=1)
+write_json("verification.json", {"R": best_R, "alone": alone, "batch": batch[1], "weights": best.reshape(3, 7).tolist()},
+           indent=1)

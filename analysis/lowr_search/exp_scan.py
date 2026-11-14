@@ -2,14 +2,15 @@
   region part: r in [0.16, 0.36], each minor weight on with p=0.5 at 10^U(-3, -0.5) x (F5+F6)
   global part: sparse random blocks anywhere on the simplex (is there a second basin?)
 Each row varies one building only, so R - R_incumbent is that block's effect directly."""
-import json, sys, time
+import sys, time
 import numpy as np
 from pool import SolverPool
 from common import block
+from common import read_json
 
 P = int(sys.argv[1]) if len(sys.argv) > 1 else 10
 N_REG, N_GLOB = 220, 80
-state = json.load(open('fms_state.json', encoding='utf-8'))
+state = read_json('fms_state.json')
 inc = np.array(state['inc']); inc_R = state['inc_R']
 rng = np.random.default_rng(31)
 X, meta = [], []

@@ -7,15 +7,15 @@ r runs from 0.15 to 0.50 in steps of 0.002. The plateau of the incumbent is far 
 (about 0.0002 in r), so neighbouring samples are different cells: the scan shows the trend and the
 scatter around it, not the exact piecewise-constant structure.
 """
-import json
 import time
 
 import numpy as np
 
 from common import block, to_ratio
 from pool import SolverPool
+from common import read_json, write_json
 
-state = json.load(open("fms_state_run4.json", encoding="utf-8"))
+state = read_json("fms_state_run4.json")
 inc = np.array(state["inc"]); inc = inc / inc.sum(1, keepdims=True); inc_R = state["inc_R"]
 GRID = np.round(np.arange(0.15, 0.5001, 0.002), 4)
 X, meta = [], []
@@ -36,6 +36,6 @@ for b in range(3):
         i = int(np.argmin(d))
         print(f"b{b + 1} {variant:5s}: min {d.min():+.4f} at r = {GRID[i]:.3f}; below incumbent: {int((d < -1e-9).sum())}; "
               f"median for r < 0.30: {np.median(d[GRID < 0.30]):+.3f}")
-json.dump(out, open("E9_rscan.json", "w"), indent=1)
+write_json("E9_rscan.json", out, indent=1)
 if y.min() < -1e-9:
     i = int(np.argmin(y)); print("NEW BEST", y[i] + inc_R, np.array(X[i]).reshape(3, 7))

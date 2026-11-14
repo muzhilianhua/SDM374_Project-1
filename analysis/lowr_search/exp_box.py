@@ -3,13 +3,14 @@
   inactive minors switched on with p = 0.25 at 10^U(-3, -1.5).
 One building varies per row, so delta = R - R_incumbent is that block's effect. The sample says how
 extreme the incumbent block is among the cells of its own neighbourhood, and gives new entrances."""
-import json, sys, time
+import sys, time
 import numpy as np
 from pool import SolverPool
 from common import block, to_ratio
+from common import read_json
 
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 250
-state = json.load(open('fms_state.json', encoding='utf-8'))
+state = read_json('fms_state.json')
 inc = np.array(state['inc']); inc_R = state['inc_R']
 rng = np.random.default_rng(55)
 X, meta = [], []

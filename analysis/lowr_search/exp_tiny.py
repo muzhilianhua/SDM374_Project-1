@@ -8,13 +8,13 @@ weight of one building at a time by m in {0, 1e-13, 1e-10, 1e-8, 1e-6, 1e-5, 3e-
 (m = weight / (degradation + ramping)), starting from the best point in the log.
 """
 import itertools
-import json
 import time
 
 import numpy as np
 
 from common import MINOR, NAMES, block, to_ratio
 from pool import SolverPool, load_log
+from common import write_json
 
 MN = [NAMES[k] for k in MINOR]
 LEVELS = [0.0, 1e-13, 1e-10, 1e-8, 1e-6, 1e-5, 3e-5, 1e-4]
@@ -55,4 +55,4 @@ if any(c is not None for c in cands):
     out["best_R"] = best_R + float(yc[k]); out["best_W"] = Xc[k].reshape(3, 7).tolist()
 else:
     print("no change lowers R")
-json.dump(out, open("E11_tiny.json", "w"), indent=1)
+write_json("E11_tiny.json", out, indent=1)

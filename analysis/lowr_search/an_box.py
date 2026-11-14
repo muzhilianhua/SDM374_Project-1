@@ -1,6 +1,7 @@
 """How deep is the incumbent block inside its own neighbourhood box? Archive deltas by distance class."""
-import json, numpy as np
-state = json.load(open('fms_state.json', encoding='utf-8'))
+import numpy as np
+from common import read_json
+state = read_json('fms_state.json')
 inc = np.array(state['inc'])
 np.set_printoptions(precision=4, suppress=True, linewidth=200)
 for b in range(3):

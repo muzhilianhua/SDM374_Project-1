@@ -183,17 +183,20 @@ training table alone.
 | `provenance.json` | Hashes, versions and machine |
 
 ```powershell
-cd analysis/lowr_search          # every script expects this working directory
 $env:PYTHONUTF8 = 1
-uv run python exp_mech.py        # any experiment; points already in eval_log.jsonl are not re-evaluated
-uv run python fms.py --fresh --minutes 45 --surrogate 0 --niche 12 --run-name runN
-uv run python verify.py; uv run python report.py
-uv run python an_mech.py --plot  # E8/E9 tables and the mech_*.png figures
+uv run python analysis/lowr_search/exp_mech.py       # any experiment; points already in eval_log.jsonl are not re-evaluated
+uv run python analysis/lowr_search/fms.py --fresh --minutes 45 --surrogate 0 --niche 12 --run-name runN
+uv run python analysis/lowr_search/verify.py; uv run python analysis/lowr_search/report.py
+uv run python analysis/lowr_search/an_mech.py --plot # E8/E9 tables and the mech_*.png figures
+$env:LOWR_CACHE_ONLY = 1                              # replay from eval_log.jsonl only; a point not in it is an error
 ```
 
-`solver.exe` must be in `solver/` (decision 25). E3–E5 read `fms_state.json` as it was when they ran
-(states after runs 1 and 3, not committed); re-running them now uses the current state and will evaluate
-new points. `t_fms_dry.py` runs the search loop on a synthetic function without calling the solver.
+Every script resolves its files against this folder (`common.HERE`), so it runs from any working directory.
+`solver.exe` must be in `solver/` (decision 25); `SolverPool` checks its sha256 on start (about 5 s).
+With `LOWR_CACHE_ONLY` set, E1, E2 and E6–E10 re-run entirely from the log and rewrite their result files
+byte for byte (checked 2026-11-13). E3–E5 read `fms_state.json` as it was when they ran (states after runs 1
+and 3, not committed), and E11, E12 start from the log's current best, so re-running those evaluates new points.
+`t_fms_dry.py` runs the search loop on a synthetic function without calling the solver.
 
 ## Limits
 

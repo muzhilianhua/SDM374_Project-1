@@ -1,12 +1,13 @@
 """E1: is R additive over buildings in the low region?  5 x 5 x 5 factorial of
 per-building weight vectors taken from the team's log (R < 108), chosen by
 farthest-point sampling so the variants differ. Doubles as a throughput test."""
-import itertools, json, sys, time
+import itertools, sys, time
 import numpy as np
 from pool import SolverPool, normalize
+from common import HERE, read_jsonl, write_json
 
 P = int(sys.argv[1]) if len(sys.argv) > 1 else 8
-rows = [json.loads(l) for l in open('../replay/evidence/eval_log.jsonl', encoding='utf-8')]
+rows = read_jsonl('../replay/evidence/eval_log.jsonl')
 W = normalize([r['weights'] for r in rows]).reshape(-1, 3, 7)
 R = np.array([r['R'] for r in rows])
 good = np.where(R < 108)[0]
@@ -34,4 +35,4 @@ print('main effects b1', a.round(3), 'b2', b_.round(3), 'b3', c.round(3))
 print('additive R2', 1 - res.var() / T.var(), 'residual SD', res.std().round(4), 'max |res|', np.abs(res).max().round(3))
 i, j, k = np.unravel_index(T.argmin(), T.shape); ia, ja, ka = a.argmin(), b_.argmin(), c.argmin()
 print('true argmin', (i, j, k), T.min(), '| additive argmin', (ia, ja, ka), T[ia, ja, ka])
-np.save('E1_factorial.npy', T); json.dump([v.tolist() for v in variants], open('E1_variants.json', 'w'))
+np.save(HERE / 'E1_factorial.npy', T); write_json('E1_variants.json', [v.tolist() for v in variants])

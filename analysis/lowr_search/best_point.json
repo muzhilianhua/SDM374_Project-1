@@ -44,7 +44,7 @@
   1.0,
   1.0
  ],
- "evaluations_this_harness": 8139,
+ "evaluations_this_harness": 8763,
  "evaluations_team_log": 6568,
  "note": "exploration result from local solver.exe runs; not an input to the graded online policy (decisions 19, 29)"
 }

@@ -1,9 +1,10 @@
 """E2: one-dimensional profiles around the incumbent, one coordinate at a time.
 Minor weights on a log scale (including exact 0), r on a linear scale."""
-import sys, time, json
+import sys, time
 import numpy as np
 from pool import SolverPool
 from common import block, to_ratio, team_best, NAMES, MINOR
+from common import write_json
 
 P = int(sys.argv[1]) if len(sys.argv) > 1 else 10
 base = team_best()
@@ -29,4 +30,4 @@ for k, v in out.items():
     cur = r0 if k.endswith(':r') else m0[[NAMES[i] for i in MINOR].index(k.split(':')[1])]
     best = min(v, key=lambda t: t[1])
     print(f'{k:16s} incumbent value {cur:.5f} | best {best} | ' + ' '.join(f'{a:g}:{c:.2f}' for a, c in v))
-json.dump(out, open('E2_profiles.json', 'w'))
+write_json('E2_profiles.json', out)

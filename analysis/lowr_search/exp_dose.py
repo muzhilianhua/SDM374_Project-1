@@ -9,15 +9,15 @@ A minor weight is written m_k = w_k / (degradation + ramping); r and the other m
   pair   10 x 10 grid over the building's two most valuable minor weights (0 and 1/8 .. 8 times the
          incumbent values): do they substitute for each other or do they need each other?
 """
-import json
 import time
 
 import numpy as np
 
 from common import MINOR, NAMES, block, to_ratio
 from pool import SolverPool
+from common import read_json, write_json
 
-state = json.load(open("fms_state_run4.json", encoding="utf-8"))
+state = read_json("fms_state_run4.json")
 inc = np.array(state["inc"]); inc = inc / inc.sum(1, keepdims=True); inc_R = state["inc_R"]
 LOG = 10 ** np.linspace(-4, 0, 25)
 NEAR = np.array([0.7, 0.85, 0.95, 1.05, 1.2, 1.5])
@@ -39,7 +39,7 @@ y = pool.evaluate(np.array(X), tag="E8_loo") - inc_R
 print(f"[loo] {len(X)} points, {pool.n_solver_evals} new evaluations so far, {time.time() - t0:.0f}s")
 for (b, j, v), d in zip(meta, y):
     out["loo"].append({"building": b + 1, "minor": j, "m": v, "delta": float(d)})
-json.dump(out, open("E8_dose.json", "w"), indent=1)
+write_json("E8_dose.json", out, indent=1)
 
 X, meta = [], []
 for b in range(3):
@@ -52,7 +52,7 @@ y = pool.evaluate(np.array(X), tag="E8_add") - inc_R
 print(f"[add] {len(X)} points, {pool.n_solver_evals} new evaluations so far, {time.time() - t0:.0f}s")
 for (b, j, v), d in zip(meta, y):
     out["add"].append({"building": b + 1, "minor": j, "m": v, "delta": float(d)})
-json.dump(out, open("E8_dose.json", "w"), indent=1)
+write_json("E8_dose.json", out, indent=1)
 
 X, meta = [], []
 for b in range(3):
@@ -66,6 +66,6 @@ y = pool.evaluate(np.array(X), tag="E8_pair") - inc_R
 print(f"[pair] {len(X)} points, {pool.n_solver_evals} new evaluations in total, {time.time() - t0:.0f}s")
 for (b, j1, j2, f1, f2), d in zip(meta, y):
     out["pair"].append({"building": b + 1, "minor1": j1, "minor2": j2, "f1": f1, "f2": f2, "delta": float(d)})
-json.dump(out, open("E8_dose.json", "w"), indent=1)
+write_json("E8_dose.json", out, indent=1)
 best = min(min(e["delta"] for e in out[k]) for k in ("loo", "add", "pair"))
 print(f"lowest delta in E8: {best:+.4f}")

@@ -1,8 +1,9 @@
 """Outcome of each move type around the 104.5027 incumbent (run 2: no adoption, so every delta is
 relative to the same point). Shows the correlation length of the landscape: how far a move can go
 before the result is no better than a random block of the basin."""
-import json, sys, numpy as np
-state = json.load(open(sys.argv[1] if len(sys.argv) > 1 else 'fms_state.json', encoding='utf-8'))
+import sys, numpy as np
+from common import read_json
+state = read_json(sys.argv[1] if len(sys.argv) > 1 else 'fms_state.json')
 rows = {}
 for b in range(3):
     for e in state['arch'][b]:

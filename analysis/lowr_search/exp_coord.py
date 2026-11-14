@@ -10,7 +10,6 @@ Stops after --rounds rounds or when a round brings nothing.
     python exp_coord.py [rounds]
 """
 import itertools
-import json
 import sys
 import time
 
@@ -18,6 +17,7 @@ import numpy as np
 
 from common import MINOR, NAMES, block, to_ratio
 from pool import SolverPool, load_log
+from common import write_json
 
 MN = [NAMES[k] for k in MINOR]
 ROUNDS = int(sys.argv[1]) if len(sys.argv) > 1 else 2
@@ -85,8 +85,8 @@ for rnd in range(ROUNDS):
         cur, cur_R = Xc[k].reshape(3, 7), cur_R + float(yc[k])
     rec["R_after"] = cur_R; hist["rounds"].append(rec)
     print(f"  -> R = {cur_R:.9f}", flush=True)
-    json.dump(hist | {"best_R": cur_R, "best_W": cur.tolist()}, open("E12_coord.json", "w"), indent=1)
+    write_json("E12_coord.json", hist | {"best_R": cur_R, "best_W": cur.tolist()}, indent=1)
 
 np.set_printoptions(precision=6, suppress=True, linewidth=200)
 print(f"\nfinal R = {cur_R:.9f}; {pool.n_solver_evals} new evaluations in {time.time() - t0:.0f}s"); print(cur)
-json.dump(hist | {"best_R": cur_R, "best_W": cur.tolist()}, open("E12_coord.json", "w"), indent=1)
+write_json("E12_coord.json", hist | {"best_R": cur_R, "best_W": cur.tolist()}, indent=1)

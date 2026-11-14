@@ -1,12 +1,13 @@
 """E4: interaction lottery. Cross product of the K best distinct blocks per building
 (by delta in the search archive). Under exact additivity no combination could beat the
 incumbent; the residual of an additive fit measures the fine-scale interaction."""
-import itertools, json, sys, time
+import itertools, sys, time
 import numpy as np
 from pool import SolverPool
+from common import HERE, read_json
 
 K = int(sys.argv[1]) if len(sys.argv) > 1 else 7
-state = json.load(open('fms_state.json', encoding='utf-8'))
+state = read_json('fms_state.json')
 inc_R = state['inc_R']
 sets, deltas = [], []
 for b in range(3):
@@ -31,4 +32,4 @@ pred = inc_R + np.add.outer(np.add.outer(deltas[0], deltas[1]), deltas[2])     #
 err = T - pred
 print('error of the single-block additive prediction: mean', round(err.mean(), 4), 'SD', round(err.std(), 4), 'min', round(err.min(), 4))
 print('combinations below the incumbent:', int((T < inc_R - 1e-9).sum()), 'of', T.size)
-np.save('E4_recomb.npy', T)
+np.save(HERE / 'E4_recomb.npy', T)

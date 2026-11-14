@@ -10,16 +10,16 @@ At this size a weight only breaks near-ties, so R moves in a few wide steps alon
   step 4  combine again and report
 """
 import itertools
-import json
 import time
 
 import numpy as np
 
 from common import MINOR, NAMES, block, to_ratio
 from pool import SolverPool
+from common import read_json, write_json
 
 MN = [NAMES[k] for k in MINOR]
-state = json.load(open("fms_state_run4.json", encoding="utf-8"))
+state = read_json("fms_state_run4.json")
 inc = np.array(state["inc"]); inc = inc / inc.sum(1, keepdims=True); inc_R = state["inc_R"]
 pool = SolverPool(n_workers=10)
 t0 = time.time()
@@ -93,4 +93,4 @@ if any(c is not None for c in cands):
 print(f"\nbest after follow-up: R = {inc_R + cur_d:.9f}  ({cur_d:+.4f} vs {inc_R:.4f});  {pool.n_solver_evals} new evaluations in {time.time() - t0:.0f}s")
 print(cur)
 out["best_R"] = inc_R + cur_d; out["best_W"] = cur.tolist()
-json.dump(out, open("E10_followup.json", "w"), indent=1)
+write_json("E10_followup.json", out, indent=1)

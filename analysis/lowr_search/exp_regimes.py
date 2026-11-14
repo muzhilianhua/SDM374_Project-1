@@ -14,16 +14,16 @@ Question: how large are the interactions, what sign do they have, and is there a
 a building that smooths *less* gives a lower district R than the additive expectation suggests?
 """
 import itertools
-import json
 import time
 
 import numpy as np
 
 from common import block, to_ratio
 from pool import SolverPool
+from common import read_json, write_json
 
 LEVELS = ["inc", "pure", "ramp", "half", "idle"]
-state = json.load(open("fms_state_run4.json", encoding="utf-8"))
+state = read_json("fms_state_run4.json")
 inc = np.array(state["inc"]); inc = inc / inc.sum(1, keepdims=True); inc_R = state["inc_R"]
 Z = np.zeros(5)
 
@@ -84,4 +84,4 @@ for b in range(3):
     print(f"  b{b + 1}: from {v.min():.2f} (others {rows[lo][0]}/{rows[lo][1]}) to {v.max():.2f} (others {rows[hi][0]}/{rows[hi][1]});"
           f" others at incumbent {rows[0][2]:.2f}, others idle {rows[-1][2]:.2f}")
 
-json.dump({"levels": LEVELS, "incumbent_R": inc_R, "R": T.tolist()}, open("E7_regimes.json", "w"), indent=1)
+write_json("E7_regimes.json", {"levels": LEVELS, "incumbent_R": inc_R, "R": T.tolist()}, indent=1)

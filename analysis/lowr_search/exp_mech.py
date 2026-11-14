@@ -8,16 +8,16 @@
   stale    archived blocks whose *estimated* delta is negative but which were never measured against the
            current incumbent: one representative per distinct estimate.
 """
-import json
 import time
 
 import numpy as np
 
 from common import MINOR, NAMES
 from pool import SolverPool
+from common import read_json, write_json
 
 np.set_printoptions(precision=5, suppress=True, linewidth=200)
-state = json.load(open("fms_state_run4.json", encoding="utf-8"))
+state = read_json("fms_state_run4.json")
 inc = np.array(state["inc"]); inc = inc / inc.sum(1, keepdims=True); inc_R = state["inc_R"]
 E = np.eye(7)
 pool = SolverPool(n_workers=10)
@@ -109,4 +109,4 @@ if X:
         i = int(np.argmin(d)); print("  NEW BEST", y[i], np.array(X[i]).reshape(3, 7))
 
 print(f"\n{pool.n_solver_evals} new evaluations in {time.time() - t0:.0f}s")
-json.dump(out, open("E6_mech.json", "w"), indent=1)
+write_json("E6_mech.json", out, indent=1)

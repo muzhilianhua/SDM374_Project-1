@@ -6,7 +6,6 @@
 It rebuilds each experiment's design with the same expressions as the exp_*.py scripts and looks the
 points up in eval_log.jsonl, so it can run while an experiment is still in progress.
 """
-import json
 import sys
 import warnings
 
@@ -14,16 +13,14 @@ import numpy as np
 
 from common import MINOR, NAMES, block, to_ratio
 from pool import LOG as LOG_FILE, key_of, normalize
+from common import HERE, read_json, read_jsonl
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)      # all-NaN windows while a run is in progress
 np.set_printoptions(precision=3, suppress=True, linewidth=220)
-state = json.load(open("fms_state_run4.json", encoding="utf-8"))
+state = read_json("fms_state_run4.json")
 inc = np.array(state["inc"]); inc = inc / inc.sum(1, keepdims=True); inc_R = state["inc_R"]
 MN = [NAMES[k] for k in MINOR]                       # cost, carbon, peak, discomfort, resilience
-cache = {}
-for line in open(LOG_FILE, encoding="utf-8"):
-    rec = json.loads(line)
-    cache[key_of(np.asarray(rec["weights"], dtype=float))] = rec["R"]
+cache = {key_of(np.asarray(rec["weights"], dtype=float)): rec["R"] for rec in read_jsonl(LOG_FILE)}
 
 
 def delta(W):
@@ -203,7 +200,7 @@ def plots(res, loo, add, pair):
     fig.suptitle(T("r 的细扫：点是单次评估，线是 11 点滑动中位数；纵轴截断在 8（r 再大时 1 号楼升到 +37.7）",
                    "Fine scan of r: dots are single evaluations, lines are 11-point running medians; y axis cut at 8"),
                  x=0.01, y=0.985, ha="left", fontsize=10, color=INK2)
-    fig.tight_layout(rect=(0, 0, 1, 0.87)); fig.savefig("mech_rscan.png", dpi=140); plt.close(fig)
+    fig.tight_layout(rect=(0, 0, 1, 0.87)); fig.savefig(HERE / "mech_rscan.png", dpi=140); plt.close(fig)
 
     # --- dose response ---
     fig, ax = plt.subplots(3, 5, figsize=(14, 7.2), sharex=True, sharey=True)
@@ -234,7 +231,7 @@ def plots(res, loo, add, pair):
     fig.suptitle(T("次要权重的剂量曲线：菱形是该权重为 0 时的值，虚线是当前最优的取值；纵轴截断在 5",
                    "Dose curves of the minor weights: diamonds are the value at weight 0, dashed lines the incumbent's level; y axis cut at 5"),
                  x=0.01, y=0.99, ha="left", fontsize=10, color=INK2)
-    fig.tight_layout(rect=(0, 0, 1, 0.92)); fig.savefig("mech_dose.png", dpi=140); plt.close(fig)
+    fig.tight_layout(rect=(0, 0, 1, 0.92)); fig.savefig(HERE / "mech_dose.png", dpi=140); plt.close(fig)
 
     # --- pair grids ---
     cmap = LinearSegmentedColormap.from_list("seq_blue", ["#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"])
@@ -258,7 +255,7 @@ def plots(res, loo, add, pair):
     fig.suptitle(T("每栋楼最有价值的两个次要权重：格内数字是 R − 当前最优，颜色越深越差（3 以上同色）",
                    "The two most valuable minor weights per building: cells show R − incumbent, darker is worse (capped at 3)"),
                  x=0.01, y=0.99, ha="left", fontsize=10, color=INK2)
-    fig.tight_layout(rect=(0, 0, 1, 0.97)); fig.savefig("mech_pair.png", dpi=140); plt.close(fig)
+    fig.tight_layout(rect=(0, 0, 1, 0.97)); fig.savefig(HERE / "mech_pair.png", dpi=140); plt.close(fig)
     print("\nwrote mech_rscan.png, mech_dose.png, mech_pair.png")
 
 

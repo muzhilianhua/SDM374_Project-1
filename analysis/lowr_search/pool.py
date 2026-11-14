@@ -146,6 +146,8 @@ class SolverPool:
         for k, w in zip(keys, W):
             if k not in self.cache and k not in todo:
                 todo[k] = w
+        if todo and os.environ.get("LOWR_CACHE_ONLY"):
+            raise RuntimeError(f"LOWR_CACHE_ONLY is set but {len(todo)} point(s) of '{tag}' are not in {self.log.name}")
         if todo:
             new_keys = list(todo)
             new_W = np.array([todo[k] for k in new_keys])

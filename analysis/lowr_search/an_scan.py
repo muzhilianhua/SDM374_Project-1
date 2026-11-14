@@ -1,10 +1,11 @@
 """Read the E3 scan: which minor objectives help each building, and at what magnitude and r."""
-import json, numpy as np
+import numpy as np
 from pool import load_log
 from common import to_ratio, NAMES, MINOR
+from common import read_json
 W, R, tags = load_log()
 m = np.array([t == 'E3_scan' for t in tags]); W, R = W[m].reshape(-1, 3, 7), R[m]
-state = json.load(open('fms_state.json', encoding='utf-8')); inc = np.array(state['inc'])
+state = read_json('fms_state.json'); inc = np.array(state['inc'])
 # incumbent at scan time = most common block per building
 np.set_printoptions(precision=3, suppress=True, linewidth=200)
 for b in range(3):
