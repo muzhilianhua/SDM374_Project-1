@@ -1,0 +1,9 @@
+[init] incumbent R=104.502683; seeded blocks per building: [1391, 1442, 1353]
+gen   0  R*=104.502683  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=176  268s
+gen   1  R*=104.502683  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=173  262s
+gen   2  R*=104.502683  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=173  264s
+FINAL R*=104.502682754
+[[0.       0.044162 0.       0.009356 0.255136 0.681509 0.009838]
+ [0.       0.007283 0.       0.000331 0.20995  0.65244  0.129997]
+ [0.       0.       0.009887 0.       0.242252 0.725322 0.022539]]
+operator selection probabilities: {'scale0.001': 0.089, 'scale0.003': 0.074, 'scale0.01': 0.069, 'scale0.03': 0.057, 'scale0.1': 0.066, 'scale0.3': 0.057, 'scale1': 0.048, 'toggle': 0.052, 'multi0.002': 0.064, 'multi0.01': 0.048, 'multi0.05': 0.035, 'multi0.2': 0.036, 'cross': 0.057, 'transplant': 0.04, 'global': 0.037, 'snap40': 0.039, 'snap100': 0.042, 'snap400': 0.046, 'snap1000': 0.043}

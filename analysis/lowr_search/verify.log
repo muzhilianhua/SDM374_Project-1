@@ -1,0 +1,16 @@
+logged 104.3726098362822
+alone  104.3726098362822
+batch  104.3726098362822  (team best in the same call: 104.851733, uniform weights: 156.245609)
+reproduced exactly: True
+rounded to 8 decimals: R = 104.372610  (+0.0000)
+rounded to 6 decimals: R = 104.372610  (+0.0000)
+rounded to 5 decimals: R = 104.372610  (+0.0000)
+rounded to 4 decimals: R = 104.393229  (+0.0206)
+rounded to 3 decimals: R = 104.509041  (+0.1364)
+
+relative noise on every weight -> share of perturbed points with the same R, median and worst change
+  10^N(0,1e-06): same R 1.00   median +0.0000   worst +0.0000   best +0.0000
+  10^N(0,1e-05): same R 1.00   median +0.0000   worst +0.0000   best +0.0000
+  10^N(0,0.0001): same R 0.83   median +0.0000   worst +0.0153   best +0.0000
+  10^N(0,0.001): same R 0.00   median +0.0252   worst +0.7030   best +0.0053
+  10^N(0,0.01): same R 0.00   median +2.3543   worst +3.0026   best +0.9733

@@ -1,0 +1,7 @@
+993 new evaluations in 1756s; incumbent 104.4755
+b1 minor: min +0.5606 at r = 0.270; below incumbent: 0; median for r < 0.30: +2.709
+b1 pure : min +0.9367 at r = 0.270; below incumbent: 0; median for r < 0.30: +2.117
+b2 minor: min +0.0072 at r = 0.244; below incumbent: 0; median for r < 0.30: +1.015
+b2 pure : min +1.0096 at r = 0.222; below incumbent: 0; median for r < 0.30: +1.327
+b3 minor: min +0.0000 at r = 0.250; below incumbent: 0; median for r < 0.30: +1.983
+b3 pure : min +0.5685 at r = 0.246; below incumbent: 0; median for r < 0.30: +1.708

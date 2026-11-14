@@ -39,6 +39,32 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **The local evaluator reaches R = 104.3726; below ~106 the landscape is needles, not a valley** (2026-11-13, T36,
+  [study](../analysis/lowr_search/README.md), `analysis/lowr_search/`, 8,763 local `solver.exe` evaluations,
+  exploration only: none of its points, R values or weights may enter the online code or configs, decisions 19, 27, 29).
+  Best point R = 104.3726098362822, reproduced bit for bit by two fresh calls, 0.479 below the team log's 104.8517.
+  One basin (degradation + ramping dominant, r = F5/(F5+F6) ≈ 0.24–0.27); R is strictly additive over buildings at
+  fine scale (error ≈ 0.03); plateaus are 0.02–0.2 % of a weight wide and a ~2 % move already looks like a random
+  basin draw. The buildings are complements, with no division-of-labour regime; the best r is a local dip, not the
+  edge of the battery switch-off band (r 0.30–0.50). Minor weights act as switches with repeatable windows, and
+  tiny weights (1e-5 to 3e-3) on unused objectives lower R by changing near-tied hourly choices; weights below 1e-6
+  equal exact zeros. The last 0.103 came from one-coordinate systematic scans that the random search had missed;
+  the final point is a coordinate-wise local minimum. Larger drops would need a white-box replay, not done.
+
+- **The GP-ARD ranks well near the data but cannot see the low region away from it** (2026-11-12, T35,
+  [study](../analysis/gp_assumptions/README.md), `analysis/gp_assumptions/delivery/20261112/`, built on `08b77c8`
+  with `study.py` sha256 `a1e8bbad…`, no evaluator calls). Checked on 3 random 1400/648 splits of the training
+  table and scored on the 6,548 distinct points of the local solver log (`analysis/replay/evidence/`, used only to
+  choose the model under decision 27). The team kernel (`bayes-search`, `additive-ard`) beats generic 21-dim ARD
+  kernels (held-out MAE 3.40 vs 4.74–5.98), so additivity over buildings holds; the solver is deterministic
+  (7 repeated points, spread 0); in-distribution 95 % coverage is 0.948. Two assumptions fail: the constant prior
+  mean (far from data real R is below the prediction, z mean −1.48; the log's 200 lowest points, R ≈ 105.1 at
+  about 1.9 spacings on the simplex boundary, are predicted 124.4 ± 8.8) and small-scale stationarity (ripples of
+  about 1 R at scales 0.01–0.025 near that region). On optimizer-chosen points near the data the `std` is about half
+  the real error (z sd 1.90). Of three changes, a quadratic trend and a log target hurt local ranking;
+  per-building length scales help slightly (near MAE 3.63 vs 3.74) but did not converge in 18 iterations. No kernel
+  change makes the surrogate predict the low region, so reaching it is an exploration question (T15, T18).
+
 - **Offline submission 2 met the bar; the online target is 115.68** (submitted 2026-11-05, recorded
   2026-11-09). Real R = **115.68**, below the bar 115.7648 (`p01969`, decision 17) by about 0.08. The
   exact value returned by the evaluator is still to be added. The best offline result is therefore
@@ -211,6 +237,11 @@ and record the new decision here with a date.
 
 ## Open questions
 
+- May the online policy use structural priors that local evaluator runs revealed, such as "the low region uses
+  degradation + ramping with few other objectives"? Decision 27 forbids embedding measured points or R values,
+  but such a prior is in effect the optimum's location. Working recommendation (A, 2026-11-13,
+  [guidance](../analysis/lowr_search/GUIDANCE.md)): use only priors derivable from the 2048 training rows
+  (`analysis/lowr_search/train_priors.py`). Owner: A, with T03.
 - Which `solver.exe` does the graded run use? The course computer (2026-11-12, see Resolved) holds four
   evaluators: two copies of the pinned `solver.exe` (`293867b8…a077247`), the offline `RampingSolver.exe`, and
   `Desktop\AIM\01Lab\Lab6\solver_v2\solver.exe` (199,092,593 bytes, sha256 `28b81344…52a6586`), which is

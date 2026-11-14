@@ -1,0 +1,15 @@
+[init] incumbent R=104.497673; seeded blocks per building: [1964, 2013, 1929]
+  [adopt] 104.497673 -> 104.475612 (run4_g0_adopt)
+gen   0  R*=104.475612  gain=0.0221  improving b1/b2/b3=[0, 1, 0]  evals=180  270s
+gen   1  R*=104.475612  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=182  269s
+gen   2  R*=104.475612  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=175  258s
+gen   3  R*=104.475612  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=175  258s
+gen   4  R*=104.475612  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=177  261s
+  [adopt] 104.475612 -> 104.475472 (run4_g5_adopt)
+gen   5  R*=104.475472  gain=0.0001  improving b1/b2/b3=[0, 1, 0]  evals=176  258s
+gen   6  R*=104.475472  gain=0.0000  improving b1/b2/b3=[0, 0, 0]  evals=182  276s
+FINAL R*=104.475471706
+[[0.       0.059819 0.       0.00615  0.249589 0.675891 0.008552]
+ [0.       0.008513 0.       0.000188 0.2098   0.651974 0.129525]
+ [0.       0.       0.009887 0.       0.242252 0.725322 0.022539]]
+operator selection probabilities: {'scale0.001': 0.091, 'scale0.003': 0.07, 'scale0.01': 0.074, 'scale0.03': 0.06, 'scale0.1': 0.056, 'scale0.3': 0.068, 'scale1': 0.045, 'toggle': 0.057, 'multi0.002': 0.058, 'multi0.01': 0.037, 'multi0.05': 0.038, 'multi0.2': 0.038, 'cross': 0.079, 'transplant': 0.036, 'global': 0.034, 'snap40': 0.039, 'snap100': 0.038, 'snap400': 0.042, 'snap1000': 0.039}

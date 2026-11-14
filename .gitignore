@@ -14,3 +14,8 @@ design-variants/
 /solver/solver.exe
 /solver/usage.count
 /solver/__pycache__/
+
+# analysis/lowr_search: solver worker folders (hard links of solver.exe + usage.count) and the live search state
+analysis/lowr_search/workers/
+analysis/lowr_search/fms_state.json
+analysis/lowr_search/STOP
