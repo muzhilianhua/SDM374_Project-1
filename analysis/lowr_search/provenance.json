@@ -60,7 +60,7 @@
   "exp_scan.py": "47445c9d0d05fc443aafb7b0a1b663bfb2cd1817af9fedf9430eb5fa60e51f38",
   "exp_tiny.py": "2f1c602aff2ce6b8f156daccddf7b04d3d40558f8314ea8493519ece58a9541a",
   "fms.py": "b1691a13a59b2b3ba6bbb8b22e89cd0340c3168d85c37aff1d8bebe5c4e1e1c1",
-  "pool.py": "eb0524385c2f7aca1de8ef0ae57cbbe4586847fb5046acfcc8014ec123ad1ac3",
+  "pool.py": "d908d99a0ddd52a6d53f026c31b0da65603e750190e0641a36fc9d6f384aa961",
   "qos.py": "75d410be751a552c9c628b2cbc6a21a21175c94e0389d942e0efb09092988c81",
   "report.py": "06d0a4420de7b6c5fdfcf6663991f525d76cbcc6d4c04bb9c3e468afe62b31a0",
   "t_fms_dry.py": "d9ee185e4e512d4119de94607d1bbf449b6988fc934a10d3616b30334d5f1bea",
@@ -128,5 +128,13 @@
    "t_sanity.py"
   ],
   "effect": "no recorded result changes: pool.py now checks the solver.exe sha256 and adds call_uncached (verify.py uses it); common.to_ratio guards degradation + ramping = 0, where the old code divided by zero"
+ },
+ "review_changes_pr25": {
+  "date": "2026-11-14",
+  "pr": 25,
+  "changed": [
+   "pool.py"
+  ],
+  "effect": "no recorded result changes: pool.py counts solver.exe invocations (n_solver_invocations, used by analysis/online_rehearsal/rehearse.py for its call records); evaluation, caching and the sha256 check are unchanged"
  }
 }
