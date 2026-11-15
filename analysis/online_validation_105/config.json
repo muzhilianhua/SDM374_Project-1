@@ -1,0 +1,66 @@
+{
+  "experiment": "independent_additive_ard_gp_online_validation",
+  "rounds": 20,
+  "batch_size": 50,
+  "master_seed": 2026,
+  "data": {
+    "path": "data/train.csv",
+    "expected_rows": 2048,
+    "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+  },
+  "model": {
+    "kernel": "0.90_mean_three_building_matern_2.5_plus_0.10_global_matern_2.5",
+    "initial_length_scale": 0.5,
+    "length_scale_bounds": [0.03, 3.0],
+    "initial_noise": 0.03,
+    "noise_bounds": [0.001, 0.3],
+    "global_weight": 0.1,
+    "alpha": 1e-8,
+    "optimizer": "L-BFGS-B",
+    "maxiter": 18,
+    "ftol": 1e-5,
+    "maxls": 10,
+    "restarts": 0,
+    "prediction_chunk": 256
+  },
+  "calibration": {
+    "history": 100,
+    "minimum": 1.0,
+    "maximum": 3.0
+  },
+  "candidates": {
+    "local": 12000,
+    "structure": 12000,
+    "elite_structures": 16,
+    "donors_per_building_role": 8,
+    "local_concentrations": [100.0, 300.0, 1000.0, 3000.0, 10000.0],
+    "two_building_probability": 0.2,
+    "replacement_fractions": [0.5, 0.75, 1.0],
+    "structure_concentrations": [100.0, 300.0],
+    "max_replenishments": 3
+  },
+  "selection": {
+    "duplicate_atol": 1e-9,
+    "explore_distance_factor": 0.5,
+    "selected_distance_factor": 0.1,
+    "exploit_std_weight": 0.5,
+    "structure_std_weight": 1.0,
+    "explore_std_weight": 2.0,
+    "exploit_structure_cap": 5,
+    "structure_target_cap": 1,
+    "explore_structure_cap": 2,
+    "first_round_quotas": {"exploit": 15, "structure": 25, "explore": 10},
+    "improving_quotas": {"exploit": 30, "structure": 10, "explore": 10},
+    "stalled_quotas": {"exploit": 20, "structure": 20, "explore": 10},
+    "improvement_lookback": 3
+  },
+  "solver": {
+    "transport": "embedded_serve_json_lines",
+    "path": "d:/HuaweiMoveData/Users/11659/Desktop/在线/solver/solver.exe",
+    "sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+    "inner_path": "C:/Users/11659/AppData/Local/Temp/RampingSolver.exe",
+    "inner_sha256": "e7afe2c252a8c6caed4645ae0893664d134146fac4b2db19a05c7b36828d1112",
+    "workers": 4,
+    "timeout_seconds": 3600
+  }
+}

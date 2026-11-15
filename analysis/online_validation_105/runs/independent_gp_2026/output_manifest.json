@@ -1,0 +1,8 @@
+{
+  "evaluations.csv": "588be7ba0fe7aa50f7ab6df379969f66b0fc51cc8ec8e842116ca21df96fa57e",
+  "metrics_by_call.csv": "cb8fef2df73dc6c0d37eb3b477c8065cd30a4e045889ec785d790f1fe086b2a1",
+  "summary.json": "e99d0299c1e3e3f7c10bf803e121b1d9c41fbeb80044e16a1b6156920df106ef",
+  "r_descent.png": "ed7f214e8938c0a313f427fe6c0c23e14a20070eff14638b0f6b0c3310c8d146",
+  "learning_curve.png": "793034ed9ba2e3048b9fc1cd6880278464d48fd8b442d7340ef13a7ef47c1416",
+  "prediction_vs_actual.png": "2be97f5d16ee91a906f4a355ece765678df3b5742af72b93d00de74b184dbb1c"
+}
