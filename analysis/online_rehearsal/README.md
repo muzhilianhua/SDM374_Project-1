@@ -26,32 +26,37 @@ real evaluator, and can it get near 104?
 | Variant | Change | Seed 2026 | Seed 7 | Seed 11 | Mean | Mean best after call 5 / 10 / 15 |
 |---|---|---|---|---|---|---|
 | v1 | base policy | 107.026 | 107.211 | 106.425 | 106.89 | 109.18 / 107.88 / 107.28 |
-| v2 | v1 + shift bias derived from the training rows | 106.951 | **105.107** | 107.490 | **106.52** | 109.51 / 107.50 / 106.69 |
+| v2 | v1 + shift bias derived from the training rows | 106.951 | 105.107 | 107.490 | 106.52 | 109.51 / 107.50 / 106.69 |
 | v3 | v2 + fewer surrogate picks after call 6 | 107.777 | — | — | — | 110.03 / 108.90 / 108.61 |
+| **v4** | v2 + null-step filter, late coordinate scans, adaptive shares, no repeats (2026-11-16, `policy_v4.py`) | 108.049 | **103.275** | 105.440 | **105.59** | 108.51 / 107.00 / 105.98 |
 
-Each run is 20 policy batches of at most 50 points (963–995 points were sent: the screen drops proposals that repeat a sent point and the prototype does not refill them), about 40 minutes
-with 10 parallel solver instances. The local pool splits each policy batch into smaller worker invocations and resets quota state only inside those private worker folders; `solver_invocations` in each
-new `call_done` record reports this development-only detail (the committed historical logs predate this field). Curves: `convergence.png`.
+Each run is 20 policy batches of at most 50 points, about 40 minutes with 10 parallel solver instances. v1–v3 sent
+963–995 points (the screen dropped repeats that the prototype did not refill); v4 sends all 1,000. The local pool
+splits each policy batch into smaller worker invocations and resets quota state only inside those private worker
+folders; `solver_invocations` in each new `call_done` record reports this development-only detail (the committed
+historical logs predate this field). Curves: `convergence.png`.
 
-- All 7 runs beat the best offline result 115.68 in **call 1** (114.5–115.1).
-- Expect **106.5 ± 1**; about 105 in a lucky run. **104 is not reachable** within 1,000 compliant points.
-  Most runs settle at 106.4–107.5 after call 13–15, which is the level of the degradation + ramping face
-  (lowr_search E6: 107–108). Going lower needs narrow minor-weight windows that lowr_search found with about
-  8,000 targeted evaluations.
-- Seed spread (about ±1) is larger than the v1/v2 difference (0.37 on the mean); three seeds cannot rank them.
-  v2 is not worse and has the better best case, so it is the recommended starting point. v3 (one seed) is
-  clearly slower: surrogate picks still matter in the middle calls.
-- v2 seed 7 is the outlier: it reached a better region in calls 7–9 (107.0 → 105.75). Its final point uses
-  ramping as the main weight in every building; v1/v2 seed 2026 ended in regions where building 2 is almost
-  all peak (0.98) or all discomfort (0.90) at nearly the same R, so several equivalent plateaus exist near 107.
+- All 10 runs beat the best offline result 115.68 in **call 1** (113.2–115.1).
+- **v4 is the recommended policy.** Its mean is 0.93 below v2's and it is ahead at calls 5, 10 and 15. Per seed it
+  is better for seeds 7 (−1.83) and 11 (−2.05) and worse for seed 2026 (+1.10); with three seeds this is a
+  likely, not a proven, improvement.
+- v4 seed 7 reached **103.275** within 1,000 compliant points, close to the lowest point `analysis/lowr_search`
+  found with about 20,000 unrestricted evaluations (103.247). Its late coordinate scans and same-building
+  combinations kept descending through calls 11–20 (105.11 → 103.28), where v1–v3 runs stalled.
+- Seed spread is large (v4: 103.3–108.0). Expect about **105.5**, roughly 103–108 depending on where a run lands.
+- v3 (one seed) is clearly slower: surrogate picks still matter in the middle calls, which is why v4 keeps a
+  model floor of 25 % in its adaptive shares.
+- v1/v2 runs ended in different regions at similar R (e.g. building 2 almost all peak or all discomfort); several
+  near-equivalent valleys exist, which `analysis/lowr_search` later confirmed (§1.8–§1.11 there).
 
 ### Picking the seed is a decision for the user / TA
 
-Policy and evaluator are deterministic, so freezing v2 with seed 7 would reproduce **105.107** bit for bit in
-the graded run. That selects a seed on the test function. Decision 27 allows choosing hyperparameters on local
-runs but is not TA-confirmed, and the earlier open question in `docs/decisions.md` named exactly this case. It
-also needs the course computer to emit the same batches (T09) and the same `solver.exe` (decision 30, also in PR #20). The case is
-recorded under the open question on tuning in `docs/decisions.md`. Without seed picking, plan for about 106.5.
+Policy and evaluator are deterministic, so freezing v4 with seed 7 would reproduce **103.275** bit for bit in
+the graded run (v2 seed 7: 105.107). That selects a seed on the test function. Decision 27 allows choosing
+hyperparameters on local runs but is not TA-confirmed, and the earlier open question in `docs/decisions.md` named
+exactly this case. It also needs the course computer to emit the same batches (T09) and the same `solver.exe`
+(decision 30, also in PR #20). The case is recorded under the open question on tuning in `docs/decisions.md`.
+Without seed picking, plan for about 105.5 with v4.
 
 ## Policy (`policy.py`, `surrogate.py`)
 
@@ -66,7 +71,21 @@ recorded under the open question on tuning in `docs/decisions.md`. Without seed 
 | Call 1 | start from the best training row (not resent): per-building surrogate candidates + 8 multi-building jumps | — |
 | v2 shift bias | the shift target is drawn with probability ∝ max(0, −Spearman(share, R)) + 0.02 on the training rows (ramping 0.43–0.63 in every building); calls 1–6 add 3 unscreened biased shifts per building | training rows only |
 
-## What the logs show (all 7 runs, `analyse.py`)
+## v4 changes (`policy_v4.py`)
+
+All four use only the run's own results.
+
+| Change | What it does | Why |
+|---|---|---|
+| Null-step filter | a one-coordinate move that returns exactly the base's R marks a plateau; per building, base block and coordinate the widest such interval is kept and no move inside it is proposed | in v1–v3, 30 % of the points in calls 11–20 repeated an R already seen in the run |
+| Late coordinate scans (from call 9) | one-coordinate steps just outside the known plateau (smallest effective step first, coordinates rotating), plus the previous call's improving coordinates of the same building applied to the current base (E15-style combinations) | v1–v3 late moves were too fine; one-coordinate scans and their combinations found the late gains in `analysis/lowr_search` (E10, E15) |
+| Adaptive shares | per building, slots go to model / random / fine / scan in proportion to their hit rate over the last 4 calls, posterior (hits + 1) / (n + 5), with floors (model 0.25, others 0.10) | model picks hit 9 % of the time but held 42 % of the slots |
+| No repeats, no call-1 jumps | candidates that repeat a training row or a sent point are never proposed, so every call sends 50 points; the call-1 multi-building jumps are gone | 5–37 points per run were dropped; the jumps hit 0 times in 56 points |
+
+In v4 the late repeat rate fell from 39 % to 28 % (seed 2026; the rest are repeats of other plateaus than the
+base's), and scans were the most productive late move (hits / points: 35/152, 54/178, 26/138).
+
+## What the logs show (the 7 v1–v3 runs, `analyse.py`)
 
 "Hit" = a point below the best R known when its call was sent.
 
@@ -93,15 +112,16 @@ recorded under the open question on tuning in `docs/decisions.md`. Without seed 
 ## Reproducibility
 
 `check_replay.py` re-runs the committed policy on the logged history and compares each proposed batch with the
-logged one, point by point (no solver calls). Result in `check_replay.log`: all 20 calls of `v1_s2026` and calls
-1, 7, 14, 20 of the other six runs are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
+logged one, point by point (no solver calls). Result in `check_replay.log`: all 20 calls of `v1_s2026`, calls
+1, 7, 14, 20 of the other v1–v3 runs and calls 1, 9, 14, 20 of the three v4 runs are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
 that adding them left v1 unchanged.
 
 ## Files
 
 | File | Content |
 |---|---|
-| `policy.py`, `surrogate.py` | the policy and its surrogate |
+| `policy.py`, `surrogate.py` | the policy (v1–v3) and its surrogate |
+| `policy_v4.py` | v4 as a subclass of the v1–v3 policy |
 | `rehearse.py` | driver: 20 calls, pre-submit screen (training rows, sent points, 1e-9), log, resume; `--evaluator synthetic` exercises the code without the solver |
 | `analyse.py` | summary table, per-run details, `--plot` redraws `convergence.png` |
 | `check_replay.py`, `check_replay.log` | batch-by-batch reproduction check |
@@ -122,7 +142,7 @@ about 40 minutes; it creates an isolated `analysis/online_rehearsal/workers/<run
 
 ## Limits
 
-- Three seeds for v1 and v2, one for v3; the variant ranking is not significant.
+- Three seeds for v1, v2 and v4, one for v3; seed spread (up to ±2.4 for v4) is as large as the variant differences.
 - Up to 37 of 1,000 points per run were lost to dropped repeats; a port to `BatchPolicy` should rank extra
   candidates so the loop can refill (decision 26).
 - One machine, one evaluator build (sha256 `293867b8…a077247`).

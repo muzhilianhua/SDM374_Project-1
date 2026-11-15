@@ -16,8 +16,8 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from policy import BlockDescentPolicy, State, norm_blocks  # noqa: E402
-from rehearse import Screen, load_training, variant_params  # noqa: E402
+from policy import State, norm_blocks  # noqa: E402
+from rehearse import Screen, load_training, make_policy  # noqa: E402
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
     todo = range(1, n_calls + 1) if calls == ["all"] else [int(c) for c in calls]
     X, y = load_training()
     variant = cfg.get("variant", "v1")      # the first run (v1, seed 2026) predates the variant field
-    policy = BlockDescentPolicy(variant_params(variant), seed=cfg["seed"])
+    policy = make_policy(variant, cfg["seed"])
     screen = Screen(X)
     ok = True
     for c in todo:

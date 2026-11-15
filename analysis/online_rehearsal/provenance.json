@@ -68,14 +68,45 @@
    "points": 988,
    "final_best": 107.77692430000752,
    "online_log_sha256_lf": "8c56fd4ea97034affce72d1d04937f5bcf321df225155d26068346cae4a05ed1"
+  },
+  "v4_s11": {
+   "variant": "v4",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 105.4404507540894,
+   "online_log_sha256_lf": "ce0c5d544c11ff6d64da59e8874169ccb5bd3d97bb1e0b20d7946da1c1516699",
+   "run_date": "2026-11-16",
+   "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
+  },
+  "v4_s2026": {
+   "variant": "v4",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 108.04884444068011,
+   "online_log_sha256_lf": "da31dc99c7ef154a2a8301236e2a3eb786b92765fe189918f0de218cde999ab9",
+   "run_date": "2026-11-16",
+   "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
+  },
+  "v4_s7": {
+   "variant": "v4",
+   "seed": 7,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 103.27529487758876,
+   "online_log_sha256_lf": "f72c79c82192824cc593ca6c569108566178f612809e2d1a17f26fac88104d64",
+   "run_date": "2026-11-16",
+   "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
   }
  },
  "scripts_sha256_lf": {
   "policy.py": "50ae3c777e11cdc9c4bf2f6c1653ccc64e3e4cb5d1b41a8690978236018f3ecb",
+  "policy_v4.py": "14782f21a7c2456e6146f2e786a947b98b42f332b79c06524443a2e2414310bb",
   "surrogate.py": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8",
-  "rehearse.py": "6aa4b69a8f12c18f5969646eb955ec3454a82c15c5b1ed6dc553a31a8e34decd",
-  "analyse.py": "b554e0cc392104eccba1ddef652c9d2f902554928c149c5f2a8dca70d56dfafa",
-  "check_replay.py": "3425667d4e831e533469b7a9d6b98b8d1ab07bbd255fa99162b6a38cf13c2d3f",
+  "rehearse.py": "85829ec07ce67352f2233091e05fb46112f7047649982a595747cb560a4181bb",
+  "analyse.py": "30557dc2ae63e874befe04f30c848135daa2b7ea43f814c589860ed92c07110d",
+  "check_replay.py": "2525e979a1a98c30aac40550fd38934cacb1eab1e510f49a1fb8e1e62cb1f8fe",
   "train_checks.py": "89d7570854835da2daea2653081e1da1dd072cc6ca3841d5cc0327cbcf9112a6"
  },
  "review_fix_scripts_sha256_lf": {
