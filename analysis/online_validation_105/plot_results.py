@@ -32,6 +32,22 @@ def write_json(path: Path, value) -> None:
         handle.write("\n")
 
 
+MANIFEST_FILES = ("evaluations.csv", "metrics_by_call.csv", "summary.json", "best_weights.json",
+                  "r_descent.png", "learning_curve.png", "prediction_vs_actual.png")
+
+
+def build_manifest(run_dir: Path) -> dict:
+    """Hashes of every output plus the call payloads and journal that justify them."""
+    manifest = {name: sha256_file(run_dir / name) for name in MANIFEST_FILES
+                if (run_dir / name).is_file()}
+    attempts = run_dir / "attempts.jsonl"
+    if attempts.is_file():
+        manifest["attempts.jsonl"] = sha256_file(attempts)
+    for path in sorted((run_dir / "calls").glob("call_*.json")):
+        manifest[f"calls/{path.name}"] = sha256_file(path)
+    return manifest
+
+
 def load_and_validate(run_dir: Path) -> tuple[dict, pd.DataFrame, list[dict], dict]:
     config = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
     train_weights, train_actual, _ = load_training(config)
@@ -148,9 +164,7 @@ def create_outputs(run_dir: Path) -> dict:
                 "weights": [float(best_row[name]) for name in WEIGHT_COLUMNS], "source": "this run's online evaluations"}
         write_json(run_dir / "best_weights.json", best)
     write_json(run_dir / "summary.json", summary)
-    manifest = {name: sha256_file(run_dir / name) for name in
-                ("evaluations.csv", "metrics_by_call.csv", "summary.json", "r_descent.png",
-                 "learning_curve.png", "prediction_vs_actual.png") if (run_dir / name).exists()}
+    manifest = build_manifest(run_dir)
     write_json(run_dir / "output_manifest.json", manifest)
     return summary
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+import hashlib
 from importlib import metadata
 import json
 from pathlib import Path
@@ -82,6 +83,8 @@ def create_run(kind: str, config_path: Path, *, name: str, options: dict[str, An
         "created": datetime.now().isoformat(timespec="seconds"),
         "options": options,
         "source_config": str(config_path),
+        "config": {"path": "config.toml",
+                   "sha256": hashlib.sha256((path / "config.toml").read_bytes()).hexdigest()},
         "dataset": {"path": str(dataset.path), "version": dataset.version, "sha256": dataset.sha256},
         "git": git_state(),
         "python": platform.python_version(),

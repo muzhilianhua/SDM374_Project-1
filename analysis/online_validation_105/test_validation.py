@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -10,10 +11,12 @@ import unittest
 import numpy as np
 import pandas as pd
 
+import verify_run
+
 from run_online import (DIM, ROOT, SelectionState, append_evaluations, build_elites, calibration_coefficient,
                         dominant_structures, duplicate_mask, generate_structure, load_evaluations,
-                        make_candidates, normalise, prepare_resume, quotas_for_call, select_batch,
-                        valid_weight_mask, append_jsonl, utc_now, SolverEvaluator, SolverError,
+                        make_candidates, normalise, prepare_resume, quotas_for_call, reconcile_completed_calls,
+                        select_batch, valid_weight_mask, append_jsonl, utc_now, SolverEvaluator, SolverError,
                         parse_solver_output)
 
 
@@ -132,6 +135,42 @@ class ValidationTests(unittest.TestCase):
             statuses = [json.loads(line)["status"] for line in (run_dir / "attempts.jsonl").read_text().splitlines()]
             self.assertEqual(statuses, ["started", "lost"])
 
+    def test_resume_finishes_a_call_saved_before_the_journal(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            run_dir = Path(temporary)
+            (run_dir / "calls").mkdir()
+            record = {"call": 1, "status": "ok", "timestamp_utc": utc_now(),
+                      "actual_R": [120.0, 121.0], "predicted_mean": [119.0, 122.0],
+                      "predicted_std_raw": [1.0, 1.0], "predicted_std": [1.0, 1.0],
+                      "slots": ["exploit", "explore"], "nearest_observed_distance": [0.1, 0.2],
+                      "dominant_structures": dominant_structures(self.weights[:2]).tolist(),
+                      "weights": self.weights[:2].tolist(), "solver": {"returncode": 0}}
+            (run_dir / "calls" / "call_01.json").write_text(json.dumps(record), encoding="utf-8")
+            append_jsonl(run_dir / "attempts.jsonl", {"status": "started", "call": 1,
+                         "timestamp": utc_now(), "weights": self.weights[:2].tolist()})
+            self.assertEqual(reconcile_completed_calls(run_dir), [1])
+            self.assertEqual(load_evaluations(run_dir)["actual_R"].tolist(), [120.0, 121.0])
+            statuses = [json.loads(line)["status"] for line in
+                        (run_dir / "attempts.jsonl").read_text(encoding="utf-8").splitlines()]
+            self.assertEqual(statuses, ["started", "ok"])
+            self.assertEqual(reconcile_completed_calls(run_dir), [])
+            self.assertEqual(len(load_evaluations(run_dir)), 2)
+            _, sent, next_call = prepare_resume(run_dir, False)
+            self.assertEqual(next_call, 2)
+            self.assertEqual(len(sent), 2)
+
+    def test_verify_rejects_a_tampered_call_payload(self):
+        source = ROOT / "runs" / "independent_gp_2026"
+        with tempfile.TemporaryDirectory() as temporary:
+            run_dir = Path(temporary) / "run"
+            shutil.copytree(source, run_dir)
+            path = run_dir / "calls" / "call_01.json"
+            record = json.loads(path.read_text(encoding="utf-8"))
+            record["weights"][0][0] = 99.0
+            path.write_text(json.dumps(record), encoding="utf-8")
+            with self.assertRaises(AssertionError):
+                verify_run.verify(run_dir)
+
     def test_parse_serve_json_lines_with_log_lines(self):
         stdout = 'serve ready\n{"R": 123.5}\nnot JSON\n{"R": 120.25}\n'
         self.assertEqual(parse_solver_output(stdout), [123.5, 120.25])
@@ -152,7 +191,8 @@ class ValidationTests(unittest.TestCase):
                 '    print(json.dumps({"R": 100 + sum(weights)}), flush=True)\n',
                 encoding="utf-8")
             evaluator = SolverEvaluator(
-                self.config, command=[sys.executable, "-u", str(script), "--serve"], verify_hashes=False)
+                self.config, command=[sys.executable, "-u", str(script), "--serve"], verify_hashes=False,
+                cwd=temporary)
             actual, info = evaluator.evaluate(self.weights[:3])
             np.testing.assert_allclose(actual, 100 + self.weights[:3].sum(axis=1))
             self.assertEqual(info["response_rows"], 3)

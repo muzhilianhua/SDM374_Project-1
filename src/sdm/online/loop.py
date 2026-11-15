@@ -545,6 +545,12 @@ def resume(reference: str, *, runs_root=None, max_calls: int | None = None, dry_
     if meta["kind"] != "online":
         raise ValueError(f"{run.id} is a {meta['kind']} run, not an online run")
     config = load_config(run.config_path)
+    config_sha256 = hashlib.sha256(run.config_path.read_bytes()).hexdigest()
+    if config_sha256 != meta["config"]["sha256"]:
+        raise OnlineRunError(
+            f"{run.id} was started with config sha256 {meta['config']['sha256'][:12]}, but "
+            f"{run.config_path.name} now hashes to {config_sha256[:12]}. Restore the recorded config, "
+            "or start a new run (decision 22).")
     dataset = load_dataset(config.dataset)
     if dataset.sha256 != meta["dataset"]["sha256"]:
         raise OnlineRunError(f"{run.id} was started on dataset {meta['dataset']['sha256'][:12]}, "

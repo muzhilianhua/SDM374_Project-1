@@ -73,7 +73,7 @@ Then, in this directory:
 
 ```bash
 python -m unittest -v test_validation.py        # offline, no solver quota
-python run_online.py --synthetic                # 2-round synthetic loop; interface smoke test only
+python run_online.py --synthetic                # 2-round synthetic loop in runs/synthetic_smoke; interface smoke test only
 python run_online.py --dry-run --run-id check    # builds round-1 batch, starts no process
 python run_online.py --run-id <new_run_id>       # 20 real calls, resumes automatically
 python plot_results.py <new_run_id>              # writes summaries + 3 figures
@@ -93,6 +93,9 @@ It checks, and exits non-zero on the first violation:
 - non-negative weights, every building summing to 1 (`<1e-12`), 1000 unique rows at `1e-9`
 - running best non-increasing across calls
 - `attempts.jsonl` has exactly 20 `started` and 20 `ok`, no `failed`, no unresolved call
+- `calls/call_NN.json`, `attempts.jsonl` and `evaluations.csv` agree on weights, R and predictions
+- every file listed in `output_manifest.json` matches its hash, and the manifest covers
+  `attempts.jsonl` and every `calls/call_NN.json`
 - `summary.json` agrees with `evaluations.csv`
 - for the committed run: best R `105.9905449313228` at call 20, point 9
 

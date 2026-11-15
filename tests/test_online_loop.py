@@ -138,6 +138,16 @@ def test_cli_run_and_resume_send_the_same_batches(tmp_path, capsys):
     assert "online-test" in capsys.readouterr().out
 
 
+def test_resume_refuses_an_edited_run_config(session_factory):
+    session = session_factory(calls=3)
+    session.run(max_calls=1)
+    path = session.run_folder.config_path
+    edited = path.read_text(encoding="utf-8").replace("candidate_margin = 5", "candidate_margin = 4")
+    path.write_text(edited, encoding="utf-8")
+    with pytest.raises(loop.OnlineRunError, match="config sha256"):
+        loop.resume(str(session.run_folder.path))
+
+
 def test_first_call_sees_only_training_rows(session_factory, dataset):
     policy = Sampler()
     session = session_factory(policy=policy, calls=2)

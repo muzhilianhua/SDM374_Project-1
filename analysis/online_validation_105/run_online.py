@@ -428,6 +428,76 @@ def read_attempts(path: Path) -> list[dict]:
         return [json.loads(line) for line in handle if line.strip()]
 
 
+def evaluation_rows(record: dict, timestamp: str | None = None) -> list[dict]:
+    """Evaluation rows for one prepared call record; also used to repair a half-written CSV."""
+    weights = np.asarray(record["weights"], dtype=float).reshape(-1, DIM)
+    structures = np.asarray(record["dominant_structures"], dtype=int).reshape(-1, 3)
+    rows = []
+    for point in range(len(weights)):
+        row = {"call": int(record["call"]), "point": point,
+               "actual_R": float(record["actual_R"][point]),
+               "predicted_mean": float(record["predicted_mean"][point]),
+               "predicted_std_raw": float(record["predicted_std_raw"][point]),
+               "predicted_std": float(record["predicted_std"][point]),
+               "slot": record["slots"][point],
+               "nearest_observed_distance": float(record["nearest_observed_distance"][point]),
+               "timestamp": timestamp or record["timestamp_utc"]}
+        row.update({name: float(weights[point, index]) for index, name in enumerate(WEIGHT_COLUMNS)})
+        row.update({f"dominant_b{building + 1}": int(structures[point, building]) for building in range(3)})
+        rows.append(row)
+    return rows
+
+
+def reconcile_completed_calls(run_dir: Path) -> list[int]:
+    """Finish calls whose results reached calls/ but whose journal/CSV tail was cut by a crash.
+
+    The success path writes call JSON, then evaluations.csv, then the `ok` journal line. A crash
+    between those steps leaves a measured call that `prepare_resume` would otherwise skip (or bill
+    as lost). Rebuild the CSV rows and the `ok` line from the call record instead.
+    """
+    path = run_dir / "attempts.jsonl"
+    attempts = read_attempts(path)
+    latest: dict[int, dict] = {}
+    for event in attempts:
+        latest[int(event["call"])] = event
+    recovered = []
+    evaluations_path = run_dir / "evaluations.csv"
+    if evaluations_path.exists() and evaluations_path.stat().st_size:
+        with evaluations_path.open("rb") as handle:
+            handle.seek(-1, os.SEEK_END)
+            if handle.read(1) != b"\n":
+                raise RuntimeError("evaluations.csv ends with a torn line; inspect it before resuming")
+    for call, event in sorted(latest.items()):
+        record_path = run_dir / "calls" / f"call_{call:02d}.json"
+        record = json.loads(record_path.read_text(encoding="utf-8")) if record_path.exists() else None
+        if event["status"] == "started":
+            if record is None or record.get("status") != "ok":
+                continue  # a genuine lost attempt; prepare_resume handles it
+            status = "ok"
+        elif event["status"] == "ok":
+            if record is None or record.get("status") != "ok":
+                raise RuntimeError(f"call {call} is logged ok but calls/call_{call:02d}.json is missing "
+                                   "or has another status; the measured values cannot be rebuilt")
+            status = "repaired"
+        else:
+            continue
+        rows = evaluation_rows(record, event.get("timestamp") or record["timestamp_utc"])
+        evaluations = load_evaluations(run_dir)
+        present = sorted(evaluations.loc[evaluations["call"] == call, "point"].astype(int)) if len(evaluations) else []
+        if present and present != list(range(len(present))):
+            raise RuntimeError(f"evaluations.csv holds non-prefix rows for call {call}: {present}")
+        missing = rows[len(present):]
+        if missing:
+            append_evaluations(run_dir, missing)
+        if status == "ok":
+            append_jsonl(path, {"status": "ok", "call": call, "timestamp": utc_now(),
+                                "actual_R": record["actual_R"], "solver": record.get("solver"),
+                                "recovered": True})
+        if missing or status == "ok":
+            recovered.append(call)
+    return recovered
+
+
 def prepare_resume(run_dir: Path, accept_lost: bool) -> tuple[list[dict], np.ndarray, int]:
     path = run_dir / "attempts.jsonl"
     attempts = read_attempts(path)
@@ -543,10 +613,12 @@ def parse_solver_output(stdout: str, stderr: str = "") -> list[float]:
 class SolverEvaluator:
     kind = "solver"
 
-    def __init__(self, config: dict, command: list[str] | None = None, verify_hashes: bool = True):
+    def __init__(self, config: dict, command: list[str] | None = None, verify_hashes: bool = True,
+                 cwd: str | Path | None = None):
         settings = config["solver"]
         self.outer_executable = Path(settings["path"]).resolve()
         self.executable = Path(settings["inner_path"]).resolve()
+        self.cwd = Path(cwd) if cwd is not None else self.executable.parent
         self.timeout = float(settings["timeout_seconds"])
         self.workers = int(settings["workers"])
         if verify_hashes:
@@ -565,7 +637,7 @@ class SolverEvaluator:
         payload = "".join(json.dumps(row, allow_nan=False) + "\n" for row in weights.tolist())
         started = time.perf_counter()
         group = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if sys.platform == "win32" else {}
-        process = subprocess.Popen(self.command, cwd=str(self.executable.parent),
+        process = subprocess.Popen(self.command, cwd=str(self.cwd),
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    text=True, encoding="utf-8", errors="replace", bufsize=1, **group)
         try:
@@ -639,6 +711,8 @@ def environment_record(config: dict, command: list[str], evaluator_kind: str, st
 
 def run(args: argparse.Namespace) -> Path:
     config = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
+    if args.run_id is None:
+        args.run_id = "synthetic_smoke" if args.synthetic else "independent_gp_2026"
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.run_id):
         raise ValueError("run-id may contain only letters, digits, dot, underscore and hyphen")
     train_weights, train_actual, _ = load_training(config)
@@ -649,6 +723,13 @@ def run(args: argparse.Namespace) -> Path:
     dry_run = args.dry_run
     if synthetic and dry_run:
         raise ValueError("--synthetic and --dry-run are mutually exclusive")
+    environment_path = run_dir / "environment.json"
+    if not dry_run and environment_path.exists():
+        recorded_kind = json.loads(environment_path.read_text(encoding="utf-8"))["evaluator"]
+        wanted_kind = "synthetic" if synthetic else "solver"
+        if recorded_kind != wanted_kind:
+            raise RuntimeError(f"{args.run_id} holds {recorded_kind} results; refusing to append "
+                               f"{wanted_kind} results to the same run")
     evaluator = SyntheticEvaluator(config) if synthetic else SolverEvaluator(config)
     rounds = 2 if synthetic else config["rounds"]
     batch_size = 8 if synthetic else config["batch_size"]
@@ -661,6 +742,9 @@ def run(args: argparse.Namespace) -> Path:
         previous_calls = []
         evaluations = pd.DataFrame(columns=EVALUATION_COLUMNS)
     else:
+        recovered = reconcile_completed_calls(run_dir)
+        if recovered:
+            print(f"recovered saved results for calls {recovered} from calls/", flush=True)
         attempts, sent_weights, next_call = prepare_resume(run_dir, args.accept_lost_attempt)
         previous_calls = load_previous_calls(run_dir)
         evaluations = load_evaluations(run_dir)
@@ -669,9 +753,8 @@ def run(args: argparse.Namespace) -> Path:
         print(f"Run already has {next_call - 1} attempts; nothing to do.", flush=True)
         return run_dir
     if not dry_run and next_call == 1:
-        write_json(run_dir / "environment.json", environment_record(config, sys.argv, evaluator.kind, started_utc))
+        write_json(environment_path, environment_record(config, sys.argv, evaluator.kind, started_utc))
     elif not dry_run:
-        environment_path = run_dir / "environment.json"
         environment = json.loads(environment_path.read_text(encoding="utf-8"))
         environment.setdefault("resumptions", []).append(
             environment_record(config, sys.argv, evaluator.kind, started_utc))
@@ -776,8 +859,6 @@ def run(args: argparse.Namespace) -> Path:
             environment.update({"ended_utc": utc_now(), "status": "failed"})
             write_json(environment_path, environment)
             raise
-        append_jsonl(attempts_path, {"status": "ok", "call": call, "timestamp": utc_now(),
-                                     "actual_R": actual.tolist(), "solver": solver_info})
         previous_online_best = float(online_actual.min()) if len(online_actual) else None
         best_before = float(observed_actual.min())
         running_best = min(float(actual.min()), previous_online_best) if previous_online_best is not None else float(actual.min())
@@ -787,20 +868,11 @@ def run(args: argparse.Namespace) -> Path:
             "batch_min": float(actual.min()), "running_best_online": running_best,
             "improved_global": bool(float(actual.min()) < best_before),
         })
+        # Persist the measured batch before journaling it as ok, so a crash can be repaired from calls/.
         write_json(run_dir / "calls" / f"call_{call:02d}.json", record)
-        timestamp = utc_now()
-        rows = []
-        for point in range(batch_size):
-            row = {"call": call, "point": point, "actual_R": float(actual[point]),
-                   "predicted_mean": float(pool["mean"][selected_indices][point]),
-                   "predicted_std_raw": float(pool["std_raw"][selected_indices][point]),
-                   "predicted_std": float(pool["std"][selected_indices][point]),
-                   "slot": selection.labels[point], "nearest_observed_distance": float(nearest[point]),
-                   "timestamp": timestamp}
-            row.update({name: float(weights[point, index]) for index, name in enumerate(WEIGHT_COLUMNS)})
-            row.update({f"dominant_b{building + 1}": int(structures[point, building]) for building in range(3)})
-            rows.append(row)
-        append_evaluations(run_dir, rows)
+        append_evaluations(run_dir, evaluation_rows(record, utc_now()))
+        append_jsonl(attempts_path, {"status": "ok", "call": call, "timestamp": utc_now(),
+                                     "actual_R": actual.tolist(), "solver": solver_info})
         evaluations = load_evaluations(run_dir)
         previous_calls.append(record)
         write_metrics(run_dir, previous_calls)
@@ -816,7 +888,8 @@ def run(args: argparse.Namespace) -> Path:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run-id", default="independent_gp_2026")
+    parser.add_argument("--run-id", default=None,
+                        help="run folder name (default: independent_gp_2026; synthetic_smoke with --synthetic)")
     parser.add_argument("--dry-run", action="store_true", help="prepare only call 1; never start the solver")
     parser.add_argument("--synthetic", action="store_true", help="run the deterministic two-call interface smoke test")
     parser.add_argument("--accept-lost-attempt", action="store_true",
