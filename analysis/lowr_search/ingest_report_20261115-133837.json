@@ -1,0 +1,44 @@
+{
+  "tag": "local-measured-20261115",
+  "log": "D:\\HuaweiMoveData\\Users\\11659\\Desktop\\\u5728\u7ebf\\tmp_online_model_repo\\analysis\\lowr_search\\eval_log.jsonl",
+  "sources": {
+    "d:\\HuaweiMoveData\\Users\\11659\\Desktop\\\u5728\u7ebf\\random_search_run1\\eval_log.jsonl": {
+      "seen": 4160,
+      "added": 3774,
+      "duplicate": 386
+    },
+    "d:\\HuaweiMoveData\\Users\\11659\\Desktop\\\u5728\u7ebf\\structure_census_run1\\eval_log.jsonl": {
+      "seen": 1180,
+      "added": 1180,
+      "duplicate": 0
+    },
+    "d:\\HuaweiMoveData\\Users\\11659\\Desktop\\\u5728\u7ebf\\asymmetric_run1\\eval_log.jsonl": {
+      "seen": 1024,
+      "added": 1024,
+      "duplicate": 0
+    },
+    "d:\\HuaweiMoveData\\Users\\11659\\Desktop\\\u5728\u7ebf\\ridge_run1\\eval_log.jsonl": {
+      "seen": 1000,
+      "added": 1000,
+      "duplicate": 0
+    },
+    "d:\\HuaweiMoveData\\Users\\11659\\Desktop\\\u5728\u7ebf\\es_run1\\eval_log.jsonl": {
+      "seen": 2720,
+      "added": 2720,
+      "duplicate": 0
+    }
+  },
+  "rejected": {},
+  "added_total": 9698,
+  "sha256_weights_appended": "5a7c600693db49a14b34d97be33ff8a3a7e57c0c8803973d71d8b0da582d83f5",
+  "R_range_added": [
+    103.46086008194834,
+    275.0571445324895
+  ],
+  "env": {
+    "python": "3.13.5",
+    "numpy": "2.1.3",
+    "platform": "Windows-11-10.0.26300-SP0"
+  },
+  "timestamp": "2026-11-15T13:38:37"
+}
