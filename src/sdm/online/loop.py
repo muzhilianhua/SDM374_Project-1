@@ -549,6 +549,16 @@ def resume(reference: str, *, runs_root=None, max_calls: int | None = None, dry_
     if dataset.sha256 != meta["dataset"]["sha256"]:
         raise OnlineRunError(f"{run.id} was started on dataset {meta['dataset']['sha256'][:12]}, "
                              f"not {dataset.sha256[:12]}")
+    if "config" not in meta:
+        raise OnlineRunError(
+            f"{run.id} was created before config hashes were recorded, so its configuration cannot be "
+            "verified. Resume is not supported for runs in this old format.")
+    config_sha256 = hashlib.sha256(run.config_path.read_bytes()).hexdigest()
+    if config_sha256 != meta["config"]["sha256"]:
+        raise OnlineRunError(
+            f"{run.id} was started with config sha256 {meta['config']['sha256'][:12]}, but "
+            f"{run.config_path.name} now hashes to {config_sha256[:12]}. Restore the recorded config, "
+            "or start a new run (decision 22).")
     now, then = git_state(), meta["git"]
     if not allow_code_change and (now["commit"] != then["commit"] or now["dirty"] or then["dirty"]):
         raise OnlineRunError(
