@@ -54,6 +54,12 @@ def _dirichlet_around_centroid(centroid: np.ndarray, n: int, concentration: floa
     ).reshape(n, DIM)
 
 
+def _sparse_simplex_sample(n: int, concentration: float,
+                           rng: np.random.Generator) -> np.ndarray:
+    """Sample sparse points to probe simplex boundaries without naming a preferred objective."""
+    return rng.dirichlet(np.full(N_METRICS, concentration), size=(n, N_BUILDINGS)).reshape(n, DIM)
+
+
 def _greedy_quota(pool: np.ndarray, acquisition: np.ndarray, source: str, n: int,
                   reference: np.ndarray, selected: list[np.ndarray]) -> list[dict]:
     order = np.argsort(acquisition)
@@ -97,13 +103,17 @@ def generate(*, seed: int = 2026, n: int = 50, pool_size: int = 20_000,
     pools = {
         "elite_local": _dirichlet_around(elite, per_stream, 220.0, rng),
         "elite_centroid": _dirichlet_around_centroid(centroid, per_stream, 220.0, rng),
+        "boundary_explore": _sparse_simplex_sample(per_stream, 0.15, rng),
         "global_explore": sample(per_stream, rng),
     }
     selected: list[np.ndarray] = []
     # The quota is intentionally fixed by batch size, while the ranking is data-derived.
-    quotas = {"elite_local": int(round(n * 0.5)),
-              "elite_centroid": int(round(n * 0.3)),
-              "global_explore": n - int(round(n * 0.5)) - int(round(n * 0.3))}
+    local_quota = int(round(n * 0.45))
+    centroid_quota = int(round(n * 0.25))
+    boundary_quota = int(round(n * 0.20))
+    quotas = {"elite_local": local_quota, "elite_centroid": centroid_quota,
+              "boundary_explore": boundary_quota,
+              "global_explore": n - local_quota - centroid_quota - boundary_quota}
     candidates: list[dict] = []
     for stream_name, pool in pools.items():
         pool = _novel(pool, dataset.X)
@@ -151,7 +161,8 @@ def main() -> int:
     result = generate(seed=args.seed, n=args.n, pool_size=args.pool_size,
                       elite_quantile=args.elite_quantile, lcb_k=args.lcb_k)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Write bytes so generated artifacts keep LF line endings on Windows as well as Unix.
+    args.out.write_bytes((json.dumps(result, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
     print(json.dumps({"out": str(args.out), "candidates": len(result["candidates"]),
                       "elite_threshold": result["parameters"]["elite_threshold"]}, ensure_ascii=False))
     return 0

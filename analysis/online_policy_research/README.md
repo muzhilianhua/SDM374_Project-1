@@ -6,11 +6,13 @@ streams:
 
 * local Dirichlet perturbations of the lowest training quantile;
 * perturbations around the component-wise elite centroid, which preserves the observed building roles;
+* sparse simplex samples for generic boundary exploration without naming a preferred objective;
 * a global simplex sample for exploration.
 
 The streams are scored with a lower confidence bound (`mean - k * std`) and are quota-limited so that a
-surrogate minimum cannot consume the whole batch. The script never reads `solver/`, historical search logs,
-or archived low-R points. Its output is a candidate artifact for review; it is not a formal evaluator call.
+surrogate minimum cannot consume the whole batch. The sparse stream is kept as a separate quota so that
+model extrapolation cannot remove all boundary probes. The script never reads `solver/`, historical search
+logs, or archived low-R points. Its output is a candidate artifact for review; it is not a formal evaluator call.
 
 ```powershell
 uv run python analysis/online_policy_research/elite_candidates.py `
