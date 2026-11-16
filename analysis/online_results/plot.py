@@ -22,6 +22,8 @@ import numpy as np
 from sdm.online.log import OnlineLog, OnlineLogError
 from sdm.runs import git_state
 
+REPORT_STYLE = Path(__file__).resolve().parents[2] / "report" / "style.mplstyle"
+
 
 def read_predictions(path: Path) -> dict[tuple[int, int], float]:
     with path.open(newline="", encoding="utf-8-sig") as stream:
@@ -49,6 +51,8 @@ def read_predictions(path: Path) -> dict[tuple[int, int], float]:
 
 def plot_online_log(log_path: Path, output: Path, prediction_path: Path | None = None, *,
                     offline_baseline: float = 115.68, training_best: float = 115.76) -> dict:
+    if REPORT_STYLE.is_file():
+        plt.style.use(REPORT_STYLE)
     rows = OnlineLog(log_path).rows()
     if not rows:
         raise OnlineLogError("online log is empty")

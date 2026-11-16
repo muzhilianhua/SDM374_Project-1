@@ -1,0 +1,27 @@
+# Course baseline: quadratic ridge + multi-start projected gradient descent.
+# Defaults reproduce baseline.py exactly; they are spelled out so the run record is self-describing.
+
+[data]
+dataset = "dataset_same8"  # relative to the repo root
+
+[model]
+name = "ridge2"
+
+[model.params]
+alphas = [0.1, 1.0, 10.0, 100.0, 1000.0]
+folds = 5
+seed = 2026
+
+[optimizer]
+name = "pgd"
+
+[optimizer.params]
+starts = 16
+max_iter = 5000
+tolerance = 1e-7
+seed = 2026
+
+[evaluate]
+folds = 5
+seed = 2026
+top_k = 50

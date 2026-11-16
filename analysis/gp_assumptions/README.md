@@ -141,6 +141,11 @@ About 20 minutes on one laptop. `results/` is git-ignored; the committed copies 
 dataset and solver-log sha256, package versions, split seeds and the sha256 of `study.py`
 (`a1e8bbad…e0c5e88f`), because the git dirty flag does not cover `analysis/`.
 
+After the PR #23 review (2026-11-13), `search_scores` always returns the near / mid / far bands, with `n = 0`
+and empty scores for a band without points, so `summarize` cannot fail on a missing key. The delivered run
+had at least 1,017 points in every band of every record, so this change does not alter any delivered number;
+the recorded sha256 is that of the version that produced them.
+
 ## Files
 
 | path | what it is |

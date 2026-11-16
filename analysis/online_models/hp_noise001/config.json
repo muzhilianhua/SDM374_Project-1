@@ -1,0 +1,78 @@
+{
+  "model": "hp_noise001",
+  "schema": "sdm374.model_library.v1",
+  "feature_order": [
+    "b1_cost",
+    "b1_carbon",
+    "b1_peak",
+    "b1_discomfort",
+    "b1_degradation",
+    "b1_ramping",
+    "b1_resilience",
+    "b2_cost",
+    "b2_carbon",
+    "b2_peak",
+    "b2_discomfort",
+    "b2_degradation",
+    "b2_ramping",
+    "b2_resilience",
+    "b3_cost",
+    "b3_carbon",
+    "b3_peak",
+    "b3_discomfort",
+    "b3_degradation",
+    "b3_ramping",
+    "b3_resilience"
+  ],
+  "feature_contract": "Building 1 -> Building 3; per building: cost -> carbon -> peak -> discomfort -> degradation -> ramping -> resilience",
+  "target": "ramping",
+  "target_transform": "raw",
+  "seed": 2026,
+  "hyperparameters": {
+    "transform": "raw",
+    "bounds": [
+      0.03,
+      6.0
+    ],
+    "n_starts": 3,
+    "maxiter": 80,
+    "noise": 0.01,
+    "noise_bounds": "fixed"
+  },
+  "kernel": {
+    "type": "BlockARD(Matern-5/2, ARD, 3 blocks) + global interaction + WhiteKernel",
+    "n_blocks": 3,
+    "per_block": 7,
+    "nu": 2.5,
+    "ls_bounds": [
+      0.03,
+      6.0
+    ],
+    "learn_global_weight": false
+  },
+  "fitted": {
+    "length_scale": [
+      0.28886273017664743,
+      0.24795250404855884,
+      1.20235612353313,
+      6.0,
+      0.18697259727554072,
+      0.19078812296344239,
+      6.0
+    ],
+    "global_weight": 0.1,
+    "noise_level": 0.01,
+    "loc": 160.45233558019424,
+    "scale": 15.767298536933115,
+    "theta_log": [
+      -1.2418036857971546,
+      -1.3945180670919035,
+      0.18428306804991448,
+      1.791759469228055,
+      -1.676793211498857,
+      -1.6565917705247513,
+      1.791759469228055
+    ]
+  },
+  "extra": {}
+}

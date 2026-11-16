@@ -15,9 +15,9 @@ W, R, tags = load_log()
 i = int(np.argmin(R))
 best, best_R = W[i], float(R[i])
 pool = SolverPool(n_workers=10)
-alone = pool._call(0, best[None])[0]
+alone = pool.call_uncached(best[None], worker=0)[0]
 other = normalize([team_best().ravel(), np.full(21, 1 / 7)])
-batch = pool._call(1, np.vstack([other[0], best, other[1]]))
+batch = pool.call_uncached(np.vstack([other[0], best, other[1]]), worker=1)
 print(f"logged {best_R!r}\nalone  {alone!r}\nbatch  {batch[1]!r}  (team best in the same call: {batch[0]:.6f}, uniform weights: {batch[2]:.6f})")
 print("reproduced exactly:", alone == best_R and batch[1] == best_R)
 

@@ -111,6 +111,9 @@ def load_solver_log():
                               "max_repeat_spread": max(spreads, default=0.0)}
 
 
+EMPTY_SCORES = ("mae", "spearman", "nlpd", "cover68", "cover95", "z_mean", "z_sd", "z_skew", "z_kurtosis")
+
+
 def gaussian_scores(mean, std, y) -> dict:
     z = (y - mean) / std
     return {"n": int(len(y)), "mae": float(np.abs(mean - y).mean()), "spearman": float(stats.spearmanr(mean, y)[0]),
@@ -125,8 +128,10 @@ def search_scores(mean, std, Xlog, ylog, ratio) -> dict:
     basin = np.argsort(ylog)[:BASIN_SIZE]
     best50 = set(np.argsort(ylog)[:50].tolist())
     order = np.argsort(mean)
-    out = {band: gaussian_scores(mean[m], std[m], ylog[m])
-           for band, (low, high) in BANDS.items() if (m := (ratio >= low) & (ratio < high)).any()}
+    out = {}
+    for band, (low, high) in BANDS.items():   # every band is always present; an empty one has n = 0 and None scores
+        m = (ratio >= low) & (ratio < high)
+        out[band] = gaussian_scores(mean[m], std[m], ylog[m]) if m.any() else dict.fromkeys(EMPTY_SCORES, None) | {"n": 0}
     out.update({"log_spearman": float(stats.spearmanr(mean, ylog)[0]),
                 "basin_real": float(ylog[basin].mean()), "basin_pred": float(mean[basin].mean()),
                 "basin_std": float(std[basin].mean()),

@@ -1,0 +1,7 @@
+# Local LaTeX build products; keep sources and shared plotting style in git.
+*.aux
+*.log
+*.pdf
+*.out
+*.fls
+*.fdb_latexmk

@@ -1,0 +1,8 @@
+{
+  "CHECKSUMS.json": "a5a72ec74ccbb8f4e70116dff770ba1bd68a7eba16af3d1aacb95fd45bc84b98",
+  "config.json": "f54303793dfd1d1b4a8e6cf1d0071207aa7b4d958e5635832c8d01c30b3a5864",
+  "meta.json": "d79b3e7dbe792e28daaf9716413eb86c20bebb696fc331bf2c1b13bd9272d713",
+  "metrics.json": "3e78ba9bf000fc48467ffdf975053aaf60e5b7fe0615d383311cfc15f490fb65",
+  "train_predictions.csv": "0ba1189db14f62c332425b5f60f560931e028c9dc22378baf2ebc37034888edf",
+  "model.npz": "762c675f72e9b2d0a0bec1316aa75eeeddba302daae39126c8f0f4fc7c9369fc"
+}

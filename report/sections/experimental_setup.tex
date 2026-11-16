@@ -1,0 +1,4 @@
+\section{Experimental Setup}
+The training table contains 2,048 feasible candidates and seven features per building. We preserve the released feature order and use the repository's simplex validation before any candidate is passed to an optimizer or evaluator. Model comparisons use the frozen-v3.2 protocol and its released outer splits; the original five-fold protocol is reported separately when used.
+
+The course evaluator is deterministic. A policy must avoid training rows and all previously submitted points, maintain an append-only call log, and resume without repeating a call after interruption. The final policy will therefore be frozen with its configuration, seeds, dependency versions, and run provenance before any official execution.
