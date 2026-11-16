@@ -122,7 +122,7 @@ A standalone folder for other machines (instructions in Chinese in its `README.m
 (versions, logical CPUs, BLAS, sha256 of data, package and `solver.exe`), `verify` (re-computes all 20
 batches from the reference history without the solver, about 10 minutes) and `run` (a full sequential
 20 × 50 run compared call by call with the reference; resumable; never touches `usage.count`). The policy
-files are byte-identical to this folder's at commit b705164 apart from line endings (`provenance.json`);
+files are byte-identical to this folder's at commit 9d01fd8 apart from line endings (`provenance.json`);
 `.gitattributes` keeps the committed bytes so `CHECKSUMS.sha256` holds after checkout.
 
 On this machine: a fresh `setup.ps1` environment reproduced 20/20 batches, and calls 1–2 of `run` matched

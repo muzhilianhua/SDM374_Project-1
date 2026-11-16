@@ -78,7 +78,7 @@
 
 - 第 1 次调用前，策略只用 `data/train.csv`（课程提供的 2048 行，按 `data/manifest.json` 核对 sha256）；之后只再用本次运行自己的调用结果。
 - `reference/` 里的参考日志只在比对时读取，从不交给策略。
-- 策略代码 `policy/` 与仓库分支 `analysis/online-rehearsal` 的提交 `b705164` 中 `analysis/online_rehearsal/` 下的同名文件逐字节相同（换行符除外），
+- 策略代码 `policy/` 与仓库分支 `analysis/online-rehearsal` 的提交 `9d01fd8`（含 PR #25 审阅修正；v4 种子 7 的 20 批经 `check_replay.py` 核对与参考运行逐点相同） 中 `analysis/online_rehearsal/` 下的同名文件逐字节相同（换行符除外），
   见 `provenance.json`；`CHECKSUMS.sha256` 列出本包全部文件的哈希，`check` 会核对。
 
 | 文件 | 内容 |
