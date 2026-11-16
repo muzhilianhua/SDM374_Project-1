@@ -10,5 +10,10 @@ analysis/v33_protocol/release_v2/*.csv text eol=lf
 analysis/v33_protocol/** -text whitespace=cr-at-eol
 # Course-provided solver files: keep their original bytes (run.py has CRLF).
 solver/** -text
+# Online validation run: config.json pins the train.csv and solver sha256 values, and
+# output_manifest.json pins every generated artefact, so checkouts must not rewrite line endings.
+analysis/online_validation_105/** -text
 # Online surrogate packages pin their exact bytes in CHECKSUMS.json; never apply eol conversion.
 analysis/online_models/** -text
+# The ablation baselines pin the LF bytes of their config.toml in CHECKSUMS.json.
+analysis/ablation/evidence/**/config.toml text eol=lf
