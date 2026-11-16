@@ -8,7 +8,8 @@ what must be true afterwards, and what is forbidden.
 
 A closed loop that starts from `data/train.csv` (2048 rows, 21 weights) only, fits an additive
 ARD Matérn-2.5 Gaussian process, proposes 50 new weight sets per round, evaluates them with the
-inner `RampingSolver.exe` extracted from the course solver, and refits on all data.
+inner `RampingSolver.exe` (the course solver's embedded resource, used for internal exploration
+only — see section 5), and refits on all data.
 20 script-limited rounds → 1000 measured points.
 
 The complete run is committed under `runs/independent_gp_2026/`. Reproduction means producing
@@ -20,9 +21,11 @@ pipeline is seeded, so values should in fact match on the same data).
 1. **Do not delete, reset, or edit `usage.count` next to `solver.exe`.** This development run never
    launched the outer `solver.exe`; it only hash-checked that file, so `usage.count` was unchanged.
    The 20 rounds are the script's own `config.json` limit, not the course quota.
-2. **The direct inner-solver transport is for development evaluation only.** A formal run must follow
-   decision 31: use the course `solver/run.py`, which pipes `weight.json` to the outer `solver.exe`
-   through PowerShell. Do not substitute `RampingSolver.exe --serve` in a formal run.
+2. **The direct inner-solver transport is for internal exploration only.** The course does not allow
+   extracting the inner executable or calling it directly (TA answer, see issue #28), so this step
+   must not appear in the final code package. A formal run must follow decision 31: use the course
+   `solver/run.py`, which pipes `weight.json` to the outer `solver.exe` through PowerShell. Do not
+   substitute `RampingSolver.exe --serve` in a formal run.
 3. **Do not use any prior search artefact as input**: `best_weights*.json`, `landscape_bundle`,
    earlier ridge / evolution-strategy / random-search points and their R values. They must not be
    seeds, templates, structural priors, tuning input, or reference lines. The only reference value
@@ -77,11 +80,12 @@ target machine. Keep the pinned hashes and every other setting unchanged. `solve
 the course outer executable; `solver.inner_path` identifies the extracted inner executable.
 
 The inner file is the `RampingSolver.exe` manifest resource inside the outer .NET executable; its
-SHA-256 is pinned in section 8. Whether the course allows extracting and calling it directly is
-being confirmed with the TA (issue #28), so the extraction steps are not published here.
+SHA-256 is pinned in section 8. The course does not allow extracting it or calling it directly (TA
+answer, recorded in issue #28), so the extraction steps are not published here and must not appear
+in the final code package.
 
-This setup and the direct inner transport are development-only; they are not the formal-run
-procedure in decision 31.
+This setup and the direct inner transport are for internal exploration only; they are not the
+formal-run procedure in decision 31, which uses the outer `solver.exe` through `solver/run.py`.
 
 Then, in this directory:
 

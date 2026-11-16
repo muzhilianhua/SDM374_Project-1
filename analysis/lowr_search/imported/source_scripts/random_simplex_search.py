@@ -2,8 +2,8 @@
 """
 random_simplex_search.py — 方案A：3000 点均匀随机撒网 + top 候选精细坐标下降（总预算 ≤ 5000）
 
-调用 RampingSolver.exe 的正确方式：
-  - 先用 PowerShell .NET 反射从 solver.exe 提取嵌入的 RampingSolver.exe 到 %TEMP%
+调用 RampingSolver.exe 的正确方式（仅内部探索；课程不允许拆解求解器，见 issue #28）：
+  - 内层 RampingSolver.exe 是 solver.exe 的嵌入资源，由使用者自行准备到 %TEMP%，本归档不含提取步骤
   - 用 --serve --workers 4 启动后台进程
   - 每次输入: json.dumps([21 floats]) + "\\n"
   - 每次输出: {"R": number}\\n
@@ -64,9 +64,9 @@ def cleanup_pyi():
 
 
 # ============================ 真实求解器 ============================
-# The inner RampingSolver.exe is an embedded manifest resource of the course solver.exe. Whether the
-# course allows extracting and calling it directly is still being confirmed with the TA (issue #28),
-# so the extraction recipe is left out of this archived copy: place the inner executable at BASE_EXE
+# The inner RampingSolver.exe is an embedded manifest resource of the course solver.exe. The course
+# does not allow extracting it (TA answer, issue #28), so the extraction recipe is left out of this
+# archived copy and must not appear in the final code package: place the inner executable at BASE_EXE
 # yourself before running the script.
 def ensure_solver():
     if not os.path.exists(BASE_EXE):

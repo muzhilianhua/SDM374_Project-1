@@ -35,7 +35,9 @@ stored separately from `eval_log.jsonl`, which remains the original T36 evidence
 SHA-256 `e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2`, and best R 104.3726098362822.
 The adjacent provenance records source-log hashes, row counts, archived generator hashes, and the solver
 transport. The generators used the extracted inner `RampingSolver.exe --serve`, not the outer solver's
-stdin channel.
+stdin channel. The course does not permit extracting the inner executable, so this is internal
+exploration material only; it is not part of the final code package and the extraction step is not
+published here.
 
 The lowest imported value is **R = 103.46086008194834** (`ridge_run1`, phase `A_probe_0`). It has not
 been independently re-checked and is **not an established team or historical best**. It must not be used

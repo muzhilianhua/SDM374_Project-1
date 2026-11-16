@@ -126,9 +126,10 @@ Fixed structure and uncertainty quotas distinguish this policy from pure exploit
   Consequently, the outer program's `usage.count` was unchanged and played no role in this run.
 - **Round limit:** 20 rounds was the script's own configuration, not consumption of a 20-call course
   quota. The outer solver's empty-stdin behaviour on this machine motivated the development transport.
-- **Development only:** direct inner-solver JSON-lines transport must not be used for a formal run.
-  Decision 31 requires the course `solver/run.py` procedure, in which PowerShell pipes `weight.json` to
-  the outer `solver.exe`.
+- **Internal exploration only:** the course does not allow extracting the inner executable or calling it
+  directly (TA answer, issue #28). This transport is not part of the final code package and must not be
+  used for a formal run. Decision 31 requires the course `solver/run.py` procedure, in which PowerShell
+  pipes `weight.json` to the outer `solver.exe`.
 - **Conservative failure semantics:** once this script started a batch, it treated the batch as spent.
   Failed or timed-out points became sent-but-unmeasured and were never automatically resent. Resume
   stopped at an unresolved attempt unless `--accept-lost-attempt` explicitly marked it lost.
@@ -213,9 +214,9 @@ which helps explain the slow late-stage improvement.
 
 `README.md` is the machine-facing reproduction and verification contract. Replace the two solver path
 placeholders in `config.json` and verify both pinned solver hashes. The inner executable is an embedded
-resource of the course `solver.exe`; whether it may be extracted and called directly is still being
-confirmed with the TA (issue #28), so its extraction procedure is not reproduced here. The
-training-table hash is checked before the run.
+resource of the course `solver.exe`; the course does not permit extracting it or calling it directly
+(TA answer, issue #28), so its extraction procedure is not reproduced here and is excluded from the
+final code package. The training-table hash is checked before the run.
 
 ```bash
 uv run python -m unittest -v test_validation.py
@@ -232,8 +233,9 @@ course `solver/run.py` procedure required by decision 31.
 
 ## 6. Limitations
 
-1. **No formal-run validation.** This experiment used the development-only inner transport. It does not
-   validate the outer solver's stdin channel or consume the formal course quota.
+1. **No formal-run validation.** This experiment used the inner transport, which the course does not
+   permit for submission: it validates neither the outer solver's stdin channel nor the formal course
+   quota, and the extraction step is excluded from the final code package.
 2. **One 20-round script budget.** The curve was still declining at the end, but no additional rounds were
    run, so further improvement is not established.
 3. **Weak fine-grained ranking.** Unreliable ordering among similarly good points is a likely cause of the

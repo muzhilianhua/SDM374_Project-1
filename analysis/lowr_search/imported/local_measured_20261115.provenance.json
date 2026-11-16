@@ -30,8 +30,8 @@
       "duplicate": 386,
       "generator": {
         "path": "analysis/lowr_search/imported/source_scripts/random_simplex_search.py",
-        "sha256": "5a55bf106d947cd3dcdad4284813c5a4e2e271b1d65ddfd2a0c32f916943a565",
-        "redaction": "the PowerShell snippet that extracts the inner solver from the course solver.exe is removed from this archived copy, because the course has not yet confirmed that extraction is allowed (issue #28); the recorded hash is for the redacted file"
+        "sha256": "256c76d40845ccc5dbb8e702a44365b7bb2a4ad3fc2db7282cbd6723bb3a9532",
+        "redaction": "the PowerShell snippet that extracts the inner solver from the course solver.exe is removed from this archived copy: the course does not allow extraction (TA answer, 2026-11-16, issue #28), and the step must not appear in the final code package; the recorded hash is for the redacted file"
       }
     },
     {
@@ -80,7 +80,7 @@
     }
   ],
   "measurement_solver": {
-    "transport": "extracted inner RampingSolver.exe --serve; four processes with two workers each",
+    "transport": "extracted inner RampingSolver.exe --serve; four processes with two workers each; internal exploration only, the course does not permit extraction (TA answer, 2026-11-16, issue #28)",
     "outer_solver_invoked": false,
     "outer_solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
     "inner_solver_sha256": "e7afe2c252a8c6caed4645ae0893664d134146fac4b2db19a05c7b36828d1112",
