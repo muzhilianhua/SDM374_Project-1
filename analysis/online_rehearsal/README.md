@@ -116,6 +116,24 @@ logged one, point by point (no solver calls). Result in `check_replay.log`: all 
 1, 7, 14, 20 of the other v1–v3 runs and calls 1, 9, 14, 20 of the three v4 runs are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
 that adding them left v1 unchanged.
 
+### Verification package for v4 seed 7 (`package_v4s7/`, 2026-11-16)
+
+A standalone folder for other machines (instructions in Chinese in its `README.md`): `online_run.py check`
+(versions, logical CPUs, BLAS, sha256 of data, package and `solver.exe`), `verify` (re-computes all 20
+batches from the reference history without the solver, about 10 minutes) and `run` (a full sequential
+20 × 50 run compared call by call with the reference; resumable; never touches `usage.count`). The policy
+files are byte-identical to this folder's at commit b705164 apart from line endings (`provenance.json`);
+`.gitattributes` keeps the committed bytes so `CHECKSUMS.sha256` holds after checkout.
+
+On this machine: a fresh `setup.ps1` environment reproduced 20/20 batches, and calls 1–2 of `run` matched
+weights and R. **Cross-machine determinism is fragile:** the GP hyperparameter fit amplifies BLAS rounding
+into about 0.01 of predicted R, enough to swap a selected candidate. With `OPENBLAS_NUM_THREADS=8` call 3
+differs, with `=1` call 20 differs. The package forces `OPENBLAS_CORETYPE=Prescott` (the kernel OpenBLAS
+uses here), but the thread count defaults to the logical CPU count (20 here) and cannot be raised above it,
+so a machine with another count will probably diverge at some call and end elsewhere in the 103–108 range.
+Making the run machine-independent would need a deterministic surrogate fit (fixed or rounded GP
+hyperparameters), which changes the trajectory and needs new seed runs.
+
 ## Files
 
 | File | Content |
@@ -128,6 +146,7 @@ that adding them left v1 unchanged.
 | `train_checks.py`, `train_checks.log` | additivity and feature checks, `TrainPriors` constants; training rows only |
 | `rehearsals/<variant>_s<seed>/` | `online_log.jsonl` (every point: call, weights, R, move, prediction; one summary per call), `config.json`, `console.log` |
 | `provenance.json` | git base, dataset and solver sha256, packages, file hashes; `scripts_sha256_lf` is the historical run input and `review_fix_scripts_sha256_lf` records the current bookkeeping fixes |
+| `package_v4s7/` | standalone verification package for v4 seed 7 (`check` / `verify` / `run`) |
 
 ```powershell
 $env:PYTHONUTF8 = 1

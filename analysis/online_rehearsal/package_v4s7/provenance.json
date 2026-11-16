@@ -1,0 +1,49 @@
+{
+ "built": "2026-11-16",
+ "policy": {
+  "variant": "v4",
+  "seed": 7,
+  "calls": 20,
+  "batch": 50
+ },
+ "source": {
+  "branch": "analysis/online-rehearsal",
+  "commit": "b705164",
+  "folder": "analysis/online_rehearsal",
+  "files": {
+   "policy.py": {
+    "package_sha256_lf": "50ae3c777e11cdc9c4bf2f6c1653ccc64e3e4cb5d1b41a8690978236018f3ecb",
+    "repo_sha256_lf": "50ae3c777e11cdc9c4bf2f6c1653ccc64e3e4cb5d1b41a8690978236018f3ecb"
+   },
+   "policy_v4.py": {
+    "package_sha256_lf": "14782f21a7c2456e6146f2e786a947b98b42f332b79c06524443a2e2414310bb",
+    "repo_sha256_lf": "14782f21a7c2456e6146f2e786a947b98b42f332b79c06524443a2e2414310bb"
+   },
+   "surrogate.py": {
+    "package_sha256_lf": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8",
+    "repo_sha256_lf": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8"
+   }
+  }
+ },
+ "reference_run": {
+  "date": "2026-11-16",
+  "best_R": 103.27529487758876,
+  "best_call": 20,
+  "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads)",
+  "python": "3.11.16",
+  "numpy": "1.24.4 (OpenBLAS, default threads)",
+  "scipy": "1.10.1",
+  "scikit-learn": "1.2.2",
+  "evaluator": "local solver.exe sha256 293867b8...a077247, 10 parallel instances (each point's R is independent of how calls are split)"
+ },
+ "verification_on_reference_machine": {
+  "default_threads": "20/20 batches identical (repository venv and a fresh .venv from setup.ps1)",
+  "OPENBLAS_NUM_THREADS=8": "calls 3 and 20 differ",
+  "OPENBLAS_NUM_THREADS=1": "call 20 differs",
+  "run_mode": "calls 1-2 with a sequential solver copy: weights and R identical to the reference"
+ },
+ "data": {
+  "train_csv_sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+ },
+ "builder_python": "3.11.16"
+}
