@@ -35,6 +35,19 @@ uv sync
 uv run pytest -q
 ```
 
+On Windows, especially when the checkout path contains Chinese characters, use the checked helper so
+Python does not recreate an editable `.pth` with a system-encoded path:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task Setup
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task CheckData
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task Test
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task DryRun -Config experiments/online-baseline-synthetic.toml
+```
+
+The dry-run uses the synthetic evaluator and does not spend course-evaluator calls. Details and the
+limitations of the course-computer package are in [`scripts/README.md`](scripts/README.md).
+
 ## Workbench (GUI)
 
 ```bash
@@ -65,6 +78,11 @@ uv run sdm predict  --model-run <run-id> --weights weights.json   # '-' reads st
 uv run sdm runs [--json]                               # list recorded runs
 uv run sdm reproduce <run-id>                          # re-execute and compare outputs
 ```
+
+For a training-only candidate study, run `uv run python analysis/online_policy_research/elite_candidates.py
+--out analysis/online_policy_research/candidates.json`. It fits a seeded surrogate on the checked training
+table and writes a legal 50-point candidate artifact. It does not read the solver or historical online
+results, and the artifact must be reviewed before any formal call.
 
 ## Where to read next
 
