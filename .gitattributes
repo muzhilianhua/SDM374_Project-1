@@ -13,3 +13,5 @@ solver/** -text
 # Online validation run: config.json pins the train.csv and solver sha256 values, and
 # output_manifest.json pins every generated artefact, so checkouts must not rewrite line endings.
 analysis/online_validation_105/** -text
+# Online surrogate packages pin their exact bytes in CHECKSUMS.json; never apply eol conversion.
+analysis/online_models/** -text

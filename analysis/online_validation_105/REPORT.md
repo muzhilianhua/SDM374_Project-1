@@ -1,122 +1,155 @@
-# 独立在线代理模型验证：20 轮 × 50 点
+# Independent Online Surrogate-Model Validation: 20 Rounds × 50 Points
 
-**一句话结论**：只用原始 2048 行训练数据、不借助任何既有搜索结果，加性 ARD 高斯过程在线代理在 20 次真实求解器调用、共 1000 个真实评估点上，把最优 R 从训练集最优 **115.7648** 降到 **105.9905**（改善 8.44%）；未达到此前历史结果的 103.46，也未接近 96。
-
----
-
-## 1. 这次验证想回答什么
-
-此前若干搜索脚本（ridge、进化策略、随机搜索、信任域扰动等）都曾在既有最优附近继续下探，但它们共享同一个隐患：**候选生成、调参和判断标准都可能被已知的低 R 区域影响**，于是“模型有效”和“模型记住了答案”无法区分。
-
-所以本实验设定一个强约束的独立起点：
-
-- 只读取 `data/train.csv` 的 2048 行原始训练数据；
-- 不使用 `best_weights*.json`、`landscape_bundle`、历史 103/104 后验点或任何既往搜索结果，作为种子、模板、结构先验、调参依据或图中参考线；
-- 图中唯一参考线是从训练表算出的 115.7648；
-- 每轮真实评估 50 点，共 20 轮，评估预算固定，不因中间结果变好或变坏而调整。
-
-问题因此变成：**在完全不知道答案在哪的前提下，一个能给出逐点不确定度的代理模型，能否在 1000 次真实评估内把 R 压到训练最优以下，并压到多低？**
+**Result:** using only the original 2,048 training rows and no prior search artefact, an additive ARD
+Gaussian-process surrogate reduced the best measured R from the training-table best **115.7648** to
+**105.9905**, an **8.44%** improvement, over 20 development batches and 1,000 real evaluations.
 
 ---
 
-## 2. 方法
+## 1. Question and independence constraints
 
-### 2.1 代理模型：加性 ARD Matérn-2.5 高斯过程
+Earlier local searches (ridge, evolution strategies, random search, trust-region perturbations, and
+others) refined weights near already known good points. Their candidate generation, tuning, and success
+criteria could therefore have been influenced by known low-R regions, making it difficult to distinguish
+a genuinely useful model from one that had indirectly seen the answer.
 
-输入是原始 21 维权重（三栋楼 × 7 个指标），不做派生特征；目标就是原始 R。
+This experiment imposed an independent starting point:
 
-核函数刻意利用“楼内平滑、楼间近似可加”这一结构：
+- read only the 2,048 original rows in `data/train.csv`;
+- do not use `best_weights*.json`, `landscape_bundle`, or any earlier search result as a seed, template,
+  structural prior, tuning input, or plotted reference;
+- use only `115.76481925917324`, computed from the training table, as the reference value;
+- evaluate 50 points per round for exactly 20 script-configured rounds, without changing the budget in
+  response to intermediate results.
 
-```
+The question is: **without prior knowledge of the low-R region, can a surrogate with pointwise
+uncertainty improve on the training-table best within 1,000 real evaluations, and by how much?**
+
+---
+
+## 2. Method
+
+### 2.1 Surrogate: additive ARD Matérn-2.5 Gaussian process
+
+The inputs are the original 21 weights (three buildings × seven objectives), with no derived features;
+the target is the measured R. The kernel represents smooth within-building responses and approximate
+additivity across buildings:
+
+```text
 K = 0.90 × mean(K_b1, K_b2, K_b3) + 0.10 × K_global
 ```
 
-- 每个 `K_b` 是该楼 7 维的 Matérn-2.5；
-- `K_global` 是整 21 维 Matérn-2.5，作为 10% 的交互修正；
-- 7 个指标维度共享一组 ARD 长度尺度，三栋楼共享这 7 个尺度（共 7 个自由长度尺度，而非 21 个）；
-- 初始长度尺度 0.5（边界 `[0.03, 3.0]`），初始白噪声 0.03（边界 `[0.001, 0.3]`）；
-- L-BFGS-B 最多 18 次迭代，`ftol=1e-5`，无随机重启，单一初始参数。
+- Each `K_b` is a seven-dimensional Matérn-2.5 kernel for one building.
+- `K_global` is a 21-dimensional Matérn-2.5 kernel providing a 10% interaction correction.
+- The seven objective dimensions share ARD length scales across all three buildings: seven free length
+  scales rather than 21.
+- Initial length scale: 0.5, bounded by `[0.03, 3.0]`; initial white noise: 0.03, bounded by
+  `[0.001, 0.3]`.
+- L-BFGS-B uses at most 18 iterations, `ftol=1e-5`, one initial parameter vector, and no random restarts.
 
-选择它的直接理由：它原生给出逐点后验标准差，不需要额外拼一个启发式不确定度；同时共享长度尺度让 2048 条数据不至于在 21 维上把超参数拟合得很虚。
+This model supplies posterior standard deviations directly, while shared length scales avoid fitting an
+unconstrained high-dimensional kernel to 2,048 rows. Every round refits on all 2,048 training rows plus
+all successful online observations so far, including poor observations.
 
-每轮用“2048 条原始训练 + 截至上一轮的全部成功在线点”**全量重训**，不丢弃表现较差的在线点。
+### 2.2 Online uncertainty calibration
 
-### 2.2 在线不确定度校准
+Raw GP extrapolation can be overconfident. The first round uses calibration coefficient `c = 1`.
+Subsequent rounds use at most the 100 most recent online observations:
 
-GP 的外推标准差往往过于自信。第 1 轮系数 `c = 1`；此后每轮用最近最多 100 个在线点计算：
-
+```text
+c = clip(sqrt(mean((R_actual - mean_pred)^2 / std_raw^2)), 1.0, 3.0)
 ```
-c = clip( sqrt( mean( (R_actual - mean_pred)^2 / std_raw^2 ) ), 1.0, 3.0 )
-```
 
-选点时使用 `std = std_raw × c`，同时把 `std_raw` 与校准后的 `std` 都写入日志，避免校准覆盖历史记录。
+Selection uses `std = std_raw × c`. Both the raw and calibrated values are logged so that calibration
+does not overwrite the original model output.
 
-### 2.3 候选生成：多结构精英 + 整楼角色替换
+### 2.3 Candidates: multi-structure elites and whole-building replacement
 
-每轮固定生成 24,000 个候选，分两半：
+Each round generates 24,000 candidates in two equal groups.
 
-**（a）12,000 个多尺度局部候选**
+**(a) 12,000 multiscale local candidates**
 
-- “结构”定义为三栋楼各自 7 个权重中最大者的指标索引，即一个 dominant 三元组（共 343 种可能）；
-- 每个已出现三元组保留实测 R 最低的一行作为结构精英，取全局最优的前 16 个不同结构作为局部搜索中心；
-- 每栋楼独立做归一化 Dirichlet 扰动，concentration 从 `{100, 300, 1000, 3000, 10000}` 均匀抽取；
-  小 concentration 允许角色层面的改变，大 concentration 等价于窄区域精修。
+- A structure is the triple of dominant objective indices, one per building, giving 343 possible triples.
+- For every observed triple, the row with the lowest measured R is retained as its structure elite.
+  Local search centres are the best 16 distinct structures.
+- Each building is perturbed independently with a normalised Dirichlet distribution whose concentration
+  is sampled uniformly from `{100, 300, 1000, 3000, 10000}`. Small values permit role changes; large
+  values refine a narrow region.
 
-**（b）12,000 个整楼结构变异候选**
+**(b) 12,000 whole-building structure mutations**
 
-- 从结构精英中取基点，再从“该楼 + 该主导角色”的低 R donor 池（每个角色最多 8 个）取替换块；
-- 80% 只替换一栋楼，20% 替换两栋楼，其余楼块**完全冻结**；
-- 强制 donor 的主导角色与原文块不同，因此这一步是在搜“整栋楼换角色”，而不是又做一次 21 维小扰动；
-- 混合比例 λ 从 `{0.5, 0.75, 1.0}` 抽取，再对变化楼块做 concentration `{100, 300}` 的小扰动。
+- Select a base from the structure elites and replacement blocks from a low-R donor pool for the relevant
+  building and dominant role, with at most eight donors per role.
+- Replace one building with probability 0.8 and two buildings with probability 0.2; freeze every other
+  building block exactly.
+- Require the donor's dominant role to differ from the original block, so this operation searches for a
+  whole-building role change rather than another small 21-dimensional perturbation.
+- Sample the replacement fraction from `{0.5, 0.75, 1.0}`, then apply a small Dirichlet perturbation with
+  concentration sampled from `{100, 300}` to each changed block.
 
-这样候选池里同时存在“在已知盆地里继续挖”和“跳到另一个盆地去”两类动作，而不需要预先知道盆地在哪里。
+The pool therefore contains both within-basin refinement and moves to different structural basins,
+without assuming where those basins are.
 
-### 2.4 每批 50 点的选点策略
+### 2.4 Selecting each batch of 50 points
 
-三类名额，各自用不同的 acquisition，并按结构数量设上限：
+Three quotas use different acquisition functions and per-structure caps:
 
-| 类型 | 排序分数（越小越优先） | 来源 | 结构上限 | 作用 |
+| Type | Acquisition (smaller is better) | Source | Structure cap | Purpose |
 |---|---|---|---|---|
-| `exploit` | `mean + 0.5·std` | 局部候选 | 每三元组 5 个 | 在多个已有盆地内保守利用 |
-| `structure` | `mean − 1.0·std` | 整楼变异候选 | 每三元组 1 个 | 跨越角色切换障碍 |
-| `explore` | `mean − 2.0·std` | 全部候选，且距最近观测 ≥ `0.5·spacing` | 每三元组 2 个 | 保留高不确定度机会 |
+| `exploit` | `mean + 0.5·std` | Local candidates | 5 per triple | Conservative exploitation across several known basins |
+| `structure` | `mean − 1.0·std` | Whole-building mutations | 1 per triple | Cross role-changing barriers |
+| `explore` | `mean − 2.0·std` | All candidates at least `0.5·spacing` from the nearest observation | 2 per triple | Retain high-uncertainty opportunities |
 
-- `spacing` 为当前全部观测的最近邻欧氏距离中位数；
-- 同类内部按 acquisition 从小到大贪心选取，并要求与已选点距离 ≥ `0.1·spacing`（仅在名额填不满时逐级减半）；
-- 配额：第 1 轮 15/25/10（先扩大结构覆盖）；第 2–20 轮若最近 3 次调用中出现过新的全局最优，则 30/10/10，否则 20/20/10；
-- “新全局最优”只按实测 R 判断，绝不使用预测值；
-- 去重：与训练行、所有已发送点（含失败批）、批内点比较，`max|Δw| ≤ 1e-9` 即视为重复；候选不足时先补 `structure` 再补 `exploit`，不放松合法性检查；
-- 主种子 2026，候选流按 `default_rng([2026, call, stream_id])` 派生，保证可复现。
+- `spacing` is the median nearest-neighbour Euclidean distance across all current observations.
+- Within each type, candidates are selected greedily by acquisition, subject to a distance of at least
+  `0.1·spacing` from already selected points. This threshold is reduced only if quotas cannot be filled.
+- Quotas are 15/25/10 in round 1. In rounds 2–20 they are 30/10/10 if a new global best appeared in the
+  previous three batches, and 20/20/10 otherwise.
+- Improvement is determined only by measured R, never by predictions.
+- Deduplication covers training rows, every point already sent (including failed batches), and points in
+  the current batch. `max|Δw| ≤ 1e-9` is a duplicate. If necessary, `structure` and then `exploit`
+  candidates replenish the pool without relaxing legality checks.
+- The master seed is 2026. Candidate streams derive from `default_rng([2026, call, stream_id])`.
 
-**为什么不让“预测最小值”独占名额**：GP 在外推区的低预测不可信。如果 50 个名额全给预测最小点，模型会反复把它推到同一个错误方向；固定保留结构名额和不确定度名额，是这个策略与本项目其他搜索脚本最本质的差别。
-
----
-
-## 3. 真实评估协议
-
-- 求解器：课程 `solver.exe`，每轮一次调用、每次 50 组权重，共 20 次调用上限；不删除、不重置 `usage.count`。
-- 传输层：本机外层 `solver.exe` 的批量 stdin 通道会把空输入传给内层求解器（表现为退出码 2、`Expecting value: line 1 column 1`）。因此改用同一外层 exe 内嵌的 `RampingSolver.exe --serve`，每行一个 21 维扁平数组，每行返回 `{"R": 数值}`；内层 exe 的 SHA-256 与外壳资源一致。
-- 失败语义：求解器一旦启动，该轮即视为已消耗。失败或超时的批次记为 sent-but-unmeasured，不自动重发、不补发凑满 1000 点；续跑时默认停止，只有显式 `--accept-lost-attempt` 才标记丢失并进入下一轮。
-- 本次 20 次调用全部成功，无失败轮次。
+The predicted minimum does not receive the whole batch because extrapolated GP minima are unreliable.
+Fixed structure and uncertainty quotas distinguish this policy from pure exploitation.
 
 ---
 
-## 4. 结果
+## 3. Real-evaluation and transport protocol
 
-### 4.1 总览
+- **Actual process:** each batch launched the extracted inner
+  `RampingSolver.exe --serve --workers 4`. Each stdin line contained one flat 21-element JSON array;
+  each JSON response line contained `{"R": <number>}`. The inner executable's SHA-256 was checked
+  against the resource embedded in the course outer executable.
+- **Outer executable:** `SolverEvaluator` computed the outer `solver.exe` SHA-256 but never launched it.
+  Consequently, the outer program's `usage.count` was unchanged and played no role in this run.
+- **Round limit:** 20 rounds was the script's own configuration, not consumption of a 20-call course
+  quota. The outer solver's empty-stdin behaviour on this machine motivated the development transport.
+- **Development only:** direct inner-solver JSON-lines transport must not be used for a formal run.
+  Decision 31 requires the course `solver/run.py` procedure, in which PowerShell pipes `weight.json` to
+  the outer `solver.exe`.
+- **Conservative failure semantics:** once this script started a batch, it treated the batch as spent.
+  Failed or timed-out points became sent-but-unmeasured and were never automatically resent. Resume
+  stopped at an unresolved attempt unless `--accept-lost-attempt` explicitly marked it lost.
+- All 20 development batches completed successfully; no batch was lost.
 
-| 指标 | 数值 |
+---
+
+## 4. Results
+
+### 4.1 Overview
+
+| Metric | Value |
 |---|---:|
-| 成功调用 | 20 / 20 |
-| 真实评估点 | 1000（1000 个两两唯一，与 2048 行训练数据零重复） |
-| 最优 R | **105.9905449313** |
-| 最优位置 | 第 20 轮第 9 点（`exploit` 名额，dominant 三元组 5/6/5） |
-| 训练集最优 R | 115.7648192592 |
-| 相对改善 | 8.44%（低 9.774） |
-| 权重合法性 | 每栋楼权重和 = 1，最大误差 7.8e-16 |
-| 总耗时 | 约 3 小时 38 分（单轮 7.7–10.5 分钟） |
-
-三张图：
+| Successful development batches | 20 / 20 |
+| Real evaluated points | 1,000 (all pairwise unique; no duplicate of the 2,048 training rows) |
+| Best R | **105.9905449313** |
+| Best location | Round 20, point 9 (`exploit`; dominant triple 5/6/5) |
+| Training-table best R | 115.7648192592 |
+| Relative improvement | 8.44% (9.774 lower) |
+| Weight legality | Every building sums to 1; maximum error 7.8e-16 |
+| Elapsed time | About 3 h 38 min (7.7–10.5 min per round) |
 
 ![R descent](runs/independent_gp_2026/r_descent.png)
 
@@ -124,9 +157,9 @@ c = clip( sqrt( mean( (R_actual - mean_pred)^2 / std_raw^2 ) ), 1.0, 3.0 )
 
 ![Prediction vs actual](runs/independent_gp_2026/prediction_vs_actual.png)
 
-### 4.2 逐轮记录
+### 4.2 Round-by-round record
 
-| 轮次 | 训练行数 | 本轮最小 R | 累计在线最优 | MAE | RMSE | 95% 覆盖率 |
+| Round | Training rows | Round minimum R | Cumulative online best | MAE | RMSE | 95% coverage |
 |---:|---:|---:|---:|---:|---:|---:|
 | 1 | 2048 | 113.388431 | 113.388431 | 3.533 | 4.536 | 0.94 |
 | 2 | 2098 | 110.911043 | 110.911043 | 2.710 | 3.152 | 0.92 |
@@ -146,58 +179,82 @@ c = clip( sqrt( mean( (R_actual - mean_pred)^2 / std_raw^2 ) ), 1.0, 3.0 )
 | 16 | 2798 | 106.448603 | 106.448603 | 0.654 | 0.888 | 1.00 |
 | 17 | 2848 | 106.309922 | 106.309922 | 0.554 | 0.710 | 1.00 |
 | 18 | 2898 | 106.587310 | 106.309922 | 0.877 | 1.226 | 0.92 |
-| 19 | 2948 | 106.109948 | 106.109948 | 0.642 | 0.987 | 0.96 |
+| 19 | 2948 | 106.109948 | 106.309922 | 0.642 | 0.987 | 0.96 |
 | 20 | 2998 | **105.990545** | **105.990545** | 0.630 | 0.796 | 0.96 |
 
-### 4.3 怎么读这些数字
+### 4.3 Interpretation
 
-**收敛形态**：R 在 8 轮内从 113.39 降到 108.06，之后进入平台期，靠零星突破逐步推进（106.73 → 106.59 → 106.45 → 106.31 → 106.11 → 105.99）。平台期的“本轮最小值”反复在 106–107 之间震荡，累计最优却仍在缓慢下降——这是典型的盆地内精修，而不是随机噪声。
+**Convergence:** R fell from 113.39 to 108.06 in eight rounds, then entered a plateau with occasional
+improvements: 106.73 → 106.59 → 106.45 → 106.31 → 106.11 → 105.99. Round minima oscillated around
+106–107 while the cumulative best continued to decline slowly, consistent with refinement within a basin.
 
-**前 10 名高度聚集**：105.991、106.079、106.110、106.163、106.181、106.204、106.310、106.341、106.356、106.409。末端已经收敛到同一个低值盆地，继续加轮次的边际收益会明显变小。
+**The ten best points are tightly clustered:** 105.991, 106.079, 106.110, 106.163, 106.181, 106.204,
+106.310, 106.341, 106.356, and 106.409. The final rounds converged on the same low-value basin.
 
-**三类名额的贡献**：
-- `exploit` 最小 105.991（最终最优，出现在最后一轮的保守利用）；
-- `structure` 最小 106.110（整楼换角色确实找到了与局部搜索不同的盆地）；
-- `explore` 最小 106.514（高不确定度探索没有单独夺冠，但为后续精修提供了新区域）。
+**Contributions by quota:**
+- `exploit`: minimum 105.991, including the final best point;
+- `structure`: minimum 106.110, showing that whole-building role changes reached a distinct competitive
+  region;
+- `explore`: minimum 106.514, supplying new regions for subsequent refinement although it did not produce
+  the overall best.
 
-这说明“三种名额混合”不是装饰：结构名额给出了与 exploit 同一量级、但不同位置的解，避免了纯利用策略的停滞。
+**Prediction quality:** MAE fell from 3.53 to 0.63 and RMSE from 4.54 to 0.80; bias moved from −3.34 to
+approximately zero. Early GP predictions systematically overestimated R, and online observations
+corrected this. Coverage remained between 0.92 and 1.00, so the calibrated intervals were neither
+severely too narrow nor excessively wide.
 
-**预测质量**：MAE 3.53 → 0.63，RMSE 4.54 → 0.80，偏差从 −3.34 收敛到 ≈0。早期 GP 系统性高估 R（预测比实测高），在线数据把它纠正过来；95% 覆盖率全程 0.92–1.00，说明校准系数工作正常，区间既没有严重过窄也没有过度膨胀。
-
-**排序能力**：Spearman 在 0.14–0.76 之间波动，明显弱于数值精度。含义是：模型能较好地估计“某个点大概多好”，但在两个都不错的点之间挑出更好的那个时，判断不稳定。这解释了为什么末段最优值推进缓慢。
+**Ranking:** Spearman correlation varied from 0.14 to 0.76 and was much weaker than numerical accuracy.
+The model estimated approximate point quality better than it ranked pairs of similarly good points,
+which helps explain the slow late-stage improvement.
 
 ---
 
-## 5. 复现
+## 5. Reproduction
 
-同目录的 `README.md` 是给自动化代理用的复现与校验说明（依赖版本、必须改的路径、断言、失败语义、禁止事项）。
-
-人工复现的最小步骤：
+`README.md` is the machine-facing reproduction and verification contract. Replace the two solver path
+placeholders in `config.json`, extract the inner executable as documented there, and verify both pinned
+solver hashes. The training-table hash is checked before the run.
 
 ```bash
-python -m unittest -v test_validation.py        # 离线单元测试，不消耗求解器额度
-python run_online.py --synthetic                # 两轮合成闭环，只验证循环/日志/绘图
-python run_online.py --dry-run --run-id check    # 只生成第 1 批 50 点，不启动求解器
+python -m unittest -v test_validation.py
+python run_online.py --synthetic
+python run_online.py --dry-run --run-id check
 python run_online.py --run-id independent_gp_2026
 python plot_results.py independent_gp_2026
 ```
 
-换机器时唯一必须改的是 `config.json` 里的 `solver.path` / `solver.inner_path` 及对应 SHA-256；`data/train.csv` 的 SHA-256 已在配置中固定（`877b5f8e…`），运行前会校验。
+The direct inner transport is development-only. Do not use these commands as a substitute for the formal
+course `solver/run.py` procedure required by decision 31.
 
 ---
 
-## 6. 局限
+## 6. Limitations
 
-1. **没有突破 103.46**。1000 点中没有任何一点低于 103.46。这次验证证明的是“独立起点下能稳定压到 106 附近”，不是“能复现历史最好成绩”。
-2. **20 次调用是硬上限**。曲线末端仍在缓慢下降，多给预算很可能还能再降一点，但本次没有额外额度可验证这一点。
-3. **Spearman 偏低**。模型在相近优秀点之间的排序不可靠，是当前策略末端推进乏力的主要原因，也是下一步最值得改进的方向。
-4. **单次随机种子**。主种子固定为 2026，只跑了一条轨迹；没有做多种子重复，不能据此估计结果的方差。
-5. **结构定义较粗**。dominant 三元组只取每栋楼的最大权重，忽略了“两个指标接近并列”的情况；更细的结构描述可能带来更有效的跨盆地搜索。
+1. **No formal-run validation.** This experiment used the development-only inner transport. It does not
+   validate the outer solver's stdin channel or consume the formal course quota.
+2. **One 20-round script budget.** The curve was still declining at the end, but no additional rounds were
+   run, so further improvement is not established.
+3. **Weak fine-grained ranking.** Unreliable ordering among similarly good points is a likely cause of the
+   slow late-stage progress.
+4. **One random seed.** Only the trajectory from master seed 2026 was run. The result does not estimate
+   seed-to-seed variance or establish superiority over another strategy.
+5. **Coarse structure definition.** A dominant triple retains only each building's largest weight and
+   ignores near ties; a finer structural representation might improve cross-basin search.
+
+The separately archived local import containing R = 103.46086008194834 is unverified and was not an
+input, tuning target, or reference line for this independent run. It is not an established team or
+historical best, and this report makes no comparison against it.
 
 ---
 
-## 7. 结论
+## 7. Conclusion
 
-在完全不使用既有搜索结果的条件下，加性 ARD Matérn-2.5 GP + 多结构精英候选 + 三类名额混合，在 20 次真实调用、1000 个真实评估点内把 R 从 115.7648 稳定压到 105.9905。过程可复现、日志完整、无失败批次，且曲线末端仍在下降。
+Without using earlier search results, the additive ARD Matérn-2.5 GP, multi-structure elite candidates,
+and mixed selection quotas reduced R from the training-table best 115.7648 to **105.9905449313** in 20
+successful development batches and 1,000 real evaluations. The run is seeded and structurally verifiable,
+with complete logs and no failed batches.
 
-它没有复现 103.46 的历史成绩，因此**不能**据此宣称该策略优于此前方法；能成立的结论是：**这是一条不依赖答案泄漏、可独立复现、且确实有效下降的搜索路径**，其瓶颈在于相近优秀点之间的排序精度，而非数值拟合精度。
+The supported conclusion is that this is an independently seeded, effective optimisation path with no
+prior-search input. It is not evidence that the strategy is superior to other methods, nor that the
+development transport is suitable for a formal run. Its main observed modelling bottleneck is ranking
+among similarly strong candidates rather than numerical prediction error.

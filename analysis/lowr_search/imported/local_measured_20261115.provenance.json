@@ -1,0 +1,100 @@
+{
+  "tag": "local-measured-20261115",
+  "created": "2026-11-15T13:38:37",
+  "output": {
+    "path": "analysis/lowr_search/imported/local_measured_20261115.jsonl",
+    "sha256": "1f7658231c38a95a653e5462d09713eb49d411fe7aa50822d1ec9d8047f7a515",
+    "line_endings": "CRLF",
+    "records": 9698,
+    "sha256_weights_imported": "5a7c600693db49a14b34d97be33ff8a3a7e57c0c8803973d71d8b0da582d83f5",
+    "R_range": [
+      103.46086008194834,
+      275.0571445324895
+    ]
+  },
+  "t36_log_restored": {
+    "path": "analysis/lowr_search/eval_log.jsonl",
+    "sha256": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
+    "records": 8763,
+    "note": "The imported records are not part of T36 and must not be appended to this log."
+  },
+  "source_logs_retained_in_repository": false,
+  "sources": [
+    {
+      "path": "../random_search_run1/eval_log.jsonl",
+      "sha256": "5b518d22793fa5b988a91098df2b6c4223b458681462ddac43c83de01653776e",
+      "seen": 4160,
+      "imported": 3774,
+      "duplicate": 386,
+      "generator": {
+        "path": "analysis/lowr_search/imported/source_scripts/random_simplex_search.py",
+        "sha256": "ab92ec855db1a70bc3cd103037bcbda79b16bdb3e167f46ea929890a1e88a6c8"
+      }
+    },
+    {
+      "path": "../structure_census_run1/eval_log.jsonl",
+      "sha256": "505337c066aa7f9cebf7b65507db0ff106e3bf085ffe47adb292a49160aabaf2",
+      "seen": 1180,
+      "imported": 1180,
+      "duplicate": 0,
+      "generator": {
+        "path": "analysis/lowr_search/imported/source_scripts/structure_census.py",
+        "sha256": "6eccae72b41197b776deebd6e7fcc15e45605c213b2b617acd73dfab4e5c5c3e"
+      }
+    },
+    {
+      "path": "../asymmetric_run1/eval_log.jsonl",
+      "sha256": "7ec539a097c927afefc0c80e83d04517869edc678ced7a254942edd5729e3c9e",
+      "seen": 1024,
+      "imported": 1024,
+      "duplicate": 0,
+      "generator": {
+        "path": "analysis/lowr_search/imported/source_scripts/asymmetric_search.py",
+        "sha256": "7b13175592ae58de906de23b75fab476d20037d7f6b6420c6d47120cab831f98"
+      }
+    },
+    {
+      "path": "../ridge_run1/eval_log.jsonl",
+      "sha256": "4a9adcc40cd726ffb5eb861c0858a852cac99588c2014953f58db43ea13d7887",
+      "seen": 1000,
+      "imported": 1000,
+      "duplicate": 0,
+      "generator": {
+        "path": "analysis/lowr_search/imported/source_scripts/ridge_search.py",
+        "sha256": "7b9bc66d1c661a25868098ac7c8e6fc45de4c34fe0edafbdf6f707fb37fdb779"
+      }
+    },
+    {
+      "path": "../es_run1/eval_log.jsonl",
+      "sha256": "8f4c8c67ad8f5a067c90681576faa4497bfdc6c8c38717443ca627767fa2023c",
+      "seen": 2720,
+      "imported": 2720,
+      "duplicate": 0,
+      "generator": {
+        "path": "analysis/lowr_search/imported/source_scripts/es_search.py",
+        "sha256": "7769f31b01b62827eba9165a2d77e6d733246727953779b14d4ea7f7c3e97f1e"
+      }
+    }
+  ],
+  "measurement_solver": {
+    "transport": "extracted inner RampingSolver.exe --serve; four processes with two workers each",
+    "outer_solver_invoked": false,
+    "outer_solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+    "inner_solver_sha256": "e7afe2c252a8c6caed4645ae0893664d134146fac4b2db19a05c7b36828d1112",
+    "usage_count_involved": false
+  },
+  "lowest_imported_record": {
+    "R": 103.46086008194834,
+    "source": "ridge_run1",
+    "source_phase": "A_probe_0",
+    "source_eval_id": 840,
+    "imported_eval_id": 14741
+  },
+  "verification_status": "unverified imported measurements; no independent re-check is recorded",
+  "established_team_or_historical_best": false,
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.1.3",
+    "platform": "Windows-11-10.0.26300-SP0"
+  }
+}

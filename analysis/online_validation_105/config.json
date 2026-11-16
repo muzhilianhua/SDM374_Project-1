@@ -56,9 +56,9 @@
   },
   "solver": {
     "transport": "embedded_serve_json_lines",
-    "path": "d:/HuaweiMoveData/Users/11659/Desktop/在线/solver/solver.exe",
+    "path": "<PATH_TO_OUTER_SOLVER_EXE>",
     "sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
-    "inner_path": "C:/Users/11659/AppData/Local/Temp/RampingSolver.exe",
+    "inner_path": "<PATH_TO_EXTRACTED_RAMPINGSOLVER_EXE>",
     "inner_sha256": "e7afe2c252a8c6caed4645ae0893664d134146fac4b2db19a05c7b36828d1112",
     "workers": 4,
     "timeout_seconds": 3600
