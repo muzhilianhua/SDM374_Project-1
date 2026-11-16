@@ -212,15 +212,17 @@ which helps explain the slow late-stage improvement.
 ## 5. Reproduction
 
 `README.md` is the machine-facing reproduction and verification contract. Replace the two solver path
-placeholders in `config.json`, extract the inner executable as documented there, and verify both pinned
-solver hashes. The training-table hash is checked before the run.
+placeholders in `config.json` and verify both pinned solver hashes. The inner executable is an embedded
+resource of the course `solver.exe`; whether it may be extracted and called directly is still being
+confirmed with the TA (issue #28), so its extraction procedure is not reproduced here. The
+training-table hash is checked before the run.
 
 ```bash
-python -m unittest -v test_validation.py
-python run_online.py --synthetic
-python run_online.py --dry-run --run-id check
-python run_online.py --run-id independent_gp_2026
-python plot_results.py independent_gp_2026
+uv run python -m unittest -v test_validation.py
+uv run python run_online.py --synthetic
+uv run python run_online.py --dry-run --run-id check
+uv run python run_online.py --run-id independent_gp_2026
+uv run python plot_results.py independent_gp_2026
 ```
 
 The direct inner transport is development-only. Do not use these commands as a substitute for the formal

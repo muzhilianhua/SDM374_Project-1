@@ -76,23 +76,12 @@ Replace the `solver.path` and `solver.inner_path` placeholders in `config.json` 
 target machine. Keep the pinned hashes and every other setting unchanged. `solver.path` identifies
 the course outer executable; `solver.inner_path` identifies the extracted inner executable.
 
-The inner file is the `RampingSolver.exe` manifest resource inside the outer .NET executable. On
-Windows, extract it without launching the outer program (replace the two paths first):
+The inner file is the `RampingSolver.exe` manifest resource inside the outer .NET executable; its
+SHA-256 is pinned in section 8. Whether the course allows extracting and calling it directly is
+being confirmed with the TA (issue #28), so the extraction steps are not published here.
 
-```powershell
-$outer = "C:\path\to\solver.exe"
-$inner = "C:\path\to\RampingSolver.exe"
-$a = [System.Reflection.Assembly]::LoadFile($outer)
-$s = $a.GetManifestResourceStream('RampingSolver.exe')
-$fs = [System.IO.File]::Create($inner)
-$s.CopyTo($fs)
-$fs.Close(); $s.Close()
-Get-FileHash $outer -Algorithm SHA256
-Get-FileHash $inner -Algorithm SHA256
-```
-
-Both hashes must match section 8. This setup and the direct inner transport are development-only;
-they are not the formal-run procedure in decision 31.
+This setup and the direct inner transport are development-only; they are not the formal-run
+procedure in decision 31.
 
 Then, in this directory:
 

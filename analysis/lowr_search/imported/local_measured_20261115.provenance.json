@@ -5,6 +5,7 @@
     "path": "analysis/lowr_search/imported/local_measured_20261115.jsonl",
     "sha256": "1f7658231c38a95a653e5462d09713eb49d411fe7aa50822d1ec9d8047f7a515",
     "line_endings": "CRLF",
+    "sha256_lf": "fba571cab9e094b7fb302635be2a95b12493799ee805e6624312e10f36bebf84",
     "records": 9698,
     "sha256_weights_imported": "5a7c600693db49a14b34d97be33ff8a3a7e57c0c8803973d71d8b0da582d83f5",
     "R_range": [
@@ -15,6 +16,7 @@
   "t36_log_restored": {
     "path": "analysis/lowr_search/eval_log.jsonl",
     "sha256": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
+    "sha256_lf": "0a38f0807cfd6a9bdb8ecca103c055fdef96e54f9395a963943a4cb735349cc1",
     "records": 8763,
     "note": "The imported records are not part of T36 and must not be appended to this log."
   },
@@ -28,7 +30,8 @@
       "duplicate": 386,
       "generator": {
         "path": "analysis/lowr_search/imported/source_scripts/random_simplex_search.py",
-        "sha256": "ab92ec855db1a70bc3cd103037bcbda79b16bdb3e167f46ea929890a1e88a6c8"
+        "sha256": "5a55bf106d947cd3dcdad4284813c5a4e2e271b1d65ddfd2a0c32f916943a565",
+        "redaction": "the PowerShell snippet that extracts the inner solver from the course solver.exe is removed from this archived copy, because the course has not yet confirmed that extraction is allowed (issue #28); the recorded hash is for the redacted file"
       }
     },
     {

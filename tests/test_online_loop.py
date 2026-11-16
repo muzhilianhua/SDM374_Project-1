@@ -148,6 +148,17 @@ def test_resume_refuses_an_edited_run_config(session_factory):
         loop.resume(str(session.run_folder.path))
 
 
+def test_resume_refuses_a_run_without_a_recorded_config_hash(session_factory):
+    session = session_factory(calls=3)
+    session.run(max_calls=1)
+    folder = session.run_folder
+    meta = folder.read_json("meta.json")
+    del meta["config"]
+    folder.write_json("meta.json", meta)
+    with pytest.raises(loop.OnlineRunError, match="old format"):
+        loop.resume(str(folder.path))
+
+
 def test_first_call_sees_only_training_rows(session_factory, dataset):
     policy = Sampler()
     session = session_factory(policy=policy, calls=2)

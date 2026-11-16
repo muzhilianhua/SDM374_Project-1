@@ -63,27 +63,16 @@ def cleanup_pyi():
                 pass
 
 
-# ============================ 提取真实求解器 ============================
+# ============================ 真实求解器 ============================
+# The inner RampingSolver.exe is an embedded manifest resource of the course solver.exe. Whether the
+# course allows extracting and calling it directly is still being confirmed with the TA (issue #28),
+# so the extraction recipe is left out of this archived copy: place the inner executable at BASE_EXE
+# yourself before running the script.
 def ensure_solver():
-    if os.path.exists(BASE_EXE) and os.path.getsize(BASE_EXE) > 1e7:
-        return BASE_EXE
-    if os.path.exists(BASE_EXE):
-        os.remove(BASE_EXE)
-    import base64
-    ps_code = (
-        "$ErrorActionPreference = 'Stop'\n"
-        "$src = '{src}'\n"
-        "$dst = '{dst}'\n"
-        "$a = [System.Reflection.Assembly]::LoadFile($src)\n"
-        "$s = $a.GetManifestResourceStream('RampingSolver.exe')\n"
-        "$fs = [System.IO.File]::Create($dst)\n"
-        "$s.CopyTo($fs)\n"
-        "$fs.Close(); $s.Close()\n"
-    ).format(src=SOLVER_EXE_ORIG.replace("\\", "/"), dst=BASE_EXE.replace("\\", "/"))
-    ps_b64 = base64.b64encode(ps_code.encode("utf-16-le")).decode()
-    subprocess.run(["powershell", "-NoProfile", "-EncodedCommand", ps_b64], check=True)
-    assert os.path.exists(BASE_EXE) and os.path.getsize(BASE_EXE) > 1e7, "提取失败"
-    print("  已提取 RampingSolver.exe size=%d" % os.path.getsize(BASE_EXE))
+    if not os.path.exists(BASE_EXE):
+        raise SystemExit(
+            "inner solver not found: %s (embedded resource of the course solver.exe; extraction is "
+            "not included in this archived script, see issue #28)" % BASE_EXE)
     return BASE_EXE
 
 
