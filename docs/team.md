@@ -57,7 +57,7 @@
 | T07 | 调用日志 `online_log.csv`（调用号、21 个权重、R、来源策略、run id）及只追加写入 | 武韵扬 | M | P0 | — | 待审 | PR #18; `tests/test_online_log.py` |
 | T08 | 在线主程序（如 `sdm online -c <配置>`）：读 2048 行 → 策略提议 → 提交前检查（单纯形约束、与训练行和已发送点去重、≤ 50 组、额度）→ 调用评估器 → 写日志 → 并入 `X, y` 重训 → 下一次；中断后从日志续跑，不重复调用 | 张子木 | L | P0 | T06 T07 | 待审 | PR #21；`tests/test_online_loop.py` |
 | T09 | 跨机器确定性（提交包验收）：`submission/` 用 `--evaluator synthetic` 在本机和课程电脑上跑满 20 次调用，每次调用的规范记录（权重、R、策略与 RNG 状态，`float.hex`）逐位一致；不一致就按决策 31 的顺序降级（单线程 → 预测量化 + 字典序平分） | 刘润泽 | M | P0 | T10 T15 | 待办 | |
-| T10 | 提交包骨架 `submission/`（决策 31）：基于课程 `run.py` 的 20 次调用循环、每次调用的 checkpoint 与哈希链、中断续跑、第 1 次调用前的 stdin 检查（#28）与退出码规则、`--evaluator synthetic` 与开发用的评估器接口、`pyproject.toml` + `uv.lock`、README（`uv run run.py` 一条命令）；从 PR #25 的验证包 `package_v4s7/` 改起；临时运行包 `feat/course-pc-kit` 只作备用 | 武韵扬 | M | P0 | T03 | 待审 | `9a23f47`；`submission/`；synthetic 两次调用与断点续跑通过 |
+| T10 | 提交包骨架 `submission/`（决策 31）：基于课程 `run.py` 的 20 次调用循环、每次调用的 checkpoint 与哈希链、中断续跑、第 1 次调用前的 stdin 检查（#28）与退出码规则、`--evaluator synthetic` 与开发用的评估器接口、`pyproject.toml` + `uv.lock`、README（`uv run run.py` 一条命令）；从 PR #25 的验证包 `package_v4s7/` 改起；临时运行包 `feat/course-pc-kit` 只作备用 | 武韵扬 | M | P0 | T03 | 待审 | `564be36`；`submission/`；synthetic 两次调用与断点续跑通过 |
 | T11 | GUI 在线控制台：额度台账（已用 / 20）、提交前检查结果、最优值曲线 | 艾子齐 | M | P2 | T07 | 待办 | |
 
 ### 3.3 代理模型
@@ -108,7 +108,7 @@
 | T31 | 本人章节与幻灯片：实验设置、调用日志、基线、消融与在线结果（T07、T23、T24、T26） | 武韵扬 | M | P0 | T26 | 待办 | |
 | T32 | 报告统稿：合并各章并控制正文不超过 4 页，统一术语和图表，补写摘要、衔接与结论，整理创新点叙述 | 张子木 | M | P0 | T27 T28 T29 T30 T31 | 待办 | |
 | T33 | 幻灯片模板与统稿：制作统一的幻灯片模板和页数预算，合并各成员的页面，统一风格，组织试讲 | 刘润泽 | M | P0 | T27 T28 T29 T30 T31 | 待办 | |
-| T34 | 最终代码包：正式运行交 `submission/`（决策 31）；仓库 README 中的命令能复现报告里的每一个数（开发、回放与作图仍用 `sdm`） | 武韵扬 | S | P0 | T21 T32 | 待审 | `9a23f47`；`submission/README.md`；`uv run python run.py check` |
+| T34 | 最终代码包：正式运行交 `submission/`（决策 31）；仓库 README 中的命令能复现报告里的每一个数（开发、回放与作图仍用 `sdm`） | 武韵扬 | S | P0 | T21 T32 | 待审 | `564be36`；`submission/README.md`；`uv run python run.py check` |
 
 报告与幻灯片按"谁开发、谁撰写"分工：T27–T31 由各成员撰写自己开发部分的章节和幻灯片页，保证内容准确完整；
 T25（报告模板）、T32（报告统稿）、T33（幻灯片模板与统稿）负责模板和整体一致性，不替别人改写技术内容。
