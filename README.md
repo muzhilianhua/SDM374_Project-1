@@ -7,6 +7,10 @@ The offline phase is closed and frozen at git tag **`offline-final`** (submissio
 only what the online script needs. Online rules: at most 20 sequential evaluator calls of up to 50 weight
 sets each, using only the 2048 training rows before the first call ([decision 19](docs/decisions.md)).
 
+The graded runner is the standalone [`submission/`](submission/README.md) package. The repository `sdm`
+commands remain for development and replay; use `uv run python submission/run.py` only from inside that
+folder, because its lockfile and package checks are independent of the repository environment.
+
 The course evaluator lives in [`solver/`](solver/README.md). `solver.exe` (182 MB, Windows only) is not in
 git: copy it from the course `solver.zip` into `solver/` and check it:
 
