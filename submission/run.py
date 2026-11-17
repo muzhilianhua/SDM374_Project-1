@@ -27,6 +27,7 @@ import json
 import platform
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -115,8 +116,8 @@ def write_json(path: Path, value) -> None:
 
 
 def package_hashes() -> dict[str, str]:
-    names = ["run.py", "config.json", "data/train.csv", "data/manifest.json",
-             "policy/policy.py", "policy/policy_v4.py", "policy/surrogate.py"]
+    names = ["run.py", "config.json", "pyproject.toml", "uv.lock", "data/train.csv",
+             "data/manifest.json", "policy/policy.py", "policy/policy_v4.py", "policy/surrogate.py"]
     return {name: sha256(HERE / name) for name in names}
 
 
@@ -211,10 +212,21 @@ def cmd_check(args):
     return 0 if ok else 1
 
 
-def run_solver(exe: Path, batch: np.ndarray, timeout: float):
-    payload = json.dumps({"weights": batch.tolist()})
-    proc = subprocess.run([str(exe)], input=payload, capture_output=True, text=True, cwd=str(exe.parent),
-                          timeout=timeout, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+def _powershell_quote(path: Path) -> str:
+    return "'" + str(path).replace("'", "''") + "'"
+
+
+def _powershell_pipe(exe: Path, input_path: Path, timeout: float):
+    command = (f"Get-Content -LiteralPath {_powershell_quote(input_path)} -Raw | "
+               f"& {_powershell_quote(exe)}")
+    return subprocess.run(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", command],
+                          capture_output=True, text=True, encoding="utf-8", errors="replace",
+                          cwd=str(exe.parent), timeout=timeout)
+
+
+def run_solver(exe: Path, batch: np.ndarray, timeout: float, input_path: Path):
+    write_json(input_path, {"weights": batch.tolist()})
+    proc = _powershell_pipe(exe, input_path, timeout)
     if proc.returncode != 0:
         raise RuntimeError(f"solver exit {proc.returncode}: {proc.stderr.strip()[:500]}")
     R = [float(v) for v in json.loads(proc.stdout)["R"]]
@@ -234,9 +246,10 @@ def check_solver_stdin(exe: Path) -> None:
     """Check the course executable's stdin channel with an invalid, non-billable request."""
     bad = np.zeros((1, 3, 7), dtype=float)
     bad[0, 0, 0] = -1.0
-    proc = subprocess.run([str(exe)], input=json.dumps({"weights": bad.tolist()}), capture_output=True,
-                          text=True, cwd=str(exe.parent), timeout=60,
-                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    with tempfile.TemporaryDirectory(prefix="sdm374-stdin-check-") as folder:
+        input_path = Path(folder) / "weight.json"
+        input_path.write_text(json.dumps({"weights": bad.tolist()}), encoding="utf-8")
+        proc = _powershell_pipe(exe, input_path, timeout=60)
     stderr = proc.stderr.strip()
     if proc.returncode != 2 or "Weights must be finite and nonnegative" not in stderr or "Expecting value" in stderr:
         raise SystemExit("solver stdin preflight failed; refusing to spend a call: " + stderr[:500])
@@ -292,7 +305,9 @@ def cmd_run(args):
                    {"call": c, "evaluator": args.evaluator, "weights": batch.tolist(),
                     "batch_sha256": hashlib.sha256(json.dumps(batch.tolist()).encode()).hexdigest()})
         try:
-            R = run_solver(exe, batch, args.timeout) if args.evaluator == "solver" else run_synthetic(batch, X, y)
+            input_path = out / "checkpoints" / f"call_{c:02d}.weight.json"
+            R = (run_solver(exe, batch, args.timeout, input_path)
+                 if args.evaluator == "solver" else run_synthetic(batch, X, y))
         except Exception as error:
             with log.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps({"type": "call_failed", "call": c, "error": repr(error)}) + "\n")
