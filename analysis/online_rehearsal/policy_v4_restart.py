@@ -91,15 +91,24 @@ class BlockDescentPolicyV4Restart(BlockDescentPolicyV4):
 
         # Good training rows provide plausible forms; measured blocks provide
         # forms that have already been tested in this run.  Both are dynamic.
+        observed = []
         candidates = []
-        for i in order[:limit]:
-            candidates.append((0, float(st.y_train[i]), train[i, b]))
         for call in st.calls:
             for e in call:
-                if np.isfinite(e["R"]):
-                    candidates.append((1, float(e["R"]), e["W"][b]))
-
-        pool = self._unique_blocks([x[2] for x in sorted(candidates, key=lambda x: (x[0], x[1]))])
+                meta = e.get("meta", {})
+                if (meta.get("kind") == "single" and meta.get("building") == b
+                        and np.isfinite(e["R"])):
+                    observed.append((float(e["R"]), e["W"][b]))
+        for i in order[:limit]:
+            candidates.append((0, float(st.y_train[i]), train[i, b]))
+        # A measured single-building block has evaluator evidence in this run,
+        # so it is the safer first restart head.  Training heads remain useful
+        # as fallbacks and for later diversity selection.
+        observed_blocks = self._unique_blocks([x[1] for x in sorted(observed, key=lambda x: x[0])])
+        training_blocks = self._unique_blocks(
+            [x[2] for x in sorted(candidates, key=lambda x: (x[0], x[1]))])
+        pool = observed_blocks + [x for x in training_blocks
+                                  if bkey(x) not in {bkey(y) for y in observed_blocks}]
         if not pool:
             return []
 
@@ -109,6 +118,12 @@ class BlockDescentPolicyV4Restart(BlockDescentPolicyV4):
         remaining = pool[:]
         while remaining and len(chosen) < p.restart_heads:
             if not chosen:
+                # Prefer the best observed block when one is available.  This
+                # avoids sending a large, unsupported training extrapolation
+                # merely because it is far from the incumbent.
+                if observed_blocks:
+                    chosen.append(remaining.pop(0))
+                    continue
                 scores = [np.sum(np.abs(x - base_block)) for x in remaining]
             else:
                 scores = [min(np.sum(np.abs(x - y)) for y in [base_block] + chosen)

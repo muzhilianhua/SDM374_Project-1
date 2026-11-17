@@ -8,6 +8,11 @@ from the best training rows and blocks measured in the current run, then given
 two small local perturbations. The policy reads no historical evaluator log and
 does not contain a known low point or a fixed weight vector.
 
+The first head prefers the lowest measured single-building block for the
+stalled building. Training-derived heads remain available for diversity and as
+a fallback, limiting unsupported long jumps while keeping the policy able to
+leave its current local form.
+
 ## Checks completed
 
 - Synthetic replay: four seeds, 12 calls, 50 points per call. Both V4 and the
