@@ -62,7 +62,8 @@ def details(run):
 
 
 # ---------------------------------------------------------------- summary table and figure
-RUNS = {"v1": ["v1_s2026", "v1_s7", "v1_s11"], "v2": ["v2_s2026", "v2_s7", "v2_s11"], "v3": ["v3_s2026"], "v4": ["v4_s2026", "v4_s7", "v4_s11"]}
+RUNS = {"v1": ["v1_s2026", "v1_s7", "v1_s11"], "v2": ["v2_s2026", "v2_s7", "v2_s11"], "v3": ["v3_s2026"], "v4": ["v4_s2026", "v4_s7", "v4_s11"],
+        "v5": ["v5_s2026", "v5_s7", "v5_s11"], "v6": ["v6_s2026", "v6_s7", "v6_s11"]}
 
 
 def best_curve(run):
@@ -84,20 +85,20 @@ def summary(plot: bool):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(figsize=(7.5, 4.2))
+    fig, ax = plt.subplots(figsize=(8.5, 5.0))
     for v, runs in RUNS.items():
         for i, run in enumerate(runs):
             c = best_curve(run)
-            ax.plot(range(1, len(c) + 1), c, color={"v1": "C0", "v2": "C1", "v3": "C2", "v4": "C3"}[v],
+            ax.plot(range(1, len(c) + 1), c, color={"v1": "C0", "v2": "C1", "v3": "C2", "v4": "C3", "v5": "C4", "v6": "C5"}[v],
                     ls=["-", "--", ":"][i], marker="o", ms=2, label=f"{v} seed {run.split('_s')[1]}: {c[-1]:.2f}")
     ax.axhline(115.68, ls="--", c="gray", lw=1)
     ax.text(20, 115.9, "best offline result 115.68", ha="right", fontsize=8)
-    ax.axhline(104.37, ls=":", c="gray", lw=1)
-    ax.text(20, 104.55, "lowest point found by analysis/lowr_search (about 15,000 evaluations)", ha="right", fontsize=8)
+    ax.axhline(102.10, ls=":", c="gray", lw=1)
+    ax.text(20, 102.28, "lowest point found by analysis/lowr_search (about 22,500 evaluations, E20)", ha="right", fontsize=8)
     ax.set_xlabel("call (50 points each)")
     ax.set_ylabel("best R so far")
     ax.set_xticks(range(1, 21, 2))
-    ax.legend(fontsize=7, ncol=2)
+    ax.legend(fontsize=6, ncol=3)
     plt.tight_layout()
     plt.savefig(HERE / "convergence.png", dpi=130)
 

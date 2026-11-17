@@ -50,6 +50,13 @@ and record the new decision here with a date.
   depend on the peak share in 0.78–0.97. Ramping is the needle coordinate and R is terraced. The form does
   not transfer to buildings 1 and 3 (≥ +3). The research reads the rehearsal logs; nothing flows back into
   the online policy.
+- **Opening other block forms does not help within 1,000 points; v4 stays the recommended policy**
+  (2026-11-17, T37, [study](../analysis/online_rehearsal/README.md#v5-and-v6-opening-other-block-forms-2026-11-17-negative),
+  same condition as below). Every v1–v4 run fixed each building's dominant objectives by call 3–8. v5 (vertex
+  probes, per-building lanes from call 1) reached 106.167 / 106.176 / 106.438 (seeds 2026 / 7 / 11, mean 106.26);
+  v6 (lanes only for a stalled building) 107.413 / 106.479 / 106.675 (mean 106.86); v4 105.59. Lanes hit 5–6 %
+  of the time, spawned forms never. Variant means v1–v6 lie in 105.6–106.9 while one variant's seeds span up to
+  4.8, so three seeds per variant establish no ranking; v4's 103.275 is best read as a lucky seed.
 - **v4 of the compliant policy reaches 105.59 on average, 103.275 at best** (2026-11-16, T37, same study and
   condition as the entry below). v4 adds a null-step filter, late coordinate scans with same-building
   combinations, adaptive slot shares and no repeated points (`analysis/online_rehearsal/policy_v4.py`).

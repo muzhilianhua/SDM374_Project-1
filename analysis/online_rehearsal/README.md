@@ -29,6 +29,8 @@ real evaluator, and can it get near 104?
 | v2 | v1 + shift bias derived from the training rows | 106.951 | 105.107 | 107.490 | 106.52 | 109.51 / 107.50 / 106.69 |
 | v3 | v2 + fewer surrogate picks after call 6 | 107.777 | — | — | — | 110.03 / 108.90 / 108.61 |
 | **v4** | v2 + null-step filter, late coordinate scans, adaptive shares, no repeats (2026-11-16, `policy_v4.py`) | 108.049 | **103.275** | 105.440 | **105.59** | 108.51 / 107.00 / 105.98 |
+| v5 | v4 + vertex probes and per-building lanes from call 1 (2026-11-17, `policy_v5.py`) | 106.167 | 106.176 | 106.438 | 106.26 | 110.17 / 107.44 / 106.58 |
+| v6 | v4 + lanes only for a building whose descent stalled (2026-11-17, `policy_v6.py`) | 107.413 | 106.479 | 106.675 | 106.86 | 109.63 / 108.51 / 107.31 |
 
 Each run is 20 policy batches of at most 50 points, about 40 minutes with 10 parallel solver instances. v1–v3 sent
 963–995 points (the screen dropped repeats that the prototype did not refill); v4 sends all 1,000. The local pool
@@ -36,7 +38,7 @@ splits each policy batch into smaller worker invocations and resets quota state 
 folders; `solver_invocations` in each new `call_done` record reports this development-only detail (the committed
 historical logs predate this field). Curves: `convergence.png`.
 
-- All 10 runs beat the best offline result 115.68 in **call 1** (113.2–115.1).
+- All 16 runs beat the best offline result 115.68 in **call 1** (113.2–115.1).
 - **v4 is the recommended policy.** Its mean is 0.93 below v2's and it is ahead at calls 5, 10 and 15. Per seed it
   is better for seeds 7 (−1.83) and 11 (−2.05) and worse for seed 2026 (+1.10); with three seeds this is a
   likely, not a proven, improvement.
@@ -44,6 +46,8 @@ historical logs predate this field). Curves: `convergence.png`.
   found with about 20,000 unrestricted evaluations (103.247). Its late coordinate scans and same-building
   combinations kept descending through calls 11–20 (105.11 → 103.28), where v1–v3 runs stalled.
 - Seed spread is large (v4: 103.3–108.0). Expect about **105.5**, roughly 103–108 depending on where a run lands.
+- v5 and v6 (2026-11-17) tried to stop runs from committing early to one block form per building. Neither
+  beat v4; see [v5 and v6](#v5-and-v6-opening-other-block-forms-2026-11-17-negative).
 - v3 (one seed) is clearly slower: surrogate picks still matter in the middle calls, which is why v4 keeps a
   model floor of 25 % in its adaptive shares.
 - v1/v2 runs ended in different regions at similar R (e.g. building 2 almost all peak or all discomfort); several
@@ -84,6 +88,52 @@ All four use only the run's own results.
 In v4 the late repeat rate fell from 39 % to 28 % (seed 2026; the rest are repeats of other plateaus than the
 base's), and scans were the most productive late move (hits / points: 35/152, 54/178, 26/138).
 
+## v5 and v6: opening other block forms (2026-11-17, negative)
+
+**Question** (the user, 2026-11-17): can a better combination of surrogate and selection policy bring the online
+best closer to the lowest point the research found (102.10, `analysis/lowr_search` E20)?
+
+**Diagnosis from the own rehearsal logs.** Every v1–v4 run fixed the dominant objectives ("form") of each
+building's block by call 3–8 and kept that form to call 20, e.g. `v4_s2026` kept building 1 at ramping +
+discomfort until call 16 and `v2_s11` never left discomfort + ramping (building 1) and ramping + resilience
+(building 3). Forms differ by 1–3 in R per building, which matches the seed spread. Both variants below use the
+training rows and the run's own results only; neither uses a research point, value or form.
+
+| | v5 (`policy_v5.py`) | v6 (`policy_v6.py`) |
+|---|---|---|
+| Vertex probes | calls 1–2: per building, the base block mixed toward each of the 7 objectives by 0.5, then 0.8 | none |
+| Lanes | calls 1–12, every building: up to 3 measured blocks at L1 distance ≥ 0.4 from each other; 30 % of the building's slots refine the non-base ones; the surrogate pool draws its non-base parents from them | only a building none of whose singles beat the base in its last 2 calls, up to call 17: the same lane refinement, plus `spawn` moves (the base block shifted 25–50 % toward one objective drawn from the training-derived favour) |
+| Otherwise | v4 | v4 |
+
+**Result.** Final best per seed in the table above; hits = singles below their call's base, all three seeds:
+
+| Move class | v4 | v5 | v6 |
+|---|---|---|---|
+| model | 29 / 962 | 21 / 798 | 37 / 920 |
+| random | 47 / 615 | 27 / 489 | 58 / 644 |
+| fine | 57 / 650 | 44 / 522 | 45 / 503 |
+| scan | 40 / 518 | 24 / 407 | 38 / 470 |
+| probe | — | 19 / 126 | — |
+| lane | — | 26 / 420 | 10 / 185 |
+| spawn | — | — | 0 / 38 |
+
+- v5 narrowed the seed spread from 4.8 to 0.27 (seed 2026: 108.05 → 106.17) but lost on the mean (+0.67)
+  and on the best run (seed 7: 103.28 → 106.18). Probes hit often early, so extreme blocks (building 1 mostly
+  resilience, building 3 mostly discomfort in seed 2026) became the base before they were refined, and the 30 %
+  lane share slowed the main descent (mean best after call 5: 110.17 against 108.51).
+- v6 lost overall (mean 106.86). Until a building stalls it is v4 with another random stream, and it was
+  already behind v4 after call 4, before any lane opened (mean best 110.20 against 108.82): part of the gap is
+  seed noise. Lanes of stalled buildings hit 5 % of the time and spawned forms never did; the lane blocks it
+  adopted (seed 11: building 1 mostly discomfort) did not refine further in the calls left.
+- **Conclusion.** Within 1,000 points, searching other forms costs more than it finds; once a building stalls,
+  coordinate scans of its current form (v4) are the better use of its slots. The variant means v1–v6 lie in
+  105.6–106.9 while one variant's seeds span up to 4.8, so with three seeds per variant no difference among them
+  is established, and v4's 103.275 is best read as a lucky seed. Ranking variants reliably needs about 6–8 seeds
+  each (3–4 hours per variant here). Under decision 32 a high-spread policy is not a drawback: the graded score is
+  that of the picked seed, so seeds of the frozen `submission/` policy (T19) matter more than these variants.
+- v5 and v6 were run three seeds at a time with 6 workers each (about 1.6 hours for three runs); the worker
+  count does not change a run's batches.
+
 ## What the logs show (the 7 v1–v3 runs, `analyse.py`)
 
 "Hit" = a point below the best R known when its call was sent.
@@ -112,7 +162,7 @@ base's), and scans were the most productive late move (hits / points: 35/152, 54
 
 `check_replay.py` re-runs the committed policy on the logged history and compares each proposed batch with the
 logged one, point by point (no solver calls). Result in `check_replay.log`: all 20 calls of `v1_s2026`, calls
-1, 7, 14, 20 of the other v1–v3 runs and calls 1, 9, 14, 20 of the three v4 runs are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
+1, 7, 14, 20 of the other v1–v3 runs and calls 1, 9, 14, 20 of the three v4, v5 and v6 runs are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
 that adding them left v1 unchanged.
 
 ### Verification package for v4 seed 7 (`package_v4s7/`, 2026-11-16)
@@ -139,6 +189,7 @@ hyperparameters), which changes the trajectory and needs new seed runs.
 |---|---|
 | `policy.py`, `surrogate.py` | the policy (v1–v3) and its surrogate |
 | `policy_v4.py` | v4 as a subclass of the v1–v3 policy |
+| `policy_v5.py`, `policy_v6.py` | v5 (probes, lanes from call 1) and v6 (lanes for stalled buildings) as subclasses of v4; negative results |
 | `rehearse.py` | driver: 20 calls, pre-submit screen (training rows, sent points, 1e-9), log, resume; `--evaluator synthetic` exercises the code without the solver |
 | `analyse.py` | summary table, per-run details, `--plot` redraws `convergence.png` |
 | `check_replay.py`, `check_replay.log` | batch-by-batch reproduction check |
@@ -160,7 +211,7 @@ about 40 minutes; it creates an isolated `analysis/online_rehearsal/workers/<run
 
 ## Limits
 
-- Three seeds for v1, v2 and v4, one for v3; seed spread (up to ±2.4 for v4) is as large as the variant differences.
+- Three seeds for v1, v2, v4, v5 and v6, one for v3; seed spread (up to ±2.4 for v4) is as large as the variant differences.
 - Up to 37 of 1,000 points per run were lost to dropped repeats; a port to `BatchPolicy` should rank extra
   candidates so the loop can refill (decision 26).
 - One machine, one evaluator build (sha256 `293867b8…a077247`).

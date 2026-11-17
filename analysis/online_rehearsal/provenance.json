@@ -98,6 +98,66 @@
    "online_log_sha256_lf": "f72c79c82192824cc593ca6c569108566178f612809e2d1a17f26fac88104d64",
    "run_date": "2026-11-16",
    "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
+  },
+  "v5_s2026": {
+   "variant": "v5",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.16684685979271,
+   "online_log_sha256_lf": "b68aa10d79d151651c4a4c5996e6b7ebe4b3a4fffc49352398699e6701f86784",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v5_s7": {
+   "variant": "v5",
+   "seed": 7,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.17588856699876,
+   "online_log_sha256_lf": "77084cd5e9f8a998b1746c84ae639d34b722759c8118e73846f9b438ec0ec2dc",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v5_s11": {
+   "variant": "v5",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.4378238467034,
+   "online_log_sha256_lf": "95c0a534ade8e83eca2298dc8d4b70fa8d4f42a888e312e38cf673b8297b6378",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v6_s2026": {
+   "variant": "v6",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 107.4131382968626,
+   "online_log_sha256_lf": "cb5b8401406efd66916da347aaf062906cef76edf6cdb05755b2297d54b17504",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v6_s7": {
+   "variant": "v6",
+   "seed": 7,
+   "calls": 20,
+   "points": 999,
+   "final_best": 106.47931752400471,
+   "online_log_sha256_lf": "5bbe486dea59dcf5fac4eda6af5b26691953e57961f5021766e6dfc6ce7f123e",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v6_s11": {
+   "variant": "v6",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.6752626716625,
+   "online_log_sha256_lf": "2933e9508de8f7a34836755603d7d267d10e179a159e80610c92f26aeeff5ed5",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
   }
  },
  "scripts_sha256_lf": {
@@ -123,5 +183,12 @@
   "scikit-learn": "1.2.2",
   "matplotlib": "3.10.9"
  },
- "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads)"
+ "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads)",
+ "v5_v6_scripts_sha256_lf": {
+  "policy_v5.py": "2042ddc4d908661ddade2ad0c53d023505b86eb2c04f503b71b551b94aec985c",
+  "policy_v6.py": "f757d664675c51ec31f12aef7c6726f32023c200a79a643eaa1a088e546bacc0",
+  "rehearse.py": "7ca4e1610abe8253e86929c16b5a756a7b57711577eda1f65a2f83ec07d222c7",
+  "analyse.py": "aa516d001f9f5cdfa1dcb59a038b158d597fd6f6d02483e96ec5597a1092bed3"
+ },
+ "v5_v6_note": "v5 ran with policy_v5.py before its lane trigger was moved into hook methods for v6; check_replay.log shows the committed policy_v5.py reproduces the logged v5 batches."
 }
