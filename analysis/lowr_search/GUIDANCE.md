@@ -19,8 +19,9 @@ check (T08). Written 2026-11-13 by 张子木 (A). Recommendations, not decisions
 
 | Structure | Evidence | Consequence |
 |---|---|---|
-| One basin, on the simplex boundary (minor weights small or zero), about 1.9 spacings from the training rows | E3; T35 | A first batch that stays near the data cannot reach it; a trend has to carry the search out |
-| Additive over buildings; strictly additive at fine scale in the low region (error ≈ 0.03) | E1, E4, E10; T20; T35 | Change one building per candidate, combine the buildings' winners in the next call |
+| Low region on the simplex boundary (minor weights small or zero), about 1.9 spacings from the training rows; not one basin but several valleys per building (README section 2b, 2026-11-16) | E3, E15, E20; T35 | A first batch that stays near the data cannot reach it; a trend has to carry the search out |
+| Additive over buildings; strictly additive at fine scale inside one valley (error ≈ 0.03), but up to ~0.85 interaction across valleys | E1, E4, E10, E16; T20; T35 | Change one building per candidate, combine the buildings' winners in the next call, and measure the combinations instead of trusting the sum |
+| Different good points carry different good blocks: swapping single-building blocks between them gave −0.38 (E19) and −0.32 (E20) before any refinement | E19, E20 | Per-building block swaps between a run's own good points are a cheap move type (design only: the points must be the run's own) |
 | Below ~2 % weight change R behaves like a random draw (per-building SD 0.3–0.7; plateaus 0.02–0.2 % of a weight wide) | E5, E9; `verify.log` | No surrogate can rank at that scale; locally only many samples help (batch minimum) |
 | Minor weights act as switches; tiny weights 1e-5 to 3e-3 change R; below 1e-6 a weight equals zero | E8, E10, E11 | The candidate generator must produce exact zeros and tiny weights |
 | One-coordinate scans found 0.103 that random perturbations had missed | E10, E12 | Coordinate scans are a move type of their own |

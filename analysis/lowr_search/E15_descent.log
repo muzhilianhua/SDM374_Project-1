@@ -1,0 +1,37 @@
+seeds: {'b3_disc_x0.01': -0.0225, 'b3_disc': 0.0572, 'b3_ramp_peak_degr_cost': 0.3506, 'b2_ramp_carb': 0.6636, 'b2_disc': 0.7029, 'b2_peak_x0.1': 0.9305, 'b1_ramp_cost_x0.85': 0.6328}
+round 1 b3_disc_x0.01: -0.3041 via rampingx0.93 (8 improving of 100)
+round 1 b3_disc: -0.2211 via rampingx0.93 (7 improving of 100)
+round 1 b3_ramp_peak_degr_cost: -0.0206 via discomfort=2.1e-03 (11 improving of 97)
+round 1 b2_ramp_carb: +0.5755 via discomfortx0.5 (4 improving of 103)
+round 1 b2_disc: +0.6773 via carbon=5.1e-03 (5 improving of 97)
+round 1 b2_peak_x0.1: +0.7780 via peakx1.15 (9 improving of 100)
+round 1 b1_ramp_cost_x0.85: +0.6205 via carbon=5.1e-03 (6 improving of 91)
+round 2 b3_disc_x0.01: -0.4514 via peakx0.7 (16 improving of 104)
+round 2 b3_disc: -0.2577 via peakx1.15 (2 improving of 104)
+round 2 b3_ramp_peak_degr_cost: -0.0512 via jitter0.005 (2 improving of 107)
+round 2 b2_ramp_carb: +0.5286 via resiliencex0.3 (4 improving of 103)
+round 2 b2_disc: +0.6707 via resilience=5.1e-03 (4 improving of 104)
+round 2 b2_peak_x0.1: +0.7398 via combo:resilience+discomfort (6 improving of 107)
+round 2 b1_ramp_cost_x0.85: +0.5904 via carbonx1.4 (6 improving of 95)
+round 3 b3_disc_x0.01: -0.5329 via combo:carbon+resilience (16 improving of 107)
+round 3 b3_disc: -0.4907 via peakx1.07 (5 improving of 100)
+round 3 b3_ramp_peak_degr_cost: -0.2408 via degradationx0.97 (7 improving of 100)
+round 3 b2_ramp_carb: +0.4701 via degradationx1.4 (3 improving of 103)
+round 3 b2_disc: +0.6472 via peakx0.93 (1 improving of 103)
+round 3 b2_peak_x0.1: no improvement, stop at +0.7398
+round 3 b1_ramp_cost_x0.85: +0.3625 via carbonx0.93 (7 improving of 95)
+round 4 b3_disc_x0.01: -0.5487 via carbonx2 (2 improving of 104)
+round 4 b3_disc: -0.4999 via resiliencex0.93 (3 improving of 104)
+round 4 b3_ramp_peak_degr_cost: -0.3101 via costx1.03 (6 improving of 107)
+round 4 b2_ramp_carb: +0.2957 via carbonx1.03 (13 improving of 104)
+round 4 b2_disc: +0.6472 via resiliencex1.4 (1 improving of 103)
+round 4 b1_ramp_cost_x0.85: +0.3493 via discomfort=5.1e-03 (5 improving of 95)
+round 5 b3_disc_x0.01: no improvement, stop at -0.5487
+round 5 b3_disc: no improvement, stop at -0.4999
+round 5 b3_ramp_peak_degr_cost: no improvement, stop at -0.3101
+round 5 b2_ramp_carb: +0.2685 via resiliencex1.03 (4 improving of 110)
+round 5 b2_disc: no improvement, stop at +0.6472
+round 5 b1_ramp_cost_x0.85: +0.3291 via costx1.03 (2 improving of 97)
+round 6 b2_ramp_carb: +0.2599 via peakx1.4 (2 improving of 107)
+round 6 b1_ramp_cost_x0.85: +0.2773 via peak=3.5e-04 (12 improving of 98)
+final: {'b3_disc_x0.01': -0.5487, 'b3_disc': -0.4999, 'b3_ramp_peak_degr_cost': -0.3101, 'b2_ramp_carb': 0.2599, 'b2_disc': 0.6472, 'b2_peak_x0.1': 0.7398, 'b1_ramp_cost_x0.85': 0.2773}

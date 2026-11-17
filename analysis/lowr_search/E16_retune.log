@@ -1,0 +1,10 @@
+seeds: {'b1_incumbent': 0.0, 'b2_incumbent': 0.0, 'b1_ramp_cost': -0.5714, 'b2_ramp_carb': 0.1509}
+round 1 b1_incumbent: -0.0219 via discomfortx0.85 (3 improving of 100)
+round 1 b2_incumbent: -0.0600 via cost=3.5e-04 (3 improving of 97)
+round 1 b1_ramp_cost: -0.5766 via discomfortx0.7 (4 improving of 100)
+round 1 b2_ramp_carb: no improvement, stop at +0.1509
+round 2 b1_incumbent: no improvement, stop at -0.0219
+round 2 b2_incumbent: -0.0829 via discomfortx2 (9 improving of 100)
+round 2 b1_ramp_cost: no improvement, stop at -0.5766
+round 3 b2_incumbent: no improvement, stop at -0.0829
+final: {'b1_incumbent': -0.0219, 'b2_incumbent': -0.0829, 'b1_ramp_cost': -0.5766, 'b2_ramp_carb': 0.1509}

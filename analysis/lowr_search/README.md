@@ -9,14 +9,33 @@
 > The study resets `usage.count` only inside its own `workers/` hard-link copies, never in `solver/`.
 > All queries are black-box: the embedded evaluator program was not unpacked or run outside the wrapper.
 
-Owner: 张子木 (A). Run on 2026-11-12/13 on one Windows 11 PC (i5-14600KF), `solver.exe` sha256
-`293867b8…a077247`. 8,763 evaluations in `eval_log.jsonl`, on top of the team's 6,568-call log
-(`analysis/replay/evidence/eval_log.jsonl`).
+> E13–E22 (2026-11-15/16) also *read* the online rehearsal logs in `analysis/online_rehearsal/rehearsals/`
+> to seed their searches. The direction is one-way: nothing from this folder flows back into the rehearsal
+> policy, its configs or its runs.
+
+Owner: 张子木 (A). Run on 2026-11-12/13 (E1–E12) and 2026-11-15/16 (E13–E22) on one Windows 11 PC
+(i5-14600KF), `solver.exe` sha256 `293867b8…a077247`. 22,551 evaluations in `eval_log.jsonl` (8,763 for
+E1–E12, 13,788 for E13–E22), on top of the team's 6,568-call log (`analysis/replay/evidence/eval_log.jsonl`).
 
 ## Result
 
-**Lowest point found: R = 104.3726098362822**, 0.479 below the team log's best (104.8517), against the
-training-table best 115.765 and offline submission 2 at 115.68.
+**Lowest point found: R = 102.09589070483344** (E20, 2026-11-16, `best_point_E20.json`), 2.76 below the
+team log's best (104.8517), against the training-table best 115.765 and offline submission 2 at 115.68.
+Section 2b explains how it was reached; it replaced all three buildings' blocks of the first phase's best
+point W* below.
+
+| Building | cost | carbon | peak | discomfort | degradation | ramping | resilience |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.31939 | 0.004401 | 0.000237 | 0.002421 | 0.09769 | 0.575861 | 0 |
+| 2 | 0.03233 | 0.021296 | 0.880493 | 0.004158 | 0.019541 | 0.041859 | 0.000322 |
+| 3 | 0.144667 | 0.000287 | 0.252734 | 0.000512 | 0.187032 | 0.412158 | 0.002610 |
+
+Checks (`verify_e20.py`, results inside `best_point_E20.json`): two fresh uncached calls (alone, and in
+the middle of a 3-set batch) reproduce it bit for bit; 5 or more decimals keep R, 4 give 102.2150, 3 give
+102.7326.
+
+**First phase (E1–E12): W\* with R = 104.3726098362822**, 0.479 below the team log's best. It stays in
+`best_point.json` because E13–E15 use it as their baseline.
 
 | Building | cost | carbon | peak | discomfort | degradation | ramping | resilience |
 |---|---|---|---|---|---|---|---|
@@ -136,6 +155,119 @@ All 18 coordinates (5 minor weights per building on 0 and a 22-point log grid 1e
 building 2's r and resilience and building 3's resilience only get worse. **The best point is a
 coordinate-wise local minimum at this resolution.**
 
+## 2b. Other valleys, and crossing with the online rehearsal (E13–E22, 2026-11-15/16)
+
+W* is a coordinate-wise local minimum, but not the only low region. The rehearsal runs of
+`analysis/online_rehearsal/` stop in places that the first phase never sampled. Their blocks, refined,
+reach lower valleys. All deltas are relative to the baseline named in each step.
+
+| Step | Evaluations | R |
+|---|---|---|
+| E13–E15: transplant rehearsal blocks into W*, dose scans, per-building descent | 3,653 | 104.3726 → 103.8239 |
+| E16–E17: retune buildings 1 and 2 at the new point, combine | 1,017 | → 103.2473 |
+| E18: systematic per-region discovery around that point | 4,142 | unchanged |
+| E19: cross with the v4 seed 7 online best point, refine | 1,223 | → 102.6609 |
+| E20: cross with the other 9 rehearsal runs, refine | 2,818 | → **102.0959** |
+| E21: shape of building 2's new valley | 607 | unchanged |
+| E22: transplant that form into buildings 1 and 3 | 328 | unchanged |
+
+### E13–E15 `exp_alt.py`, `exp_alt_dose.py`, `exp_alt_descent.py`: a second valley for building 3
+
+- **E13 (29 points).** For each building and each "regime" (the objectives that hold at least 10 % of a
+  block), the best block among the 60 best points of the 7 v1–v3 rehearsal runs was put into W*, with
+  the other two buildings unchanged. An unrefined building-3 block with discomfort 0.90 was only +0.057
+  above W*'s refined block. Random blocks inside W*'s basin are +0.40 to +0.93 (E3).
+- **E14 (106 points).** The dominant weight was scaled by 0 to 100. Discomfort and peak blocks are
+  insensitive from about 0.03× to 100×: once large enough, the objective acts like a constraint.
+  Ramping-led blocks belong to W*'s family. Additivity holds only near W*: the same block measured in its
+  rehearsal context differs by 0.4–1.1.
+- **E15 (3,518 points).** Per-building coordinate descent of 7 seeds (others at W*), up to 6 rounds.
+  Three different building-3 seeds fell below W*: −0.55, −0.50 and −0.31. The best block is cost 0.153,
+  peak 0.154, discomfort 0.091, degradation 0.185, ramping 0.416 (r = 0.31), whereas W*'s block is almost
+  pure degradation + ramping. **R = 103.8239** (`best_point_E15.json`). This refutes E3's "one basin":
+  E3 compared unrefined global samples with a refined W*.
+
+### E16–E17 `exp_retune.py`, `exp_retune2.py`: buildings interact across valleys
+
+- **E16 (802 points).** A building-1 cost + ramping block (r ≈ 0.13) was +0.28 in W*'s context but
+  −0.57 once building 3 sat in its new valley. **Additivity between buildings (error 0.03, section 1)
+  holds only inside one valley; across valleys the interaction reaches about 0.85.**
+- **E17 (215 points).** Measured combinations of the best blocks, then one more scan per building:
+  **R = 103.2473** (`best_point_E17.json`), a coordinate-wise local minimum.
+
+### E18 `exp_phase2.py`: systematic discovery (4,142 points)
+
+500 sparse or one-dominant blocks per building around the E17 point, grouped into 87–101 regions per
+building; the 5 best other regions per building refined for 2 rounds; 27 combinations measured. Nothing
+went below 103.2473: the closest candidates were +0.21 (building 2) and +0.48 (building 1), still
+descending when the budget ended. The conclusion is "no deeper valley that is easy to reach at this
+budget", not "no other valley".
+
+### E19 `exp_e19.py`: crossing with the v4 seed 7 online best point (1,223 points)
+
+The v4 seed 7 rehearsal (compliant: training rows and its own 1,000 points only) ended at S = 103.2753,
+close to the E17 point B but with different blocks. The 2×2×2 per-building combinations of B and S were
+measured first:
+
+| Combination (buildings 1/2/3 from B or S) | R |
+|---|---|
+| **BBS** | **102.8700** |
+| BSS | 103.0066 |
+| SBS | 103.1606 |
+| BBB (= B) | 103.2473 |
+| SSS (= S, re-measured identically) | 103.2753 |
+| BSB / SBB / SSB | 103.49 / 103.64 / 103.84 |
+
+S's building-3 block (peak 0.25, discomfort ≈ 0) beats E15's (peak 0.15, discomfort 0.09) in every
+context. Then block-coordinate cycles: building 3 −0.175, building 1 −0.034, and a third cycle with no
+improvement. **R = 102.6609** (`best_point_E19.json`, verified by `verify_e19.py`).
+
+### E20 `exp_e20.py`: crossing with the other 9 rehearsal runs (2,818 points)
+
+1. Each run's online best point replaced every non-empty subset of the E19 point's buildings (63 points).
+   Only three swaps improved, all of them building 2: v2_s11 −0.319, v4_s11 −0.224, v4_s2026 −0.095.
+2. The six single-building swaps within +0.6 were descended for up to 3 rounds. v2_s11's building 2
+   reached −0.528, and five building-2 seeds of different origin ended below the base.
+3. Two block-coordinate cycles: **R = 102.0959** (`best_point_E20.json`, `verify_e20.py`), a
+   coordinate-wise local minimum.
+
+The improvement is entirely building 2 moving to a peak-dominated valley: peak 0.88, small degradation
+and ramping (r ≈ 0.32). It used to be ramping 0.65 + resilience 0.13. The block came from v2_s11, the
+second-worst rehearsal run (online best 107.49): **how good a run is overall says nothing about how good
+its single-building blocks are.**
+
+### E21 `exp_e21.py`, `exp_e21b.py`, `exp_e21c.py`: shape of building 2's valley (607 points)
+
+Building 2 was written as the peak share p, the battery share q = (deg + ramp)/(1 − p), and
+r = deg/(deg + ramp), with the other minor weights kept in the E20 point's proportions.
+
+- **R does not depend on p for p = 0.78–0.97** (identical to all digits). p = 0.70 gives +0.31. Only the
+  ratios among the non-peak weights matter. `exp_e21.py` was therefore stopped during its seed descent:
+  its four seeds differed only in p. Its grid is in `E21_coarse_log.json`.
+- On a 17 × 17 fine grid in (r, q), no point beats the E20 point. The low values lie in a thin diagonal
+  trough along which ramping, relative to the minor weights, is nearly constant. **Ramping is the needle
+  coordinate; degradation is much looser.**
+- On a ramping × degradation scan (steps of 0.2 % and 2.5 %) nothing is lower. R is **terraced**: it is
+  identical over runs of grid cells, then jumps. This is consistent with discrete battery switching.
+
+### E22 `exp_e22.py`, `exp_e22b.py`: the peak-dominated form in buildings 1 and 3 (328 points)
+
+The seeds were peak-dominated rehearsal blocks plus a grid (p = 0.88, r 0.02–0.45, q 0.4–0.95). Every
+point was at least +3.05 worse; nothing was descended. Each building has its own valley form: building 1
+uses cost + ramping, building 2 is peak-dominated, and building 3 uses cost + peak + ramping.
+
+### What this adds
+
+- The low region is a set of per-building valleys whose combination must itself be searched. Buildings
+  are additive inside a valley, but not across valleys.
+- Inside a valley the landscape is terraced needles. Further drops come from jumping to another valley,
+  not from finer tuning.
+- Compliant online runs are an efficient way to discover valleys: they visit combinations that 15,000
+  unrestricted evaluations missed. Crossing their best blocks costs 8–63 points plus refinement.
+- None of this is an input to the online policy (see the note at the top). For policy design under
+  decision 27, the transferable lesson is a move type: per-building block swaps and combinations between
+  good points.
+
 ## 3. The search strategy (FMS, `fms.py`)
 
 Factorised multi-scale search: one building changes per candidate (the other two at the incumbent, so
@@ -176,6 +308,8 @@ training table alone.
 | `qos.py` | Keeps the pool's own solver processes off Windows' E-core-only background scheduling (2.5× slower otherwise on this hybrid CPU); changes no system setting |
 | `common.py`, `fms.py` | Block parameterisation and the FMS search (state in `fms_state.json`, git-ignored; a file `STOP` ends a run) |
 | `exp_*.py`, `an_*.py` | Experiments E1–E12 and their analyses; logs `*.log`, results `E*_*.json`, `E*.npy` |
+| `exp_alt*.py`, `exp_retune*.py`, `exp_phase2.py`, `exp_e19.py` … `exp_e22b.py` | Experiments E13–E22 (section 2b); logs `E1[3-9]*.log`, `E2*.log`, results `E1[3-9]_*.json`, `E2*_*.json` |
+| `best_point_E15.json`, `_E17`, `_E19`, `_E20` | Best point after each step of section 2b; `verify_e19.py`, `verify_e20.py` re-check the last two |
 | `fms_progress.jsonl`, `fms_run*.log` | Per-generation records of the four FMS runs |
 | `fms_state_run4.json` | Search state after run 4 (best 104.4755), the baseline of E6–E10 |
 | `eval_log.jsonl` | Every evaluation of this study (tag, weights, R, worker, call time) |
@@ -197,7 +331,9 @@ new points. `t_fms_dry.py` runs the search loop on a synthetic function without 
 
 ## Limits
 
-- One evaluator version, one machine. "One basin" rests on ~3,000 global samples, not a proof.
+- One evaluator version, one machine. The first phase's "one basin" (E3) was refuted by E15.
+- E13–E22 were developed outside the repository (`Project-1/lowR_research`) and copied here; only the
+  paths to the rehearsal logs changed (`provenance.json`, `part2`).
 - Operator hit rates are not a controlled comparison.
 - The explanations in section 2 (battery reserve, near-ties, switch-off thresholds) are consistent with the
   black-box data; no hourly trajectory was observed.

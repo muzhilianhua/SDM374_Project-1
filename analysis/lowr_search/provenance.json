@@ -7,8 +7,8 @@
  "solver_exe_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
  "eval_log": {
   "path": "analysis/lowr_search/eval_log.jsonl",
-  "sha256": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
-  "evaluations": 8763,
+  "sha256": "d175989cd3032971bbbf568f8c208911357c6753a01ada9e37ab5646edcc022d",
+  "evaluations": 22551,
   "by_experiment": {
    "E1": 125,
    "E10": 171,
@@ -25,10 +25,25 @@
    "fms": 1594,
    "run4": 1247,
    "sanity": 2,
-   "verify": 194
+   "verify": 194,
+   "E13": 29,
+   "E14": 106,
+   "E15": 3518,
+   "E16": 802,
+   "E17": 215,
+   "E18": 4142,
+   "E19": 1223,
+   "E20": 2818,
+   "E21": 130,
+   "E21b": 289,
+   "E21c": 188,
+   "E22": 224,
+   "E22b": 104
   },
   "first": "2026-11-12T18:12:24",
-  "last": "2026-11-13T15:24:46"
+  "last": "2026-11-16T23:43:47",
+  "sha256_e1_e12_prefix": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
+  "note": "lines 1-8763 are byte-identical to the E1-E12 log (sha256_e1_e12_prefix); E13-E22 appended on 2026-11-17"
  },
  "team_log": {
   "path": "analysis/replay/evidence/eval_log.jsonl",
@@ -136,5 +151,55 @@
    "pool.py"
   ],
   "effect": "no recorded result changes: pool.py counts solver.exe invocations (n_solver_invocations, used by analysis/online_rehearsal/rehearse.py for its call records); evaluation, caching and the sha256 check are unchanged"
+ },
+ "part2": {
+  "experiments": "E13-E22",
+  "run_dates": "2026-11-15/16",
+  "copied": "2026-11-17",
+  "evaluations": 13788,
+  "note": "developed and run outside the repository (Project-1/lowR_research) with the E1-E12 pool.py/common.py (behaviour identical to the reviewed copies here for these runs); copied unchanged except the paths to the rehearsal logs: exp_alt.py/exp_alt_dose.py read the v1-v3 runs (outside names real_*, byte-identical online_log.jsonl) via exp_alt.RUNS, exp_e19.py reads analysis/online_rehearsal/rehearsals",
+  "reads_rehearsal_logs": "analysis/online_rehearsal/rehearsals/*/online_log.jsonl (read only; nothing flows back)",
+  "best_points": {
+   "best_point_E15.json": {
+    "R": 103.82392775069457,
+    "sha256": "e0872a9166db329e1735abfda51aefac9129dd18581d93dc8f2eac3bbd574c25"
+   },
+   "best_point_E17.json": {
+    "R": 103.24728436453734,
+    "sha256": "469589e56ccbb5e5e689f47ed9bb010dde1611d29c8b06f770d398546c4abf31"
+   },
+   "best_point_E19.json": {
+    "R": 102.66092298738658,
+    "sha256": "8ebf9f7dff6484c3c347df394c5cdf3d5536e7b223e9df0bc90845433a63c7e3"
+   },
+   "best_point_E20.json": {
+    "R": 102.09589070483344,
+    "sha256": "a75f2cb6370adca8df867ba3118c7ceadec95bd990036248d5473eaa3e859202"
+   }
+  },
+  "scripts_sha256": {
+   "exp_alt.py": "e08293e793ab9986b015898bda9ebfb35ce35766b098f97f5d5146200bfea70a",
+   "exp_alt_dose.py": "6ddfc08a57eb827848b8baab8a9304256fc41ac3585f3bde93459a57012f542b",
+   "exp_alt_descent.py": "b7b12e1d0dcedd3928ea17c4cdc9e65df874e24b3e3ad64fb3c66f7d3698b3c7",
+   "exp_retune.py": "e25db3f483a94551dc6f0e32d991934627b5dbf2d480d8cad13e032f23297967",
+   "exp_retune2.py": "495676c63cc37580ce7fc0d3a840caf6d6b46715f3eedd3cb9123341feb83e40",
+   "exp_phase2.py": "8e6473db69037d4b00911da87de08ab7629c9c2c8c6160ccb5629b505d019dfe",
+   "exp_e19.py": "9f04a33a69079e366cb95e54d298b23660fbf8bc7aa61e678da012880157b518",
+   "exp_e20.py": "3c8c6c6dde134267ac4525eb513ed87b6f64b21e5759976bd2971e26289ee892",
+   "exp_e21.py": "1195528d1860e0aba2760f87ad7122218a54bb58276ce68cab3d21195f4e18de",
+   "exp_e21b.py": "c0c61d703dac1ecc2ba3b3fea6778eb26a9584ca44b2c3e449e6311e0005e594",
+   "exp_e21c.py": "e71373faf04373507e8972320e7b969ba2fb87f2e078c76e75c5c90e9927d661",
+   "exp_e22.py": "36d164c6ea7ce623c392de0d66ae2f64f7f6d6705530dc49555be4da7db488aa",
+   "exp_e22b.py": "435cba0b2f86dc61ca9516e26c564a01f67ae174dc015fb0cca9a92b9347d0df",
+   "verify_e19.py": "1d4f587f90c7ff6adb386f40691361302113efd967ce74bfd5f6e98fcbf6ec0d",
+   "verify_e20.py": "95cafb66a77165cfaef428b722bf3de631b0e0784c36f49791687845d831e777"
+  },
+  "seeds": {
+   "descend rng_seed (default 15, used by E15)": "E16 16, E17 170+cycle, E18 18/181/182, E19 190+cycle, E20 200 and 200+cycle, E21 210, E21b 215, E22 220"
+  },
+  "script_notes": [
+   "exp_e20.cycles got prefix/rng0 parameters after E20 ran (for E21b/E22); the defaults reproduce E20's behaviour",
+   "exp_e21.py was stopped during its seed descent (its four seeds differed only in p, which E21 showed has no effect); its grid stage is E21_coarse_log.json / E21_coarse.log; E21b and E21c replaced the rest"
+  ]
  }
 }

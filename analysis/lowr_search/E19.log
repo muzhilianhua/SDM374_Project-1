@@ -1,0 +1,28 @@
+B 103.2472843645  S 103.2752948776 (online log)
+cycle 1 combinations: BBS 102.8700, BSS 103.0066, SBS 103.1606, BBB 103.2473, SSS 103.2753, BSB 103.4932, SBB 103.6359, SSB 103.8402
+seeds: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+round 1 b1: no improvement, stop at +0.0000
+round 1 b2: no improvement, stop at +0.0000
+round 1 b3: -0.0034 via discomfort=8.5e-04 (2 improving of 100)
+round 2 b3: -0.1750 via resiliencex2 (3 improving of 103)
+round 3 b3: no improvement, stop at -0.1750
+final: {'b1': 0.0, 'b2': 0.0, 'b3': -0.175}
+cycle 2 combinations: oon 102.6950, ooo 102.8700
+seeds: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+round 1 b1: -0.0104 via jitter0.005 (1 improving of 100)
+round 1 b2: no improvement, stop at +0.0000
+round 1 b3: no improvement, stop at +0.0000
+round 2 b1: -0.0341 via carbonx0.7 (4 improving of 100)
+round 3 b1: no improvement, stop at -0.0341
+final: {'b1': -0.0341, 'b2': 0.0, 'b3': 0.0}
+cycle 3 combinations: noo 102.6609, ooo 102.6950
+seeds: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+round 1 b1: no improvement, stop at +0.0000
+round 1 b2: no improvement, stop at +0.0000
+round 1 b3: no improvement, stop at +0.0000
+final: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+cycle 3: no building improved, stop
+final R 102.6609229874 (B 103.2472843645, delta -0.5864)
+[[0.319792 0.003148 0.000237 0.002424 0.097813 0.576586 0.      ]
+ [0.       0.008513 0.       0.000217 0.209794 0.651955 0.129521]
+ [0.144667 0.000287 0.252734 0.000512 0.187032 0.412158 0.00261 ]]

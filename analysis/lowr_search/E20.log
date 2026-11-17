@@ -1,0 +1,50 @@
+v1_s2026: online best 107.0261
+v1_s7: online best 107.2111
+v1_s11: online best 106.4248
+v2_s2026: online best 106.9512
+v2_s7: online best 105.1068
+v2_s11: online best 107.4897
+v3_s2026: online best 107.7769
+v4_s2026: online best 108.0488
+v4_s11: online best 105.4405
+best swaps: v2_s11:EXE -0.3194, v4_s11:EXE -0.2244, v4_s2026:EXE -0.0950, v1_s11:EXE +0.2779, v1_s2026:EXE +0.3371, v2_s7:XEE +0.3999, v3_s2026:EXE +0.4680, v2_s7:EXE +0.5398, v2_s2026:EXE +0.6107, v1_s7:EXE +0.6721, v4_s11:EXX +0.8140, v2_s7:XXE +0.8778
+seeds: {'v2_s11_b2': -0.3194, 'v4_s11_b2': -0.2244, 'v4_s2026_b2': -0.095, 'v1_s11_b2': 0.2779, 'v1_s2026_b2': 0.3371, 'v2_s7_b1': 0.3999}
+round 1 v2_s11_b2: -0.4184 via resilience=5.1e-03 (5 improving of 100)
+round 1 v4_s11_b2: -0.2613 via jitter0.002 (2 improving of 100)
+round 1 v4_s2026_b2: -0.1306 via resiliencex1.15 (7 improving of 103)
+round 1 v1_s11_b2: +0.0517 via jitter0.01 (12 improving of 100)
+round 1 v1_s2026_b2: +0.3081 via costx0.85 (4 improving of 100)
+round 1 v2_s7_b1: +0.3886 via degradationx1.03 (3 improving of 94)
+round 2 v2_s11_b2: -0.5194 via combo:carbon+discomfort (2 improving of 107)
+round 2 v4_s11_b2: -0.3424 via cost=3.5e-04 (2 improving of 100)
+round 2 v4_s2026_b2: -0.1787 via resiliencex1.15 (6 improving of 110)
+round 2 v1_s11_b2: -0.0214 via jitter0.01 (5 improving of 107)
+round 2 v1_s2026_b2: -0.0222 via jitter0.005 (12 improving of 101)
+round 2 v2_s7_b1: +0.3447 via jitter0.005 (4 improving of 95)
+round 3 v2_s11_b2: -0.5276 via jitter0.005 (2 improving of 103)
+round 3 v4_s11_b2: no improvement, stop at -0.3424
+round 3 v4_s2026_b2: -0.1945 via jitter0.01 (7 improving of 107)
+round 3 v1_s11_b2: -0.0677 via discomfortx1.15 (6 improving of 100)
+round 3 v1_s2026_b2: -0.0534 via combo:resilience+discomfort (13 improving of 107)
+round 3 v2_s7_b1: no improvement, stop at +0.3447
+final: {'v2_s11_b2': -0.5276, 'v4_s11_b2': -0.3424, 'v4_s2026_b2': -0.1945, 'v1_s11_b2': -0.0677, 'v1_s2026_b2': -0.0534, 'v2_s7_b1': 0.3447}
+cycle 1 combinations: ono 102.1334, ooo 102.3416
+seeds: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+round 1 b1: -0.0130 via carbonx1.4 (1 improving of 100)
+round 1 b2: -0.0181 via jitter0.002 (4 improving of 103)
+round 1 b3: no improvement, stop at +0.0000
+round 2 b1: no improvement, stop at -0.0130
+round 2 b2: -0.0245 via discomfortx1.03 (1 improving of 103)
+round 3 b2: no improvement, stop at -0.0245
+final: {'b1': -0.013, 'b2': -0.0245, 'b3': 0.0}
+cycle 2 combinations: nno 102.0959, ono 102.1089, noo 102.1204, ooo 102.1334
+seeds: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+round 1 b1: no improvement, stop at +0.0000
+round 1 b2: no improvement, stop at +0.0000
+round 1 b3: no improvement, stop at +0.0000
+final: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+cycle 2: no building improved, stop
+final R 102.0958907048 (E 102.6609229874, delta -0.5650)
+[[0.31939  0.004401 0.000237 0.002421 0.09769  0.575861 0.      ]
+ [0.03233  0.021296 0.880493 0.004158 0.019541 0.041859 0.000322]
+ [0.144667 0.000287 0.252734 0.000512 0.187032 0.412158 0.00261 ]]

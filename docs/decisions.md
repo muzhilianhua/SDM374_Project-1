@@ -38,6 +38,17 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **The local evaluator reaches R = 102.0959; the low region is several per-building valleys** (2026-11-16, T36
+  part 2, [study](../analysis/lowr_search/README.md) section 2b, 13,788 more local `solver.exe` evaluations,
+  exploration only under the same rules as the T36 entry below). Supersedes that entry's "one basin".
+  E13–E18 found a second, deeper valley for building 3 by refining rehearsal blocks (104.3726 → 103.2473).
+  E19–E20 crossed that point per building with the online best points of the 10 T37 rehearsal runs, then
+  refined it (→ 102.6609 → **102.09589070483344**, `best_point_E20.json`). The point is reproduced bit for bit
+  by two fresh calls and is a coordinate-wise local minimum. Buildings are additive inside a valley but
+  interact by up to ~0.85 across valleys. Building 2's new valley is peak-dominated, and R there does not
+  depend on the peak share in 0.78–0.97. Ramping is the needle coordinate and R is terraced. The form does
+  not transfer to buildings 1 and 3 (≥ +3). The research reads the rehearsal logs; nothing flows back into
+  the online policy.
 - **v4 of the compliant policy reaches 105.59 on average, 103.275 at best** (2026-11-16, T37, same study and
   condition as the entry below). v4 adds a null-step filter, late coordinate scans with same-building
   combinations, adaptive slot shares and no repeated points (`analysis/online_rehearsal/policy_v4.py`).
