@@ -7,7 +7,9 @@
 > 29). Decision 27 (the user's judgment of 2026-11-11, pending the TA) allows local evaluator runs only to
 > choose models, policies and hyperparameters.
 > The study resets `usage.count` only inside its own `workers/` hard-link copies, never in `solver/`.
-> All queries are black-box: the embedded evaluator program was not unpacked or run outside the wrapper.
+> All original T36 queries were black-box: the embedded evaluator program was not unpacked or run
+> outside the wrapper. The separately archived imports below used a different transport and are not
+> part of the 8,763 T36 evaluations.
 
 > E13–E22 (2026-11-15/16) also *read* the online rehearsal logs in `analysis/online_rehearsal/rehearsals/`
 > to seed their searches. The direction is one-way: nothing from this folder flows back into the rehearsal
@@ -45,7 +47,25 @@ the middle of a 3-set batch) reproduce it bit for bit; 5 or more decimals keep R
 | 2 | 0 | 0.008513 | 0 | 0.000217 | 0.209794 | 0.651955 | 0.129521 |
 | 3 | 0.000029 | 0 | 0.009883 | 0.000294 | 0.242174 | 0.725088 | 0.022532 |
 
-Full precision in `best_point.json`. Checks (`verify.py` → `verify.log`, `verification.json`):
+Full precision in `best_point.json`.
+
+### Separate imported measurements (not T36 evidence)
+
+`imported/local_measured_20261115.jsonl` contains 9,698 measurements from five local runs. They are
+stored separately from `eval_log.jsonl`, which remains the original T36 evidence: 8,763 evaluations,
+SHA-256 `e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2`, and best R 104.3726098362822.
+The adjacent provenance records source-log hashes, row counts, archived generator hashes, and the solver
+transport. The generators used the extracted inner `RampingSolver.exe --serve`, not the outer solver's
+stdin channel. The course does not permit extracting the inner executable, so this is internal
+exploration material only; it is not part of the final code package and the extraction step is not
+published here.
+
+The lowest imported value is **R = 103.46086008194834** (`ridge_run1`, phase `A_probe_0`). It has not
+been independently re-checked and is **not an established team or historical best**. It must not be used
+as a target or reference line for the independent online run. No `docs/decisions.md` finding is claimed
+for this value.
+
+Checks on the original T36 best point (`verify.py` → `verify.log`, `verification.json`):
 
 - Two fresh `solver.exe` calls (alone, and in the middle of a 3-set batch) reproduce the value bit for bit.
 - Rounding the weights to 5 or more decimals keeps R; 4 decimals give 104.3932 (+0.021), 3 give 104.509.

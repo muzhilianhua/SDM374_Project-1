@@ -8,6 +8,8 @@
  "eval_log": {
   "path": "analysis/lowr_search/eval_log.jsonl",
   "sha256": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
+  "line_endings": "CRLF",
+  "sha256_lf": "0a38f0807cfd6a9bdb8ecca103c055fdef96e54f9395a963943a4cb735349cc1",
   "evaluations": 8763,
   "by_experiment": {
    "E1": 125,
