@@ -14,8 +14,10 @@
 > policy, its configs or its runs.
 
 Owner: 张子木 (A). Run on 2026-11-12/13 (E1–E12) and 2026-11-15/16 (E13–E22) on one Windows 11 PC
-(i5-14600KF), `solver.exe` sha256 `293867b8…a077247`. 22,551 evaluations in `eval_log.jsonl` (8,763 for
-E1–E12, 13,788 for E13–E22), on top of the team's 6,568-call log (`analysis/replay/evidence/eval_log.jsonl`).
+(i5-14600KF), `solver.exe` sha256 `293867b8…a077247`. E1–E12: 8,763 evaluations in `eval_log.jsonl`
+(the original T36 evidence, unchanged); E13–E22: 13,788 evaluations in `eval_log_part2.jsonl`, through the
+same black-box `pool.py` and outer `solver.exe`. Both come on top of the team's 6,568-call log
+(`analysis/replay/evidence/eval_log.jsonl`).
 
 ## Result
 
@@ -310,6 +312,7 @@ training table alone.
 | `exp_*.py`, `an_*.py` | Experiments E1–E12 and their analyses; logs `*.log`, results `E*_*.json`, `E*.npy` |
 | `exp_alt*.py`, `exp_retune*.py`, `exp_phase2.py`, `exp_e19.py` … `exp_e22b.py` | Experiments E13–E22 (section 2b); logs `E1[3-9]*.log`, `E2*.log`, results `E1[3-9]_*.json`, `E2*_*.json` |
 | `best_point_E15.json`, `_E17`, `_E19`, `_E20` | Best point after each step of section 2b; `verify_e19.py`, `verify_e20.py` re-check the last two |
+| `eval_log_part2.jsonl` | Every E13–E22 evaluation, same format as `eval_log.jsonl`. To re-run those experiments from the cache, append it to `eval_log.jsonl` in a working copy (the pool reads only `eval_log.jsonl`) |
 | `fms_progress.jsonl`, `fms_run*.log` | Per-generation records of the four FMS runs |
 | `fms_state_run4.json` | Search state after run 4 (best 104.4755), the baseline of E6–E10 |
 | `eval_log.jsonl` | Every evaluation of this study (tag, weights, R, worker, call time) |

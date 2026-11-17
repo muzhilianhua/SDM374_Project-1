@@ -7,8 +7,8 @@
  "solver_exe_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
  "eval_log": {
   "path": "analysis/lowr_search/eval_log.jsonl",
-  "sha256": "d175989cd3032971bbbf568f8c208911357c6753a01ada9e37ab5646edcc022d",
-  "evaluations": 22551,
+  "sha256": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
+  "evaluations": 8763,
   "by_experiment": {
    "E1": 125,
    "E10": 171,
@@ -25,25 +25,10 @@
    "fms": 1594,
    "run4": 1247,
    "sanity": 2,
-   "verify": 194,
-   "E13": 29,
-   "E14": 106,
-   "E15": 3518,
-   "E16": 802,
-   "E17": 215,
-   "E18": 4142,
-   "E19": 1223,
-   "E20": 2818,
-   "E21": 130,
-   "E21b": 289,
-   "E21c": 188,
-   "E22": 224,
-   "E22b": 104
+   "verify": 194
   },
   "first": "2026-11-12T18:12:24",
-  "last": "2026-11-16T23:43:47",
-  "sha256_e1_e12_prefix": "e84565608726dbb7c5cbc0e11d965d5e912f7dbe4148ba9f2fcb79946fbe9bf2",
-  "note": "lines 1-8763 are byte-identical to the E1-E12 log (sha256_e1_e12_prefix); E13-E22 appended on 2026-11-17"
+  "last": "2026-11-13T15:24:46"
  },
  "team_log": {
   "path": "analysis/replay/evidence/eval_log.jsonl",
@@ -200,6 +185,31 @@
   "script_notes": [
    "exp_e20.cycles got prefix/rng0 parameters after E20 ran (for E21b/E22); the defaults reproduce E20's behaviour",
    "exp_e21.py was stopped during its seed descent (its four seeds differed only in p, which E21 showed has no effect); its grid stage is E21_coarse_log.json / E21_coarse.log; E21b and E21c replaced the rest"
-  ]
+  ],
+  "eval_log": {
+   "path": "analysis/lowr_search/eval_log_part2.jsonl",
+   "sha256": "1ec0cf5ba186583b04120d14ce8a9c1c8f4692f95bfa0d2d4ef820f9106e0b0c",
+   "line_endings": "CRLF",
+   "evaluations": 13788,
+   "by_experiment": {
+    "E13": 29,
+    "E14": 106,
+    "E15": 3518,
+    "E16": 802,
+    "E17": 215,
+    "E18": 4142,
+    "E19": 1223,
+    "E20": 2818,
+    "E21": 130,
+    "E21b": 289,
+    "E21c": 188,
+    "E22": 224,
+    "E22b": 104
+   },
+   "first": "2026-11-15T15:42:26",
+   "last": "2026-11-16T23:43:47",
+   "note": "lines 8,764-22,551 of the research log; eval_log.jsonl stays the original T36 evidence. To re-run E13-E22 from the cache, append this file to eval_log.jsonl in a working copy"
+  },
+  "transport": "outer solver.exe via stdin (pool.py), black-box, as E1-E12; no extracted inner executable"
  }
 }
