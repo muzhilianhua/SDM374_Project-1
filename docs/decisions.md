@@ -55,6 +55,9 @@ and record the new decision here with a date.
   combinations, adaptive slot shares and no repeated points (`analysis/online_rehearsal/policy_v4.py`).
   Seeds 2026 / 7 / 11: 108.049 / 103.275 / 105.440, against v2's 106.951 / 105.107 / 107.490; ahead of v2 on the
   mean at calls 5, 10 and 15. The previous entry's "104 is out of reach" no longer holds for a lucky seed.
+  Picking seed 7 by this score is allowed (decision 32, PR #20, 2026-11-17). It reproduces 103.275 only if the
+  course computer emits the same batches (T09) with the same `solver.exe` (decision 30); the expected score is
+  still the 3-seed spread, about 105.5 (103–108).
 - **A compliant policy reaches about 106.5 on the real evaluator in 20 × 50 points; 104 is out of reach**
   (2026-11-14, T37, [study](../analysis/online_rehearsal/README.md), local `solver.exe`, under the decision-27
   condition, not TA-confirmed). An additive block-descent policy that sees only the training rows and its own
@@ -281,10 +284,6 @@ and record the new decision here with a date.
 - How much the policy may be tuned on local evaluator runs. A deterministic policy's local result equals its
   graded result, so picking among policies or seeds by their local 20-call score selects on the test function.
   Ask the TA whether that is allowed (owner: A).
-  Concrete case (2026-11-14, T37; updated 2026-11-16): freezing v4 of `analysis/online_rehearsal/` with seed 7 would
-  reproduce its local 103.275 bit for bit (v2 seed 7: 105.107), against about 106.5 expected for an unpicked seed. It also needs
-  identical batches on the course computer (T09) and the same `solver.exe` (decision 30). Not done; the user
-  or the TA decides.
 
 ## Resolved
 

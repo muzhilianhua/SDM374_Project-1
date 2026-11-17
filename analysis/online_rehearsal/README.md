@@ -49,14 +49,13 @@ historical logs predate this field). Curves: `convergence.png`.
 - v1/v2 runs ended in different regions at similar R (e.g. building 2 almost all peak or all discomfort); several
   near-equivalent valleys exist, which `analysis/lowr_search` later confirmed (§1.8–§1.11 there).
 
-### Picking the seed is a decision for the user / TA
+### Picking the seed
 
 Policy and evaluator are deterministic, so freezing v4 with seed 7 would reproduce **103.275** bit for bit in
-the graded run (v2 seed 7: 105.107). That selects a seed on the test function. Decision 27 allows choosing
-hyperparameters on local runs but is not TA-confirmed, and the earlier open question in `docs/decisions.md` named
-exactly this case. It also needs the course computer to emit the same batches (T09) and the same `solver.exe`
-(decision 30, also in PR #20). The case is recorded under the open question on tuning in `docs/decisions.md`.
-Without seed picking, plan for about 105.5 with v4.
+the graded run (v2 seed 7: 105.107). Picking the seed by its local score is allowed: decision 32 (PR #20,
+settled by the user on 2026-11-17) treats the seed like any other `config.json` constant, and the package holds
+only the integer. It still needs the course computer to emit the same batches (T09) and the same `solver.exe`
+(decision 30). Report the expected score as the spread over seeds: about 105.5 with v4 (103–108).
 
 ## Policy (`policy.py`, `surrogate.py`)
 
