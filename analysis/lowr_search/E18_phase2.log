@@ -1,0 +1,54 @@
+A b1: own niche ramp+cost; 89 other niches; raw delta quantiles min/5%/50% [2.48, 5.14, 42.93]
+     ramp+resi+degr               raw +2.477
+     ramp+degr                    raw +2.737
+     ramp+disc+degr               raw +3.341
+     ramp                         raw +3.399
+     ramp+cost+degr               raw +4.180
+A b2: own niche ramp+degr+resi; 101 other niches; raw delta quantiles min/5%/50% [0.57, 1.44, 11.37]
+     disc+ramp                    raw +0.570
+     ramp                         raw +0.655
+     peak+ramp                    raw +0.904
+     ramp+resi                    raw +1.014
+     ramp+degr+cost               raw +1.031
+A b3: own niche ramp+degr+peak+cost; 87 other niches; raw delta quantiles min/5%/50% [2.07, 5.7, 27.91]
+     ramp+degr                    raw +2.071
+     ramp                         raw +3.795
+     disc+ramp                    raw +4.450
+     ramp+degr+disc               raw +4.611
+     ramp+cost                    raw +5.117
+seeds: {'b1:ramp+resi+degr': 2.477, 'b1:ramp+degr': 2.7372, 'b1:ramp+disc+degr': 3.3407, 'b1:ramp': 3.399, 'b1:ramp+cost+degr': 4.1799, 'b2:disc+ramp': 0.5701, 'b2:ramp': 0.6546, 'b2:peak+ramp': 0.904, 'b2:ramp+resi': 1.0142, 'b2:ramp+degr+cost': 1.0311, 'b3:ramp+degr': 2.0713, 'b3:ramp': 3.7951, 'b3:disc+ramp': 4.4495, 'b3:ramp+degr+disc': 4.611, 'b3:ramp+cost': 5.1172}
+round 1 b1:ramp+resi+degr: +1.6361 via degradationx1.15 (10 improving of 91)
+round 1 b1:ramp+degr: +1.6504 via rampingx0.7 (21 improving of 91)
+round 1 b1:ramp+disc+degr: +2.4621 via discomfortx0 (15 improving of 91)
+round 1 b1:ramp: +1.8434 via degradationx3 (4 improving of 91)
+round 1 b1:ramp+cost+degr: +1.9397 via costx3 (29 improving of 91)
+round 1 b2:disc+ramp: no improvement, stop at +0.5701
+round 1 b2:ramp: +0.6405 via rampingx0.97 (15 improving of 91)
+round 1 b2:peak+ramp: +0.5809 via discomfort=1.2e-02 (15 improving of 91)
+round 1 b2:ramp+resi: +0.5567 via discomfortx1.4 (41 improving of 94)
+round 1 b2:ramp+degr+cost: +0.8260 via costx2 (22 improving of 91)
+round 1 b3:ramp+degr: +2.0152 via degradationx1.07 (6 improving of 88)
+round 1 b3:ramp: +2.9667 via rampingx0.3 (20 improving of 91)
+round 1 b3:disc+ramp: +2.6968 via rampingx0.5 (35 improving of 94)
+round 1 b3:ramp+degr+disc: +2.4391 via degradationx2 (39 improving of 91)
+round 1 b3:ramp+cost: +4.6965 via rampingx1.4 (8 improving of 91)
+round 2 b1:ramp+resi+degr: +1.1218 via degradationx1.07 (11 improving of 98)
+round 2 b1:ramp+degr: +1.1218 via jitter0.005 (9 improving of 98)
+round 2 b1:ramp+disc+degr: +1.4760 via rampingx1.15 (15 improving of 95)
+round 2 b1:ramp: +1.4760 via degradationx1.07 (15 improving of 95)
+round 2 b1:ramp+cost+degr: +0.4835 via rampingx0.93 (23 improving of 98)
+round 2 b2:ramp: +0.6312 via costx1.07 (5 improving of 98)
+round 2 b2:peak+ramp: +0.2095 via cost=3.0e-02 (20 improving of 101)
+round 2 b2:ramp+resi: +0.2111 via combo:ramping+resilience (28 improving of 101)
+round 2 b2:ramp+degr+cost: +0.6229 via peak=3.0e-02 (8 improving of 98)
+round 2 b3:ramp+degr: +1.5380 via resilience=1.2e-02 (10 improving of 92)
+round 2 b3:ramp: +1.8174 via jitter0.01 (31 improving of 98)
+round 2 b3:disc+ramp: +2.3592 via jitter0.005 (19 improving of 101)
+round 2 b3:ramp+degr+disc: +2.1867 via resilience=3.0e-02 (7 improving of 98)
+round 2 b3:ramp+cost: +4.0458 via degradation=3.0e-02 (13 improving of 98)
+final: {'b1:ramp+resi+degr': 1.1218, 'b1:ramp+degr': 1.1218, 'b1:ramp+disc+degr': 1.476, 'b1:ramp': 1.476, 'b1:ramp+cost+degr': 0.4835, 'b2:disc+ramp': 0.5701, 'b2:ramp': 0.6312, 'b2:peak+ramp': 0.2095, 'b2:ramp+resi': 0.2111, 'b2:ramp+degr+cost': 0.6229, 'b3:ramp+degr': 1.538, 'b3:ramp': 1.8174, 'b3:disc+ramp': 2.3592, 'b3:ramp+degr+disc': 2.1867, 'b3:ramp+cost': 4.0458}
+C combinations (best 5): [103.2473, 103.4568, 103.4584, 103.7308, 103.8391] B = 103.2473
+final R 103.2472843645 (base 103.2472843645)
+[[0.318356 0.004447 0.000237 0.002391 0.099186 0.575384 0.      ]
+ [0.       0.008513 0.       0.000217 0.209794 0.651955 0.129521]
+ [0.153244 0.001028 0.153655 0.090604 0.185067 0.416401 0.      ]]

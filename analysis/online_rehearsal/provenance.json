@@ -1,0 +1,194 @@
+{
+ "created": "2026-11-14",
+ "task": "T37",
+ "git": {
+  "branch_base_commit": "f7e8fe787d8cbef4a245047d5a7a918a99d83fe7",
+  "note": "developed and run outside the repository (Project-1/online_rehearsal) on 2026-11-14 and copied here; only paths changed (repo root, analysis/lowr_search pool, rehearsals/ folder). check_replay.log shows the copied code reproduces the logged batches."
+ },
+ "dataset": {
+  "path": "dataset_same8/train.csv",
+  "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+ },
+ "solver_exe_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+ "evaluator_calls_graded": 0,
+ "evaluator": "local solver.exe through analysis/lowr_search/pool.py, 10 workers, own worker folders and per-run logs; usage.count reset only inside analysis/online_rehearsal/workers/",
+ "runs": {
+  "v1_s11": {
+   "variant": "v1",
+   "seed": 11,
+   "calls": 20,
+   "points": 995,
+   "final_best": 106.42477142839924,
+   "online_log_sha256_lf": "4f537e4f7fecc59651d515ec90d18493552416beb8ff9a0716201377e232684e"
+  },
+  "v1_s2026": {
+   "variant": "v1",
+   "seed": 2026,
+   "calls": 20,
+   "points": 991,
+   "final_best": 107.02612145945022,
+   "online_log_sha256_lf": "063583d9210c1c7b737e263777d1b9844fbda5c17e6a569195a942b32c40dcf7"
+  },
+  "v1_s7": {
+   "variant": "v1",
+   "seed": 7,
+   "calls": 20,
+   "points": 963,
+   "final_best": 107.21112272726896,
+   "online_log_sha256_lf": "cc857d1baec9383a0377b43b75cffe5510edf6b149b9dc465a18cb5ed752e2a3"
+  },
+  "v2_s11": {
+   "variant": "v2",
+   "seed": 11,
+   "calls": 20,
+   "points": 985,
+   "final_best": 107.48967504095344,
+   "online_log_sha256_lf": "7ceb1cac777b1772bc6ef8d1407b26693919f54589d137b2bf4b14c77f7860a2"
+  },
+  "v2_s2026": {
+   "variant": "v2",
+   "seed": 2026,
+   "calls": 20,
+   "points": 968,
+   "final_best": 106.95123684802093,
+   "online_log_sha256_lf": "964c4d311e3e9594d5169c310734cae6b35fa617114c2dd6b8792bec0a2c1548"
+  },
+  "v2_s7": {
+   "variant": "v2",
+   "seed": 7,
+   "calls": 20,
+   "points": 971,
+   "final_best": 105.1067539617652,
+   "online_log_sha256_lf": "17dbd13033f1645c0cf4c6e9c608ac77c8f6d28f47e32fbed7252f0daa429c56"
+  },
+  "v3_s2026": {
+   "variant": "v3",
+   "seed": 2026,
+   "calls": 20,
+   "points": 988,
+   "final_best": 107.77692430000752,
+   "online_log_sha256_lf": "8c56fd4ea97034affce72d1d04937f5bcf321df225155d26068346cae4a05ed1"
+  },
+  "v4_s11": {
+   "variant": "v4",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 105.4404507540894,
+   "online_log_sha256_lf": "ce0c5d544c11ff6d64da59e8874169ccb5bd3d97bb1e0b20d7946da1c1516699",
+   "run_date": "2026-11-16",
+   "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
+  },
+  "v4_s2026": {
+   "variant": "v4",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 108.04884444068011,
+   "online_log_sha256_lf": "da31dc99c7ef154a2a8301236e2a3eb786b92765fe189918f0de218cde999ab9",
+   "run_date": "2026-11-16",
+   "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
+  },
+  "v4_s7": {
+   "variant": "v4",
+   "seed": 7,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 103.27529487758876,
+   "online_log_sha256_lf": "f72c79c82192824cc593ca6c569108566178f612809e2d1a17f26fac88104d64",
+   "run_date": "2026-11-16",
+   "note": "run from the repository worktree (analysis/online_rehearsal), solver.exe hard-linked into solver/"
+  },
+  "v5_s2026": {
+   "variant": "v5",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.16684685979271,
+   "online_log_sha256_lf": "b68aa10d79d151651c4a4c5996e6b7ebe4b3a4fffc49352398699e6701f86784",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v5_s7": {
+   "variant": "v5",
+   "seed": 7,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.17588856699876,
+   "online_log_sha256_lf": "77084cd5e9f8a998b1746c84ae639d34b722759c8118e73846f9b438ec0ec2dc",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v5_s11": {
+   "variant": "v5",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.4378238467034,
+   "online_log_sha256_lf": "95c0a534ade8e83eca2298dc8d4b70fa8d4f42a888e312e38cf673b8297b6378",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v6_s2026": {
+   "variant": "v6",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 107.4131382968626,
+   "online_log_sha256_lf": "cb5b8401406efd66916da347aaf062906cef76edf6cdb05755b2297d54b17504",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v6_s7": {
+   "variant": "v6",
+   "seed": 7,
+   "calls": 20,
+   "points": 999,
+   "final_best": 106.47931752400471,
+   "online_log_sha256_lf": "5bbe486dea59dcf5fac4eda6af5b26691953e57961f5021766e6dfc6ce7f123e",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v6_s11": {
+   "variant": "v6",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.6752626716625,
+   "online_log_sha256_lf": "2933e9508de8f7a34836755603d7d267d10e179a159e80610c92f26aeeff5ed5",
+   "run_date": "2026-11-17",
+   "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  }
+ },
+ "scripts_sha256_lf": {
+  "policy.py": "50ae3c777e11cdc9c4bf2f6c1653ccc64e3e4cb5d1b41a8690978236018f3ecb",
+  "policy_v4.py": "14782f21a7c2456e6146f2e786a947b98b42f332b79c06524443a2e2414310bb",
+  "surrogate.py": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8",
+  "rehearse.py": "85829ec07ce67352f2233091e05fb46112f7047649982a595747cb560a4181bb",
+  "analyse.py": "30557dc2ae63e874befe04f30c848135daa2b7ea43f814c589860ed92c07110d",
+  "check_replay.py": "2525e979a1a98c30aac40550fd38934cacb1eab1e510f49a1fb8e1e62cb1f8fe",
+  "train_checks.py": "89d7570854835da2daea2653081e1da1dd072cc6ca3841d5cc0327cbcf9112a6"
+ },
+ "review_fix_scripts_sha256_lf": {
+  "analysis/online_rehearsal/policy.py": "ef0f2d8df376691b5a1311ac9cf2088fe9bbe3614b19885b8f2663f1f64b2449",
+  "analysis/online_rehearsal/analyse.py": "184306b4872fcbf7ecce35daf8bf524e1a30537e38d2b838eecde115adbfa731",
+  "analysis/online_rehearsal/rehearse.py": "fbcc6c5b0dfa3c8725359dbda1f10c2f3e8f07b30d6cdc58ec5d3d07468650a0",
+  "analysis/lowr_search/pool.py": "d908d99a0ddd52a6d53f026c31b0da65603e750190e0641a36fc9d6f384aa961"
+ },
+ "review_fix_note": "The historical runs and their scripts_sha256_lf were produced before the review fixes. review_fix_scripts_sha256_lf records the current fixes; normal proposal generation is unchanged, while base-failure scale handling is now conservative and the historical tiny/grid semantics are documented for replay compatibility.",
+ "python": "3.11.16",
+ "packages": {
+  "numpy": "1.24.4",
+  "scipy": "1.10.1",
+  "scikit-learn": "1.2.2",
+  "matplotlib": "3.10.9"
+ },
+ "machine": "Windows 11 Pro, Intel i5-14600KF (14 cores / 20 threads)",
+ "v5_v6_scripts_sha256_lf": {
+  "policy_v5.py": "2042ddc4d908661ddade2ad0c53d023505b86eb2c04f503b71b551b94aec985c",
+  "policy_v6.py": "f757d664675c51ec31f12aef7c6726f32023c200a79a643eaa1a088e546bacc0",
+  "rehearse.py": "7ca4e1610abe8253e86929c16b5a756a7b57711577eda1f65a2f83ec07d222c7",
+  "analyse.py": "aa516d001f9f5cdfa1dcb59a038b158d597fd6f6d02483e96ec5597a1092bed3"
+ },
+ "v5_v6_note": "v5 ran with policy_v5.py before its lane trigger was moved into hook methods for v6; check_replay.log shows the committed policy_v5.py reproduces the logged v5 batches."
+}

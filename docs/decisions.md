@@ -39,6 +39,41 @@ and record the new decision here with a date.
 
 ## Findings
 
+- **The local evaluator reaches R = 102.0959; the low region is several per-building valleys** (2026-11-16, T36
+  part 2, [study](../analysis/lowr_search/README.md) section 2b, 13,788 more local `solver.exe` evaluations,
+  exploration only under the same rules as the T36 entry below). Supersedes that entry's "one basin".
+  E13–E18 found a second, deeper valley for building 3 by refining rehearsal blocks (104.3726 → 103.2473).
+  E19–E20 crossed that point per building with the online best points of the 10 T37 rehearsal runs, then
+  refined it (→ 102.6609 → **102.09589070483344**, `best_point_E20.json`). The point is reproduced bit for bit
+  by two fresh calls and is a coordinate-wise local minimum. Buildings are additive inside a valley but
+  interact by up to ~0.85 across valleys. Building 2's new valley is peak-dominated, and R there does not
+  depend on the peak share in 0.78–0.97. Ramping is the needle coordinate and R is terraced. The form does
+  not transfer to buildings 1 and 3 (≥ +3). The research reads the rehearsal logs; nothing flows back into
+  the online policy.
+- **Opening other block forms does not help within 1,000 points; v4 stays the recommended policy**
+  (2026-11-17, T37, [study](../analysis/online_rehearsal/README.md#v5-and-v6-opening-other-block-forms-2026-11-17-negative),
+  same condition as below). Every v1–v4 run fixed each building's dominant objectives by call 3–8. v5 (vertex
+  probes, per-building lanes from call 1) reached 106.167 / 106.176 / 106.438 (seeds 2026 / 7 / 11, mean 106.26);
+  v6 (lanes only for a stalled building) 107.413 / 106.479 / 106.675 (mean 106.86); v4 105.59. Lanes hit 5–6 %
+  of the time, spawned forms never. Variant means v1–v6 lie in 105.6–106.9 while one variant's seeds span up to
+  4.8, so three seeds per variant establish no ranking; v4's 103.275 is best read as a lucky seed.
+- **v4 of the compliant policy reaches 105.59 on average, 103.275 at best** (2026-11-16, T37, same study and
+  condition as the entry below). v4 adds a null-step filter, late coordinate scans with same-building
+  combinations, adaptive slot shares and no repeated points (`analysis/online_rehearsal/policy_v4.py`).
+  Seeds 2026 / 7 / 11: 108.049 / 103.275 / 105.440, against v2's 106.951 / 105.107 / 107.490; ahead of v2 on the
+  mean at calls 5, 10 and 15. The previous entry's "104 is out of reach" no longer holds for a lucky seed.
+  Picking seed 7 by this score is allowed (decision 32, PR #20, 2026-11-17). It reproduces 103.275 only if the
+  course computer emits the same batches (T09) with the same `solver.exe` (decision 30); the expected score is
+  still the 3-seed spread, about 105.5 (103–108).
+- **A compliant policy reaches about 106.5 on the real evaluator in 20 × 50 points; 104 is out of reach**
+  (2026-11-14, T37, [study](../analysis/online_rehearsal/README.md), local `solver.exe`, under the decision-27
+  condition, not TA-confirmed). An additive block-descent policy that sees only the training rows and its own
+  results (one building changed per candidate, the next call combines the buildings' winners) beat 115.68 in
+  call 1 in all 7 runs. Final best: v1 107.026 / 107.211 / 106.425 (seeds 2026 / 7 / 11, mean 106.89),
+  v2 with a training-derived shift bias 106.951 / 105.107 / 107.490 (mean 106.52), v3 107.777 (one seed).
+  Seed spread (±1) exceeds the variant difference. Additivity holds online (combinations: measured − predicted
+  median +0.013, MAE 0.22, 214 points); the surrogate's multi-building jumps in call 1 were 9–12 worse than
+  predicted. The committed code reproduces the logged batches (`check_replay.log`).
 - **The local evaluator reaches R = 104.3726; below ~106 the landscape is needles, not a valley** (2026-11-13, T36,
   [study](../analysis/lowr_search/README.md), `analysis/lowr_search/`, 8,763 local `solver.exe` evaluations,
   exploration only: none of its points, R values or weights may enter the online code or configs, decisions 19, 27, 29).
