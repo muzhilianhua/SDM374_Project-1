@@ -1,0 +1,198 @@
+{
+  "seed": 7,
+  "policy": "v6-multiscale",
+  "completed_calls": 20,
+  "evaluated_points": 1000,
+  "best_R": 102.8058786103502,
+  "best_call": 20,
+  "best_seq": 25,
+  "best_W": [
+    0.25726621000820765,
+    5.886888284240696e-06,
+    0.16192534726574928,
+    0.0020242705132787002,
+    0.0746938309817146,
+    0.4645907629006017,
+    0.039493691442163914,
+    0.07120494501217976,
+    0.0768846798090369,
+    0.0,
+    0.0,
+    0.16306182579457593,
+    0.5837457515410639,
+    0.10510279784314354,
+    0.14490872896296478,
+    4.404994262513992e-05,
+    0.2531557281965609,
+    0.00039381476951292146,
+    0.18734445127376761,
+    0.41284619717568005,
+    0.0013070296788885568
+  ],
+  "baseline_train_min": 115.76481925917324,
+  "target_102_3": false,
+  "target_102_15": false,
+  "target_102_143322": false,
+  "per_call": [
+    {
+      "call": 1,
+      "n": 50,
+      "batch_min": 114.35869115310196,
+      "best_so_far": 114.35869115310196,
+      "improvement": 1.4061281060712787,
+      "phase": "freeze"
+    },
+    {
+      "call": 2,
+      "n": 50,
+      "batch_min": 111.71146072917328,
+      "best_so_far": 111.71146072917328,
+      "improvement": 2.6472304239286757,
+      "phase": "freeze"
+    },
+    {
+      "call": 3,
+      "n": 50,
+      "batch_min": 108.56315402350448,
+      "best_so_far": 108.56315402350448,
+      "improvement": 3.1483067056688014,
+      "phase": "freeze"
+    },
+    {
+      "call": 4,
+      "n": 50,
+      "batch_min": 107.94273421041726,
+      "best_so_far": 107.94273421041726,
+      "improvement": 0.6204198130872243,
+      "phase": "freeze"
+    },
+    {
+      "call": 5,
+      "n": 50,
+      "batch_min": 107.25830352201592,
+      "best_so_far": 107.25830352201592,
+      "improvement": 0.6844306884013349,
+      "phase": "freeze"
+    },
+    {
+      "call": 6,
+      "n": 50,
+      "batch_min": 107.07915589108596,
+      "best_so_far": 107.07915589108596,
+      "improvement": 0.1791476309299611,
+      "phase": "freeze"
+    },
+    {
+      "call": 7,
+      "n": 50,
+      "batch_min": 106.5419266995741,
+      "best_so_far": 106.5419266995741,
+      "improvement": 0.5372291915118552,
+      "phase": "freeze"
+    },
+    {
+      "call": 8,
+      "n": 50,
+      "batch_min": 106.20803592167796,
+      "best_so_far": 106.20803592167796,
+      "improvement": 0.3338907778961442,
+      "phase": "freeze"
+    },
+    {
+      "call": 9,
+      "n": 50,
+      "batch_min": 105.48965626303108,
+      "best_so_far": 105.48965626303108,
+      "improvement": 0.7183796586468816,
+      "phase": "freeze"
+    },
+    {
+      "call": 10,
+      "n": 50,
+      "batch_min": 105.3975261086598,
+      "best_so_far": 105.3975261086598,
+      "improvement": 0.09213015437127581,
+      "phase": "freeze"
+    },
+    {
+      "call": 11,
+      "n": 50,
+      "batch_min": 105.10771648259832,
+      "best_so_far": 105.10771648259832,
+      "improvement": 0.2898096260614835,
+      "phase": "freeze"
+    },
+    {
+      "call": 12,
+      "n": 50,
+      "batch_min": 104.11393605638295,
+      "best_so_far": 104.11393605638295,
+      "improvement": 0.9937804262153662,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 13,
+      "n": 50,
+      "batch_min": 103.88100748229772,
+      "best_so_far": 103.88100748229772,
+      "improvement": 0.2329285740852356,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 14,
+      "n": 50,
+      "batch_min": 103.8368172692135,
+      "best_so_far": 103.8368172692135,
+      "improvement": 0.044190213084220886,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 15,
+      "n": 50,
+      "batch_min": 103.66415740270168,
+      "best_so_far": 103.66415740270168,
+      "improvement": 0.17265986651182175,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 16,
+      "n": 50,
+      "batch_min": 103.367454838939,
+      "best_so_far": 103.367454838939,
+      "improvement": 0.296702563762679,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 17,
+      "n": 50,
+      "batch_min": 103.24270840641113,
+      "best_so_far": 103.24270840641113,
+      "improvement": 0.12474643252787132,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 18,
+      "n": 50,
+      "batch_min": 103.24270840641113,
+      "best_so_far": 103.24270840641113,
+      "improvement": 0.0,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 19,
+      "n": 50,
+      "batch_min": 102.96002258267254,
+      "best_so_far": 102.96002258267254,
+      "improvement": 0.2826858237385892,
+      "phase": "in_basin_multiscale"
+    },
+    {
+      "call": 20,
+      "n": 50,
+      "batch_min": 102.8058786103502,
+      "best_so_far": 102.8058786103502,
+      "improvement": 0.15414397232233057,
+      "phase": "in_basin_multiscale"
+    }
+  ]
+}

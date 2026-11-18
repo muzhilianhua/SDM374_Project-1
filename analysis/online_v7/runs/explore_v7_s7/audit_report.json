@@ -1,0 +1,80 @@
+{
+  "complete_20_calls": true,
+  "freeze_calls": 11,
+  "in_basin_calls": 9,
+  "checks": {
+    "1_training_source": {
+      "pass": true,
+      "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+    },
+    "2_policy_no_external_answers": {
+      "pass": true,
+      "findings": [],
+      "files_sha256": {
+        "policy.py": "e477a9108c646563ffe4bd8aa40908fbaa202438425b1ba588441f753454b585",
+        "policy_v4.py": "ff572495ec6bc9a5ac58a2f821f4089b37b4e84ac3aca9e7f06d0135a1c59a7d",
+        "policy_v5.py": "9047b1ac89179722634e56e11a09927a77b421abac3d1671f4dea762949a5c31",
+        "policy_v6.py": "3757b89cd15e385535e63059bcb68085ff9c4c1abef04f4ebe891bd326f6d472",
+        "policy_v7.py": "72e4a3fe8cfd227cb17a11951e67db1ff9c439f2445bdf3ad8d77f5ea34099ab",
+        "surrogate.py": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8"
+      }
+    },
+    "3_runtime_file_access": {
+      "pass": true,
+      "forbidden_access": [],
+      "note": "audit hook 覆盖提案与重放阶段；求解器只接收 JSON 权重"
+    },
+    "4_proposal_replay": {
+      "pass": true,
+      "calls_checked": 20
+    },
+    "5_no_reused_points": {
+      "pass": true,
+      "calls_checked": 20
+    },
+    "6_result_attribution_order": {
+      "pass": true,
+      "points": 1000
+    },
+    "7_seed_config_fixed": {
+      "pass": true,
+      "seed": 7,
+      "calls": 20
+    },
+    "8_environment_rebuildable": {
+      "pass": true,
+      "environment": {
+        "logical_cpus": 12,
+        "machine": "Windows-10-10.0.26100-SP0",
+        "packages": {
+          "joblib": "1.6.0",
+          "numpy": "1.24.4",
+          "scikit-learn": "1.2.2",
+          "scipy": "1.10.1",
+          "threadpoolctl": "3.7.0"
+        },
+        "python": "3.11.18",
+        "thread_env": {
+          "MKL_NUM_THREADS": null,
+          "OMP_NUM_THREADS": null,
+          "OPENBLAS_NUM_THREADS": null
+        },
+        "thread_note": "未强制单线程，以与参考运行 pr25_repro 的默认线程环境一致"
+      }
+    },
+    "9_freeze_and_solver": {
+      "pass": true,
+      "freeze_calls": 11,
+      "freeze_check": "C:\\Users\\hp\\Desktop\\在线\\pr25_repro_run\\runs\\explore_v7_s7\\freeze_check.json",
+      "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
+      "fresh_copy_calls_used": 20,
+      "chain_reused_evidence": true
+    },
+    "10_budget": {
+      "pass": true,
+      "search_calls": 20,
+      "max_calls": 20
+    }
+  },
+  "overall_pass": true
+}
