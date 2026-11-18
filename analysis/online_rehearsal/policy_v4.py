@@ -62,6 +62,8 @@ def one_coord(base_blk, blk):
 
 
 class BlockDescentPolicyV4(BlockDescentPolicy):
+    surrogate_cls = Surrogate   # v7 swaps in surrogate_hp.HPSurrogate
+
     def __init__(self, params: ParamsV4 | None = None, seed: int = 2026):
         super().__init__(params or ParamsV4(), seed)
 
@@ -140,7 +142,7 @@ class BlockDescentPolicyV4(BlockDescentPolicy):
         yo = [e["R"] for c in st.calls for e in c if np.isfinite(e["R"])]
         X = np.vstack([st.X_train] + ([np.array(Xo)] if Xo else []))
         y = np.concatenate([st.y_train, np.array(yo)]) if yo else st.y_train.copy()
-        model = Surrogate(local_rows=p.local_rows, seed=self.seed).fit(X, y, center=inc.reshape(21))
+        model = self.surrogate_cls(local_rows=p.local_rows, seed=self.seed).fit(X, y, center=inc.reshape(21))
 
         out, seen = [], set()
         sent = {tuple(bkey(e["W"][b]) for b in range(3)) for c in st.calls for e in c}

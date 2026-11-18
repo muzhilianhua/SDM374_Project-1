@@ -43,10 +43,18 @@ def variant_params(variant: str) -> Params:
     """v1: base policy; v2: + training-derived shift bias; v3: v2 + fewer surrogate picks after call 6;
     v4: v2 + null-step filter, late coordinate scans, adaptive shares, no repeats (policy_v4.py);
     v5: v4 + per-building lanes and vertex probes (policy_v5.py);
-    v6: v4 + lanes only for a stalled building (policy_v6.py)."""
+    v6: v4 + lanes only for a stalled building (policy_v6.py);
+    v7: v4 + fixed-constant block Matern GP (surrogate_hp.py) and kappa 0 (policy_v7.py);
+    v8: v7 with v4's kappa 1 (policy_v8.py)."""
     if variant == "v4":
         from policy_v4 import ParamsV4
         return ParamsV4(shift_bias=True, n_nav=3)
+    if variant == "v8":
+        from policy_v8 import ParamsV8
+        return ParamsV8(shift_bias=True, n_nav=3)
+    if variant == "v7":
+        from policy_v7 import ParamsV7
+        return ParamsV7(shift_bias=True, n_nav=3)
     if variant == "v5":
         from policy_v5 import ParamsV5
         return ParamsV5(shift_bias=True, n_nav=3)
@@ -85,6 +93,12 @@ def make_policy(variant: str, seed: int):
     if variant == "v4":
         from policy_v4 import BlockDescentPolicyV4
         return BlockDescentPolicyV4(variant_params(variant), seed=seed)
+    if variant == "v8":
+        from policy_v8 import BlockDescentPolicyV8
+        return BlockDescentPolicyV8(variant_params(variant), seed=seed)
+    if variant == "v7":
+        from policy_v7 import BlockDescentPolicyV7
+        return BlockDescentPolicyV7(variant_params(variant), seed=seed)
     if variant == "v5":
         from policy_v5 import BlockDescentPolicyV5
         return BlockDescentPolicyV5(variant_params(variant), seed=seed)
@@ -131,7 +145,7 @@ def main():
     ap.add_argument("--run", required=True)
     ap.add_argument("--calls", type=int, default=20)
     ap.add_argument("--workers", type=int, default=10)
-    ap.add_argument("--variant", choices=["v1", "v2", "v3", "v4", "v5", "v6"], default="v1")
+    ap.add_argument("--variant", choices=["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8"], default="v1")
     a = ap.parse_args()
     if not 1 <= a.calls <= 20:
         ap.error("--calls must be between 1 and 20")

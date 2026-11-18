@@ -158,6 +158,66 @@
    "online_log_sha256_lf": "2933e9508de8f7a34836755603d7d267d10e179a159e80610c92f26aeeff5ed5",
    "run_date": "2026-11-17",
    "note": "run from the repository worktree, three seeds in parallel with --workers 6"
+  },
+  "v7_s2026": {
+   "variant": "v7",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 107.6869878553116,
+   "online_log_sha256_lf": "20d87165c9e7658e8cbd08375647c55df8a92935233366a88dadd5f07e6bdcb4",
+   "run_date": "2026-11-18",
+   "note": "run from the repository worktree"
+  },
+  "v7_s7": {
+   "variant": "v7",
+   "seed": 7,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.57380813657072,
+   "online_log_sha256_lf": "3a0ffadd5508aebe1979bfa5252862aa6160823295236bb7eb64148604bf43fd",
+   "run_date": "2026-11-18",
+   "note": "run from the repository worktree"
+  },
+  "v7_s11": {
+   "variant": "v7",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 107.4278273999953,
+   "online_log_sha256_lf": "a377f6a67077dfcf6a1201a18ca73660383c532f977687219e77ae6d65619aa7",
+   "run_date": "2026-11-18",
+   "note": "run from the repository worktree"
+  },
+  "v8_s2026": {
+   "variant": "v8",
+   "seed": 2026,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 106.43348230002448,
+   "online_log_sha256_lf": "bc2415a356d7a4deb386aadf3de0efee666de8ba12e2ab48055ee7f896a3dc0c",
+   "run_date": "2026-11-18",
+   "note": "run from the repository worktree"
+  },
+  "v8_s7": {
+   "variant": "v8",
+   "seed": 7,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 105.0759087728802,
+   "online_log_sha256_lf": "5a6897b1935a988677f403a0f503979e8c795aeaa4c3d57187d25dbdf9facba1",
+   "run_date": "2026-11-18",
+   "note": "run from the repository worktree"
+  },
+  "v8_s11": {
+   "variant": "v8",
+   "seed": 11,
+   "calls": 20,
+   "points": 1000,
+   "final_best": 107.15332493238384,
+   "online_log_sha256_lf": "69c232706d828297865fe66d29bc7d71900deba8e5e10faf05744a04a8314651",
+   "run_date": "2026-11-18",
+   "note": "run from the repository worktree"
   }
  },
  "scripts_sha256_lf": {
@@ -190,5 +250,14 @@
   "rehearse.py": "7ca4e1610abe8253e86929c16b5a756a7b57711577eda1f65a2f83ec07d222c7",
   "analyse.py": "aa516d001f9f5cdfa1dcb59a038b158d597fd6f6d02483e96ec5597a1092bed3"
  },
- "v5_v6_note": "v5 ran with policy_v5.py before its lane trigger was moved into hook methods for v6; check_replay.log shows the committed policy_v5.py reproduces the logged v5 batches."
+ "v5_v6_note": "v5 ran with policy_v5.py before its lane trigger was moved into hook methods for v6; check_replay.log shows the committed policy_v5.py reproduces the logged v5 batches.",
+ "v7_v8_scripts_sha256_lf": {
+  "policy_v4.py": "a9db502409cbe42d939b97fefa58f8bed0f85e9bccae30eb955e48ebc88853e7",
+  "policy_v7.py": "df9ec69dd74bf3176a78a7424ca49fdcc7a85302260dcb9454b78a5232e72af8",
+  "policy_v8.py": "131455fe3504b27d07540a4abec99d27289184cb6e085305f2780738d2c07765",
+  "surrogate_hp.py": "2acc0fa6d445ad8cf560ac8c51f3051cd1ce81c04dac10a3e9ed373ff3c5bb9d",
+  "rehearse.py": "d69804ad58527a316db1db8235a2e10e46d2e854f8727e0f08aab8df4e4de9cd",
+  "analyse.py": "0fdf426382dae3624c0dc1590cc145ccfa32e2ec18081ad4d8a4f78ab52dd62e"
+ },
+ "v7_v8_note": "policy_v4.py gained a surrogate_cls class attribute for v7/v8; check_replay.log shows v4 batches are unchanged. surrogate_compare/ holds the offline comparison that motivated v7 (no solver calls)."
 }

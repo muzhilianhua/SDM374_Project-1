@@ -1,0 +1,18 @@
+t37_frozen kernel: 1.17**2 * RBF(length_scale=[0.823, 5.73, 0.529, 0.554, 4.31, 595, 476, 7.09, 523, 4.61, 4.27, 701, 602, 121, 1.33, 4.3, 0.748, 0.913, 6.23, 330, 128]) + WhiteKernel(noise_level=0.0741)
+v1_s11: 4725 rows, fit+predict secs {'t37': 977, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1046s
+v1_s2026: 4705 rows, fit+predict secs {'t37': 1386, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 61, 'trend_hp': 3}, elapsed 1456s
+v1_s7: 4565 rows, fit+predict secs {'t37': 1362, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1456s
+v2_s11: 4675 rows, fit+predict secs {'t37': 1153, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1456s
+v2_s2026: 4590 rows, fit+predict secs {'t37': 1069, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1456s
+v2_s7: 4605 rows, fit+predict secs {'t37': 1295, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1456s
+v3_s2026: 4690 rows, fit+predict secs {'t37': 898, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1456s
+v4_s11: 4750 rows, fit+predict secs {'t37': 1334, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 1456s
+v4_s2026: 4750 rows, fit+predict secs {'t37': 1208, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 61, 'trend_hp': 3}, elapsed 2243s
+v4_s7: 4750 rows, fit+predict secs {'t37': 1136, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 61, 'trend_hp': 3}, elapsed 2249s
+v5_s11: 4750 rows, fit+predict secs {'t37': 1142, 'azq_fixed': 2, 't37_frozen': 1, 'hp_global': 55, 'trend_hp': 3}, elapsed 2342s
+v5_s2026: 4750 rows, fit+predict secs {'t37': 988, 'azq_fixed': 2, 't37_frozen': 2, 'hp_global': 60, 'trend_hp': 3}, elapsed 2342s
+v5_s7: 4750 rows, fit+predict secs {'t37': 1028, 'azq_fixed': 1, 't37_frozen': 1, 'hp_global': 48, 'trend_hp': 3}, elapsed 2446s
+v6_s11: 4750 rows, fit+predict secs {'t37': 989, 'azq_fixed': 1, 't37_frozen': 1, 'hp_global': 44, 'trend_hp': 3}, elapsed 2446s
+v6_s2026: 4750 rows, fit+predict secs {'t37': 959, 'azq_fixed': 1, 't37_frozen': 1, 'hp_global': 44, 'trend_hp': 2}, elapsed 2446s
+v6_s7: 4745 rows, fit+predict secs {'t37': 920, 'azq_fixed': 1, 't37_frozen': 1, 'hp_global': 47, 'trend_hp': 3}, elapsed 2446s
+wrote C:\Users\Administrator\Desktop\Project-1\surrogate_compare\preds.csv

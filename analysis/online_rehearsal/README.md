@@ -31,6 +31,8 @@ real evaluator, and can it get near 104?
 | **v4** | v2 + null-step filter, late coordinate scans, adaptive shares, no repeats (2026-11-16, `policy_v4.py`) | 108.049 | **103.275** | 105.440 | **105.59** | 108.51 / 107.00 / 105.98 |
 | v5 | v4 + vertex probes and per-building lanes from call 1 (2026-11-17, `policy_v5.py`) | 106.167 | 106.176 | 106.438 | 106.26 | 110.17 / 107.44 / 106.58 |
 | v6 | v4 + lanes only for a building whose descent stalled (2026-11-17, `policy_v6.py`) | 107.413 | 106.479 | 106.675 | 106.86 | 109.63 / 108.51 / 107.31 |
+| v7 | v4 + fixed-constant block Matérn GP (`surrogate_hp.py`, PR #24 constants) and kappa 0 (2026-11-18, `policy_v7.py`) | 107.687 | 106.574 | 107.428 | 107.23 | 108.95 / 108.00 / 107.58 |
+| v8 | v7 with v4's kappa 1 (2026-11-18, `policy_v8.py`); no run-time optimiser (decision 31) | 106.433 | 105.076 | 107.153 | 106.22 | 108.66 / 107.48 / 106.57 |
 
 Each run is 20 policy batches of at most 50 points, about 40 minutes with 10 parallel solver instances. v1–v3 sent
 963–995 points (the screen dropped repeats that the prototype did not refill); v4 sends all 1,000. The local pool
@@ -38,7 +40,7 @@ splits each policy batch into smaller worker invocations and resets quota state 
 folders; `solver_invocations` in each new `call_done` record reports this development-only detail (the committed
 historical logs predate this field). Curves: `convergence.png`.
 
-- All 16 runs beat the best offline result 115.68 in **call 1** (113.2–115.1).
+- All 22 runs beat the best offline result 115.68 in **call 1** (113.2–115.1).
 - **v4 is the recommended policy.** Its mean is 0.93 below v2's and it is ahead at calls 5, 10 and 15. Per seed it
   is better for seeds 7 (−1.83) and 11 (−2.05) and worse for seed 2026 (+1.10); with three seeds this is a
   likely, not a proven, improvement.
@@ -134,6 +136,47 @@ training rows and the run's own results only; neither uses a research point, val
 - v5 and v6 were run three seeds at a time with 6 workers each (about 1.6 hours for three runs); the worker
   count does not change a run's batches.
 
+## v7: a better-ranking surrogate (2026-11-18, negative)
+
+**Question.** An offline call-by-call replay of the 16 v1–v6 logs
+([`surrogate_compare/`](surrogate_compare/README.md)) found that the fixed-constant block-additive Matérn GP of PR #24 (`hp_noise001`) ranks a call's
+unscreened points better than the T37 surrogate (within-call Spearman 0.52 vs 0.38; top 5 by mean 1.07 vs
+0.65 below the call mean; bootstrap over runs significant) and that, for every model, ranking by the mean
+(kappa 0) beats kappa 1. It also meets decision 31 (no run-time optimiser; one Cholesky solve, about 0.5 s).
+Does it lower the final R?
+
+**Change.** `policy_v7.py`: v4 with `surrogate_hp.HPSurrogate` (reproduces the PR #24 bundle to 6e-12) and
+`kappa = 0`. `policy_v4.py` gained a `surrogate_cls` class attribute; v4 batches are unchanged
+(`check_replay.py v4_s7 1 9 14 20`: identical).
+
+**Result.** Mean 107.23 against v4's 105.59, behind at calls 5, 10 and 15. The model is far better calibrated
+(model picks R − prediction: median +0.16 against +2.84) and its picks hit twice as often (62/1080 against
+29/962, total single-move gain 23.0 against 15.6), but the median gain per hit is smaller (0.28 against
+0.39), and fine and scan moves gained less (8.9 and 1.0 against 13.6 and 3.6). With three seeds and v4's
+spread (103.3–108.0) the difference is not significant, but there is no sign of an improvement either.
+
+**Reading.** Better ranking of nearby points is not what limits the final R. With kappa 0 and an accurate model
+the picks become safe small steps; the miscalibrated T37 model with kappa 1 hit rarely but made bigger jumps.
+Which of the two changes (model or kappa) costs the descent is not separated: that needs a run of the block
+GP with kappa 1. For decision 31 this matters, because the submission needs some fixed-constant surrogate and
+neither v4 with frozen T37 hyperparameters nor the block GP with kappa 1 has a real-solver run yet.
+
+**v8 (block GP, kappa 1; same day).** 106.433 / 105.076 / 107.153, mean 106.22: 1.01 better than v7 and 0.63
+behind v4, inside v4's seed spread. So most of v7's loss came from kappa 0, not from the model.
+
+| Move class, 3 seeds | v4: hits / points (gain sum, median gain) | v7 | v8 |
+|---|---|---|---|
+| model | 29 / 962 (15.6, 0.39) | 62 / 1080 (23.0, 0.28) | 69 / 1050 (40.2, 0.45) |
+| random | 45 / 615 (13.0, 0.14) | 41 / 637 (14.0, 0.15) | 38 / 544 (10.7, 0.08) |
+| fine | 49 / 650 (13.6, 0.10) | 35 / 563 (8.9, 0.07) | 41 / 575 (7.4, 0.04) |
+| scan | 40 / 518 (3.6, 0.06) | 27 / 478 (1.0, 0.02) | 52 / 568 (2.7, 0.01) |
+
+With the block GP and kappa 1, model picks are the most productive move (gain 40.2 against 15.6 in v4,
+prediction error median +0.10 against +2.84), but the run as a whole does not end lower: the other moves gain
+less once the model takes the large steps. v8 is the only fixed-constant (decision 31) policy with real-solver
+runs; its spread (2.1) is narrower than v4's (4.8), which under seed picking (decision 32) also means a less
+low best seed. Variant means v1–v8 now lie in 105.6–107.2; none is established as better than v4.
+
 ## What the logs show (the 7 v1–v3 runs, `analyse.py`)
 
 "Hit" = a point below the best R known when its call was sent.
@@ -162,7 +205,7 @@ training rows and the run's own results only; neither uses a research point, val
 
 `check_replay.py` re-runs the committed policy on the logged history and compares each proposed batch with the
 logged one, point by point (no solver calls). Result in `check_replay.log`: all 20 calls of `v1_s2026`, calls
-1, 7, 14, 20 of the other v1–v3 runs and calls 1, 9, 14, 20 of the three v4, v5 and v6 runs are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
+1, 7, 14, 20 of the other v1–v3 runs and calls 1, 9, 14, 20 of the three v4, v5 and v6 runs and calls 1 and 20 of `v7_s7`, `v7_s2026`, `v8_s7` and `v8_s11` are identical. `v1_s2026` was run before v2/v3 were added, so this also shows
 that adding them left v1 unchanged.
 
 ### Verification package for v4 seed 7 (`package_v4s7/`, 2026-11-16)
@@ -190,6 +233,8 @@ hyperparameters), which changes the trajectory and needs new seed runs.
 | `policy.py`, `surrogate.py` | the policy (v1–v3) and its surrogate |
 | `policy_v4.py` | v4 as a subclass of the v1–v3 policy |
 | `policy_v5.py`, `policy_v6.py` | v5 (probes, lanes from call 1) and v6 (lanes for stalled buildings) as subclasses of v4; negative results |
+| `policy_v7.py`, `policy_v8.py`, `surrogate_hp.py` | v7 and v8: v4 with the fixed-constant block Matérn GP of PR #24 (kappa 0 / 1); negative results |
+| `surrogate_compare/` | offline call-by-call comparison of surrogates on the v1–v6 logs (no solver calls) |
 | `rehearse.py` | driver: 20 calls, pre-submit screen (training rows, sent points, 1e-9), log, resume; `--evaluator synthetic` exercises the code without the solver |
 | `analyse.py` | summary table, per-run details, `--plot` redraws `convergence.png` |
 | `check_replay.py`, `check_replay.log` | batch-by-batch reproduction check |
@@ -211,7 +256,7 @@ about 40 minutes; it creates an isolated `analysis/online_rehearsal/workers/<run
 
 ## Limits
 
-- Three seeds for v1, v2, v4, v5 and v6, one for v3; seed spread (up to ±2.4 for v4) is as large as the variant differences.
+- Three seeds for v1, v2 and v4–v8, one for v3; seed spread (up to ±2.4 for v4) is as large as the variant differences.
 - Up to 37 of 1,000 points per run were lost to dropped repeats; a port to `BatchPolicy` should rank extra
   candidates so the loop can refill (decision 26).
 - One machine, one evaluator build (sha256 `293867b8…a077247`).

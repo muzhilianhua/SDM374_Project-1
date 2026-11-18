@@ -50,6 +50,15 @@ and record the new decision here with a date.
   depend on the peak share in 0.78–0.97. Ramping is the needle coordinate and R is terraced. The form does
   not transfer to buildings 1 and 3 (≥ +3). The research reads the rehearsal logs; nothing flows back into
   the online policy.
+- **A surrogate that ranks measured points better does not lower the final R; a fixed-constant policy reaches
+  106.22** (2026-11-18, T37, [study](../analysis/online_rehearsal/README.md#v7-a-better-ranking-surrogate-2026-11-18-negative),
+  same condition as below). Offline, on the 16 v1–v6 logs (`analysis/online_rehearsal/surrogate_compare/`),
+  PR #24's fixed-constant block-additive Matérn GP (`hp_noise001`) ranked a call's points better than T37's
+  surrogate (within-call Spearman 0.52 against 0.38), and freezing T37's own hyperparameters ranked worse (0.21).
+  On the real solver (seeds 2026 / 7 / 11), v7 (that GP, kappa 0) reached 107.687 / 106.574 / 107.428 (mean
+  107.23), and v8 (that GP, kappa 1) reached 106.433 / 105.076 / 107.153 (mean 106.22), against v4's 105.59.
+  Most of v7's loss came from kappa 0. v8 is the only policy with constant hyperparameters (decision 31) that
+  has real-solver runs; it is inside v4's seed spread.
 - **Opening other block forms does not help within 1,000 points; v4 stays the recommended policy**
   (2026-11-17, T37, [study](../analysis/online_rehearsal/README.md#v5-and-v6-opening-other-block-forms-2026-11-17-negative),
   same condition as below). Every v1–v4 run fixed each building's dominant objectives by call 3–8. v5 (vertex
