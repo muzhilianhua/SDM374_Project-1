@@ -193,8 +193,9 @@ def _ps_quote(path: Path) -> str:
 
 def powershell_pipe(exe: Path, weight_json: Path, timeout: float):
     """`Get-Content weight.json -Raw | .\\solver.exe`, as in the course run.py, run in the exe's folder.
-    Returns (returncode or None on timeout, stdout, stderr)."""
-    command = f"Get-Content -LiteralPath {_ps_quote(weight_json)} -Raw | & {_ps_quote(exe)}"
+    Returns (returncode or None on timeout, stdout, stderr). `powershell -Command` exits 1 whenever a native
+    command fails, so the exe's own exit code (2 = rejected before evaluation) is passed on explicitly."""
+    command = f"Get-Content -LiteralPath {_ps_quote(weight_json)} -Raw | & {_ps_quote(exe)}; exit $LASTEXITCODE"
     process = subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", command],
                                cwd=str(exe.parent), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, encoding="utf-8", errors="replace")
