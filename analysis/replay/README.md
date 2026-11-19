@@ -5,7 +5,7 @@
 > `solver.exe` calls and handed T15 a structural prior (old §6) plus a note that T12 could adopt the
 > same ranking directly (old §9). **Both are withdrawn.** Decision 19 allows only the 2048 training
 > rows before the first evaluator call, so no point or R value measured with the real evaluator may
-> enter the submitted code. Decision 27 (2026-11-11, from the T03 reply; not yet confirmed by the TA)
+> enter the submitted code. Decision 27 (2026-11-11, from the T03 reply; confirmed by the TA on 2026-11-18)
 > now allows local evaluator runs to choose parameters, but this study does not use them: everything
 > below comes from the replayer and uses the table only.
 >

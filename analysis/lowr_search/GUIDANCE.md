@@ -6,7 +6,7 @@ check (T08). Written 2026-11-13 by 张子木 (A). Recommendations, not decisions
 
 ## 0. Boundary
 
-- **Allowed** (decision 27, the user's judgment of 2026-11-11, **not yet confirmed by the TA**): use local
+- **Allowed** (decision 27, the user's judgment of 2026-11-11, confirmed by the TA on 2026-11-18): use local
   evaluator runs to choose models, policies and hyperparameters.
 - **Not allowed** (decisions 19, 27, 29): any point, R value or weight measured locally in the submitted code,
   its configs, warm starts or exclusion lists.
