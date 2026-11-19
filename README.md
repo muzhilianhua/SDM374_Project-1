@@ -7,6 +7,10 @@ The offline phase is closed and frozen at git tag **`offline-final`** (submissio
 only what the online script needs. Online rules: at most 20 sequential evaluator calls of up to 50 weight
 sets each, using only the 2048 training rows before the first call ([decision 19](docs/decisions.md)).
 
+The graded runner is the standalone [`submission/`](submission/README.md) package. The repository `sdm`
+commands remain for development and replay; use `uv run python submission/run.py` only from inside that
+folder, because its lockfile and package checks are independent of the repository environment.
+
 The course evaluator lives in [`solver/`](solver/README.md). `solver.exe` (182 MB, Windows only) is not in
 git: copy it from the course `solver.zip` into `solver/` and check it:
 
@@ -34,6 +38,19 @@ On macOS, the `xgboost` surrogate also needs the OpenMP runtime once: `brew inst
 uv sync
 uv run pytest -q
 ```
+
+On Windows, especially when the checkout path contains Chinese characters, use the checked helper so
+Python does not recreate an editable `.pth` with a system-encoded path:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task Setup
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task CheckData
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task Test
+powershell -ExecutionPolicy Bypass -File scripts/check_windows.ps1 -Task DryRun -Config experiments/online-baseline-synthetic.toml
+```
+
+The dry-run uses the synthetic evaluator and does not spend course-evaluator calls. Details and the
+limitations of the course-computer package are in [`scripts/README.md`](scripts/README.md).
 
 ## Workbench (GUI)
 
@@ -65,6 +82,11 @@ uv run sdm predict  --model-run <run-id> --weights weights.json   # '-' reads st
 uv run sdm runs [--json]                               # list recorded runs
 uv run sdm reproduce <run-id>                          # re-execute and compare outputs
 ```
+
+For a training-only candidate study, run `uv run python analysis/online_policy_research/elite_candidates.py
+--out analysis/online_policy_research/candidates.json`. It fits a seeded surrogate on the checked training
+table and writes a legal 50-point candidate artifact. It does not read the solver or historical online
+results, and the artifact must be reviewed before any formal call.
 
 ## Where to read next
 

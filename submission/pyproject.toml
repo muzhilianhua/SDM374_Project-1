@@ -1,0 +1,14 @@
+[project]
+name = "sdm374-submission"
+version = "1.0.0"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "numpy==1.24.4",
+  "scipy==1.10.1",
+  "scikit-learn==1.2.2",
+  "joblib==1.6.0",
+  "threadpoolctl==3.7.0",
+]
+
+[tool.uv]
+package = false
