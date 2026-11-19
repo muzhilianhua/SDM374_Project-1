@@ -24,9 +24,12 @@ import os
 # change a policy choice. The v7 reference log was recorded with the rehearsal machine's native kernels
 # (Intel i5-10600, which OpenBLAS maps to "Cooperlake"; "Haswell" gives the same batches and runs on any x86-64
 # CPU with AVX2), so they are forced here. The generic "Prescott" kernels used by the v4 package do not
-# reproduce the v7 log at call 3. This only affects an OpenBLAS-linked numpy (the uv-locked pip wheels); the
-# thread count is left at OpenBLAS's default.
+# reproduce the v7 log at call 3. This only affects an OpenBLAS-linked numpy (the uv-locked pip wheels).
 os.environ.setdefault("OPENBLAS_CORETYPE", "Haswell")
+# The thread count is part of the arithmetic too: the reference log was recorded on 12 logical CPUs
+# (environment.logical_cpus = 12), and the same Haswell kernels with another thread count already differ at
+# call 3. It is pinned for the same reason as the kernels; an externally set value still wins.
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "12")
 
 import argparse  # noqa: E402
 import csv  # noqa: E402

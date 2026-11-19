@@ -95,11 +95,14 @@ uv run run.py --evaluator mymodule:MyTruth --out runs\replay              # deve
 
 ## Checking that a machine reproduces the batches
 
-The policy is deterministic, but linear-algebra rounding depends on the CPU and the OpenBLAS kernel, and a
-difference in one call changes every later batch (decision 31, Determinism). `run.py` forces the generic
-OpenBLAS Haswell kernels (`OPENBLAS_CORETYPE=Haswell`), which reproduce the v7 reference log and run on every
-x86-64 CPU with AVX2; it also reports the BLAS backend at start. The v4 package's Prescott kernels do **not**
-reproduce the v7 log (call 3 differs by 0.12 in one weight), which is why this package pins Haswell instead.
+The policy is deterministic, but linear-algebra rounding depends on the CPU, the OpenBLAS kernel and the
+OpenBLAS thread count, and a difference in one call changes every later batch (decision 31, Determinism).
+`run.py` forces the generic OpenBLAS Haswell kernels (`OPENBLAS_CORETYPE=Haswell`), which run on every
+x86-64 CPU with AVX2, and `OPENBLAS_NUM_THREADS=12`: the v7 reference log was recorded on 12 logical CPUs
+(`environment.logical_cpus` in its header), and the same Haswell kernels on another thread count already
+differ at call 3. Both are `setdefault`, so a value set in the environment beforehand still wins. `run.py`
+also reports the BLAS backend at start. The v4 package's Prescott kernels do **not** reproduce the v7 log
+(call 3 differs by 0.12 in one weight), which is why this package pins Haswell instead.
 
 - `uv run run.py verify --reference <online_log.jsonl>` recomputes each call's batch from a recorded run's
   earlier results and compares it point by point, without calling the solver. The v7 reference log is
