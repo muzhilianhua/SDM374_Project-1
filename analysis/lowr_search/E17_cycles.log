@@ -1,0 +1,11 @@
+cycle 1: 6 combinations, best 103.247284 (was 103.823928)
+seeds: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+round 1 b1: no improvement, stop at +0.0000
+round 1 b2: no improvement, stop at +0.0000
+round 1 b3: no improvement, stop at +0.0000
+final: {'b1': 0.0, 'b2': 0.0, 'b3': 0.0}
+cycle 1: no building improved, stop
+final R 103.2472843645
+[[0.318356 0.004447 0.000237 0.002391 0.099186 0.575384 0.      ]
+ [0.       0.008513 0.       0.000217 0.209794 0.651955 0.129521]
+ [0.153244 0.001028 0.153655 0.090604 0.185067 0.416401 0.      ]]

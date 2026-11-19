@@ -60,6 +60,7 @@ class SolverPool:
         self.cache: dict[str, float] = {}
         self.n_logged = 0
         self.n_solver_evals = 0
+        self.n_solver_invocations = 0
         if self.log.exists():
             with self.log.open(encoding="utf-8") as fh:
                 for line in fh:
@@ -103,6 +104,8 @@ class SolverPool:
             usage.unlink()
         env = dict(os.environ, TEMP=str(tmp), TMP=str(tmp))
         payload = json.dumps({"weights": [w.reshape(3, 7).tolist() for w in W]})
+        with self._lock:
+            self.n_solver_invocations += 1
         try:
             proc = subprocess.run(
                 [str(d / "solver.exe")], input=payload, capture_output=True, text=True,
