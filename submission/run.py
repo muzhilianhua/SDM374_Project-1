@@ -1,53 +1,69 @@
-"""Standalone SDM374 online runner.
+"""SDM374 Project 1 online run: the course solver/run.py with its two todos filled in (decision 31).
 
-    python run.py check [--solver PATH\\solver.exe]
-    python run.py run --evaluator synthetic --max-calls 2
-    python run.py run --evaluator solver --solver PATH\\solver.exe
+The course template calls solver.exe 20 times, piping weight.json through PowerShell, and leaves "read R,
+refit the surrogate, write the next weight.json" as todo. This file keeps that loop and fills it in: before
+each call the policy (policy.py, surrogate.py, constants in config.json) refits on train.csv plus this run's
+results and writes the next batch of at most 50 weight sets; the batch goes to solver.exe through the same
+PowerShell pipe; the R values come back into the next refit.
 
-Before call 1 the policy sees only data/train.csv; afterwards it sees only results from this run. The
-solver evaluator never edits usage.count. Every started call is checkpointed before evaluation and is
-never silently resent after an interruption.
+    uv run run.py                          graded run (solver.exe next to this file; resumes if interrupted)
+    uv run run.py --solver D:\\dev\\solver.exe --out runs\\rehearsal-1     development rehearsal on another copy
+    uv run run.py check [--solver PATH]    environment, pinned files and solver, no call
+    uv run run.py verify --reference LOG   recompute every batch of a recorded run, no call
+    uv run run.py compare RUN_A RUN_B      first call and field where two runs differ
+
+Data boundary (decisions 19, 27, 29, 32): before call 1 the policy reads only train.csv (the 2048 course
+training rows); afterwards only the results of this run. No locally measured point, R value or weight is
+in this folder; config.json holds constants only. This file never touches usage.count.
 """
 from __future__ import annotations
 
 import os
 
-# The BLAS thread count changes the summation order of linear algebra and so, eventually, the batches.
-# The reference run used OpenBLAS's default (one thread per logical CPU, 20 on the machine that made it).
-# Set OPENBLAS_NUM_THREADS before starting Python to try another value; `check` reports what is in effect.
-# OpenBLAS picks its kernels by CPU model; on the reference machine it fell back to the generic "Prescott"
-# kernels, which run on every x86-64 CPU, so they are forced here to remove one machine-dependent difference.
-# The thread count cannot be forced above the machine's logical CPU count.
+# OpenBLAS picks its kernels by CPU model; the generic Prescott kernels run on every x86-64 CPU and were the
+# ones in effect on the reference machine, so they are forced here (decision 31). This only affects an
+# OpenBLAS-linked numpy (the uv-locked pip wheels); the thread count is left at OpenBLAS's default.
 os.environ.setdefault("OPENBLAS_CORETYPE", "Prescott")
 
-import argparse
-import csv
-import hashlib
-import json
-import platform
-import subprocess
-import sys
-import tempfile
-import time
-from pathlib import Path
+import argparse  # noqa: E402
+import csv  # noqa: E402
+import hashlib  # noqa: E402
+import importlib  # noqa: E402
+import json  # noqa: E402
+import math  # noqa: E402
+import platform  # noqa: E402
+import subprocess  # noqa: E402
+import sys  # noqa: E402
+import tempfile  # noqa: E402
+import time  # noqa: E402
+from pathlib import Path  # noqa: E402
 
-import numpy as np
+import numpy as np  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE / "policy"))
+sys.path.insert(0, str(HERE))
 
-from policy import State, norm_blocks  # noqa: E402
-from policy_v4 import BlockDescentPolicyV4, ParamsV4  # noqa: E402
+from policy import BlockDescentPolicyV4, ParamsV4, State, norm_blocks  # noqa: E402
 
 CONFIG = json.loads((HERE / "config.json").read_text(encoding="utf-8"))
 SEED = int(CONFIG["seed"])
 CALLS = int(CONFIG["calls"])
 BATCH = int(CONFIG["batch"])
+TIMEOUT = float(CONFIG["solver_timeout_seconds"])
+# Pinned values (README): the released course solver.exe (solver/CHECKSUMS.sha256, decision 30) and train.csv.
 SOLVER_SHA256 = "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247"
-TRAIN_SHA256 = json.loads((HERE / "data" / "manifest.json").read_text(encoding="utf-8"))["train_sha256"]
+TRAIN_SHA256 = "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+TRAIN_ROWS = 2048
+# A resume refuses to continue when any of these differs from checkpoints/run.json (decision 31).
+FROZEN = ("config.json", "train.csv", "run.py", "policy.py", "surrogate.py")
 PINNED = {"python": "3.11", "numpy": "1.24.4", "scipy": "1.10.1", "scikit-learn": "1.2.2"}
+# The solver's own messages (analysis/solver_smoke/reports/, issue #28).
+STDIN_OK = "Weights must be finite and nonnegative"
+STDIN_EMPTY = "Expecting value"
+QUOTA_USED = "Usage limit reached"
 
 
+# ---------------------------------------------------------------------------------------------- files
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as fh:
@@ -56,16 +72,67 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def _plain(value):
+    if isinstance(value, (np.integer, np.bool_)):
+        return value.item()
+    if isinstance(value, (float, np.floating)):
+        value = float(value)
+        return value if math.isfinite(value) else None
+    if isinstance(value, np.ndarray):
+        return [_plain(v) for v in value.tolist()]
+    if isinstance(value, dict):
+        return {str(k): _plain(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(v) for v in value]
+    return value
+
+
+def write_json(path: Path, value) -> None:
+    """Write, flush and fsync; never a partial file under the final name."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".part")
+    with open(temporary, "wb") as fh:
+        fh.write((json.dumps(_plain(value), indent=1, ensure_ascii=False) + "\n").encode("utf-8"))
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(temporary, path)
+
+
+def write_text(path: Path, text: str) -> None:
+    with open(path, "wb") as fh:
+        fh.write(text.encode("utf-8"))
+        fh.flush()
+        os.fsync(fh.fileno())
+
+
+def canonical(value):
+    """Floats as float.hex, so two machines compare bit for bit (decision 31, Comparison)."""
+    if isinstance(value, (float, np.floating)):
+        value = float(value)
+        return value.hex() if math.isfinite(value) else None
+    if isinstance(value, (np.integer, np.bool_)):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        return [canonical(v) for v in value.tolist()]
+    if isinstance(value, dict):
+        return {str(k): canonical(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [canonical(v) for v in value]
+    return value
+
+
+# ---------------------------------------------------------------------------------------------- data, policy
 def load_training():
-    """The 2048 training rows, checked against the manifest, sorted by candidate_id (as in the rehearsal)."""
-    path = HERE / "data" / "train.csv"
+    """The 2048 training rows, checked against the pinned sha256, sorted by candidate_id (as in the rehearsal)."""
+    path = HERE / "train.csv"
     if sha256(path) != TRAIN_SHA256:
-        raise SystemExit(f"{path} does not match data/manifest.json")
+        raise SystemExit(f"{path} does not match the pinned sha256 {TRAIN_SHA256[:12]}…; stop")
     with open(path, newline="", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
     rows.sort(key=lambda r: r["candidate_id"])
     cols = [c for c in rows[0] if c not in ("candidate_id", "ramping")]
-    assert len(cols) == 21
+    if len(rows) != TRAIN_ROWS or len(cols) != 21:
+        raise SystemExit(f"train.csv has {len(rows)} rows and {len(cols)} weight columns; expected 2048 and 21")
     X = np.array([[float(r[c]) for c in cols] for r in rows])
     y = np.array([float(r["ramping"]) for r in rows])
     return X, y
@@ -99,261 +166,409 @@ def propose(policy, st, X_train):
     return batch, metas, info
 
 
-def _json_default(value):
-    if isinstance(value, (np.integer, np.floating, np.bool_)):
-        return value.item()
-    if isinstance(value, np.ndarray):
-        return value.tolist()
-    raise TypeError(f"cannot encode {type(value).__name__}")
+def blas_report() -> str:
+    try:
+        from threadpoolctl import threadpool_info
+        blas = [f"{i.get('internal_api')} {i.get('version')} threads={i.get('num_threads')} "
+                f"arch={i.get('architecture')}" for i in threadpool_info() if i.get("user_api") == "blas"]
+    except Exception as error:  # report, never fail on this
+        blas = [f"unknown ({error!r})"]
+    return (f"BLAS: {'; '.join(blas)} | OPENBLAS_CORETYPE={os.environ.get('OPENBLAS_CORETYPE')} "
+            f"OPENBLAS_NUM_THREADS={os.environ.get('OPENBLAS_NUM_THREADS')} "
+            f"OMP_NUM_THREADS={os.environ.get('OMP_NUM_THREADS')} MKL_NUM_THREADS={os.environ.get('MKL_NUM_THREADS')}")
 
 
-def write_json(path: Path, value) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_bytes((json.dumps(value, indent=2, ensure_ascii=False, default=_json_default) + "\n")
-                          .encode("utf-8"))
-    os.replace(temporary, path)
+# ---------------------------------------------------------------------------------------------- evaluators
+class Outcome:
+    """`ok`: R for every set. `rejected`: the solver refused before evaluating anything (exit 2; costs no
+    call). `failed`: anything else after the solver started; the batch counts as sent without R."""
+
+    def __init__(self, kind, R=None, returncode=None, stdout="", stderr=""):
+        self.kind, self.R, self.returncode, self.stdout, self.stderr = kind, R, returncode, stdout, stderr
 
 
-def package_hashes() -> dict[str, str]:
-    names = ["run.py", "config.json", "pyproject.toml", "uv.lock", "data/train.csv",
-             "data/manifest.json", "policy/policy.py", "policy/policy_v4.py", "policy/surrogate.py"]
-    return {name: sha256(HERE / name) for name in names}
+def _ps_quote(path: Path) -> str:
+    return "'" + str(path).replace("'", "''") + "'"
 
 
-def ensure_run_manifest(out: Path, solver: Path | None) -> None:
-    path = out / "checkpoints" / "run.json"
-    current = package_hashes()
-    if solver is not None and solver.is_file():
-        current["solver.exe"] = sha256(solver)
-    if path.exists():
-        saved = json.loads(path.read_text(encoding="utf-8"))
-        if saved.get("files") != current:
-            raise SystemExit("checkpoint run.json does not match the current package; refuse to resume")
-        return
-    write_json(path, {"version": 1, "seed": SEED, "calls": CALLS, "batch": BATCH, "files": current})
+def powershell_pipe(exe: Path, weight_json: Path, timeout: float):
+    """`Get-Content weight.json -Raw | .\\solver.exe`, as in the course run.py, run in the exe's folder.
+    Returns (returncode or None on timeout, stdout, stderr)."""
+    command = f"Get-Content -LiteralPath {_ps_quote(weight_json)} -Raw | & {_ps_quote(exe)}"
+    process = subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", command],
+                               cwd=str(exe.parent), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               text=True, encoding="utf-8", errors="replace")
+    try:
+        out, err = process.communicate(timeout=timeout)
+        return process.returncode, out, err
+    except subprocess.TimeoutExpired:
+        # solver.exe starts a second process and a worker pool; kill the whole tree.
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(process.pid)], capture_output=True, check=False)
+        out, err = process.communicate()
+        return None, out, err + f"\n[run.py] timeout after {timeout:.0f} s; process tree killed"
 
 
-def checkpoint(out: Path, call: int, payload: dict, previous_manifest: str | None) -> str:
-    """Write one complete checkpoint atomically and return its manifest hash."""
-    root = out / "checkpoints"
-    temporary = root / f"call_{call:02d}.tmp"
-    final = root / f"call_{call:02d}"
-    temporary.mkdir(parents=True, exist_ok=True)
-    write_json(temporary / "result.json", payload)
-    files = {p.relative_to(temporary).as_posix(): sha256(p)
-             for p in temporary.rglob("*") if p.is_file()}
-    write_json(temporary / "manifest.json", {"version": 1, "call": call,
-                                               "previous_manifest_sha256": previous_manifest,
-                                               "files": files})
-    if final.exists():
-        raise SystemExit(f"checkpoint {final} already exists")
-    os.replace(temporary, final)
-    return sha256(final / "manifest.json")
+class SolverEvaluator:
+    name = "solver"
+
+    def __init__(self, exe: Path, timeout: float):
+        self.exe, self.timeout = exe, timeout
+
+    def stdin_check(self) -> None:
+        """Before call 1: send one invalid set (a negative weight). The solver must reject it with its
+        validation message, which proves stdin reaches the exe; a rejection costs no call (decision 28)."""
+        bad = np.full((1, 3, 7), 1 / 7)
+        bad[0, 0, 0] = -1.0
+        with tempfile.TemporaryDirectory(prefix="sdm374-stdin-check-") as folder:
+            path = Path(folder) / "weight.json"
+            path.write_text(json.dumps({"weights": bad.tolist()}), encoding="utf-8")
+            code, _, err = powershell_pipe(self.exe, path, timeout=120)
+        if QUOTA_USED in err:
+            raise SystemExit(f"stdin check: this solver copy's quota is used up ({err.strip()[:300]}); stop")
+        if code != 2 or STDIN_OK not in err or STDIN_EMPTY in err:
+            raise SystemExit("stdin check failed (exit "
+                             f"{code}): the weights did not reach solver.exe; no call was spent. "
+                             f"stderr: {err.strip()[:500]}")
+        print("stdin check: solver.exe received the test input and rejected it as expected (no call spent)")
+
+    def evaluate(self, batch: np.ndarray, folder: Path) -> Outcome:
+        weight_json = folder / "weight.json"
+        write_text(weight_json, json.dumps({"weights": batch.reshape(-1, 3, 7).tolist()}))
+        try:
+            code, out, err = powershell_pipe(self.exe, weight_json, self.timeout)
+        except Exception as error:  # could not even start PowerShell: still treat as sent (decision 28)
+            return Outcome("failed", stderr=f"[run.py] {error!r}")
+        if code == 2:
+            return Outcome("rejected", returncode=code, stdout=out, stderr=err)
+        if code == 0:
+            try:
+                R = [float(v) for v in json.loads(out)["R"]]
+                if len(R) == len(batch) and all(math.isfinite(r) for r in R):
+                    return Outcome("ok", R, code, out, err)
+            except (ValueError, KeyError, TypeError):
+                pass
+        return Outcome("failed", returncode=code, stdout=out, stderr=err)
 
 
-def verify_checkpoints(out: Path) -> str | None:
-    """Verify the hash chain and return the latest manifest hash."""
-    previous = None
-    folders = sorted((out / "checkpoints").glob("call_[0-9][0-9]"))
-    for folder in folders:
-        manifest_path = folder / "manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+class SyntheticEvaluator:
+    """Closed-form stand-in for tests and machine comparisons; never used by the graded run."""
+    name = "synthetic"
+
+    def __init__(self, X_train, y_train):
+        self.center = X_train[int(np.argmin(y_train))]
+        self.floor = float(y_train.min())
+
+    def stdin_check(self) -> None:
+        pass
+
+    def evaluate(self, batch: np.ndarray, folder: Path) -> Outcome:
+        distance = np.sum((batch - self.center[None]) ** 2, axis=1)
+        return Outcome("ok", (self.floor + 100.0 * distance).tolist(), 0)
+
+
+class ExternalEvaluator:
+    """Development only: `--evaluator module:Class` (module importable from the working directory), whose
+    instance returns one R per row of an (n, 21) array. Used for the T17 / T18 replay truths."""
+
+    def __init__(self, spec: str):
+        module, _, cls = spec.partition(":")
+        sys.path.insert(0, os.getcwd())
+        self.impl = getattr(importlib.import_module(module), cls)()
+        self.name = spec
+
+    def stdin_check(self) -> None:
+        pass
+
+    def evaluate(self, batch: np.ndarray, folder: Path) -> Outcome:
+        R = [float(r) for r in self.impl(batch)]
+        return Outcome("ok", R, 0)
+
+
+# ---------------------------------------------------------------------------------------------- checkpoints
+def frozen_hashes() -> dict:
+    return {name: sha256(HERE / name) for name in FROZEN}
+
+
+def call_dir(root: Path, call: int) -> Path:
+    return root / f"call_{call:02d}"
+
+
+def check_chain(root: Path) -> list:
+    """Verify every complete checkpoint and its link; return the calls as the policy sees them.
+    Stops (naming the folder) on any damage instead of guessing."""
+    previous = sha256(root / "run.json")
+    calls = []
+    call = 1
+    while call_dir(root, call).is_dir():
+        folder = call_dir(root, call)
+        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
         if manifest.get("previous_manifest_sha256") != previous:
-            raise SystemExit(f"checkpoint chain broken at {folder}")
+            raise SystemExit(f"{folder}: its link to the previous checkpoint does not hold; stop")
         for name, expected in manifest["files"].items():
-            if sha256(folder / name) != expected:
-                raise SystemExit(f"checkpoint file changed: {folder / name}")
-        previous = sha256(manifest_path)
-    return previous
+            if not (folder / name).is_file() or sha256(folder / name) != expected:
+                raise SystemExit(f"{folder / name} does not match its manifest; stop")
+        result = json.loads((folder / "result.json").read_text(encoding="utf-8"))
+        calls.append([{"W": np.array(w, float).reshape(3, 7), "R": float("nan") if r is None else float(r),
+                       "meta": m} for w, r, m in zip(result["weights"], result["R"], result["meta"])])
+        previous = sha256(folder / "manifest.json")
+        call += 1
+    for later in sorted(root.glob("call_[0-9][0-9]")):
+        if later.is_dir() and int(later.name[5:]) > call:
+            raise SystemExit(f"{later} exists but call_{call:02d}/ is missing; stop")
+    return calls
+
+
+def write_checkpoint(root: Path, call: int, tmp: Path, *, status: str, batch, R, metas, info, outcome: Outcome,
+                     evaluator: str, solver_sha: str | None) -> None:
+    """Fill call_<kk>.tmp/, fsync every file, then rename it to call_<kk>/ (decision 31, Checkpoints)."""
+    tmp.mkdir(parents=True, exist_ok=True)
+    rng = [SEED, call, 4]  # policy.BlockDescentPolicyV4.propose draws from default_rng([seed, call, 4])
+    record = {"call": call, "weights": batch, "R": R, "meta": metas,
+              "policy": {"seed": SEED, "rng": rng, "params": CONFIG["params"]}}
+    write_json(tmp / "result.json", {"status": status, "call": call, "evaluator": evaluator,
+                                     "weights": batch, "R": R, "meta": metas,
+                                     "solver_returncode": outcome.returncode})
+    write_json(tmp / "policy_state.json", {"seed": SEED, "rng": rng, "params": CONFIG["params"],
+                                           "variant": CONFIG["variant"], "diagnostics": info})
+    write_json(tmp / "inputs.json", {"train_sha256": sha256(HERE / "train.csv"), "train_rows": TRAIN_ROWS,
+                                     "solver_sha256": solver_sha, "evaluator": evaluator})
+    write_text(tmp / "canonical.json", json.dumps(canonical(record), sort_keys=True, separators=(",", ":")) + "\n")
+    write_text(tmp / "stdout.txt", outcome.stdout or "")
+    write_text(tmp / "stderr.txt", outcome.stderr or "")
+    if not (tmp / "weight.json").exists():
+        write_text(tmp / "weight.json", json.dumps({"weights": np.asarray(batch).reshape(-1, 3, 7).tolist()}))
+    previous = sha256(root / "run.json") if call == 1 else sha256(call_dir(root, call - 1) / "manifest.json")
+    files = {p.name: sha256(p) for p in sorted(tmp.iterdir()) if p.is_file() and p.name != "manifest.json"}
+    write_json(tmp / "manifest.json", {"call": call, "previous_manifest_sha256": previous, "files": files})
+    os.replace(tmp, call_dir(root, call))
 
 
 # ---------------------------------------------------------------------------------------------- commands
-def cmd_check(args):
+def resolve_evaluator(args, X, y):
+    if args.evaluator == "solver":
+        exe = Path(args.solver).resolve() if args.solver else HERE / "solver.exe"
+        if not exe.is_file():
+            raise SystemExit(f"{exe} not found: put the course solver.exe next to run.py or pass --solver PATH")
+        digest = sha256(exe)
+        if digest != SOLVER_SHA256:
+            # The course computer's exe is the one that is graded (decision 31): warn, record, continue.
+            print(f"WARNING: {exe} sha256 {digest[:12]}… differs from the pinned {SOLVER_SHA256[:12]}…; "
+                  "continuing; the hash is recorded in every checkpoint")
+        return SolverEvaluator(exe, args.timeout), exe, digest
+    if args.evaluator == "synthetic":
+        return SyntheticEvaluator(X, y), None, None
+    return ExternalEvaluator(args.evaluator), None, None
+
+
+def cmd_run(args) -> int:
+    print(f"{platform.platform()} | Python {platform.python_version()} | numpy {np.__version__} | "
+          f"{os.cpu_count()} logical CPUs")
+    print(blas_report())
+    X, y = load_training()
+    evaluator, exe, solver_sha = resolve_evaluator(args, X, y)
+    out = Path(args.out).resolve() if args.out else HERE
+    root = out / "checkpoints"
+    root.mkdir(parents=True, exist_ok=True)
+    run_json = root / "run.json"
+    frozen = frozen_hashes()
+    if run_json.exists():
+        saved = json.loads(run_json.read_text(encoding="utf-8"))
+        changed = [n for n in FROZEN if saved["files"].get(n) != frozen[n]]
+        if changed:
+            raise SystemExit(f"{changed} differ from {run_json}; refusing to resume with other code or data")
+        if saved.get("evaluator") != evaluator.name:
+            raise SystemExit(f"{run_json} was written for evaluator {saved.get('evaluator')!r}; stop")
+    else:
+        write_json(run_json, {"seed": SEED, "calls": CALLS, "batch": BATCH, "evaluator": evaluator.name,
+                              "files": {**frozen, "solver.exe": solver_sha},
+                              "started": time.strftime("%Y-%m-%dT%H:%M:%S")})
+
+    st = State(X, y)
+    st.calls = check_chain(root)
+    k = len(st.calls) + 1
+    rejected = root / f"call_{k:02d}.rejected.json"
+    sent = root / f"call_{k:02d}.sent.json"
+    if rejected.exists() and not sent.exists():
+        if not args.after_rejection:
+            raise SystemExit(f"{rejected} records a batch the solver refused (no call was spent). Fix the cause, "
+                             f"then rerun with --after-rejection to send call {k} again; nothing is resent on its own")
+        rejected.rename(root / f"call_{k:02d}.rejected.{time.strftime('%Y%m%d-%H%M%S')}.json")
+    if sent.exists():
+        # Started, never finished: a batch sent without R. Its points count as sent, the call as used, and it
+        # is never resent (decision 28). Only the last call is handled automatically.
+        sent_rec = json.loads(sent.read_text(encoding="utf-8"))
+        tmp = root / f"call_{k:02d}.tmp"
+        print(f"call {k} was started but has no result: recording it as sent without R (never resent)")
+        nan = [None] * len(sent_rec["weights"])
+        write_checkpoint(root, k, tmp, status="sent_without_R", batch=sent_rec["weights"], R=nan,
+                         metas=sent_rec["meta"], info={"recovered": True},
+                         outcome=Outcome("failed", stderr="[run.py] recovered after an interruption"),
+                         evaluator=evaluator.name, solver_sha=solver_sha)
+        st.calls = check_chain(root)
+    if st.calls:
+        print(f"resuming after call {len(st.calls)}")
+
+    log = out / "online_log.jsonl"
+    finite = [e["R"] for c in st.calls for e in c if math.isfinite(e["R"])]
+    best = min([float(y.min())] + finite)
+    last = min(CALLS, args.max_calls or CALLS)
+    if not st.calls and last > 0:
+        evaluator.stdin_check()
+    policy = make_policy()
+
+    for call in range(len(st.calls) + 1, last + 1):  # the course run.py loop: for i in range(1, 21)
+        t0 = time.time()
+        batch, metas, info = propose(policy, st, X)           # todo 1 of run.py: refit, next weight.json
+        t1 = time.time()
+        sent = root / f"call_{call:02d}.sent.json"
+        write_json(sent, {"call": call, "weights": batch, "meta": metas})   # from here on the batch counts as sent
+        tmp = root / f"call_{call:02d}.tmp"
+        tmp.mkdir(exist_ok=True)
+        outcome = evaluator.evaluate(batch, tmp)               # Get-Content weight.json -Raw | .\solver.exe
+        t2 = time.time()
+        if outcome.kind == "rejected":
+            write_json(root / f"call_{call:02d}.rejected.json",
+                       {"call": call, "weights": batch, "meta": metas, "returncode": outcome.returncode,
+                        "stderr": outcome.stderr})
+            sent.unlink()
+            for p in tmp.iterdir():
+                p.unlink()
+            tmp.rmdir()
+            print(f"call {call}: solver.exe rejected the batch before evaluating it (exit 2, no call spent): "
+                  f"{outcome.stderr.strip()[:300]}\nStopped. A person decides whether to send again "
+                  "(rerun with --after-rejection).")
+            return 2
+        R = outcome.R if outcome.kind == "ok" else [None] * len(batch)   # todo 2 of run.py: read R
+        status = "complete" if outcome.kind == "ok" else "sent_without_R"
+        write_checkpoint(root, call, tmp, status=status, batch=batch, R=R, metas=metas, info=info,
+                         outcome=outcome, evaluator=evaluator.name, solver_sha=solver_sha)
+        st.calls.append([{"W": w.reshape(3, 7), "R": float("nan") if r is None else float(r), "meta": m}
+                         for w, r, m in zip(batch, R, metas)])
+        with open(log, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(_plain({"call": call, "status": status, "n": len(batch),
+                                        "batch_min": min([r for r in R if r is not None], default=None),
+                                        "propose_secs": round(t1 - t0, 1), "eval_secs": round(t2 - t1, 1),
+                                        "time": time.strftime("%Y-%m-%dT%H:%M:%S")})) + "\n")
+        if outcome.kind == "ok":
+            best = min(best, min(R))
+            print(f"[{call}/{CALLS}] batch min {min(R):.6f}  best {best:.6f}  | refit+propose {t1 - t0:.0f} s, "
+                  f"solver {t2 - t1:.0f} s", flush=True)
+        else:
+            print(f"[{call}/{CALLS}] FAILED after solver.exe started (exit {outcome.returncode}): counted as sent "
+                  f"without R, never resent. {outcome.stderr.strip()[:300]}", flush=True)
+    done = len(st.calls)
+    print(f"{'finished' if done == CALLS else f'stopped after call {done} (--max-calls)'}: best R {best!r}; "
+          f"checkpoints in {root}")
+    return 0
+
+
+def cmd_check(args) -> int:
     import scipy
     import sklearn
     got = {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__,
            "scikit-learn": sklearn.__version__}
-    print(f"machine: {platform.platform()} | {platform.processor()} | {os.cpu_count()} logical CPUs "
-          f"(reference: 20)")
+    print(f"{platform.platform()} | {platform.processor()} | {os.cpu_count()} logical CPUs (reference: 20)")
     ok = True
     for k, v in PINNED.items():
         match = got[k].startswith(v) if k == "python" else got[k] == v
         ok &= match
-        print(f"  {k:13s} {got[k]:10s} pinned {v:8s} {'ok' if match else 'DIFFERENT (results may differ)'}")
-    from threadpoolctl import threadpool_info
-    blas = [f"{i.get('internal_api')} {i.get('version')} threads={i.get('num_threads')} arch={i.get('architecture')}"
-            for i in threadpool_info() if i.get("user_api") == "blas"]
-    print(f"  BLAS          {'; '.join(blas)} (reference: openblas 0.3.21 in numpy and 0.3.18 in scipy, 20 threads, Prescott)"
-          f"  OPENBLAS_NUM_THREADS={os.environ.get('OPENBLAS_NUM_THREADS')}")
+        print(f"  {k:13s} {got[k]:10s} pinned {v:8s} {'ok' if match else 'DIFFERENT'}")
+    print("  " + blas_report())
     try:
         load_training()
-        print("  data/train.csv sha256 ok (2048 rows)")
-    except SystemExit as e:
+        print(f"  train.csv sha256 {TRAIN_SHA256[:12]}… ok ({TRAIN_ROWS} rows)")
+    except SystemExit as error:
         ok = False
-        print(f"  {e}")
-    bad = []
-    for line in (HERE / "CHECKSUMS.sha256").read_text(encoding="utf-8").splitlines():
-        h, name = line.split(maxsplit=1)
-        if sha256(HERE / name.strip().lstrip("*")) != h:
-            bad.append(name)
-    print("  package files:", "ok" if not bad else f"CHANGED: {bad}")
-    ok &= not bad
-    if args.solver:
-        s = Path(args.solver).resolve()
-        if not s.is_file():
-            print(f"  solver: {s} not found"); ok = False
-        else:
-            good = sha256(s) == SOLVER_SHA256
-            ok &= good
-            print(f"  solver sha256 {'ok' if good else 'DIFFERENT from the pinned course build'}; "
-                  f"usage.count {'present' if (s.parent / 'usage.count').exists() else 'absent'}")
+        print(f"  {error}")
+    for name, digest in frozen_hashes().items():
+        print(f"  {name:13s} {digest}")
+    exe = Path(args.solver).resolve() if args.solver else HERE / "solver.exe"
+    if exe.is_file():
+        digest = sha256(exe)
+        print(f"  solver.exe    {exe}\n                sha256 {'= pinned' if digest == SOLVER_SHA256 else 'DIFFERS from the pinned ' + SOLVER_SHA256[:12] + '… (the run warns and continues)'}; "
+              f"usage.count {'present' if (exe.parent / 'usage.count').exists() else 'absent'}")
+    else:
+        print(f"  solver.exe    {exe} not found")
     print("check:", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
 
-def _powershell_quote(path: Path) -> str:
-    return "'" + str(path).replace("'", "''") + "'"
-
-
-def _powershell_pipe(exe: Path, input_path: Path, timeout: float):
-    command = (f"Get-Content -LiteralPath {_powershell_quote(input_path)} -Raw | "
-               f"& {_powershell_quote(exe)}")
-    return subprocess.run(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", command],
-                          capture_output=True, text=True, encoding="utf-8", errors="replace",
-                          cwd=str(exe.parent), timeout=timeout)
-
-
-def run_solver(exe: Path, batch: np.ndarray, timeout: float, input_path: Path):
-    write_json(input_path, {"weights": batch.tolist()})
-    proc = _powershell_pipe(exe, input_path, timeout)
-    if proc.returncode != 0:
-        raise RuntimeError(f"solver exit {proc.returncode}: {proc.stderr.strip()[:500]}")
-    R = [float(v) for v in json.loads(proc.stdout)["R"]]
-    if len(R) != len(batch) or not all(np.isfinite(R)):
-        raise RuntimeError(f"solver returned {len(R)} values for {len(batch)} sets")
-    return R
-
-
-def run_synthetic(batch: np.ndarray, X_train: np.ndarray, y_train: np.ndarray) -> list[float]:
-    """Deterministic development truth derived from the checked training table only."""
-    center = X_train[int(np.argmin(y_train))]
-    distance = np.sum((batch - center[None]) ** 2, axis=1)
-    return (float(y_train.min()) + 100.0 * distance).tolist()
-
-
-def check_solver_stdin(exe: Path) -> None:
-    """Check the course executable's stdin channel with an invalid, non-billable request."""
-    bad = np.zeros((1, 3, 7), dtype=float)
-    bad[0, 0, 0] = -1.0
-    with tempfile.TemporaryDirectory(prefix="sdm374-stdin-check-") as folder:
-        input_path = Path(folder) / "weight.json"
-        input_path.write_text(json.dumps({"weights": bad.tolist()}), encoding="utf-8")
-        proc = _powershell_pipe(exe, input_path, timeout=60)
-    stderr = proc.stderr.strip()
-    if proc.returncode != 2 or "Weights must be finite and nonnegative" not in stderr or "Expecting value" in stderr:
-        raise SystemExit("solver stdin preflight failed; refusing to spend a call: " + stderr[:500])
-
-
-def cmd_run(args):
-    if args.evaluator == "solver":
-        exe = Path(args.solver or HERE / "solver.exe").resolve()
-        if not exe.is_file() or sha256(exe) != SOLVER_SHA256:
-            raise SystemExit(f"{exe} is not the pinned course solver.exe ({SOLVER_SHA256[:12]}...)")
-    else:
-        exe = None
-    out = Path(args.out or HERE / "runs" / time.strftime("%Y%m%d-%H%M%S")).resolve()
-    out.mkdir(parents=True, exist_ok=True)
-    log = out / "online_log.jsonl"
+def cmd_verify(args) -> int:
+    """Recompute each call's batch from a recorded run's earlier results and compare point by point."""
     X, y = load_training()
-    st = State(X, y)
-    ensure_run_manifest(out, exe)
-    previous_manifest = verify_checkpoints(out)
-    if log.exists():                                 # resume after the last finished call
-        recs = [json.loads(l) for l in log.open(encoding="utf-8")]
-        started = {r["call"] for r in recs if r["type"] == "call_start"}
-        done = {r["call"] for r in recs if r["type"] == "call_done"}
-        if started - done:
-            raise SystemExit(f"call {sorted(started - done)} started but did not finish: the solver may have "
-                             f"charged it; inspect {log} before deciding how to continue")
-        for c in sorted(done):
-            st.calls.append([{"W": np.array(r["W"]).reshape(3, 7), "R": r["R"], "meta": r["meta"]}
-                             for r in recs if r["type"] == "point" and r["call"] == c])
-        print(f"resuming after call {len(st.calls)}")
-    if len(st.calls) == 0 and args.evaluator == "solver":
-        check_solver_stdin(exe)
+    by_call: dict[int, list] = {}
+    for line in Path(args.reference).open(encoding="utf-8"):
+        r = json.loads(line)
+        if r.get("type") == "point":
+            by_call.setdefault(r["call"], []).append(r)
+    calls = args.calls or sorted(by_call)
     policy = make_policy()
-    best = float(y.min())
-    for c in st.calls:
-        best = min(best, min(e["R"] for e in c))
-    with log.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps({"type": "run_info", "time": time.strftime("%Y-%m-%dT%H:%M:%S"),
-                             "machine": platform.platform(), "python": platform.python_version(),
-                             "numpy": np.__version__, "evaluator": args.evaluator,
-                             "solver": str(exe) if exe else None}) + "\n")
-    last = min(CALLS, args.max_calls or CALLS)
-    while len(st.calls) < last:
-        c = len(st.calls) + 1
-        t0 = time.time()
-        batch, metas, info = propose(policy, st, X)
-        t1 = time.time()
-        with log.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps({"type": "call_start", "call": c, "n": len(batch),
-                                 "evaluator": args.evaluator}) + "\n")
-            fh.flush(); os.fsync(fh.fileno())
-        write_json(out / "checkpoints" / f"call_{c:02d}.sent.json",
-                   {"call": c, "evaluator": args.evaluator, "weights": batch.tolist(),
-                    "batch_sha256": hashlib.sha256(json.dumps(batch.tolist()).encode()).hexdigest()})
-        try:
-            input_path = out / "checkpoints" / f"call_{c:02d}.weight.json"
-            R = (run_solver(exe, batch, args.timeout, input_path)
-                 if args.evaluator == "solver" else run_synthetic(batch, X, y))
-        except Exception as error:
-            with log.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps({"type": "call_failed", "call": c, "error": repr(error)}) + "\n")
-                fh.flush(); os.fsync(fh.fileno())
-            checkpoint(out, c, {"status": "failed", "call": c, "error": repr(error),
-                                "weights": batch.tolist()}, previous_manifest)
-            raise
-        t2 = time.time()
-        with log.open("a", encoding="utf-8") as fh:
-            for w, r, m in zip(batch, R, metas):
-                fh.write(json.dumps({"type": "point", "call": c, "W": w.tolist(), "R": r, "meta": m}) + "\n")
-            fh.write(json.dumps({"type": "call_done", "call": c, "n": len(batch), "batch_min": min(R),
-                                 "propose_secs": round(t1 - t0, 1), "eval_secs": round(t2 - t1, 1),
-                                 **info}) + "\n")
-            fh.flush(); os.fsync(fh.fileno())
-        previous_manifest = checkpoint(out, c, {"status": "complete", "call": c,
-                                                "evaluator": args.evaluator, "weights": batch.tolist(),
-                                                "R": R, "meta": metas, "diagnostics": info}, previous_manifest)
-        st.calls.append([{"W": w.reshape(3, 7), "R": r, "meta": m} for w, r, m in zip(batch, R, metas)])
-        best = min(best, min(R))
-        print(f"call {c:2d}: batch min {min(R):.4f}  best {best:.4f}  | propose {t1 - t0:.0f}s solver {t2 - t1:.0f}s"
-              f" | {args.evaluator}", flush=True)
-    print(f"run {'finished' if len(st.calls) == CALLS else f'stopped after call {len(st.calls)} (--max-calls)'}: "
-          f"best R {best:.10f}; log {log}")
+    ok_all = True
+    t0 = time.time()
+    for c in calls:
+        st = State(X, y)
+        for k in range(1, c):
+            st.calls.append([{"W": np.array(r["W"], float).reshape(3, 7),
+                              "R": float("nan") if r["R"] is None else r["R"], "meta": r["meta"]}
+                             for r in by_call[k]])
+        batch, _, _ = propose(policy, st, X)
+        ref = np.array([r["W"] for r in by_call[c]], float)
+        same = batch.shape == ref.shape and np.array_equal(batch, ref)
+        diff = float(np.max(np.abs(batch - ref))) if batch.shape == ref.shape else float("inf")
+        ok_all &= same
+        print(f"call {c:2d}: {'identical' if same else 'DIFFERENT'} (max |dW| {diff:.1e})", flush=True)
+    print(f"verify: {'PASS' if ok_all else 'FAIL'} ({len(calls)} calls, {time.time() - t0:.0f} s)")
+    return 0 if ok_all else 1
+
+
+def cmd_compare(args) -> int:
+    """Compare two runs' canonical records call by call; name the first call and field that differ."""
+    def load(path):
+        root = Path(path) / "checkpoints" if (Path(path) / "checkpoints").is_dir() else Path(path)
+        out = {}
+        for folder in sorted(root.glob("call_[0-9][0-9]")):
+            if folder.is_dir():
+                out[int(folder.name[5:])] = json.loads((folder / "canonical.json").read_text(encoding="utf-8"))
+        return out
+    a, b = load(args.run_a), load(args.run_b)
+    for call in sorted(set(a) | set(b)):
+        if call not in a or call not in b:
+            print(f"call {call}: present in only one run")
+            return 1
+        for field in sorted(set(a[call]) | set(b[call])):
+            if a[call].get(field) != b[call].get(field):
+                print(f"first difference: call {call}, field {field!r}")
+                return 1
+    print(f"identical: {len(a)} calls")
     return 0
 
 
-def cmd_verify(args):
-    """Compatibility alias: run a short synthetic end-to-end check without a solver."""
-    calls = max(args.calls or [2])
-    return cmd_run(argparse.Namespace(evaluator="synthetic", solver=None, out=args.out,
-                                      timeout=60.0, max_calls=calls))
-
-
-def main():
+def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if not argv or argv[0].startswith("-"):
+        argv.insert(0, "run")            # `uv run run.py` alone is the graded run
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    p = sub.add_parser("check"); p.add_argument("--solver")
-    p = sub.add_parser("verify"); p.add_argument("--calls", type=int, nargs="*"); p.add_argument("--out")
-    p = sub.add_parser("run"); p.add_argument("--evaluator", choices=("solver", "synthetic"), default="solver")
-    p.add_argument("--solver"); p.add_argument("--out")
-    p.add_argument("--timeout", type=float, default=1800.0)
-    p.add_argument("--max-calls", type=int, help="stop after this call (testing only; rerun to continue)")
-    args = ap.parse_args()
-    sys.exit({"check": cmd_check, "verify": cmd_verify, "run": cmd_run}[args.cmd](args))
+    p = sub.add_parser("run", help="the online run (default)")
+    p.add_argument("--solver", help="solver.exe to call (default: next to run.py, the graded copy)")
+    p.add_argument("--evaluator", default="solver",
+                   help="solver (default, the only one for the graded run), synthetic, or module:Class (development)")
+    p.add_argument("--out", help="folder for checkpoints/ and online_log.jsonl (default: this folder)")
+    p.add_argument("--timeout", type=float, default=TIMEOUT, help="seconds per call before the process tree is killed")
+    p.add_argument("--max-calls", type=int, help="stop after this call (testing; rerun to continue)")
+    p.add_argument("--after-rejection", action="store_true",
+                   help="send the next call again after the solver rejected it (a person's decision)")
+    p = sub.add_parser("check", help="environment and pinned files; no call")
+    p.add_argument("--solver")
+    p = sub.add_parser("verify", help="recompute the batches of a recorded run; no call")
+    p.add_argument("--reference", required=True, help="online_log.jsonl with one 'point' record per sent set")
+    p.add_argument("--calls", type=int, nargs="*")
+    p = sub.add_parser("compare", help="compare two runs' canonical records")
+    p.add_argument("run_a")
+    p.add_argument("run_b")
+    args = ap.parse_args(argv)
+    return {"run": cmd_run, "check": cmd_check, "verify": cmd_verify, "compare": cmd_compare}[args.cmd](args)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

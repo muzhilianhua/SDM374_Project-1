@@ -2,3 +2,7 @@
 runs/
 __pycache__/
 *.pyc
+checkpoints/
+online_log.jsonl
+solver.exe
+usage.count
