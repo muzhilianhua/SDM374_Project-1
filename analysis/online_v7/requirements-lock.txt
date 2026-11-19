@@ -1,6 +1,6 @@
-# v7 复现环境锁（Python 3.11.18 / Windows）
-# 运行期依赖：numpy / scipy / scikit-learn / joblib / threadpoolctl
-# 仅绘图需要：matplotlib 及其传递依赖
+# Reproduction lock for the v7 package (Python 3.11.18)
+# Runtime: numpy / scipy / scikit-learn / joblib / threadpoolctl
+# Plotting only: matplotlib and its transitive dependencies
 numpy==1.24.4
 scipy==1.10.1
 scikit-learn==1.2.2

@@ -1,122 +1,154 @@
-# online_v7：保留 v4 完整批次 + 多尺度候选的真实在线搜索
+# online_v7: keeping the v4 batches, replacing zero-yield slots with multiscale candidates
 
-本目录是一次完整、可复现的 20 轮 × 50 点真实求解器在线搜索（总计 1000 次真实评估，最优
-R = 102.8058786104）。策略在 PR#25（v4）的基础上改进，用于回答“能否用更少轮次达到更低 R”。
+This directory is one complete, reproducible online search: 20 solver calls x 50 points = 1000 real
+evaluations of the course evaluator, best R = **102.8058786104**.
 
-结果与对比见 [REPORT.md](REPORT.md)，策略原理见同文件第 2 节。
+The result, the comparison with the earlier policies and the limitations are in
+[REPORT.md](REPORT.md). This file covers what is in the package, how to verify it without the solver
+and how to rerun it.
 
-## 目录内容
+## Headline result (seed 7 only)
+
+| Item | Value |
+|---|---|
+| Best R | 102.8058786104 (call 20, point 25, `icombo`, building 1) |
+| Frozen phase (calls 1-11) | 105.107716483, identical to PR 25 / v4 point by point |
+| v4 at 20 calls, same seed | 103.275294878 |
+| h6 at 20 calls, same seed | 103.222939235 |
+| v4 at 35 calls, same seed | 102.1433224203 |
+
+The experiment was designed after looking at the v4 seed-7 log, and it was then evaluated on the same
+seed. **Only seed 7 has been run.** The difference of -0.469416 against v4 must therefore be read as
+"on seed 7, the seed used during design", not as an expected gain. Rehearsals on seeds 2026 and 11
+(the two other seeds that have v4 results) are still outstanding; until they exist, no average over
+seeds can be quoted (decision 32 in PR 20).
+
+## Naming: h5 / h6 / h7 versus the file names
+
+PR 25 already merged a `policy_v5.py` (vertex probing with per-building channels) and a
+`policy_v6.py` (channels only for stagnant buildings). The files in this package use the same names
+for different policies. The file names are kept because `runs/explore_v7_s7/run_config.json` pins
+their sha256, so renaming them would break the record of what produced the run. Documents and
+`docs/team.md` use the `h` labels below instead.
+
+| Label | File | Policy |
+|---|---|---|
+| v4 (= PR 25) | `policy/policy_v4.py` | reference policy, frozen phase of this run |
+| h5 | `policy/policy_v5.py` | 15-call accelerated schedule (negative result, best 107.133834) |
+| h6 | `policy/policy_v6.py` | multiscale pool from call 12 (negative result, best 103.222939) |
+| h7 | `policy/policy_v7.py` | this run: keep every v4 point, replace zero-yield slots |
+
+## Layout
 
 ```
 analysis/online_v7/
-├── README.md                  本文件：固定条件与复现步骤
-├── REPORT.md                  策略原理、结果展示、与 v4/v6 的对比报告
-├── requirements-lock.txt      完整依赖锁（含绘图依赖）
-├── requirements.txt           运行期依赖（与探索包一致）
-├── online_run.py              共享运行层：训练集/求解器校验、状态、规范化、审计钩子
-├── explore_v7.py              v7 运行入口（verify-freeze / dry-run / run / audit）
-├── plot_v7.py                 绘图脚本，仅读取已存档日志
+├── README.md                this file
+├── REPORT.md                policy, results, comparison
+├── QUICK_VERIFY.md          the three zero-solver commands and what each one proves
+├── requirements-lock.txt    full environment lock (adds matplotlib for the plots)
+├── requirements.txt         runtime dependencies (sha256 pinned in run_config.json)
+├── online_run.py            shared runner: data/solver checks, state, screening, audit hook
+├── explore_v7.py            the runner that produced the result (sha256 pinned, do not edit)
+├── verify_v7.py             zero-solver verification (freeze / replay / audit)
+├── plot_v7.py               plots from the archived log
 ├── policy/
-│   ├── policy.py              v1 基础策略（共享工具、特征、ZERO/MINOR 定义）
-│   ├── policy_v4.py           PR#25 策略（冻结阶段使用）
-│   ├── policy_v5.py           15 轮加速实验策略（仅保留作历史对照，未参与本次运行）
-│   ├── policy_v6.py           多尺度基础策略（v7 的父类）
-│   ├── policy_v7.py           本次策略：v4 完整批次 + 替换零产出名额
-│   └── surrogate.py           GP / Ridge / 特征接口
+│   ├── policy.py            v1 base policy (shared helpers, features, ZERO/MINOR sets)
+│   ├── policy_v4.py         v4 = PR 25 policy, used verbatim for calls 1-11
+│   ├── policy_v5.py         h5, 15-call accelerated schedule (not used in this run)
+│   ├── policy_v6.py         h6 parent class of the multiscale candidates
+│   ├── policy_v7.py         h7, this run
+│   └── surrogate.py         GP / Ridge / feature interface
 ├── data/
-│   ├── train.csv              冻结训练集（2048×23，与仓库其他副本逐字节一致）
-│   └── manifest.json          数据集元信息与 sha256
+│   ├── train.csv            frozen 2048 x 23 training table
+│   └── manifest.json        dataset metadata and sha256
 ├── runs/
-│   ├── explore_v7_s7/         本次运行证据：配置、逐点日志、冻结校验、审计、汇总
-│   ├── pr25_repro/            PR#25 参考运行日志（仅作冻结核对与对照，不参与提案）
-│   ├── explore_v6_s7/         v6 对照日志（仅用于绘图对照，不参与提案）
-│   └── accelerated15_s7/      求解器链路证据（chain_check.jsonl）
-└── viz_explore_v7/            四张图与逐轮表、文字汇总
+│   ├── PROVENANCE.md        how each log was produced, what it supports, what was redacted
+│   ├── explore_v7_s7/       this run: config, point log, freeze check, audit, summary
+│   ├── pr25_repro/          v4 seed-7 rerun, 20 calls (frozen-phase reference)
+│   ├── from_call20/         v4 seed-7 continuation, calls 21-35
+│   ├── accelerated15_s7/    h5 log, h5 summary and the solver chain check
+│   └── explore_v6_s7/       h6 log, used by the plots only
+└── viz_explore_v7/          four figures, per-call table and text summary
 ```
 
-`runs/` 与 `analysis/**/results/` 在仓库根 `.gitignore` 中被忽略；本目录的 `runs/` 证据文件是用
-`git add -f` 显式提交的，属于已完成的真实运行快照，不是可再生的临时目录。
+`runs/` and `analysis/**/results/` are ignored by the repository `.gitignore`. The files above were
+force-added because they are finished-run snapshots, not regenerable working directories.
 
-## 固定条件
+## Fixed conditions
 
-| 项目 | 固定值 |
+| Item | Value |
 |---|---|
-| 随机种子 | `7`（所有随机性只由 `(seed, call_no)` 决定，`rng_uses_clock=false`） |
-| 每轮提交点数 | `50` |
-| 轮次 | `20`（求解器额度上限 20 次） |
-| 冻结轮次 | `1–11`（与 PR#25 逐点一致，`max|dW| = 0`） |
-| 训练集 | `data/train.csv`，2048 行 × 23 列，sha256 `877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023` |
-| 求解器 | 课程 `solver.exe`，sha256 `293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247` |
+| Seed | `7` (all randomness derives from `(seed, call_no)`; `rng_uses_clock = false`) |
+| Points per call | `50` |
+| Calls | `20` (the solver allows 20) |
+| Frozen calls | `1-11`, identical to PR 25 (`max abs dW = 0`) |
+| Training table | `data/train.csv`, 2048 x 23, sha256 `877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023` |
+| Solver | course `solver.exe`, sha256 `293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247` |
 | Python | `3.11.18` |
-| 运行依赖 | `numpy 1.24.4` / `scipy 1.10.1` / `scikit-learn 1.2.2` / `joblib 1.6.0` / `threadpoolctl 3.7.0` |
-| 策略文件 sha256 | 见 `runs/explore_v7_s7/run_config.json` 的 `policy_sha256` |
-| 运行入口 sha256 | `c0229c16f9421c4912894ee47a44c14f035195dd5e1bd5f346af8838632d4ae7` |
-| 线程环境 | 未强制单线程，与 PR#25 参考运行的默认线程环境一致（`MKL/OMP/OPENBLAS` 均未设置） |
-| 平台 | `Windows-10-10.0.26100-SP0`，12 逻辑核；单进程顺序调用求解器 |
+| Runtime packages | numpy 1.24.4 / scipy 1.10.1 / scikit-learn 1.2.2 / joblib 1.6.0 / threadpoolctl 3.7.0 |
+| Policy sha256 | see `policy_sha256` in `runs/explore_v7_s7/run_config.json` |
+| Runner sha256 | `c0229c16f9421c4912894ee47a44c14f035195dd5e1bd5f346af8838632d4ae7` (`explore_v7.py`) |
+| Thread environment | not forced, same default as the reference run (`MKL` / `OMP` / `OPENBLAS` unset) |
+| Machine | `Windows-10-10.0.26100-SP0`, 12 logical CPUs, one solver process at a time |
 
-以上字段全部写入 `runs/explore_v7_s7/run_config.json`，运行时由 `explore_v7.py` 自动生成并锁定，
-不会因环境变化而静默改变；`audit` 会校验实际环境与记录一致。
+`run_config.json` is written once at the start of the run and refuses to resume if the environment
+changed; `audit` re-checks the recorded environment against the current one.
 
-## 复现步骤
+Three files are CRLF and the rest are LF. The root `.gitattributes` sets
+`analysis/online_v7/** -text` so that a macOS or Linux checkout keeps the exact bytes, and the sha256
+values above match on every platform.
 
-1. 克隆仓库并切到分支 `online102_8`，安装依赖：
+## Verification without the solver
 
-```bash
-python -m venv .venv
-.venv/Scripts/pip install -r analysis/online_v7/requirements-lock.txt
-```
-
-2. 从课程 `solver.zip` 取得评估器，放到 `analysis/online_v7/solver/solver.exe`，并校验：
+The three verification commands take a few minutes each (the policy refits its surrogate per call);
+none of them starts `solver.exe`:
 
 ```bash
-python -c "import hashlib;print(hashlib.sha256(open('analysis/online_v7/solver/solver.exe','rb').read()).hexdigest())"
-# 期望 293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247
+uv venv --python 3.11
+uv pip install -r analysis/online_v7/requirements-lock.txt
+
+uv run python analysis/online_v7/verify_v7.py freeze   # calls 1-11 against the v4 reference log
+uv run python analysis/online_v7/verify_v7.py replay   # calls 12-20 against this run's own log
+uv run python analysis/online_v7/verify_v7.py audit    # rebuilds the ten audit checks
+uv run python analysis/online_v7/plot_v7.py            # regenerates the four figures
 ```
 
-`explore_v7.py` 会自动把主求解器复制成 `explore_v7_solver/` 副本再调用（避免消耗主目录的
-额度计数器），该副本与 `usage.count` 均已在 `.gitignore` 中屏蔽。
+Results go to `analysis/online_v7/verify_out/` (git-ignored); the committed evidence under `runs/`
+is not touched. See [QUICK_VERIFY.md](QUICK_VERIFY.md) for the expected output of each command.
 
-3. 校验冻结阶段与 PR#25 完全一致（不调用求解器）：
+## Rerunning the real search
 
-```bash
-python analysis/online_v7/explore_v7.py verify-freeze
-```
+This consumes 20 calls of a fresh solver quota and takes hours.
 
-期望：11 轮 `multiset_identical=true`、`max_abs_diff=0.0`。
+1. Put the course `solver.exe` at `analysis/online_v7/solver/solver.exe` and check its sha256
+   against the table above. The runner copies it into `explore_v7_solver/` so the main copy's
+   `usage.count` is untouched; both paths are git-ignored.
+2. `uv run python analysis/online_v7/explore_v7.py verify-freeze` and `dry-run` first (no solver).
+3. `uv run python analysis/online_v7/explore_v7.py run`. The log is append-only and the same command
+   resumes after an interruption.
 
-4. 校验第 12 轮提案的重放一致性（不调用求解器）：
+`explore_v7.py` is byte-identical to the runner that produced the committed log, which is why
+`run_config.json` still matches it. It writes into `runs/explore_v7_s7/`; use `verify_v7.py` if you
+only want to check the committed evidence.
 
-```bash
-python analysis/online_v7/explore_v7.py dry-run
-```
+## Data boundary
 
-期望：`replay_exact: true`，`dry-run: PASS（未调用 solver）`。
+Before call 1 the policy reads only `data/train.csv`; afterwards it uses this run's own results.
+Audit checks 2 and 3 scan the policy source and the runtime file accesses for any read of `runs/`,
+`reference/`, `.csv` or `.jsonl`. `runs/pr25_repro` is read only by the frozen-phase comparison and
+is never passed to the policy (`history_used_for_policy = false`).
 
-5. 真实运行 20 轮（会消耗 20 次课程求解器额度）：
+## Relationship to the other packages
 
-```bash
-python analysis/online_v7/explore_v7.py run
-```
+`data/train.csv`, `policy/policy.py`, `policy/policy_v4.py`, `policy/surrogate.py` and `online_run.py`
+are the same source as `analysis/online_rehearsal/package_v4s7` (PR 25) after normalising line
+endings; see [runs/PROVENANCE.md](runs/PROVENANCE.md) for the hashes and for the origin of every log.
 
-日志 append-only 写入 `analysis/online_v7/runs/explore_v7_s7/online_log.jsonl`，中断后再次执行
-同一命令会从断点续跑（会先校验调用编号连续、无未完成的半次调用）。
+## Known limitations
 
-6. 生成/覆盖审计报告（读取环境与日志，不调用求解器）：
-
-```bash
-python analysis/online_v7/explore_v7.py audit
-```
-
-7. 重新生成图表与逐轮表：
-
-```bash
-python analysis/online_v7/plot_v7.py
-```
-
-## 说明
-
-- 求解器为 182 MB 的可执行文件，超过 GitHub 单文件限制，故不入库；请从课程 `solver.zip` 获取。
-- 仓库内的 `runs/pr25_repro`、`runs/explore_v6_s7`、`runs/accelerated15_s7` 只作为冻结核对、
-  审计输入和绘图对照；v7 的提案不读取其中任何 R 值或最优点（`history_used_for_policy=false`，
-  审计项 `no_external_answer_reference` 会检查策略代码与运行时文件访问）。
-- `policy_v5.py` 属于 15 轮加速实验，本次未参与运行，保留仅为记录该阶段结论。
+- One seed only, and it is the seed the policy was designed on; see the headline section.
+- The surrogate model re-optimises its GP hyperparameters on every call. Decision 31 asks the
+  submitted policy to use fixed constants, so this has to be addressed when the policy is ported to
+  `submission/`; it is not changed here.
+- The multiscale channels produced one new best in nine calls; the block and restart candidates
+  produced none.

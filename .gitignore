@@ -28,4 +28,6 @@ analysis/online_v7/solver/
 analysis/online_v7/explore_v7_solver/
 analysis/online_v7/**/usage.count
 analysis/online_v7/workers/
+# analysis/online_v7: scratch output of verify_v7.py / plot_v7.py (never committed)
+analysis/online_v7/verify_out/
 

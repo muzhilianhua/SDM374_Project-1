@@ -1,6 +1,6 @@
 {
   "seed": 7,
-  "policy": "v6-multiscale",
+  "policy": "v7-hybrid",
   "completed_calls": 20,
   "evaluated_points": 1000,
   "best_R": 102.8058786103502,

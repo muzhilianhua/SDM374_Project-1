@@ -65,7 +65,7 @@
     "9_freeze_and_solver": {
       "pass": true,
       "freeze_calls": 11,
-      "freeze_check": "C:\\Users\\hp\\Desktop\\在线\\pr25_repro_run\\runs\\explore_v7_s7\\freeze_check.json",
+      "freeze_check": "runs/explore_v7_s7/freeze_check.json",
       "solver_sha256": "293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247",
       "fresh_copy_calls_used": 20,
       "chain_reused_evidence": true

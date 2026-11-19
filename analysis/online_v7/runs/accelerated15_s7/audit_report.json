@@ -1,0 +1,323 @@
+{
+  "complete_15_calls": true,
+  "checks": {
+    "1_training_source": {
+      "pass": true,
+      "sha256": "877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023"
+    },
+    "2_policy_no_external_answers": {
+      "pass": true,
+      "findings": [],
+      "files_sha256": {
+        "policy.py": "e477a9108c646563ffe4bd8aa40908fbaa202438425b1ba588441f753454b585",
+        "policy_v4.py": "ff572495ec6bc9a5ac58a2f821f4089b37b4e84ac3aca9e7f06d0135a1c59a7d",
+        "policy_v5.py": "9047b1ac89179722634e56e11a09927a77b421abac3d1671f4dea762949a5c31",
+        "surrogate.py": "4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8"
+      }
+    },
+    "3_runtime_file_access": {
+      "pass": true,
+      "forbidden_access": [],
+      "note": "Python audit hook 覆盖提案与重放阶段；solver 为固定哈希子进程，仅接收 JSON 权重"
+    },
+    "4_proposal_replay": {
+      "pass": true,
+      "calls_checked": 15
+    },
+    "5_no_reused_points": {
+      "pass": true,
+      "calls_checked": 15
+    },
+    "6_result_attribution_order": {
+      "pass": true,
+      "points": 750
+    },
+    "7_seed_config_fixed": {
+      "pass": true,
+      "seed": 7,
+      "calls": 15,
+      "batch": 50
+    },
+    "8_environment_rebuildable": {
+      "pass": true,
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_CORETYPE": "Prescott",
+        "OPENBLAS_NUM_THREADS": "1",
+        "logical_cpus": 12,
+        "machine": "Windows-10-10.0.26100-SP0",
+        "packages": {
+          "joblib": "1.6.0",
+          "numpy": "1.24.4",
+          "scikit-learn": "1.2.2",
+          "scipy": "1.10.1",
+          "threadpoolctl": "3.7.0"
+        },
+        "python": "3.11.18"
+      },
+      "requirements_sha256": "4ee6d8a605ef38ed73b2a84127705f82569cb71d8f550eb54ea34b0f6a11e96c"
+    },
+    "9_history_crosscheck": {
+      "pass": true,
+      "history_points": 1749,
+      "overlap_points": 35,
+      "max_abs_dR": 0.0,
+      "used_only_after_search": true,
+      "overlaps": [
+        {
+          "call": 1,
+          "seq": 0,
+          "new_R": 117.69506251980783,
+          "history_R": 117.69506251980783,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 1,
+          "new_R": 116.21037383947989,
+          "history_R": 116.21037383947989,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 2,
+          "new_R": 117.08292296883884,
+          "history_R": 117.08292296883884,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 3,
+          "new_R": 115.67887375171996,
+          "history_R": 115.67887375171996,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 4,
+          "new_R": 117.03628942574142,
+          "history_R": 117.03628942574142,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 5,
+          "new_R": 116.11108723201323,
+          "history_R": 116.11108723201323,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 6,
+          "new_R": 115.65983320015948,
+          "history_R": 115.65983320015948,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 7,
+          "new_R": 115.67459071648771,
+          "history_R": 115.67459071648771,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 8,
+          "new_R": 115.66732070071156,
+          "history_R": 115.66732070071156,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 9,
+          "new_R": 115.57467574636394,
+          "history_R": 115.57467574636394,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 10,
+          "new_R": 116.69418990251144,
+          "history_R": 116.69418990251144,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 11,
+          "new_R": 114.35869115310196,
+          "history_R": 114.35869115310196,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 12,
+          "new_R": 115.6624858194118,
+          "history_R": 115.6624858194118,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 13,
+          "new_R": 116.0462849666219,
+          "history_R": 116.0462849666219,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 14,
+          "new_R": 114.46995487342063,
+          "history_R": 114.46995487342063,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 15,
+          "new_R": 116.51969118259149,
+          "history_R": 116.51969118259149,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 16,
+          "new_R": 115.79452309606133,
+          "history_R": 115.79452309606133,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 17,
+          "new_R": 124.37615576574171,
+          "history_R": 124.37615576574171,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 18,
+          "new_R": 116.57083542375769,
+          "history_R": 116.57083542375769,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 23,
+          "new_R": 118.5787883545854,
+          "history_R": 118.5787883545854,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 24,
+          "new_R": 118.5787883545854,
+          "history_R": 118.5787883545854,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 25,
+          "new_R": 118.5787883545854,
+          "history_R": 118.5787883545854,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 26,
+          "new_R": 118.5787883545854,
+          "history_R": 118.5787883545854,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 27,
+          "new_R": 118.5787883545854,
+          "history_R": 118.5787883545854,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 28,
+          "new_R": 118.5787883545854,
+          "history_R": 118.5787883545854,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 30,
+          "new_R": 117.06734401464928,
+          "history_R": 117.06734401464928,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 35,
+          "new_R": 117.10328581661452,
+          "history_R": 117.10328581661452,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 37,
+          "new_R": 116.4857613410568,
+          "history_R": 116.4857613410568,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 38,
+          "new_R": 115.53025513363536,
+          "history_R": 115.53025513363536,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 39,
+          "new_R": 117.98097867390608,
+          "history_R": 117.98097867390608,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 40,
+          "new_R": 115.83514498209117,
+          "history_R": 115.83514498209117,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 41,
+          "new_R": 116.20332030241843,
+          "history_R": 116.20332030241843,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 42,
+          "new_R": 116.00525816937444,
+          "history_R": 116.00525816937444,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 43,
+          "new_R": 116.15738082665484,
+          "history_R": 116.15738082665484,
+          "abs_dR": 0.0
+        },
+        {
+          "call": 1,
+          "seq": 45,
+          "new_R": 126.02340990572702,
+          "history_R": 126.02340990572702,
+          "abs_dR": 0.0
+        }
+      ]
+    },
+    "solver_chain_and_budget": {
+      "pass": true,
+      "chain_calls": 2,
+      "search_calls": 15,
+      "max_total_solver_calls": 17
+    }
+  },
+  "overall_pass": true
+}

@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-"""根据 v7（explore_v7_s7）真实日志生成 R 曲线、学习曲线、步长/通道演化与结构图。
+"""Plot the v7 real run (runs/explore_v7_s7) as R curve, learning curve, step/channel evolution
+and weight structure.
 
-参考轨迹（v4、v6）只用于对照显示，不参与任何提案。
+    python plot_v7.py            # write to verify_out/viz (git-ignored)
+    python plot_v7.py --write    # overwrite the committed viz_explore_v7/
+
+The v4 and h6 traces are shown for reference only; they never feed a proposal.
 """
 from __future__ import annotations
 
@@ -20,7 +24,8 @@ HERE = Path(__file__).resolve().parent
 LOG = HERE / "runs" / "explore_v7_s7" / "online_log.jsonl"
 REF = HERE / "runs" / "pr25_repro" / "online_log.jsonl"
 REF_V6 = HERE / "runs" / "explore_v6_s7" / "online_log.jsonl"
-OUT = HERE / "viz_explore_v7"
+OUT = HERE / "verify_out" / "viz"
+COMMITTED = HERE / "viz_explore_v7"
 TRAIN = HERE / "data" / "train.csv"
 FREEZE = 11
 plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "DejaVu Sans"]
@@ -73,9 +78,9 @@ def shade(ax, rows):
     calls = [r["call"] for r in rows]
     if FREEZE in calls:
         ax.axvspan(0.5, FREEZE + 0.5, color="#9E9E9E", alpha=0.10, lw=0)
-        ax.text((FREEZE + 1) / 2, 0.035, "冻结 v4 原始批次", transform=ax.get_xaxis_transform(),
+        ax.text((FREEZE + 1) / 2, 0.035, "frozen v4 batches", transform=ax.get_xaxis_transform(),
                 ha="center", va="bottom", fontsize=8, color="#616161")
-        ax.text(FREEZE + (calls[-1] - FREEZE) / 2 + 0.5, 0.035, "盆地内多尺度",
+        ax.text(FREEZE + (calls[-1] - FREEZE) / 2 + 0.5, 0.035, "in-basin multiscale",
                 transform=ax.get_xaxis_transform(), ha="center", va="bottom", fontsize=8,
                 color="#1565C0")
 
@@ -84,27 +89,27 @@ def fig_r_curve(rows, baseline, ref_rows, ref_v6_rows=()):
     fig, ax = plt.subplots(figsize=(9.0, 4.9))
     x = [r["call"] for r in rows]
     ax.plot(x, [r["batch_min"] for r in rows], "o-", ms=4, lw=1.2,
-            color="#4C72B0", label="每轮最低 R")
+            color="#4C72B0", label="batch minimum R")
     ax.plot([0] + x, [baseline] + [r["best"] for r in rows], "s-", ms=4, lw=1.9,
-            color="#C44E52", label="累计最优 R（v7）")
+            color="#C44E52", label="best R so far (v7)")
     if ref_rows:
         xr = [r["call"] for r in ref_rows]
         ax.plot([0] + xr, [baseline] + [r["best"] for r in ref_rows], "--", lw=1.3,
-                color="#7F7F7F", label="PR#25 参考轨迹（v4）")
+                color="#7F7F7F", label="PR 25 reference (v4)")
     if ref_v6_rows:
         x6 = [r["call"] for r in ref_v6_rows]
         ax.plot([0] + x6, [baseline] + [r["best"] for r in ref_v6_rows], ":", lw=1.4,
-                color="#2E7D32", label="v6 多尺度对照")
+                color="#2E7D32", label="h6 multiscale")
     ax.axhline(102.1433224203, ls=":", lw=1.0, color="#8172B3",
-               label="35 轮历史最优 R = 102.143322")
+               label="v4 after 35 calls: R = 102.143322")
     best = rows[-1]["best"]
-    ax.annotate(f"第 {rows[-1]['call']} 轮最优 R = {best:.6f}", xy=(x[-1], best),
+    ax.annotate(f"call {rows[-1]['call']}: best R = {best:.6f}", xy=(x[-1], best),
                 xytext=(-150, 95), textcoords="offset points", color="#C44E52", fontsize=9,
                 arrowprops=dict(arrowstyle="->", color="#C44E52", lw=0.8))
     ax.set_xticks(x)
-    ax.set_xlabel("调用轮次（每轮 50 组）")
+    ax.set_xlabel("solver call (50 points each)")
     ax.set_ylabel("Ramping R")
-    ax.set_title("v7：保留 v4 完整批次，替换零产出名额为多尺度候选")
+    ax.set_title("v7: keep the whole v4 batch, replace zero-yield slots with multiscale candidates")
     ax.grid(alpha=0.3)
     shade(ax, rows)
     ax.legend(fontsize=8, loc="upper right")
@@ -122,17 +127,17 @@ def fig_learning(rows, baseline):
     idx, R, calls = np.array(idx), np.array(R), np.array(calls)
     sc = ax.scatter(idx, R, s=8, c=calls, cmap="viridis", alpha=0.65)
     ax.step(np.r_[0, idx], np.minimum.accumulate(np.r_[baseline, R]), where="post",
-            color="#C44E52", lw=1.8, label="累计最优 R")
-    ax.axhline(baseline, ls=":", color="grey", lw=1.0, label=f"训练集最低 R = {baseline:.4f}")
+            color="#C44E52", lw=1.8, label="best R so far")
+    ax.axhline(baseline, ls=":", color="grey", lw=1.0, label=f"best training row R = {baseline:.4f}")
     if FREEZE:
         ax.axvline(FREEZE * 50 + 0.5, ls="--", color="#1565C0", lw=1.1,
-                   label=f"冻结阶段结束（第 {FREEZE} 轮）")
-    ax.set_xlabel("累计真实评估点数")
+                   label=f"end of frozen phase (call {FREEZE})")
+    ax.set_xlabel("cumulative real evaluations")
     ax.set_ylabel("Ramping R")
-    ax.set_title(f"学习曲线：{len(idx)} 个真实评估点")
+    ax.set_title(f"Learning curve: {len(idx)} real evaluations")
     ax.grid(alpha=0.3)
     ax.legend(fontsize=8, loc="upper right")
-    fig.colorbar(sc, ax=ax, pad=0.015, label="调用轮次")
+    fig.colorbar(sc, ax=ax, pad=0.015, label="solver call")
     return save(fig, "02_learning_curve.png")
 
 
@@ -159,10 +164,10 @@ def fig_steps(rows):
         vals = np.array(series[g])
         if vals.sum() == 0:
             continue
-        ax1.bar(x, vals, bottom=bottom, width=0.78, color=color, label=f"{g}（{comp[g]}）")
+        ax1.bar(x, vals, bottom=bottom, width=0.78, color=color, label=f"{g} ({comp[g]})")
         bottom += vals
-    ax1.set_ylabel("每轮点数")
-    ax1.set_title("步长/通道演化：粗跨步、块重整与细步的配额变化")
+    ax1.set_ylabel("points per call")
+    ax1.set_title("Channel mix: coarse strides, block restarts and fine steps")
     ax1.legend(fontsize=7, ncol=3, loc="upper right")
     ax1.grid(alpha=0.25, axis="y")
 
@@ -170,13 +175,14 @@ def fig_steps(rows):
     if any(s is not None for s in sig):
         for b, marker in enumerate(["o", "s", "^"]):
             ys = [s[b] if s is not None else np.nan for s in sig]
-            ax2.plot(x, ys, marker=marker, ms=4, lw=1.2, label=f"楼 {b + 1} 块步长 sigma")
+            ax2.plot(x, ys, marker=marker, ms=4, lw=1.2, label=f"block {b + 1} sigma")
     ax2.axvline(FREEZE + 0.5, ls="--", color="#1565C0", lw=1.0)
     ax2.set_ylabel("log10 sigma")
-    ax2.set_xlabel("调用轮次")
+    ax2.set_xlabel("solver call")
     ax2.grid(alpha=0.3)
     ax2.legend(fontsize=7, ncol=3, loc="upper left")
-    ax2.text(FREEZE + 0.7, ax2.get_ylim()[0] + 0.02, "第 12 轮起进入多尺度", fontsize=8, color="#1565C0")
+    ax2.text(FREEZE + 0.7, ax2.get_ylim()[0] + 0.02, "multiscale from call 12", fontsize=8,
+             color="#1565C0")
     fig.tight_layout()
     return save(fig, "03_step_evolution.png")
 
@@ -200,13 +206,13 @@ def fig_structure(rows, baseline):
                    label=FEATS[f] if b == 0 else None)
             bottom += vals
         ax.axvline(FREEZE + 0.5, ls="--", color="#1565C0", lw=1.0)
-        ax.set_title(f"楼 {b + 1}")
-        ax.set_xlabel("调用轮次")
+        ax.set_title(f"Building {b + 1}")
+        ax.set_xlabel("solver call")
         ax.set_xticks(x[::2])
         ax.set_ylim(0, 1)
-    axes[0].set_ylabel("累计最优点权重占比")
+    axes[0].set_ylabel("normalised weight of the incumbent")
     axes[0].legend(fontsize=7, ncol=2, loc="upper center", bbox_to_anchor=(0.5, -0.20))
-    fig.suptitle("最优解结构随轮次的变化（虚线右侧为多尺度阶段）")
+    fig.suptitle("Structure of the best point over calls (dashed line: start of the multiscale phase)")
     fig.tight_layout()
     return save(fig, "04_structure.png")
 
@@ -228,27 +234,37 @@ def write_tables(rows, baseline):
                              "solver_seconds": r["done"].get("eval_secs", "")})
     best_point = min((p for r in rows for p in r["points"]), key=lambda p: p["R"])
     freeze_best = min((p for r in rows if r["call"] <= FREEZE for p in r["points"]), key=lambda p: p["R"])
-    lines = ["v7 混合探索真实结果", f"完成轮次：{len(rows)} / 20",
-             f"冻结阶段最优（第 {FREEZE} 轮末）：{freeze_best['R']:.10f}",
-             f"最终最优 R：{best_point['R']:.10f}（第 {best_point['call']} 轮，批内第 {best_point['seq']} 点）",
-             f"相对训练集最低值总降幅：{baseline - best_point['R']:.10f}",
-             f"多尺度阶段额外降幅：{freeze_best['R'] - best_point['R']:.10f}",
-             f"达到 R<=102.3：{best_point['R'] <= 102.3}",
-             f"达到 R<=102.15：{best_point['R'] <= 102.15}",
-             f"达到 R<=102.1433224203：{best_point['R'] <= 102.1433224203}", "",
-             "逐轮结果："]
+    lines = ["v7 hybrid search, real solver results", f"completed calls: {len(rows)} / 20",
+             f"best R at the end of the frozen phase (call {FREEZE}): {freeze_best['R']:.10f}",
+             f"final best R: {best_point['R']:.10f} (call {best_point['call']}, point {best_point['seq']})",
+             f"total drop below the best training row: {baseline - best_point['R']:.10f}",
+             f"drop added in the multiscale phase: {freeze_best['R'] - best_point['R']:.10f}",
+             f"reaches R<=102.3: {best_point['R'] <= 102.3}",
+             f"reaches R<=102.15: {best_point['R'] <= 102.15}",
+             f"reaches R<=102.1433224203: {best_point['R'] <= 102.1433224203}", "",
+             "per call:"]
     for r in rows:
         lines.append(f"  call {r['call']:2d} [{r['done'].get('phase', ''):18s}] "
                      f"batch_min={r['batch_min']:.8f}  best={r['best']:.8f}  "
                      f"imp={r['improvement']:.8f}  hits={r['hits']}")
-    lines += ["", "最优点权重（3×7）：", np.array2string(np.array(best_point["W"]).reshape(3, 7),
-              precision=8, suppress_small=True, max_line_width=140)]
+    lines += ["", "weight vector of the best point (3x7):",
+              np.array2string(np.array(best_point["W"]).reshape(3, 7),
+                              precision=8, suppress_small=True, max_line_width=140)]
     text = "\n".join(lines) + "\n"
     (OUT / "summary.txt").write_text(text, encoding="utf-8")
     return text
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--write", action="store_true",
+                    help="overwrite the committed viz_explore_v7/ instead of verify_out/viz/")
+    args = ap.parse_args()
+    global OUT
+    if args.write:
+        OUT = COMMITTED
     recs = load_points(LOG)
     with TRAIN.open(newline="", encoding="utf-8") as fh:
         baseline = min(float(r["ramping"]) for r in csv.DictReader(fh))

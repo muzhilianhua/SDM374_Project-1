@@ -1,188 +1,221 @@
-# v7 混合策略：20 轮真实在线搜索报告
+# v7 hybrid policy: a 20-call real online search
 
-## 1. 目标与背景
+## 1. Goal and background
 
-前序三次实验（v4 = PR#25、v5 十五轮加速、v6 多尺度）给出的结论是：
+Three earlier experiments set the context (v4 = PR 25, h5 = 15-call accelerated schedule,
+h6 = multiscale pool):
 
-- v4 需要 35 轮才从 115.764819 降到 102.143322；
-- 前 15 轮只完成总降幅的 88.8%（103.664157）；
-- v6 把 v4 的“模型池”改成混合池并压缩随机名额，第 12 轮丢失了 0.99 的大跳，20 轮只赢 v4 0.052；
-- v5 把扫描提前、组合加多，反而陷入 107.13 的高位子平台。
+- v4 needed 35 calls to go from 115.764819 to 102.143322; after 15 calls it had only reached
+  103.664157, i.e. 88.8% of the total drop;
+- h6 replaced v4's model pool with a mixed pool and shrank the random quota, lost the 0.9938 `model`
+  jump at call 12, and after 20 calls was only 0.052 ahead of v4;
+- h5 moved the scans earlier and added more combinations; it stalled on a high sub-plateau at
+  107.134.
 
-本轮 v7 的目标是：**不改动找盆地的 1–11 轮，保留 v4 在盆地内的全部有效通道，只替换零产出名额**，
-看能否在同样 20 轮 / 1000 点预算内取得更低 R。
+The goal of v7 was therefore narrow: **keep calls 1-11 (which find the basin) untouched, keep every
+productive v4 channel inside the basin, and replace only the slots that produced nothing**, to see
+whether the same 20 calls / 1000 points can reach a lower R.
 
-## 2. 策略原理
+## 2. Policy
 
-### 2.1 两阶段结构
+### 2.1 Two phases
 
-| 阶段 | 轮次 | 提案来源 |
+| Phase | Calls | Proposals come from |
 |---|---|---|
-| 冻结（找盆地） | 1–11 | 直接委托 `BlockDescentPolicyV4(ParamsV4(shift_bias=True, n_nav=3), seed=7)`，与 PR#25 逐点一致 |
-| 混合（盆地内收敛） | 12–20 | 先取 v4 的完整 50 点，再用多尺度候选替换零产出名额 |
+| Frozen (find the basin) | 1-11 | `BlockDescentPolicyV4(ParamsV4(shift_bias=True, n_nav=3), seed=7)`, point-identical to PR 25 |
+| Hybrid (converge inside it) | 12-20 | the full 50-point v4 batch first, then multiscale candidates in the slots that yielded nothing |
 
-冻结阶段的必要性来自 v5 的失败：提前扫描会挤占 `model` 名额，导致结构性大跳消失。v7 因此不触碰
-任何找盆地逻辑，保证第 12 轮仍能拿到 v4 那个 0.9938 的 `model` 大跳。
+The frozen phase is deliberate: h5 showed that moving scans earlier steals `model` slots and removes
+the large structural jumps. v7 does not touch any basin-finding logic, so it still receives the 0.9938
+`model` jump at call 12.
 
-### 2.2 第 12 轮起的替换机制
+### 2.2 Replacement from call 12
 
-1. 调用 v4 的 `propose` 得到完整 50 点批次，`model / scan / icombo / random / tiny / base`
-   全部原样保留；
-2. 按 `fine → zero` 的优先级腾出名额（最多 12 个），填入三类多尺度候选：
-   - `coarse`：单坐标乘性跨步，步长取自 `{0.45, 0.6, 0.75, 1.35, 1.7, 2.2, 3.0}`，用于跨越阶梯平台；
-   - `block`：2–3 个坐标同步缩放，用于整块结构平移；
-   - `restart`：与训练集低 R 块或本轮精英块做凸组合，用于整块换结构；
-3. 每栋楼优先保证 1 个 `coarse`、1 个 `block`、1 个 `restart`，其余名额补充第二个 `coarse`；
-4. 每个替换候选都要通过去重：若与训练集、历史已测点或本批保留点重复（权重网格量化后），
-   放弃该替换并保留 v4 原点，因此替换不会挤掉已验证的有效点；
-5. 步长自适应：某栋楼连续 3 轮无改进时，该楼块 σ 由 `0.22` 放宽到 `0.35`，一旦改进立即回落；
-6. 所有随机性只由 `(seed=7, call_no)` 决定，不读时钟、不读外部日志。
+1. Ask v4's `propose` for the full 50-point batch; `model / scan / icombo / random / tiny / base` are
+   all kept as they are.
+2. Free slots in the order `fine -> zero` (at most 12) and fill them with three kinds of multiscale
+   candidate:
+   - `coarse`: one coordinate scaled multiplicatively, step in `{0.45, 0.6, 0.75, 1.35, 1.7, 2.2, 3.0}`,
+     to cross step-like plateaus;
+   - `block`: 2-3 coordinates scaled together, to shift a whole structural block;
+   - `restart`: convex combination with a low-R training block or with this call's elite block.
+3. Each building first gets one `coarse`, one `block` and one `restart`; remaining slots take a second
+   `coarse`.
+4. Every replacement is de-duplicated against the training rows, all points already evaluated and the
+   kept v4 points (after weight-grid quantisation). A duplicate is dropped and the v4 point is kept, so
+   a replacement can never displace a validated point.
+5. Step adaptation: after three consecutive calls without improvement for a building, its block sigma
+   widens from 0.22 to 0.35 and snaps back on the next improvement.
+6. All randomness derives from `(seed=7, call_no)`; no clock, no external log.
 
-### 2.3 为什么这样设计
+### 2.3 Design basis
 
-v4 第 12–20 轮的真实归因显示，新低来自 `model(1) / scan(4) / icombo(3) / random(2) / tiny(1)`，
-而 `fine / zero / combo` 在 9 轮内没有产生任何新低。v7 因此只动这三类零产出名额，
-而不是像 v6 那样重排整个模型池。
+In v4's calls 12-20 the new bests came from `model` (1), `scan` (3), `icombo` (3), `random` (2),
+`tiny` (1) and re-tests of the incumbent (`base`, 3). `fine`, `zero` and `combo` produced none of the
+13 new bests. v7 therefore replaces at most 12 of those zero-yield slots per call (80 in total over
+nine calls) instead of rearranging the whole model pool as h6 did.
 
-## 3. 固定条件
+## 3. Fixed conditions
 
-| 项目 | 值 |
+| Item | Value |
 |---|---|
-| 种子 | 7 |
-| 每轮点数 / 轮次 | 50 / 20 |
-| 训练集 | 2048×23，sha256 `877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023` |
-| 求解器 | sha256 `293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247` |
-| 环境 | Python 3.11.18 / numpy 1.24.4 / scipy 1.10.1 / scikit-learn 1.2.2 / joblib 1.6.0 |
-| 策略文件 | `policy.py` `policy_v4.py` `policy_v6.py` `policy_v7.py` `surrogate.py`（sha256 见 `run_config.json`） |
-| 外部历史 | 不参与提案（`history_used_for_policy=false`） |
+| Seed | 7 |
+| Points per call / calls | 50 / 20 |
+| Training table | 2048 x 23, sha256 `877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023` |
+| Solver | sha256 `293867b81dbf0c6194f97a57115487b9a39239d0c7dadbd51d749a203a077247` |
+| Environment | Python 3.11.18 / numpy 1.24.4 / scipy 1.10.1 / scikit-learn 1.2.2 / joblib 1.6.0 |
+| Policy files | `policy.py`, `policy_v4.py`, `policy_v5.py`, `policy_v6.py`, `policy_v7.py`, `surrogate.py` (sha256 in `run_config.json`) |
+| External history | not used for proposals (`history_used_for_policy = false`) |
 
-完整复现步骤见 [README.md](README.md)。
+Full reproduction steps are in [README.md](README.md).
 
-## 4. 结果
+## 4. Results
 
-- **最终最优 R = 102.8058786104**，第 20 轮批内第 25 点，`icombo`，楼 1
-- 相对训练集最低值 115.764819 总降幅 **12.9589406488**
-- 第 11 轮末（冻结结束）105.107716，多尺度阶段净降幅 **2.3018378722**
-- 三项验收：R≤102.3 **False**、R≤102.15 **False**、R≤102.1433 **False**
+- **Final best R = 102.8058786104**, call 20, point 25, `icombo`, building 1.
+- Total drop below the best training row (115.764819): **12.9589406488**.
+- End of the frozen phase (call 11): 105.107716483; the hybrid phase added **2.3018378722**.
+- Acceptance checks: R<=102.3 **False**, R<=102.15 **False**, R<=102.1433 **False**.
 
-### 4.1 逐轮结果
+### 4.1 Per call
 
-| 轮次 | 阶段 | 批内最低 R | 累计最优 | 本轮改进 |
+| Call | Phase | Batch minimum | Best so far | Improvement |
 |---:|---|---:|---:|---:|
-| 1 | 冻结 | 114.358691 | 114.358691 | 1.406128 |
-| 2 | 冻结 | 111.711461 | 111.711461 | 2.647230 |
-| 3 | 冻结 | 108.563154 | 108.563154 | 3.148307 |
-| 4 | 冻结 | 107.942734 | 107.942734 | 0.620420 |
-| 5 | 冻结 | 107.258304 | 107.258304 | 0.684431 |
-| 6 | 冻结 | 107.079156 | 107.079156 | 0.179148 |
-| 7 | 冻结 | 106.541927 | 106.541927 | 0.537229 |
-| 8 | 冻结 | 106.208036 | 106.208036 | 0.333891 |
-| 9 | 冻结 | 105.489656 | 105.489656 | 0.718380 |
-| 10 | 冻结 | 105.397526 | 105.397526 | 0.092130 |
-| 11 | 冻结 | 105.107716 | 105.107716 | 0.289810 |
-| 12 | 混合 | 104.113936 | 104.113936 | 0.993780 |
-| 13 | 混合 | 103.881007 | 103.881007 | 0.232929 |
-| 14 | 混合 | 103.836817 | 103.836817 | 0.044190 |
-| 15 | 混合 | 103.664157 | 103.664157 | 0.172660 |
-| 16 | 混合 | 103.367455 | 103.367455 | 0.296703 |
-| 17 | 混合 | 103.242708 | 103.242708 | 0.124746 |
-| 18 | 混合 | 103.242708 | 103.242708 | 0 |
-| 19 | 混合 | 102.960023 | 102.960023 | 0.282686 |
-| 20 | 混合 | 102.805879 | **102.805879** | 0.154144 |
+| 1 | frozen | 114.358691 | 114.358691 | 1.406128 |
+| 2 | frozen | 111.711461 | 111.711461 | 2.647230 |
+| 3 | frozen | 108.563154 | 108.563154 | 3.148307 |
+| 4 | frozen | 107.942734 | 107.942734 | 0.620420 |
+| 5 | frozen | 107.258304 | 107.258304 | 0.684431 |
+| 6 | frozen | 107.079156 | 107.079156 | 0.179148 |
+| 7 | frozen | 106.541927 | 106.541927 | 0.537229 |
+| 8 | frozen | 106.208036 | 106.208036 | 0.333891 |
+| 9 | frozen | 105.489656 | 105.489656 | 0.718380 |
+| 10 | frozen | 105.397526 | 105.397526 | 0.092130 |
+| 11 | frozen | 105.107716 | 105.107716 | 0.289810 |
+| 12 | hybrid | 104.113936 | 104.113936 | 0.993780 |
+| 13 | hybrid | 103.881007 | 103.881007 | 0.232929 |
+| 14 | hybrid | 103.836817 | 103.836817 | 0.044190 |
+| 15 | hybrid | 103.664157 | 103.664157 | 0.172660 |
+| 16 | hybrid | 103.367455 | 103.367455 | 0.296703 |
+| 17 | hybrid | 103.242708 | 103.242708 | 0.124746 |
+| 18 | hybrid | 103.242708 | 103.242708 | 0 |
+| 19 | hybrid | 102.960023 | 102.960023 | 0.282686 |
+| 20 | hybrid | 102.805879 | **102.805879** | 0.154144 |
 
-### 4.2 最优点结构（3×7 归一化权重）
+### 4.2 Structure of the best point (3 x 7 normalised weights)
 
-| 楼栋 | cost | carbon | peak | discomfort | degradation | ramping | resilience |
+| Building | cost | carbon | peak | discomfort | degradation | ramping | resilience |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| 楼 1 | 0.257266 | 0.000006 | 0.161925 | 0.002024 | 0.074694 | 0.464591 | 0.039494 |
-| 楼 2 | 0.071205 | 0.076885 | 0 | 0 | 0.163062 | 0.583746 | 0.105103 |
-| 楼 3 | 0.144909 | 0.000044 | 0.253156 | 0.000394 | 0.187344 | 0.412846 | 0.001307 |
+| 1 | 0.257266 | 0.000006 | 0.161925 | 0.002024 | 0.074694 | 0.464591 | 0.039494 |
+| 2 | 0.071205 | 0.076885 | 0 | 0 | 0.163062 | 0.583746 | 0.105103 |
+| 3 | 0.144909 | 0.000044 | 0.253156 | 0.000394 | 0.187344 | 0.412846 | 0.001307 |
 
-三栋楼均由 `ramping` 主导，与历史低 R 区的结构一致；对比 v5 卡住的 107.13 点
-（ramping 仅 0.351、cost/carbon 偏高、resilience 归零），本次回到正确支撑集内。
+All three buildings are dominated by `ramping`. h5, by contrast, stalled at 107.134 with more cost in
+buildings 2 and 3 (0.266 and 0.240) and almost no resilience there (0.0000 and 0.0026).
 
-### 4.3 图表
+### 4.3 Figures
 
-| 图 | 内容 |
+| Figure | Content |
 |---|---|
-| [01_R_curve.png](viz_explore_v7/01_R_curve.png) | v7 / v4 / v6 三线收敛曲线，标注冻结与混合阶段 |
-| [02_learning_curve.png](viz_explore_v7/02_learning_curve.png) | 1000 个真实评估点的学习曲线与命中分布 |
-| [03_step_evolution.png](viz_explore_v7/03_step_evolution.png) | 每轮替换名额、通道构成与 σ 自适应触发点 |
-| [04_structure.png](viz_explore_v7/04_structure.png) | 最优解三栋楼权重结构随轮次的变化 |
+| [01_R_curve.png](viz_explore_v7/01_R_curve.png) | v7 / v4 / h6 convergence, frozen and hybrid phases marked |
+| [02_learning_curve.png](viz_explore_v7/02_learning_curve.png) | all 1000 real evaluations |
+| [03_step_evolution.png](viz_explore_v7/03_step_evolution.png) | channel mix per call and the sigma adaptation |
+| [04_structure.png](viz_explore_v7/04_structure.png) | weight structure of the incumbent over calls |
 
-## 5. 与既有策略的对比
+## 5. Comparison
 
-### 5.1 同预算（20 轮 / 1000 点）
+### 5.1 Same budget (20 calls / 1000 points, seed 7)
 
-| 策略 | 最优 R | 相对 v4 |
+| Policy | Best R | Difference to v4 |
 |---|---:|---:|
-| v4（PR#25） | 103.275295 | — |
-| v6 多尺度 | 103.222939 | -0.052356 |
-| **v7 混合** | **102.805879** | **-0.469416** |
+| v4 (PR 25) | 103.275295 | - |
+| h6 multiscale | 103.222939 | -0.052356 |
+| **v7 hybrid** | **102.805879** | **-0.469416** |
 
-### 5.2 与 v4 更长预算的比较
+### 5.2 Against v4 with a longer budget
 
-| v4 轮次 | 最优 R |
+These numbers come from the committed logs `runs/pr25_repro` (calls 1-20) and `runs/from_call20`
+(calls 21-35); see [runs/PROVENANCE.md](runs/PROVENANCE.md).
+
+| v4 call | Best R |
 |---:|---:|
 | 20 | 103.275295 |
 | 21 | 102.516515 |
 | 22 | 102.280570 |
 | 35 | 102.143322 |
 
-v7 第 20 轮的成绩落在 v4 第 20 轮与第 21 轮之间，即**实际压缩约 0.6 轮**，并未实现“15 轮完成”。
-第 15 轮节点 v7 = 103.664157，与 v4 完全相同（冻结阶段延续），因此 15 轮目标仍不成立。
+v7's 20-call result lies between v4's 20-call and 21-call results, so in R terms it saves less than
+one call. It does not meet the 15-call goal: at call 15 v7 is still 103.664157, exactly v4's value,
+because the frozen phase is shared.
 
-### 5.3 通道归因（第 12 轮后，9 个真实新低）
+### 5.3 Where the difference comes from
 
-| 通道 | 命中 | 累计贡献 |
+This is the part the first review asked to correct. Counting each point that lowered the running best
+inside calls 12-20:
+
+| Channel | v7 new bests | Improvement in R |
 |---|---:|---:|
-| model（v4 原通道） | 1 | 0.984362 |
-| scan（v4 原通道） | 3 | 0.656711 |
-| coarse（v7 新增） | 1 | 0.282686 |
-| icombo（v4 原通道） | 2 | 0.095057 |
-| tiny（v4 原通道） | 2 | 0.019577 |
-| block（v7 新增） | 0 | 0 |
-| restart（v7 新增） | 0 | 0 |
-| base（现任点复测，非新结构） | 5 | 0.263446 |
+| model (v4 channel) | 1 | 0.984362 |
+| scan (v4 channel) | 3 | 0.656711 |
+| coarse (new) | 1 | 0.282686 |
+| icombo (v4 channel) | 2 | 0.095057 |
+| tiny (v4 channel) | 2 | 0.019577 |
+| base (re-test of the incumbent) | 5 | 0.263443 |
+| block (new) | 0 | 0 |
+| restart (new) | 0 | 0 |
 
-解读：
+Reading of the -0.469416 against v4:
 
-1. 保住 v4 的 `model` 大跳（0.9844）是本轮领先的主因，v6 当时只拿到 0.388；
-2. 新通道只命中 1 次（`coarse`，第 19 轮楼 1，0.282686），占多尺度阶段降幅的 12.3%；
-   `block` 与 `restart` 在约 180 个候选上全部落空；
-3. 步长自适应只触发楼 3（σ 0.22→0.35），而楼 3 在该阶段既无命中也无新低，说明放大步长选错了对象；
-4. 第 16 轮起 v7 与 v4 分叉（103.367455 对 103.539411），原因是替换点改变了历史 R 分布，
-   间接影响了后续 `model` 候选与扫描起点，属于间接效应，不是新通道的直接贡献。
+1. **Keeping v4's batch contributes exactly 0 relative to v4.** Calls 1-15 have the same batches and
+   the same best values (103.664157 at call 15). This change only explains why v7 beats h6: h6 lost
+   the 0.9938 `model` jump at call 12 and never recovered it.
+2. The lead appears at call 16: v7 reaches 103.367455 where v4 reaches 103.539411, a gap of 0.171956.
+   The cause is indirect - the replacement points changed the set of evaluated points, which changed
+   the incumbent and the history that later `model` and `scan` proposals are built from.
+3. The only direct contribution of a new channel is the `coarse` hit at call 19 (-0.282686,
+   building 1). Together with the indirect divergence that accounts for the 0.469416:
+   0.282686 direct + 0.186730 accumulated from call 16 onward.
+4. `block` and `restart` produced no new best in 45 candidates (26 block, 19 restart).
+5. The sigma adaptation fired only for building 3, which produced no new best in that phase, so the
+   widening targeted the wrong building.
 
-## 6. 审计
+## 6. Audit
 
-`runs/explore_v7_s7/audit_report.json` 十项全部 PASS：
+All ten checks in `runs/explore_v7_s7/audit_report.json` pass:
 
-| 审计项 | 结果 | 要点 |
+| Check | Result | Point |
 |---|---|---|
-| training_source_pinned | PASS | 2048 行，sha256 与 manifest 一致 |
-| no_external_answer_reference | PASS | 策略代码不含外部答案/日志读取 |
-| runtime_file_access | PASS | 提案阶段零违规文件访问 |
-| proposal_replay | PASS | 20 轮提案逐位重放一致 |
-| no_duplicate_points | PASS | 1000 点全部唯一 |
-| result_attribution | PASS | 每个 R 归属于对应 call/seq |
-| env_pinned | PASS | Python/依赖版本与 `PINNED` 一致 |
-| solver_pinned | PASS | 求解器 sha256 与课程版本一致 |
-| freeze_consistency | PASS | 第 1–11 轮与 PR#25 集合一致，`max|dW|=0` |
-| call_budget | PASS | 独立副本使用 20/20，未超限 |
+| 1_training_source | PASS | 2048 rows, sha256 matches the manifest |
+| 2_policy_no_external_answers | PASS | policy source contains no external answer or log read |
+| 3_runtime_file_access | PASS | no forbidden access during proposal replay |
+| 4_proposal_replay | PASS | every call replayed bit-identically when it ran |
+| 5_no_reused_points | PASS | all 1000 points unique |
+| 6_result_attribution_order | PASS | every R belongs to its call/seq |
+| 7_seed_config_fixed | PASS | seed, call count and batch size fixed, no clock |
+| 8_environment_rebuildable | PASS | Python and packages match `PINNED` |
+| 9_freeze_and_solver | PASS | calls 1-11 match PR 25 as a multiset, solver chain check reused |
+| 10_budget | PASS | one fresh copy, 20/20 calls |
 
-## 7. 结论与局限
+`verify_v7.py replay` is stronger than check 4: it recomputes calls 12-20 from this log instead of
+reading the flag written during the run.
 
-**结论**：v7 把同预算最优点从 103.275295 推到 102.805879，但提升主要来自“保留 v4 原批次”
-这一改动，新增的多尺度通道只贡献 0.283（12.3%）。三轮实验（v5 / v6 / v7）共同表明：
-该响应面的下降主要靠偶发的整块结构命中，靠“加大步长 + 提高精度”只能拿到零头。
+## 7. Conclusions and limitations
 
-**局限**：
+**Conclusion (seed 7 only).** On the seed used during design, v7 moves the 20-call best from
+103.275295 to 102.805879. The gain does not come from keeping the v4 batch - that part is worth zero
+against v4 - but from one `coarse` hit at call 19 and from the indirect divergence that starts at call
+16. The three experiments together (h5, h6, v7) suggest that this response surface falls mainly
+through occasional whole-block hits; larger steps and finer search only collect small amounts.
 
-- 20 轮 / 1000 点是硬预算，未达到 102.3 与 102.1433；
-- `block` / `restart` 各约 90 个候选全部落空，说明当前块级候选的构造方式未命中阶梯凹口；
-- 步长自适应只对单栋楼生效，且触发对象（楼 3）并非主要改进来源，机制尚不充分；
-- 结果依赖课程求解器的阶梯响应面，R 相同的点可能属于同一阶梯，不代表完全等价结构。
+**Limitations.**
 
-**后续方向**：提高整块结构候选的命中率（例如按支撑集签名筛选训练集中的异构块，
-而不是在当前 base 上做尺度扰动），而不是继续调整步长尺度。
+- One seed, and it is the seed the policy was designed on. Seeds 2026 and 11 have not been run, so no
+  expected gain over seeds can be quoted (decision 32).
+- 20 calls / 1000 points is a hard budget; neither 102.3 nor 102.1433 is reached.
+- `block` and `restart` produced about 180 candidates and no new best; the block-level construction
+  does not hit the step-shaped notches yet.
+- Step adaptation acts per building and fired on a building that was not the source of improvement.
+- The evaluator is step-shaped: equal R values need not mean identical weight structure.
+
+**Next direction.** Raise the hit rate of whole-block candidates (for example select structurally
+different training blocks by support-set signature instead of perturbing the current incumbent),
+rather than tuning step sizes further.

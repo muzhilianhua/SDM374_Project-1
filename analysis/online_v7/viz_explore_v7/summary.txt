@@ -1,14 +1,14 @@
-v7 混合探索真实结果
-完成轮次：20 / 20
-冻结阶段最优（第 11 轮末）：105.1077164826
-最终最优 R：102.8058786104（第 20 轮，批内第 25 点）
-相对训练集最低值总降幅：12.9589406488
-多尺度阶段额外降幅：2.3018378722
-达到 R<=102.3：False
-达到 R<=102.15：False
-达到 R<=102.1433224203：False
+v7 hybrid search, real solver results
+completed calls: 20 / 20
+best R at the end of the frozen phase (call 11): 105.1077164826
+final best R: 102.8058786104 (call 20, point 25)
+total drop below the best training row: 12.9589406488
+drop added in the multiscale phase: 2.3018378722
+reaches R<=102.3: False
+reaches R<=102.15: False
+reaches R<=102.1433224203: False
 
-逐轮结果：
+per call:
   call  1 [                  ] batch_min=114.35869115  best=114.35869115  imp=1.40612811  hits=13
   call  2 [                  ] batch_min=111.71146073  best=111.71146073  imp=2.64723042  hits=9
   call  3 [                  ] batch_min=108.56315402  best=108.56315402  imp=3.14830671  hits=6
@@ -30,7 +30,7 @@ v7 混合探索真实结果
   call 19 [v4_batch_plus_multiscale] batch_min=102.96002258  best=102.96002258  imp=0.28268582  hits=4
   call 20 [v4_batch_plus_multiscale] batch_min=102.80587861  best=102.80587861  imp=0.15414397  hits=2
 
-最优点权重（3×7）：
+weight vector of the best point (3x7):
 [[0.25726621 0.00000589 0.16192535 0.00202427 0.07469383 0.46459076 0.03949369]
  [0.07120495 0.07688468 0.         0.         0.16306183 0.58374575 0.1051028 ]
  [0.14490873 0.00004405 0.25315573 0.00039381 0.18734445 0.4128462  0.00130703]]
