@@ -21,7 +21,7 @@ Idea
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 import itertools
 
 import numpy as np
@@ -92,6 +92,8 @@ class Params:
     # v3: after the navigation calls, fewer surrogate picks (they were optimistic and hit less often)
     share_model_late: float | None = None
     share_random_late: float | None = None
+    # streams drawn per call: v4's own proposals use v4_stream; v7 adds replace_stream for the multiscale slots.
+    v4_stream: int = 4
 
 
 @dataclass
@@ -721,3 +723,440 @@ class BlockDescentPolicyV4(BlockDescentPolicy):
                 W = base.copy(); W[b] = w / w.sum()
                 got += add(W, {"kind": "single", "building": b, "move": "scan"})
             depth += 1
+
+
+# ==================================================================================================
+# v6 / v7 (formerly policy_v6.py and policy_v7.py, merged here for the single-file submission)
+#
+# v6: calls 1-11 stay exactly v4; from call 12 the basin is searched with several step scales at once
+# (coarse single-coordinate jumps, 2-3 coordinate block moves, block restarts by blending with training
+# and elite blocks, plus v4's fine moves). A building whose singles stopped improving for
+# `stagnation_window` calls uses the wider `wide_sigma`.
+# v7: keeps v4's complete batch of 50 points from call 12 on and only replaces slots that produced no
+# new best in the v4 seed-7 rehearsal (fine -> zero -> combo, at most `max_replace`) with multiscale
+# candidates (coarse / block / restart), so every model, scan and random pick v4 made is preserved.
+# All randomness still derives from (seed, call_no); no locally measured point or R is embedded.
+# ==================================================================================================
+COARSE_F = [0.2, 0.3, 0.45, 0.6, 0.75, 0.9, 1.15, 1.35, 1.7, 2.2, 3.0]
+FINE_F = [0.94, 0.96, 0.975, 0.985, 0.992, 0.996, 1.004, 1.008, 1.015, 1.025, 1.04, 1.06]
+
+
+@dataclass
+class ParamsV6(ParamsV4):
+    freeze_calls: int = 11        # calls 1-11 are point-identical to v4
+    stagnation_window: int = 3    # consecutive calls without a single-building improvement
+    base_sigma: float = 0.18      # log10 step of a block move
+    wide_sigma: float = 0.32      # log10 step of a block move while a building is stagnant
+    share_model: float = 0.38
+    share_coarse: float = 0.22
+    share_fine: float = 0.22
+    n_combo: int = 6
+    pool: int = 1500
+
+
+class BlockDescentPolicyV6(BlockDescentPolicyV4):
+    def __init__(self, params: ParamsV6 | None = None, seed: int = 2026):
+        super().__init__(params or ParamsV6(), seed)
+        # The frozen phase delegates to a plain v4 instance, so calls 1-11 match it point by point.
+        self._frozen = BlockDescentPolicyV4(ParamsV4(shift_bias=True, n_nav=3), seed=seed)
+        self._train_top_blocks = None
+
+    # ------------------------------------------------------------------ entry
+    def propose(self, st, n: int = 50):
+        if len(st.calls) + 1 <= self.p.freeze_calls:
+            return self._frozen.propose(st, n)
+        return self._propose_in_basin(st, n)
+
+    # ------------------------------------------------------------------ stagnation
+    def _stagnant(self, st):
+        """Per building: no single-building improvement within the last `stagnation_window` calls."""
+        window = self.p.stagnation_window
+        hit = [False] * 3
+        seen = 0
+        for call in reversed(st.calls):
+            if seen >= window:
+                break
+            base = next((e["R"] for e in call if e["meta"].get("kind") == "base"), None)
+            if base is None:
+                continue
+            for e in call:
+                m = e["meta"]
+                if m.get("kind") == "single" and np.isfinite(e["R"]) and e["R"] < base - 1e-9:
+                    hit[m["building"]] = True
+            seen += 1
+        return [not h for h in hit]
+
+    # ------------------------------------------------------------------ low-R training blocks (2048 rows only)
+    def _top_train_blocks(self, st):
+        if self._train_top_blocks is not None:
+            return self._train_top_blocks
+        W = norm_blocks(st.X_train)
+        order = np.argsort(st.y_train)[:10]
+        self._train_top_blocks = [W[order][:, b, :].copy() for b in range(3)]
+        return self._train_top_blocks
+
+    # ------------------------------------------------------------------ new moves
+    def _move_block(self, rng, base_blk, sigma):
+        """Move 2-3 coordinates at once and optionally zero one minor objective."""
+        w = base_blk.copy()
+        pos = np.flatnonzero(w > 0)
+        if len(pos) == 0:
+            return None
+        nch = 2 if rng.random() < 0.7 else 3
+        ks = rng.choice(pos, size=min(nch, len(pos)), replace=False)
+        factors = np.clip(10 ** rng.normal(0, sigma, len(ks)), 0.2, 4.0)
+        w[ks] *= factors
+        if rng.random() < 0.30 and len(pos) > 2:
+            minor = [k for k in pos if k in MINOR]
+            if minor:
+                w[rng.choice(minor)] = 0.0
+        if w.sum() <= 0 or not np.all(np.isfinite(w)):
+            return None
+        w = w / w.sum()
+        w[w < ZERO] = 0.0
+        return w / w.sum() if w.sum() > 0 else None
+
+    def _blend_block(self, rng, base_blk, seeds):
+        """Convex blend with a training/elite block: restart the whole block."""
+        if not seeds:
+            return None
+        a = float(rng.choice([0.3, 0.5, 0.7]))
+        src = seeds[rng.integers(len(seeds))]
+        w = (1 - a) * base_blk + a * src
+        w[w < ZERO] = 0.0
+        if w.sum() <= 0:
+            return None
+        w = w / w.sum()
+        return w
+
+    # ------------------------------------------------------------------ in-basin proposal
+    def _propose_in_basin(self, st, n):
+        p = self.p
+        call_no = len(st.calls) + 1
+        rng = np.random.default_rng([self.seed, call_no, 6])
+        priors = TrainPriors.from_training(st.X_train, st.y_train if p.shift_bias else None)
+        inc, R_inc, val, blocks, scale = self._replay(st)
+        null, _, improvers = self._learn(st)
+        stagnant = self._stagnant(st)
+        train_top = self._top_train_blocks(st)
+
+        Xo = [e["W"].reshape(21) for c in st.calls for e in c if np.isfinite(e["R"])]
+        yo = [e["R"] for c in st.calls for e in c if np.isfinite(e["R"])]
+        X = np.vstack([st.X_train] + ([np.array(Xo)] if Xo else []))
+        y = np.concatenate([st.y_train, np.array(yo)]) if yo else st.y_train.copy()
+        model = Surrogate(local_rows=p.local_rows, seed=self.seed).fit(X, y, center=inc.reshape(21))
+
+        out, seen = [], set()
+        sent = {tuple(bkey(e["W"][b]) for b in range(3)) for c in st.calls for e in c}
+        seen |= sent
+        seen.add(tuple(bkey(inc[b]) for b in range(3)))
+        Wt = norm_blocks(st.X_train)
+        seen |= {tuple(bkey(w[b]) for b in range(3)) for w in Wt}
+
+        def add(W, meta):
+            W = norm_blocks(W)[0]
+            k = tuple(bkey(W[b]) for b in range(3))
+            if k in seen:
+                return False
+            seen.add(k)
+            out.append((W, meta))
+            return True
+
+        def in_null(b, base_blk, blk):
+            oc = one_coord(base_blk, blk)
+            if oc is None:
+                return False
+            k, kind, v = oc
+            nl = null.get((b, bkey(base_blk), k))
+            if nl is None:
+                return False
+            return (nl["lo"] <= v <= nl["hi"]) if kind == "f" else (v <= nl["tmax"])
+
+        def elites(b):
+            items = sorted(val[b].items(), key=lambda kv: kv[1])[: p.n_elite]
+            return [blocks[b][k] for k, _ in items]
+
+        # ---- base and cross-building combinations (as in v4)
+        v_inc = [val[b][bkey(inc[b])] for b in range(3)]
+        better = []
+        for b in range(3):
+            items = sorted(val[b].items(), key=lambda kv: kv[1])
+            better.append([(blocks[b][k], v - v_inc[b]) for k, v in items if v < v_inc[b] - 1e-9][:2])
+        base = inc.copy()
+        combos = []
+        for choice in itertools.product(*[[(inc[b], 0.0)] + better[b] for b in range(3)]):
+            W = np.array([c[0] for c in choice])
+            if all(bkey(W[b]) == bkey(inc[b]) for b in range(3)):
+                continue
+            combos.append((R_inc + sum(c[1] for c in choice), W))
+        combos.sort(key=lambda t: t[0])
+        combos = [(pr, W) for pr, W in combos if tuple(bkey(W[b]) for b in range(3)) not in sent]
+        if combos:
+            base = combos[0][1]
+            add(base, {"kind": "base", "pred": combos[0][0]})
+            for pr, W in combos[1: 1 + p.n_combo]:
+                add(W, {"kind": "combo", "pred": pr})
+
+        # ---- surrogate pool with coarse and block moves
+        pools, sigma_use = {}, {}
+        for b in range(3):
+            sigma_use[b] = p.wide_sigma if stagnant[b] else p.base_sigma
+            parents = [base[b]] + [e for e in elites(b) if bkey(e) != bkey(base[b])]
+            cand = []
+            kinds = ["scale1", "scale1", "multi", "shift", "block", "block", "tiny"]
+            for _ in range(p.pool):
+                par = parents[0] if rng.random() < 0.7 or len(parents) == 1 else parents[rng.integers(1, len(parents))]
+                kind = kinds[rng.integers(len(kinds))]
+                if kind == "block":
+                    blk = self._move_block(rng, par, sigma_use[b])
+                else:
+                    blk = self._move(rng, par, max(scale[b], 0.35), kind, priors, b=b)
+                if blk is not None:
+                    cand.append(blk)
+            if not cand:
+                continue
+            cand = np.array(cand)
+            Wfull = np.repeat(base[None], len(cand), 0)
+            Wfull[:, b] = cand
+            mu, sd = model.predict(Wfull.reshape(-1, 21))
+            pools[b] = (cand, mu, sd)
+
+        # ---- slot split: model / coarse / fine / block
+        slots = n - len(out)
+        per = [slots // 3 + (1 if b < slots % 3 else 0) for b in range(3)]
+        for b in range(3):
+            if b not in pools:
+                continue
+            k_model = max(2, int(round(per[b] * p.share_model)))
+            k_coarse = max(2, int(round(per[b] * p.share_coarse)))
+            k_fine = max(2, int(round(per[b] * p.share_fine)))
+            k_block = max(1, per[b] - k_model - k_coarse - k_fine)
+            self._fill_model(b, base, pools[b], k_model, add)
+            self._fill_coarse(b, base, k_coarse, rng, call_no, sigma_use[b], in_null, add)
+            self._fill_fine(b, base, k_fine, null, priors, rng, call_no, in_null, add)
+            self._fill_blocks(b, base, k_block, rng, call_no, sigma_use[b],
+                              train_top[b], elites(b), add)
+
+        # ---- top up
+        tries = 0
+        while len(out) < n and tries < 3000:
+            tries += 1
+            b = int(rng.integers(3))
+            blk = self._move_block(rng, base[b], p.base_sigma)
+            if blk is None or in_null(b, base[b], blk):
+                continue
+            W = base.copy()
+            W[b] = blk
+            add(W, {"kind": "single", "building": b, "move": "fill"})
+
+        info = {"call": call_no, "R_inc": R_inc, "scale": [round(s, 4) for s in scale],
+                "model_secs": model.fit_secs, "stagnant": stagnant,
+                "sigma": [round(sigma_use[b], 3) for b in range(3)],
+                "phase": "in_basin_multiscale"}
+        return out[:n], info
+
+    # ------------------------------------------------------------------ three fill channels
+    def _fill_coarse(self, b, base, k, rng, call_no, sigma, in_null, add):
+        """Single-coordinate coarse jumps that deliberately cross known null intervals."""
+        blk0 = base[b]
+        got, depth = 0, 0
+        order = [(call_no * 3 + b + j) % 7 for j in range(7)]
+        while got < k and depth < 4:
+            for kk in order:
+                if got >= k:
+                    break
+                if blk0[kk] <= 0:
+                    continue
+                idx = (depth * 3 + kk) % len(COARSE_F)
+                w = blk0.copy()
+                w[kk] *= COARSE_F[idx]
+                w = w / w.sum()
+                if in_null(b, blk0, w):
+                    continue
+                W = base.copy()
+                W[b] = w
+                got += add(W, {"kind": "single", "building": b, "move": "coarse"})
+            depth += 1
+
+    def _fill_fine(self, b, base, k, null, priors, rng, call_no, in_null, add):
+        """0.4%-6% coordinate moves plus tiny-weight revival, outside known null intervals."""
+        blk0 = base[b]
+        got, depth = 0, 0
+        order = [(call_no + b + j) % 7 for j in range(7)]
+        tiny_grid = np.geomspace(priors.tiny_lo, max(priors.tiny_hi, 3 * priors.tiny_lo), 14)
+        while got < k and depth < 10:
+            for kk in order:
+                if got >= k:
+                    break
+                nl = null.get((b, bkey(blk0), kk), {"lo": 1.0, "hi": 1.0, "tmax": 0.0})
+                w = blk0.copy()
+                if w[kk] > 0:
+                    ups = [f for f in FINE_F if f > nl["hi"]]
+                    downs = [f for f in sorted(FINE_F, reverse=True) if f < nl["lo"]]
+                    steps = [v for pair in itertools.zip_longest(ups, downs) for v in pair if v is not None]
+                    if depth >= len(steps):
+                        continue
+                    w[kk] *= steps[depth]
+                else:
+                    ts = [t for t in tiny_grid if t > nl["tmax"]]
+                    if depth >= len(ts):
+                        continue
+                    w[kk] = ts[depth] * (w[4] + w[5])
+                if w.sum() <= 0:
+                    continue
+                w = w / w.sum()
+                w[w < ZERO] = 0.0
+                if w.sum() <= 0 or in_null(b, blk0, w):
+                    continue
+                W = base.copy()
+                W[b] = w / w.sum()
+                got += add(W, {"kind": "single", "building": b, "move": "fine"})
+            depth += 1
+
+    def _fill_blocks(self, b, base, k, rng, call_no, sigma, train_blocks, elite_blocks, add):
+        """2-3 coordinate scaling; the last slot blends with a training/elite block (restart)."""
+        got, tries = 0, 0
+        seeds = list(elite_blocks) + [train_blocks[i] for i in range(len(train_blocks))]
+        while got < k and tries < 200:
+            tries += 1
+            if got == k - 1 and seeds:
+                w = self._blend_block(rng, base[b], seeds)
+                move = "restart"
+            else:
+                w = self._move_block(rng, base[b], sigma)
+                move = "block"
+            if w is None:
+                continue
+            W = base.copy()
+            W[b] = w
+            got += add(W, {"kind": "single", "building": b, "move": move})
+
+
+# --------------------------------------------------------------------------------------------------
+# v7: keep v4's full batch from call 12 on, replace only the zero-yield slots
+# --------------------------------------------------------------------------------------------------
+REPLACE_ORDER = ("fine", "zero")
+COARSE_STEPS = [0.45, 0.6, 0.75, 1.35, 1.7, 2.2, 3.0]
+
+
+@dataclass
+class ParamsV7(ParamsV6):
+    freeze_calls: int = 11
+    base_sigma: float = 0.22
+    wide_sigma: float = 0.35
+    max_replace: int = 12
+    replace_stream: int = 7
+
+
+class BlockDescentPolicyV7(BlockDescentPolicyV6):
+    def __init__(self, params: ParamsV7 | None = None, seed: int = 2026):
+        super().__init__(params or ParamsV7(), seed)
+        # The inner v4 that runs for calls 1-freeze_calls is built from this very same Params, filtered down to
+        # the fields ParamsV4 declares (so config.json's V4 constants are honoured and nothing is hard-coded).
+        v4_kwargs = {k: v for k, v in asdict(self.p).items()
+                     if k in ParamsV4.__dataclass_fields__}
+        self._v4 = BlockDescentPolicyV4(ParamsV4(**v4_kwargs), seed=seed)
+
+    # ------------------------------------------------------------------ entry
+    def propose(self, st, n: int = 50):
+        if len(st.calls) + 1 <= self.p.freeze_calls:
+            return self._v4.propose(st, n)
+        return self._propose_hybrid(st, n)
+
+    # ------------------------------------------------------------------ multiscale candidates
+    def _coarse_block(self, rng, base_blk, k):
+        w = base_blk.copy()
+        w[k] *= COARSE_STEPS[rng.integers(len(COARSE_STEPS))]
+        if w.sum() <= 0:
+            return None
+        w = w / w.sum()
+        w[w < ZERO] = 0.0
+        return w / w.sum() if w.sum() > 0 else None
+
+    def _restart_block(self, rng, base_blk, seeds):
+        return self._blend_block(rng, base_blk, seeds)
+
+    # ------------------------------------------------------------------ main path
+    def _propose_hybrid(self, st, n):
+        p = self.p
+        call_no = len(st.calls) + 1
+        rng = np.random.default_rng([self.seed, call_no, p.replace_stream])
+        inc, _, val, blocks, scale = self._replay(st)
+        stagnant = self._stagnant(st)
+        train_top = self._top_train_blocks(st)
+
+        # 1) v4's complete batch: every model/scan/random/icombo pick is kept
+        props, info = self._v4.propose(st, n)
+        props = [(np.asarray(W, float), dict(m)) for W, m in props]
+        metas = [m for _, m in props]
+
+        # 2) replaceable slots: fine -> zero -> combo (base and every other channel stay)
+        replaceable = []
+        for move in REPLACE_ORDER:
+            replaceable += [i for i, m in enumerate(metas)
+                            if m.get("kind") == "single" and m.get("move") == move]
+        replaceable += [i for i, m in enumerate(metas) if m.get("kind") == "combo"]
+        replaceable = replaceable[: p.max_replace]
+        if not replaceable:
+            info.update({"phase": "v4_batch", "replaced": 0})
+            return props[:n], info
+
+        # 3) multiscale candidates, rotating over the three buildings
+        W = np.array([norm_blocks(W)[0] for W, _ in props])
+        seen = {tuple(bkey(w[b]) for b in range(3)) for w in W}
+        seen |= {tuple(bkey(w[b]) for b in range(3)) for w in norm_blocks(st.X_train)}
+        for c in st.calls:
+            for e in c:
+                seen.add(tuple(bkey(e["W"][b]) for b in range(3)))
+
+        def seeds_for(b):
+            items = sorted(val[b].items(), key=lambda kv: kv[1])[: p.n_elite]
+            return [blocks[b][k] for k, _ in items] + [train_top[b][i] for i in range(len(train_top[b]))]
+
+        plans = [(0, "coarse1"), (1, "coarse1"), (2, "coarse1"),
+                 (0, "block"), (1, "block"), (2, "block"),
+                 (0, "restart"), (1, "restart"), (2, "restart"),
+                 (0, "coarse2"), (1, "coarse2"), (2, "coarse2")]
+        counts = {"coarse": 0, "block": 0, "restart": 0}
+        used, new_rows = set(), []
+        for b, kind in plans:
+            if len(new_rows) >= len(replaceable):
+                break
+            sigma = p.wide_sigma if stagnant[b] else p.base_sigma
+            if kind.startswith("coarse"):
+                pos = np.flatnonzero(inc[b] > 0)
+                if len(pos) == 0:
+                    continue
+                k = int(pos[rng.integers(len(pos))]) if kind == "coarse1" else int(
+                    pos[np.argmax(inc[b][pos])])
+                blk = self._coarse_block(rng, inc[b], k)
+                move = "coarse"
+            elif kind == "block":
+                blk = self._move_block(rng, inc[b], sigma)
+                move = "block"
+            else:
+                blk = self._restart_block(rng, inc[b], seeds_for(b))
+                move = "restart"
+            if blk is None or np.allclose(blk, inc[b], atol=1e-12):
+                continue
+            Wnew = inc.copy()
+            Wnew[b] = blk
+            key = tuple(bkey(Wnew[j]) for j in range(3))
+            if key in seen or key in used:
+                continue
+            used.add(key)
+            new_rows.append((Wnew, {"kind": "single", "building": b, "move": move}))
+            counts[move] += 1
+
+        # 4) replace by priority; slots that stay empty keep the v4 point
+        replaced = 0
+        for idx, row in zip(replaceable, new_rows):
+            props[idx] = row
+            metas[idx] = row[1]
+            replaced += 1
+
+        info.update({"phase": "v4_batch_plus_multiscale", "replaced": replaced,
+                     "coarse": counts["coarse"], "block": counts["block"],
+                     "restart": counts["restart"], "stagnant": stagnant,
+                     "sigma": [round(p.wide_sigma if s else p.base_sigma, 3) for s in stagnant]})
+        return props[:n], info
