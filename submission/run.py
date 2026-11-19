@@ -20,10 +20,13 @@ from __future__ import annotations
 
 import os
 
-# OpenBLAS picks its kernels by CPU model; the generic Prescott kernels run on every x86-64 CPU and were the
-# ones in effect on the reference machine, so they are forced here (decision 31). This only affects an
-# OpenBLAS-linked numpy (the uv-locked pip wheels); the thread count is left at OpenBLAS's default.
-os.environ.setdefault("OPENBLAS_CORETYPE", "Prescott")
+# OpenBLAS picks its kernels by CPU model, and the kernel changes the last bits of linear algebra, which can
+# change a policy choice. The v7 reference log was recorded with the rehearsal machine's native kernels
+# (Intel i5-10600, which OpenBLAS maps to "Cooperlake"; "Haswell" gives the same batches and runs on any x86-64
+# CPU with AVX2), so they are forced here. The generic "Prescott" kernels used by the v4 package do not
+# reproduce the v7 log at call 3. This only affects an OpenBLAS-linked numpy (the uv-locked pip wheels); the
+# thread count is left at OpenBLAS's default.
+os.environ.setdefault("OPENBLAS_CORETYPE", "Haswell")
 
 import argparse  # noqa: E402
 import csv  # noqa: E402
@@ -43,7 +46,8 @@ import numpy as np  # noqa: E402
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from policy import BlockDescentPolicyV4, ParamsV4, State, norm_blocks  # noqa: E402
+from policy import (BlockDescentPolicyV4, BlockDescentPolicyV7, ParamsV4, ParamsV7,  # noqa: E402
+                    State, norm_blocks)
 
 CONFIG = json.loads((HERE / "config.json").read_text(encoding="utf-8"))
 SEED = int(CONFIG["seed"])
@@ -139,7 +143,20 @@ def load_training():
 
 
 def make_policy():
+    if CONFIG["variant"] == "v7":
+        return BlockDescentPolicyV7(ParamsV7(**CONFIG["params"]), seed=SEED)
     return BlockDescentPolicyV4(ParamsV4(**CONFIG["params"]), seed=SEED)
+
+
+def rng_streams(call: int) -> list:
+    """Random streams a call draws from: v4 uses [seed, call, 4]; v7 keeps that stream for the v4 batch
+    and adds [seed, call, 7] for its multiscale replacements (calls 1-freeze_calls use only [seed, call, 4])."""
+    if CONFIG["variant"] == "v7":
+        streams = [[SEED, call, 4]]
+        if call > int(CONFIG["params"].get("freeze_calls", 11)):
+            streams.append([SEED, call, 7])
+        return streams
+    return [[SEED, call, 4]]
 
 
 def screen(props, X_train, sent):
@@ -322,7 +339,7 @@ def write_checkpoint(root: Path, call: int, tmp: Path, *, status: str, batch, R,
                      evaluator: str, solver_sha: str | None) -> None:
     """Fill call_<kk>.tmp/, fsync every file, then rename it to call_<kk>/ (decision 31, Checkpoints)."""
     tmp.mkdir(parents=True, exist_ok=True)
-    rng = [SEED, call, 4]  # policy.BlockDescentPolicyV4.propose draws from default_rng([seed, call, 4])
+    rng = rng_streams(call)
     record = {"call": call, "weights": batch, "R": R, "meta": metas,
               "policy": {"seed": SEED, "rng": rng, "params": CONFIG["params"]}}
     write_json(tmp / "result.json", {"status": status, "call": call, "evaluator": evaluator,

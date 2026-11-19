@@ -1,0 +1,95 @@
+{
+  "freeze_calls": 11,
+  "all_pass": true,
+  "comparison": "multiset",
+  "per_call": [
+    {
+      "call": 1,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 2,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 3,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 4,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 5,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 6,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 7,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 8,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 9,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 10,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    },
+    {
+      "call": 11,
+      "n": 50,
+      "matched_rows": 50,
+      "max_abs_diff": 0.0,
+      "multiset_identical": true,
+      "pass": true
+    }
+  ]
+}
