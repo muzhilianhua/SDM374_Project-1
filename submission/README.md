@@ -25,7 +25,9 @@ Pinned values, checked by `run.py`:
 
 Before call 1 the policy reads only `train.csv`; afterwards only the results of this run. No point, R value or
 weight measured on a local evaluator is in this folder; `config.json` holds constants chosen on local
-rehearsals (decisions 27 and 32), and they are never optimised at run time. Every call refits from scratch.
+rehearsals (decisions 27 and 32). Every call refits the surrogate from scratch on the training rows plus this
+run's results; the Gaussian process fits its kernel hyperparameters (length scales, noise) in that refit, as in
+the PR #25 rehearsals (decision 33). Nothing is pretrained and no fitted value is stored in the package.
 
 ## Graded run
 

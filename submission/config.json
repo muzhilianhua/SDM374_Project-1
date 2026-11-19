@@ -1,6 +1,6 @@
 {
  "_sources": {
-  "params": "Policy v4 constants from the T37 rehearsals on the local solver.exe (analysis/online_rehearsal, PR #25; T19); chosen on local runs as decision 27 allows. Never optimised at run time.",
+  "params": "Policy v4 constants from the T37 rehearsals on the local solver.exe (analysis/online_rehearsal, PR #25; T19), chosen on local runs as decision 27 allows. The surrogate's GP kernel hyperparameters are not here: they are fitted from scratch on every call (decision 33).",
   "seed": "Seed 7 picked by its local rehearsal score under decision 32 (v4: 103.275 with seed 7; spread over the rehearsed seeds 103-108).",
   "calls_batch": "Course rule: at most 20 sequential calls of at most 50 sets (decision 19).",
   "solver_timeout_seconds": "A 50-set call took 289-643 s on the team's Windows PCs; the timeout leaves a wide margin."
