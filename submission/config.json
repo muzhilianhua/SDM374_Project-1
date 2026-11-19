@@ -3,8 +3,10 @@
   "params": "Policy v7 constants from the v7 rehearsal on the local solver.exe (analysis/online_v7, PR #29; 20 calls x 50 sets, seed 7, best R = 102.8059). Calls 1-11 are the v4 seed-7 batches unchanged; from call 12 v7 keeps v4's full batch and replaces only zero-yield fine/zero/combo slots with coarse/block/restart moves. The surrogate's GP kernel hyperparameters are not here: they are fitted from scratch on every call (decision 33).",
   "seed": "Seed 7, unchanged from the v4 package, so the v7 evidence and the v4 comparison share the same random stream.",
   "calls_batch": "Course rule: at most 20 sequential calls of at most 50 sets (decision 19).",
-  "solver_timeout_seconds": "A 50-set call took 289-643 s on the team's Windows PCs; the timeout leaves a wide margin."
+  "solver_timeout_seconds": "A 50-set call took 289-643 s on the team's Windows PCs; the timeout leaves a wide margin.",
+  "blas": "Linear-algebra rounding depends on the OpenBLAS kernel and thread count. The v7 reference log was recorded on 12 logical CPUs; Haswell on 12 threads reproduces those batches and runs on every x86-64 CPU with AVX2. run.py forces these values before import numpy and fails loudly if the real BLAS does not match."
  },
+ "_blas": {"kernel": "Haswell", "threads": 12},
  "variant": "v7",
  "seed": 7,
  "calls": 20,
@@ -41,6 +43,8 @@
   "wide_sigma": 0.35,
   "share_coarse": 0.22,
   "share_fine": 0.22,
-  "max_replace": 12
+  "max_replace": 12,
+  "v4_stream": 4,
+  "replace_stream": 7
  }
 }

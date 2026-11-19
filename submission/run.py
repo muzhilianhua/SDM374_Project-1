@@ -22,14 +22,21 @@ import os
 
 # OpenBLAS picks its kernels by CPU model, and the kernel changes the last bits of linear algebra, which can
 # change a policy choice. The v7 reference log was recorded with the rehearsal machine's native kernels
-# (Intel i5-10600, which OpenBLAS maps to "Cooperlake"; "Haswell" gives the same batches and runs on any x86-64
-# CPU with AVX2), so they are forced here. The generic "Prescott" kernels used by the v4 package do not
-# reproduce the v7 log at call 3. This only affects an OpenBLAS-linked numpy (the uv-locked pip wheels).
-os.environ.setdefault("OPENBLAS_CORETYPE", "Haswell")
-# The thread count is part of the arithmetic too: the reference log was recorded on 12 logical CPUs
-# (environment.logical_cpus = 12), and the same Haswell kernels with another thread count already differ at
-# call 3. It is pinned for the same reason as the kernels; an externally set value still wins.
-os.environ.setdefault("OPENBLAS_NUM_THREADS", "12")
+# (Intel i5-10600, which OpenBLAS maps to "Cooperlake"; Haswell at 12 threads gives the same batches and runs
+# on any x86-64 CPU with AVX2), so both are forced here -- unconditional assignments because OpenBLAS
+# initialises its thread pool at `import numpy` and picking up an existing env var would silently break the
+# batches. The values come from CONFIG["_blas"] so that switching `variant` to "v4" pins Prescott/20.
+import json as _json
+try:
+    _CONFIG_BLAS = _json.loads((os.path.join(os.path.dirname(__file__), "config.json") and open(
+        os.path.join(os.path.dirname(__file__), "config.json"), encoding="utf-8").read())).get("_blas", {})
+except Exception:
+    _CONFIG_BLAS = {}
+_KERNEL = str(_CONFIG_BLAS.get("kernel", "Haswell"))
+_THREADS = int(_CONFIG_BLAS.get("threads", 12))
+os.environ["OPENBLAS_CORETYPE"] = _KERNEL
+os.environ["OPENBLAS_NUM_THREADS"] = str(_THREADS)
+del _json, _CONFIG_BLAS
 
 import argparse  # noqa: E402
 import csv  # noqa: E402
@@ -151,15 +158,19 @@ def make_policy():
     return BlockDescentPolicyV4(ParamsV4(**CONFIG["params"]), seed=SEED)
 
 
-def rng_streams(call: int) -> list:
-    """Random streams a call draws from: v4 uses [seed, call, 4]; v7 keeps that stream for the v4 batch
-    and adds [seed, call, 7] for its multiscale replacements (calls 1-freeze_calls use only [seed, call, 4])."""
+def rng_streams(call: int, params: dict) -> list:
+    """Random streams a call draws from: v4 uses [seed, call, v4_stream]; v7 keeps that stream for the v4 batch
+    and adds [seed, call, replace_stream] for its multiscale replacements (calls 1-freeze_calls use only the
+    v4 stream). stream ids and freeze_calls come from the resolved params, not from hard-coded values, so
+    they cannot drift from what the policy actually draws."""
+    v4_stream = int(params.get("v4_stream", 4))
+    freeze = int(params.get("freeze_calls", 11))
     if CONFIG["variant"] == "v7":
-        streams = [[SEED, call, 4]]
-        if call > int(CONFIG["params"].get("freeze_calls", 11)):
-            streams.append([SEED, call, 7])
+        streams = [[SEED, call, v4_stream]]
+        if call > freeze:
+            streams.append([SEED, call, int(params.get("replace_stream", 7))])
         return streams
-    return [[SEED, call, 4]]
+    return [[SEED, call, v4_stream]]
 
 
 def screen(props, X_train, sent):
@@ -196,6 +207,33 @@ def blas_report() -> str:
     return (f"BLAS: {'; '.join(blas)} | OPENBLAS_CORETYPE={os.environ.get('OPENBLAS_CORETYPE')} "
             f"OPENBLAS_NUM_THREADS={os.environ.get('OPENBLAS_NUM_THREADS')} "
             f"OMP_NUM_THREADS={os.environ.get('OMP_NUM_THREADS')} MKL_NUM_THREADS={os.environ.get('MKL_NUM_THREADS')}")
+
+
+def check_blas() -> list[str]:
+    """Hard requirements for a graded run (decision 31, Determinism). Returns a list of errors: empty
+    means the real BLAS matches the pin. Called from `cmd_run` (fails the run) and `cmd_check` (fails the
+    check) so a batch that left the rehearsal after call 3 cannot leave without warning."""
+    required = CONFIG["_blas"]
+    want_kernel = str(required.get("kernel", "Haswell"))
+    want_threads = int(required.get("threads", 12))
+    errors = []
+    try:
+        from threadpoolctl import threadpool_info
+    except Exception as exc:
+        return [f"threadpoolctl not importable: {exc!r}"]
+    blas = [i for i in threadpool_info() if i.get("user_api") == "blas"]
+    if not blas:
+        errors.append("threadpoolctl saw no BLAS backend; expected OpenBLAS")
+        return errors
+    # OpenBLAS threads are reported once per backend; MKL or MKL-pthread would be a surprise too.
+    archs = sorted({str(i.get("architecture") or "") for i in blas})
+    threads = max(int(i.get("num_threads") or 0) for i in blas)
+    if want_kernel not in archs:
+        errors.append(f"BLAS arch is {archs}; expected to contain {want_kernel} (OPENBLAS_CORETYPE)")
+    if threads != want_threads:
+        # OpenBLAS will silently cap at the CPU count it detected, so fewer threads is also wrong.
+        errors.append(f"BLAS threads={threads}; expected {want_threads} (OPENBLAS_NUM_THREADS)")
+    return errors
 
 
 # ---------------------------------------------------------------------------------------------- evaluators
@@ -343,7 +381,7 @@ def write_checkpoint(root: Path, call: int, tmp: Path, *, status: str, batch, R,
                      evaluator: str, solver_sha: str | None) -> None:
     """Fill call_<kk>.tmp/, fsync every file, then rename it to call_<kk>/ (decision 31, Checkpoints)."""
     tmp.mkdir(parents=True, exist_ok=True)
-    rng = rng_streams(call)
+    rng = rng_streams(call, CONFIG["params"])
     record = {"call": call, "weights": batch, "R": R, "meta": metas,
               "policy": {"seed": SEED, "rng": rng, "params": CONFIG["params"]}}
     write_json(tmp / "result.json", {"status": status, "call": call, "evaluator": evaluator,
@@ -382,6 +420,10 @@ def resolve_evaluator(args, X, y):
 
 
 def cmd_run(args) -> int:
+    blas_errors = check_blas()
+    if blas_errors:
+        raise SystemExit("BLAS pin failed:\n  " + "\n  ".join(blas_errors) +
+                         "\nrun.py forces OPENBLAS_CORETYPE/OPENBLAS_NUM_THREADS before import numpy; on a machine with fewer than the required logical CPUs it will still use fewer threads, so this check stops the run before call 1.")
     print(f"{platform.platform()} | Python {platform.python_version()} | numpy {np.__version__} | "
           f"{os.cpu_count()} logical CPUs")
     print(blas_report())
@@ -488,13 +530,18 @@ def cmd_check(args) -> int:
     import sklearn
     got = {"python": platform.python_version(), "numpy": np.__version__, "scipy": scipy.__version__,
            "scikit-learn": sklearn.__version__}
-    print(f"{platform.platform()} | {platform.processor()} | {os.cpu_count()} logical CPUs (reference: 20)")
+    print(f"{platform.platform()} | {platform.processor()} | {os.cpu_count()} logical CPUs (reference: {_THREADS})")
     ok = True
     for k, v in PINNED.items():
         match = got[k].startswith(v) if k == "python" else got[k] == v
         ok &= match
         print(f"  {k:13s} {got[k]:10s} pinned {v:8s} {'ok' if match else 'DIFFERENT'}")
     print("  " + blas_report())
+    blas_errors = check_blas()
+    if blas_errors:
+        ok = False
+        for err in blas_errors:
+            print(f"  BLAS pin fail: {err}")
     try:
         load_training()
         print(f"  train.csv sha256 {TRAIN_SHA256[:12]}… ok ({TRAIN_ROWS} rows)")

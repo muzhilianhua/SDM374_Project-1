@@ -97,12 +97,17 @@ uv run run.py --evaluator mymodule:MyTruth --out runs\replay              # deve
 
 The policy is deterministic, but linear-algebra rounding depends on the CPU, the OpenBLAS kernel and the
 OpenBLAS thread count, and a difference in one call changes every later batch (decision 31, Determinism).
-`run.py` forces the generic OpenBLAS Haswell kernels (`OPENBLAS_CORETYPE=Haswell`), which run on every
-x86-64 CPU with AVX2, and `OPENBLAS_NUM_THREADS=12`: the v7 reference log was recorded on 12 logical CPUs
-(`environment.logical_cpus` in its header), and the same Haswell kernels on another thread count already
-differ at call 3. Both are `setdefault`, so a value set in the environment beforehand still wins. `run.py`
-also reports the BLAS backend at start. The v4 package's Prescott kernels do **not** reproduce the v7 log
-(call 3 differs by 0.12 in one weight), which is why this package pins Haswell instead.
+`run.py` forces the generic OpenBLAS Haswell kernels (`OPENBLAS_CORETYPE=Haswell`) and pins
+`OPENBLAS_NUM_THREADS=12` **unconditionally** (not `setdefault`) before importing numpy, because OpenBLAS
+initialises its thread pool at import time. It then calls `check_blas()` with `threadpoolctl` and fails the
+run loudly if the real BLAS does not report both Haswell architecture *and* 12 threads -- OpenBLAS silently
+caps its thread count at however many logical CPUs it detected, so a machine with fewer cores would otherwise
+leave batches after call 3 without warning. `run.py` also reports the BLAS backend at start.
+
+`Haswell` at 12 threads reproduces the v7 reference log and runs on every x86-64 CPU with AVX2. The v4
+package's `Prescott` kernels do **not** reproduce the v7 log (call 3 differs by 0.12 in one weight), which is
+why this package pins Haswell instead. The pin values live in `config.json` (`_blas.kernel`, `_blas.threads`)
+next to `variant`, so switching back to `variant: "v4"` also switches the pin.
 
 - `uv run run.py verify --reference <online_log.jsonl>` recomputes each call's batch from a recorded run's
   earlier results and compares it point by point, without calling the solver. The v7 reference log is
@@ -112,7 +117,10 @@ also reports the BLAS backend at start. The v4 package's Prescott kernels do **n
 - `uv run run.py compare runs\a runs\b` compares two runs' canonical records (weights, R, policy and RNG state,
   floats written with `float.hex`) and names the first call and field that differ.
 
-If batches differ, try in order: `OMP_NUM_THREADS`, `MKL_NUM_THREADS` and `OPENBLAS_NUM_THREADS` set to 1.
+If batches differ, the machine's BLAS backend did not match the pin (run.py already fails loudly when that
+happens). The two reference logs themselves already disagree on one point at call 3 -- v4 was recorded on a
+20-CPU machine, v7 on a 12-CPU machine -- so "calls 1-11 are point-identical to the v4 package" holds only
+at 12 threads; run.py pins 12 to keep the v7 reference reproducible.
 
 ## Checkpoints
 
@@ -127,7 +135,8 @@ If batches differ, try in order: `OMP_NUM_THREADS`, `MKL_NUM_THREADS` and `OPENB
 
 ## Expected result
 
-The reference rehearsal of this exact policy and seed on the local `solver.exe` (Windows 11, 20 logical CPUs)
-reached **R = 102.806** after 20 calls, against **103.275** for v4 seed 7 on the same 50-set grid; seeds of v4
-ended between 103 and 108, so the expected score is that spread shifted down by the observed v7 gain (decision 32).
-The graded run reproduces 102.806 only if the course computer emits the same batches.
+The reference rehearsal of this exact policy and seed on the local `solver.exe` (Windows 11, 12 logical CPUs,
+matching this package's `_blas` pin) reached **R = 102.806** after 20 calls, against **103.275** for v4 seed 7
+on the same 50-set grid; seeds of v4 ended between 103 and 108, so the expected score is that spread shifted
+down by the observed v7 gain (decision 32). The graded run reproduces 102.806 only if the course computer
+emits the same batches.

@@ -21,7 +21,7 @@ Idea
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 import itertools
 
 import numpy as np
@@ -92,6 +92,8 @@ class Params:
     # v3: after the navigation calls, fewer surrogate picks (they were optimistic and hit less often)
     share_model_late: float | None = None
     share_random_late: float | None = None
+    # streams drawn per call: v4's own proposals use v4_stream; v7 adds replace_stream for the multiscale slots.
+    v4_stream: int = 4
 
 
 @dataclass
@@ -1043,12 +1045,17 @@ class ParamsV7(ParamsV6):
     base_sigma: float = 0.22
     wide_sigma: float = 0.35
     max_replace: int = 12
+    replace_stream: int = 7
 
 
 class BlockDescentPolicyV7(BlockDescentPolicyV6):
     def __init__(self, params: ParamsV7 | None = None, seed: int = 2026):
         super().__init__(params or ParamsV7(), seed)
-        self._v4 = BlockDescentPolicyV4(ParamsV4(shift_bias=True, n_nav=3), seed=seed)
+        # The inner v4 that runs for calls 1-freeze_calls is built from this very same Params, filtered down to
+        # the fields ParamsV4 declares (so config.json's V4 constants are honoured and nothing is hard-coded).
+        v4_kwargs = {k: v for k, v in asdict(self.p).items()
+                     if k in ParamsV4.__dataclass_fields__}
+        self._v4 = BlockDescentPolicyV4(ParamsV4(**v4_kwargs), seed=seed)
 
     # ------------------------------------------------------------------ entry
     def propose(self, st, n: int = 50):
@@ -1073,7 +1080,7 @@ class BlockDescentPolicyV7(BlockDescentPolicyV6):
     def _propose_hybrid(self, st, n):
         p = self.p
         call_no = len(st.calls) + 1
-        rng = np.random.default_rng([self.seed, call_no, 7])
+        rng = np.random.default_rng([self.seed, call_no, p.replace_stream])
         inc, _, val, blocks, scale = self._replay(st)
         stagnant = self._stagnant(st)
         train_top = self._top_train_blocks(st)
