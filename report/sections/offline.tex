@@ -1,0 +1,44 @@
+\section{Offline Phase: Surrogates Meet Two Real Points}
+\label{sec:offline}
+\textbf{Protocol.} All models share one interface (\texttt{fit}, \texttt{predict} with a mean and a standard
+deviation) and one evaluation protocol, \emph{frozen-v3.2}: ten fixed train/test splits of the 2,048 rows scored on
+local and global ranking, error and the regret of the top-ranked test row (0--100, higher is better). The course
+quadratic ridge scores 66.45 (top-1 regret 4.51), ExtraTrees 68.00 (5.85), HistGradientBoosting 72.35 and XGBoost 73.47
+(1.07); the gaps are inside the split-to-split standard deviation of about 9. A semi-synthetic study, in which a fitted
+model plays the true function, showed that \emph{where} an optimiser lands is set by the surrogate's shape: two
+optimisers on the same ridge model reached the same region (regret within 0.25), while switching the surrogate moved the
+regret by 5--25.
+
+\textbf{Two real points.} Only the simulator can tell how $R$ behaves outside the data, and the offline phase gave two
+such measurements before our second submission (Table~\ref{tab:offline}). The course baseline's $W^\ast$ is a corner of
+the simplex where the quadratic surrogate predicted 75.9; it measured 119.09. Our first submission was the consensus
+optimum of three tree-based models, which predicted 107--111 and agreed with each other because they had been searched
+on their shared error; it measured 119.71. Only ExtraTrees, the model that predicts flat values away from the data, had
+the right sign at both points.
+
+\begin{table}[t]
+\centering
+\caption{Surrogate predictions at the two points measured before our second offline submission (kWh). Best training
+row: 115.76.}
+\label{tab:offline}
+\begin{tabular}{lrr}
+\toprule
+Model & baseline $W^\ast$ & submission 1\\
+\midrule
+quadratic ridge (course) & 75.90 & 95.13\\
+HistGradientBoosting & 117.62 & 107.80\\
+XGBoost & 114.21 & 107.28\\
+stacked ensemble & 118.73 & 111.42\\
+ExtraTrees & -- & 126.09\\
+\midrule
+\textbf{measured} & \textbf{119.09} & \textbf{119.71}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{A short, vetted step.} We therefore submitted a step of length 0.05 from \texttt{p01969}, the best and an
+isolated training row (nearest neighbour 0.30 away). Among 19,483 random directions that point away from both failed
+submissions, we kept the one an ARD Gaussian process~\cite{rasmussen} over additive per-building kernels rated most
+confidently (predicted gain $-2.85$, $z=1.90$). The step measured $R=115.68$: below the bar, but the real gain ($-0.08$)
+was 35 times smaller than predicted. Offline, the surrogates could at best tell the direction of a short step, never its
+size.

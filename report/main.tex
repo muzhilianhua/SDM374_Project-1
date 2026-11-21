@@ -1,32 +1,68 @@
 \documentclass[conference]{IEEEtran}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{url}
-\title{Sequential Surrogate-Guided Weight Search for Building Energy Controllers}
-\author{SDM374 Project 1 Team}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+% Mark numbers that are still to come from the Windows seed runs; must be empty before submission.
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+
+\title{Additive Block Descent with Evidence-Driven Slots:\\
+Twenty Calls to Tune Three Building Energy Controllers}
+
+\author{\IEEEauthorblockN{Zimu Zhang, Runze Liu, Ziqi Ai, Xinlan Hu, Yunyang Wu}
+\IEEEauthorblockA{SDM374 Machine Learning System Design, Southern University of Science and Technology}}
+
 \begin{document}
 \maketitle
+
 \begin{abstract}
-We study a reproducible sequential search policy for tuning the seven objective weights of each of three building controllers. The policy must respect the evaluator budget, submit at most 50 feasible weight sets per call, and use feedback from earlier calls. This report compares surrogate models and search strategies under the released frozen evaluation protocol before documenting the online experiment.
+We tune the 21 objective weights of three building energy controllers to minimise the ramping $R$ of the
+district's net load, measured by a deterministic black-box simulator. Offline, surrogate models trained on 2,048
+rows and searched far from the data were optimistic by 8--43~kWh at the two points we could check, so our best
+offline submission was a short, surrogate-vetted step from the best training row ($R=115.68$, below the course
+bar of 115.76). Online, with at most 20 sequential calls of 50 points and only the training rows before the first
+call, we replace a global surrogate search by an additive block descent: each candidate changes one building, the
+next call combines the buildings' improvements, and batch slots are reallocated to the moves that actually lowered
+$R$. On the real simulator, all 16 rehearsal runs of the policy family beat our offline result in the first call; the
+submitted hybrid policy reaches $R=102.81$ in 1,000 points, 11.1\,\% below our offline result. The graded package is
+deterministic, crash-safe and reproduces every recorded batch bit for bit.
 \end{abstract}
 
 \input{sections/introduction}
-\input{sections/runner}
-\input{sections/models}
+\input{sections/offline}
+\input{sections/landscape}
 \input{sections/strategy}
-\input{sections/replay}
-\input{sections/experimental_setup}
-\input{sections/baseline_and_ablation}
 \input{sections/online_results}
+\input{sections/runner}
 
-\section{Discussion}
-Offline surrogate validation, development experiments and a frozen online run answer different questions. Model selection and policy ablations remain provisional until they are compared with controlled candidate generation and matched budgets. Final online claims must be supported by the frozen run logs.
+\section{Discussion and Conclusion}
+\label{sec:discussion}
+\textbf{What worked.} The decisive step was not a better surrogate but a search structure that the measurements
+supported: additivity over buildings turned one 21-dimensional problem into three 7-dimensional ones advanced in
+parallel inside every batch, and per-move hit rates told the policy where its 50 slots paid off. The surrogate
+remained useful as one move among several, not as the arbiter of the batch.
 
-\section{Conclusion}
-The final conclusions will be updated after the frozen online policy is selected and executed. All numerical claims will retain their source run id so that the report and code package can be checked together.
+\textbf{Limits.} (i) Every policy comparison uses at most three seeds, while one policy's seeds span up to 4.8~kWh;
+no variant is established as better than v4, and h7's gain over v4 was measured on the seed used to design it
+(Section~\ref{sec:results}). (ii) The seed and the policy were chosen on local runs of the released simulator, which
+the TA confirmed as allowed; the submitted code contains no locally measured point, value or weight, but the
+expected graded score is the seed spread, not the best seed. (iii) Bit-for-bit reproduction across machines depends on
+the BLAS kernel and thread count; the package pins and checks both, but the course computer's result was not
+available at the time of writing.
+
+\textbf{Conclusion.} Under a 1,000-point budget the policy family lowers $R$ from the best training row (115.76) to
+102.8--108.0 on the real simulator, against 115.68 for our best offline submission and 119.09 for the course
+baseline. The lesson that carries over is to spend the budget where measurements, not model predictions, show
+progress, and to make the run that is graded the run that was rehearsed.
+
 \bibliographystyle{IEEEtran}
-\begin{thebibliography}{1}
-\bibitem{sdm} SDM374 Project 1 repository, reproducible run records and frozen-v3.2 evaluation protocol, 2026.
+\begin{thebibliography}{9}
+\bibitem{rasmussen} C.~E. Rasmussen and C.~K.~I. Williams, \emph{Gaussian Processes for Machine Learning}. MIT Press, 2006.
+\bibitem{turbo} D.~Eriksson, M.~Pearce, J.~Gardner, R.~D. Turner, and M.~Poloczek, ``Scalable global optimization via local Bayesian optimization,'' in \emph{NeurIPS}, 2019.
+\bibitem{addgp} K.~Kandasamy, J.~Schneider, and B.~P{\'o}czos, ``High dimensional Bayesian optimisation and bandits via additive models,'' in \emph{ICML}, 2015.
+\bibitem{bcd} S.~J. Wright, ``Coordinate descent algorithms,'' \emph{Mathematical Programming}, vol.~151, no.~1, pp.~3--34, 2015.
+\bibitem{repo} SDM374 Project~1 team repository: decisions log (\texttt{docs/decisions.md}), studies under \texttt{analysis/}, graded package \texttt{submission/}, 2026.
 \end{thebibliography}
 \end{document}

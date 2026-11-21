@@ -1,1 +1,36 @@
-% C / T29: Batch proposal, exploration, and trust-region adaptation.
+\section{Online Policy: Additive Block Descent}
+\label{sec:strategy}
+The policy sees only the 2,048 training rows and the results of its own calls. It keeps a \emph{base} $B$, the best
+point measured so far (at call 1, the best training row, which is never resent), and proposes 50 new points per call.
+
+\textbf{Blocks and combinations.} Every candidate changes the 7-weight block of exactly one building and keeps the
+other two at the base, so $R(\text{candidate})-R(B)$ measures that block's effect alone. The next call builds a new
+base from the best improving block of each building, plus up to six other combinations of improving blocks; under
+additivity these are predicted by summing block effects. One batch thus advances three 7-dimensional searches at once,
+a block-coordinate descent~\cite{bcd} that uses additivity the way additive Bayesian optimisation does~\cite{addgp},
+but on measured rather than modelled block effects.
+
+\textbf{Moves.} The remaining slots are split across buildings among four move classes:
+\emph{model} picks, the lowest lower confidence bound (mean $-$ std) among 1,500 perturbations of the block, from a
+navigation surrogate that adds an ARD Gaussian process on the 600 rows nearest the base to a ridge trend fitted on all
+data (features: the degradation/ramping ratio and log shares, CV $R^2$ 0.844 vs.\ 0.775 for raw weights);
+\emph{random} moves at a per-building trust scale that grows by 1.5 after a success and shrinks by 0.6 after a
+failure, within $[0.01,1]$, as in trust-region BO~\cite{turbo}; \emph{fine} moves (small multiplicative steps, setting
+a minor weight to zero, or setting it to a tiny share drawn from the 0.1--10\,\% quantiles of training weights,
+$1.6\times10^{-6}$ to $7.2\times10^{-3}$); and, from call 9, \emph{scans}: one-coordinate steps just outside the known
+plateau, plus the previous call's improving coordinates re-applied to the new base. Calls 1--6 bias the shift
+target toward objectives whose share correlates negatively with $R$ in the training rows.
+
+\textbf{Evidence-driven slots (v4).} Three rules use the run's own results only. A one-coordinate move that returns
+exactly $R(B)$ marks a plateau, and no later move is proposed inside the widest such interval (in earlier versions
+30\,\% of late points repeated a value already seen). Slot shares per building follow each class's hit rate over the
+last four calls, $(h+1)/(n+5)$, with floors of 0.25 for model picks and 0.10 for the others (model picks hit 9\,\% of the
+time but had held 42\,\% of the slots). Candidates that repeat a training row or a sent point are never proposed, so
+every call sends 50 new points.
+
+\textbf{Hybrid replacement (h7, submitted).} Calls 1--11 are v4 unchanged. From call 12 the policy takes v4's full
+50-point batch and replaces at most 12 slots of the classes that produced none of v4's late improvements (fine and
+zero moves) by multiscale candidates: \emph{coarse} single-coordinate factors in $\{0.45,\dots,3.0\}$ to cross
+plateaus, \emph{block} moves of 2--3 coordinates, and \emph{restarts} towards a low training block or this call's elite
+block. A building's block step widens from 0.22 to 0.35 after three calls without improvement. Every random draw is
+seeded by (seed, call), so the batch sequence is a pure function of the seed and the measured values.

@@ -1,10 +1,29 @@
 \section{Introduction}
-Building energy controllers must balance cost, carbon, peak demand, discomfort, degradation, ramping, and resilience. For each of three buildings, the controller receives seven non-negative weights; a candidate therefore contains 21 values, with each building's seven values normalized to sum to one in our experiments.
-
-The project objective is to minimize the district ramping score returned by a deterministic black-box evaluator:
+\label{sec:intro}
+Each of three buildings on a shared microgrid runs an energy controller that trades off seven objectives: cost,
+carbon, peak, discomfort, degradation, ramping and resilience. A candidate $W\in\mathbb{R}^{3\times7}$ holds one
+non-negative weight vector per building; we normalise each row to sum to one. The course simulator returns the
+district ramping
 \begin{equation}
-R(W)=\frac{1}{8}\sum_{w=1}^{8}\sum_{t=2}^{168}|E_{w,t}(W)-E_{w,t-1}(W)|,
+R(W)=\frac{1}{8}\sum_{w=1}^{8}\sum_{t=2}^{168}\bigl|E_{w,t}(W)-E_{w,t-1}(W)\bigr|\ \text{kWh},
+\label{eq:R}
 \end{equation}
-where $E_{w,t}$ denotes district net load at hour $t$ of week $w$. Lower $R$ is better. The online stage permits at most 20 sequential evaluator calls, each containing at most 50 candidate weight sets. Before the first call, the policy may use only the 2,048-row training table; subsequent calls may append measured results and retrain the surrogate. This makes duplicate prevention, restart safety, and provenance as important as the choice of model.
+where $E_{w,t}$ is the net load in hour $t$ of week $w$; lower is better. The simulator is deterministic.
 
-Our work separates three questions: whether a surrogate ranks low-score regions accurately, how an optimizer turns its predictions into a diverse batch, and whether the complete policy remains reproducible under the evaluator budget. The report compares these components with the frozen-v3.2 protocol and then records the online result separately from offline predictions.
+The project has two phases. \emph{Offline}, we fit surrogates $R\approx M(W)$ on 2,048 measured rows (best row
+\texttt{p01969}, $R=115.76$) and submit two candidates, one after the other; the bar is to beat 115.76, which also
+beats the course quadratic-ridge baseline (its $W^\ast$ measured 119.09). \emph{Online}, a frozen program may call the
+simulator at most 20 times, sequentially, with up to 50 weight sets per call; a call scores the minimum $R$ of its
+batch and the grade takes the best call. Before its first call the program may use only the training rows. The online
+score must beat our own offline result, and teams are ranked by it.
+
+The two phases reward different things. Offline, one prediction has to be right; online, one point in fifty has to be
+low, and every call returns 50 exact measurements. Our contributions are:
+\begin{itemize}
+\item an account, with real measurements, of why surrogate optima far from the data fail on this problem and what a
+safe offline step looks like (Sections~\ref{sec:offline}--\ref{sec:landscape});
+\item an online policy that exploits measured additivity over buildings and reallocates batch slots by observed hit
+rates, with a hybrid variant that replaces only the slots that yield nothing (Section~\ref{sec:strategy});
+\item a rehearsal protocol on the real simulator with several seeds, and a graded package that is deterministic,
+crash-safe and audit-ready (Sections~\ref{sec:results}--\ref{sec:runner}).
+\end{itemize}
