@@ -1,0 +1,5 @@
+﻿Windows-10-10.0.26200-SP0 | Python 3.11.16 | numpy 1.24.4 | 20 logical CPUs
+BLAS: openblas 0.3.21 threads=12 arch=Haswell; openblas 0.3.18 threads=12 arch=Haswell | OPENBLAS_CORETYPE=Haswell OPENBLAS_NUM_THREADS=12 OMP_NUM_THREADS=None MKL_NUM_THREADS=None
+stdin check: solver.exe received the test input and rejected it as expected (no call spent)
+call 1: solver.exe rejected the batch before evaluating it (exit 2, no call spent): Expecting value: line 1 column 1 (char 0)
+Stopped. A person decides whether to send again (rerun with --after-rejection).
