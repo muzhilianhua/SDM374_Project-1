@@ -18,13 +18,15 @@ latexmk -pdf main.tex
 | `sections/online_results.tex` | rehearsal table and figures | rehearsal logs (see below) |
 | `sections/runner.tex` | graded package: determinism, checkpoints, budget | `submission/README.md`, decision 31 |
 
-Red `\todo{...}` marks are numbers still to come (h7 seeds 2026 and 11); none may remain at submission. The
-experiment that produces them, and how to run it on Windows, is in [`pending-experiments.md`](pending-experiments.md).
+Red `\todo{...}` marks text still to be written; none may remain at submission (there are none now). The h7 runs on
+seeds 2026 and 11 that Table II and Section V needed are in
+[`analysis/online_v7_seeds/`](../analysis/online_v7_seeds/README.md); how they were run is in
+[`pending-experiments.md`](pending-experiments.md).
 
 ## Figures
 
 `figures/make_figures.py` rebuilds `figures/convergence.pdf` and `figures/h7_batches.pdf` from the committed
-real-simulator logs, without the solver:
+real-simulator logs (T37 rehearsals, h7 seed 7, and the h7 seed 2026/11 checkpoints), without the solver:
 
 ```bash
 uv run python report/figures/make_figures.py

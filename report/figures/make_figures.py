@@ -4,6 +4,7 @@ Inputs:
 - `analysis/online_rehearsal/rehearsals/<variant>_s<seed>/online_log.jsonl` (T37, PR #25)
 - the submitted policy's log, `analysis/online_v7/runs/explore_v7_s7/online_log.jsonl` (PR #29 / #32);
   pass `--h7-log` while that folder is not on this branch.
+- h7 on seeds 2026 and 11, `analysis/online_v7_seeds/h7_s<seed>/checkpoints/call_<kk>/result.json`
 
 Usage (repository root):
     uv run python report/figures/make_figures.py [--h7-log PATH] [--out report/figures]
@@ -24,6 +25,7 @@ import numpy as np  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 REHEARSALS = ROOT / "analysis" / "online_rehearsal" / "rehearsals"
 H7_DEFAULT = ROOT / "analysis" / "online_v7" / "runs" / "explore_v7_s7" / "online_log.jsonl"
+H7_SEEDS = ROOT / "analysis" / "online_v7_seeds"
 BEST_TRAIN = 115.76481925917324   # p01969, the offline bar (decision 17)
 OFFLINE_BEST = 115.68             # offline submission 2
 COLUMN = (3.45, 2.25)             # IEEE single column, inches
@@ -41,6 +43,15 @@ def read_points(path: Path) -> dict[int, list[tuple[float, str]]]:
     return dict(calls)
 
 
+def read_checkpoints(folder: Path) -> dict[int, list[tuple[float, str]]]:
+    """Same as read_points, for a run of the graded package (one result.json per call)."""
+    calls: dict[int, list[tuple[float, str]]] = {}
+    for result in sorted(folder.glob("call_*/result.json")):
+        record = json.loads(result.read_text(encoding="utf-8"))
+        calls[int(record["call"])] = [(float(r), "") for r in record["R"]]
+    return calls
+
+
 def best_so_far(calls: dict[int, list[tuple[float, str]]]) -> np.ndarray:
     minima = [min(r for r, _ in calls[c]) for c in sorted(calls)]
     return np.minimum.accumulate(minima)
@@ -54,6 +65,10 @@ def convergence(h7: dict, out: Path) -> None:
             curve = best_so_far(read_points(run / "online_log.jsonl"))
             ax.plot(np.arange(1, len(curve) + 1), curve, color=color, ls=dash, lw=0.9, alpha=0.9,
                     label=f"{variant} (3 seeds)" if index == 0 else None)
+    for index, run in enumerate(sorted(H7_SEEDS.glob("h7_s*"))):
+        curve = best_so_far(read_checkpoints(run / "checkpoints"))
+        ax.plot(np.arange(1, len(curve) + 1), curve, color="#c0392b", lw=0.9, alpha=0.8,
+                label="h7, seeds 2026 and 11" if index == 0 else None)
     curve = best_so_far(h7)
     ax.plot(np.arange(1, len(curve) + 1), curve, color="#c0392b", lw=1.8, label="submitted h7, seed 7")
     ax.axhline(OFFLINE_BEST, color="k", lw=0.8, ls="-.")

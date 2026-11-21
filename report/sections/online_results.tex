@@ -20,7 +20,7 @@ v4: v2 + evidence-driven slots & 108.05 & 103.28 & 105.44 & 105.59\\
 v5: v4 + vertex probes, lanes & 106.17 & 106.18 & 106.44 & 106.26\\
 v6: v4 + lanes when stalled & 107.41 & 106.48 & 106.68 & 106.86\\
 v4, fixed-constant GP & 106.43 & 105.08 & 107.15 & 106.22\\
-\textbf{h7: v4 + hybrid (submitted)} & \todo{tbd} & \textbf{102.81} & \todo{tbd} & \todo{tbd}\\
+\textbf{h7: v4 + hybrid (submitted)} & 107.81 & \textbf{102.81} & 105.87 & 105.50\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -28,9 +28,10 @@ v4, fixed-constant GP & 106.43 & 105.08 & 107.15 & 106.22\\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/convergence.pdf}
-\caption{Best measured $R$ per call. Thin lines: v1, v2 and v4, three seeds each; thick line: the submitted h7,
-seed 7, identical to v4 seed 7 up to call 11. Source: rehearsal logs \texttt{analysis/online\_rehearsal/} and
-\texttt{analysis/online\_v7/} (real simulator, no surrogate values).}
+\caption{Best measured $R$ per call. Thin lines: v1, v2 and v4, three seeds each; red: the submitted h7 (thick: seed 7,
+the submitted seed; thin: seeds 2026 and 11), identical to v4 with the same seed up to call 11. Source: logs in
+\texttt{analysis/online\_rehearsal/}, \texttt{analysis/online\_v7/} and \texttt{analysis/online\_v7\_seeds/} (real
+simulator, no surrogate values).}
 \label{fig:convergence}
 \end{figure}
 
@@ -48,9 +49,12 @@ points, whereas the surrogate's own picks landed on average 3.6 above their pred
 
 \textbf{The submitted policy.} h7 with seed 7 reaches 102.81 (Fig.~\ref{fig:batches}), 0.47 below v4 with the same seed;
 the two runs are identical up to call 15 and diverge from call 16, and the single largest new contribution is one coarse
-move at call 19 ($-0.28$). The gain was measured on the seed used to design h7, so it is not an expected improvement;
-\todo{seeds 2026 and 11 of h7 are being run; fill in Table~\ref{tab:online} and replace this sentence by the paired
-difference to v4.} For scale, v4 seed 7 continued beyond the budget needs 21 calls to pass h7's 20-call value.
+move at call 19 ($-0.28$). Because h7 was designed on that seed's log, we then ran the graded package unchanged on
+seeds 2026 and 11. In calls 1--11 it sends the same batches as v4 and every point gets the same $R$ (apart from a
+last-bit difference in four weight vectors and one swapped tie), so the comparison is paired. In calls 12--18 h7's best
+value is at or below v4's on all three seeds; after call 20 it is 0.24 below v4 on seed 2026 and 0.43 above on seed 11,
+where v4's last two calls dropped from 106.02 to 105.44. The paired mean difference is $-0.09$ ($-0.47$, $-0.24$,
+$+0.43$), well inside the seed spread: h7 brings late gains forward but is not shown to end lower than v4.
 
 \begin{figure}[t]
 \centering

@@ -5,7 +5,7 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
-% Mark numbers that are still to come from the Windows seed runs; must be empty before submission.
+% Mark text still to be written; none may remain at submission.
 \newcommand{\todo}[1]{\textcolor{red}{[#1]}}
 
 \title{Additive Block Descent with Evidence-Driven Slots:\\
@@ -26,7 +26,8 @@ bar of 115.76). Online, with at most 20 sequential calls of 50 points and only t
 call, we replace a global surrogate search by an additive block descent: each candidate changes one building, the
 next call combines the buildings' improvements, and batch slots are reallocated to the moves that actually lowered
 $R$. On the real simulator, all 16 rehearsal runs of the policy family beat our offline result in the first call; the
-submitted hybrid policy reaches $R=102.81$ in 1,000 points, 11.1\,\% below our offline result. The graded package is
+submitted hybrid policy reaches $R=102.81$ in 1,000 points with the submitted seed, 11.1\,\% below our offline result,
+and 105.50 on average over three seeds. The graded package is
 deterministic, crash-safe and reproduces every recorded batch bit for bit.
 \end{abstract}
 
@@ -45,8 +46,8 @@ parallel inside every batch, and per-move hit rates told the policy where its 50
 remained useful as one move among several, not as the arbiter of the batch.
 
 \textbf{Limits.} (i) Every policy comparison uses at most three seeds, while one policy's seeds span up to 4.8~kWh;
-no variant is established as better than v4, and h7's gain over v4 was measured on the seed used to design it
-(Section~\ref{sec:results}). (ii) The seed and the policy were chosen on local runs of the released simulator, which
+no variant is established as better than v4. h7 gained 0.47 over v4 on the seed used to design it, but only 0.09 on
+average over three paired seeds, and lost on one (Section~\ref{sec:results}). (ii) The seed and the policy were chosen on local runs of the released simulator, which
 the TA confirmed as allowed; the submitted code contains no locally measured point, value or weight, but the
 expected graded score is the seed spread, not the best seed. (iii) Bit-for-bit reproduction across machines depends on
 the BLAS kernel and thread count; the package pins and checks both, but the course computer's result was not

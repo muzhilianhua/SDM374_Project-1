@@ -16,8 +16,10 @@ simulator; for the submitted run all 20 calls match exactly (max $|\Delta W|=0$)
 call's checkpoint (weights, raw simulator output, $R$, policy and RNG state, hashes of data, code and simulator) is
 written to a temporary folder and renamed only when complete, with a manifest that chains the previous call's hash. A
 batch that was sent but returned no $R$ counts as a used call and is never resent, because the simulator charges a call
-when it starts; a batch rejected by the simulator's input check (exit code 2) is not charged. The quota file is never
-touched, and a simulator binary whose hash differs from the released one is reported in every checkpoint.
+when it starts. A batch rejected by the simulator's input check (exit code 2) is not charged, but the run still stops
+there for a person to decide: in our seed runs, \texttt{solver.exe} launched from a host with an attached console failed
+on valid batches with the same exit code and \emph{was} charged. The quota file is never touched, and a simulator
+binary whose hash differs from the released one is reported in every checkpoint.
 
 \textbf{Development framework.} Before the package, a shared library gave every surrogate, optimiser and policy one
 registry and interface, every experiment a run folder with configuration, commit and dataset hash, and the online loop
