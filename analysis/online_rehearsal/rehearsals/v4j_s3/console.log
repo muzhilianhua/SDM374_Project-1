@@ -1,0 +1,21 @@
+call  1: min 111.9545 best 111.9545 | inc 115.765 scale [0.5, 0.5, 0.5] | propose 19s eval 237s | joint=111.95
+call  2: min 110.7585 best 110.7585 | inc 111.954 scale [0.75, 0.75, 0.75] | propose 29s eval 233s | joint=110.76
+call  3: min 110.6199 best 110.6199 | inc 110.758 scale [1.0, 1.0, 1.0] | propose 62s eval 238s | joint=110.62
+call  4: min 110.1397 best 110.1397 | inc 110.620 scale [1.0, 1.0, 1.0] | propose 34s eval 240s | joint=110.14
+call  5: min 109.7703 best 109.7703 | inc 110.140 scale [1.0, 1.0, 1.0] | propose 29s eval 215s | joint=109.77
+call  6: min 109.4619 best 109.4619 | inc 109.770 scale [1.0, 1.0, 1.0] | propose 48s eval 220s | joint=109.46
+call  7: min 109.4345 best 109.4345 | inc 109.462 scale [1.0, 1.0, 1.0] | propose 29s eval 218s | joint=109.43
+call  8: min 109.3700 best 109.3700 | inc 109.435 scale [1.0, 1.0, 1.0] | propose 39s eval 230s | joint=109.37
+call  9: min 109.0268 best 109.0268 | inc 109.370 scale [1.0, 1.0, 1.0] | propose 71s eval 177s | joint=109.03
+call 10: min 108.8835 best 108.8835 | inc 109.027 scale [1.0, 1.0, 1.0] | propose 41s eval 256s | joint=108.88
+call 11: min 108.8495 best 108.8495 | inc 108.884 scale [1.0, 1.0, 1.0] | propose 42s eval 410s | joint=108.85
+call 12: min 108.8495 best 108.8495 | inc 108.849 scale [1.0, 1.0, 1.0] | propose 32s eval 239s | joint=108.85
+call 13: min 108.8495 best 108.8495 | inc 108.849 scale [0.6, 0.6, 0.6] | propose 29s eval 251s | joint=108.85
+call 14: min 108.8497 best 108.8495 | inc 108.849 scale [0.36, 0.36, 0.36] | propose 34s eval 227s | joint=108.85
+call 15: min 108.7193 best 108.7193 | inc 108.849 scale [0.216, 0.216, 0.216] | propose 31s eval 182s | joint=108.72
+call 16: min 108.7193 best 108.7193 | inc 108.719 scale [0.324, 0.324, 0.324] | propose 23s eval 213s | joint=108.72
+call 17: min 108.7193 best 108.7193 | inc 108.719 scale [0.1944, 0.1944, 0.1944] | propose 37s eval 186s | joint=108.72
+call 18: min 108.7193 best 108.7193 | inc 108.719 scale [0.1166, 0.1166, 0.1166] | propose 22s eval 237s | joint=108.72
+call 19: min 108.7423 best 108.7193 | inc 108.719 scale [0.07, 0.07, 0.07] | propose 36s eval 230s | joint=108.74
+call 20: min 108.4034 best 108.4034 | inc 108.719 scale [0.042, 0.042, 0.042] | propose 46s eval 178s | joint=108.40
+final best 108.40339
