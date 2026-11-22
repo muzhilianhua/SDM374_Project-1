@@ -23,4 +23,5 @@ ablation that removes the block structure and the two rules that depend on it. W
 report a negative result: evidence-driven slot allocation (Section~\ref{sec:alloc}), which reassigns batch slots by
 measured hit rates, changes where points are spent but not the final $R$.
 \end{itemize}
-The policy is deployed as a deterministic package whose graded run equals its rehearsal.
+The policy is deployed as a deterministic package that recomputes every batch exactly from its log; when the BLAS
+configuration matches, the graded run reproduces its rehearsal.

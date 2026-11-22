@@ -52,13 +52,13 @@ limit of the same idea: measured hit rates moved slots to scans as intended, but
 to change the final $R$ within 20 calls. The method depends not on this simulator but on two properties: the input
 splits into weakly interacting blocks, and each evaluation round is a batch.
 
-\textbf{Limits.} (i) Seeds dominate variants: v4's six seeds span 4.8~kWh, so six seeds per variant resolve only
-large differences. The evidence favours the block structure but does not establish it at the 5\,\% level: the
+\textbf{Limits.} (i) Seeds dominate variants: v4's six seeds span 4.8~kWh, so six seeds for the main variants resolve
+only large differences. The evidence favours the block structure but does not establish it at the 5\,\% level: the
 primary ablation gives $p=0.078$, and the two comparisons below 0.05 (v2 and the pooled runs against v4j) were chosen
 after seeing the data. The submitted seed's 102.81 should not be read as the expected score (h7 mean 105.50, v4 mean
 106.19). (ii) The ablation removes the block structure together with the plateau filter and the re-application of
 improving coordinates, which need it; the v2 comparison separates the blocks from those two rules but not from the
-allocation. An independent additive-GP batch optimisation matched v4's mean in its single run, so we do not claim
+posterior shares, the no-repeat rule or the call-1 jumps. An independent additive-GP batch optimisation matched v4's mean in its single run, so we do not claim
 that block descent beats a well-tuned Bayesian optimiser. (iii) All comparisons use one simulator and one problem; the
 variants and the seed were chosen on local runs, which the TA allowed, but the submitted code contains no locally
 measured point, value or weight. The graded result depends on the course computer emitting the same batches; the

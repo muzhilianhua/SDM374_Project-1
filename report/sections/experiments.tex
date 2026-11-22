@@ -46,7 +46,8 @@ h7 (submitted)$^\ast$ & 3 & 105.50 $\pm$ 2.52 & 102.81 & 107.81 & 107.00 & --\\
 else raises the mean final $R$ from 106.19 to 107.84 ($+1.65$~kWh, $p=0.078$, six seeds each), and v4j trails v4 on
 average from the second call on (mean after call 10: 108.48 vs.\ 107.12; Fig.~\ref{fig:convergence}). On its own, this
 difference does not reach the 5\,\% level. v2 lacks the plateau filter and the re-application as well, so it isolates
-the blocks from those two rules, though not from the allocation; it also beats v4j ($-1.37$~kWh, $p=0.041$). Among
+the blocks from those two rules, though not from the posterior shares, the no-repeat rule or the eight call-1 jumps
+(which never hit); it also beats v4j ($-1.37$~kWh, $p=0.041$). Among
 the block-descent variants, neither the shift bias nor the allocation changes the final $R$ measurably (pairwise
 $p\ge0.48$), so we also pool all 15 block-descent runs against v4j: $+1.40$~kWh for v4j, $p=0.024$. Both of these
 comparisons were chosen after the primary one, so we read them as support, not proof. The mechanism is visible within these 15 runs. The combination step alone, i.e.\ the
@@ -82,6 +83,6 @@ GP and 24,000 candidates per call reached 105.99 in its single run, level with v
 there, and the paired mean difference is $-0.09$ ($-0.47$, $-0.24$, $+0.43$), i.e.\ not distinguishable from v4.
 
 \textbf{Reproducibility.} Recomputing the submitted run from its log reproduces all 20 batches exactly
-(max $|\Delta W|=0$). Running the graded package on a second machine for two further seeds reproduced the 1,100 points
+(max $|\Delta W|=0$). Running the graded package on a second machine for two further seeds reproduced the $R$ of the 1,100 points
 (2 seeds $\times$ 11 calls $\times$ 50) of calls 1--11 of the corresponding v4 rehearsals, which ran with a different harness on another machine, with
 identical $R$ (four weight vectors differ in the last bit and two tied candidates swap places).
