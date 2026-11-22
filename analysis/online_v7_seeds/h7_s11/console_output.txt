@@ -1,0 +1,24 @@
+Windows-10-10.0.26200-SP0 | Python 3.11.16 | numpy 1.24.4 | 20 logical CPUs
+BLAS: openblas 0.3.21 threads=12 arch=Haswell; openblas 0.3.18 threads=12 arch=Haswell | OPENBLAS_CORETYPE=Haswell OPENBLAS_NUM_THREADS=12 OMP_NUM_THREADS=None MKL_NUM_THREADS=None
+stdin check: solver.exe received the test input and rejected it as expected (no call spent)
+[1/20] batch min 113.200676  best 113.200676  | refit+propose 13 s, solver 331 s
+[2/20] batch min 110.359550  best 110.359550  | refit+propose 17 s, solver 455 s
+[3/20] batch min 109.644266  best 109.644266  | refit+propose 21 s, solver 643 s
+[4/20] batch min 108.903637  best 108.903637  | refit+propose 44 s, solver 653 s
+[5/20] batch min 108.839913  best 108.839913  | refit+propose 27 s, solver 641 s
+[6/20] batch min 108.388773  best 108.388773  | refit+propose 40 s, solver 634 s
+[7/20] batch min 107.759506  best 107.759506  | refit+propose 30 s, solver 646 s
+[8/20] batch min 107.004497  best 107.004497  | refit+propose 20 s, solver 362 s
+[9/20] batch min 106.846864  best 106.846864  | refit+propose 22 s, solver 327 s
+[10/20] batch min 106.576046  best 106.576046  | refit+propose 16 s, solver 328 s
+[11/20] batch min 106.282636  best 106.282636  | refit+propose 19 s, solver 348 s
+[12/20] batch min 106.255489  best 106.255489  | refit+propose 11 s, solver 331 s
+[13/20] batch min 106.153120  best 106.153120  | refit+propose 17 s, solver 326 s
+[14/20] batch min 106.086283  best 106.086283  | refit+propose 17 s, solver 326 s
+[15/20] batch min 105.947675  best 105.947675  | refit+propose 25 s, solver 326 s
+[16/20] batch min 105.914970  best 105.914970  | refit+propose 17 s, solver 327 s
+[17/20] batch min 105.898472  best 105.898472  | refit+propose 12 s, solver 525 s
+[18/20] batch min 105.898472  best 105.898472  | refit+propose 25 s, solver 639 s
+[19/20] batch min 105.865767  best 105.865767  | refit+propose 24 s, solver 648 s
+[20/20] batch min 105.865767  best 105.865767  | refit+propose 19 s, solver 517 s
+finished: best R 105.8657671660767; checkpoints in D:\sdm374-seeds\s11\runs\h7_s11\checkpoints

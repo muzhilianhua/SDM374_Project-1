@@ -1,10 +1,27 @@
 \section{Introduction}
-Building energy controllers must balance cost, carbon, peak demand, discomfort, degradation, ramping, and resilience. For each of three buildings, the controller receives seven non-negative weights; a candidate therefore contains 21 values, with each building's seven values normalized to sum to one in our experiments.
+\label{sec:intro}
+Three buildings on a shared microgrid each run an energy controller that trades off seven objectives (cost,
+carbon, peak, discomfort, degradation, ramping and resilience). We tune the $3\times7$ objective weights to
+minimise the ramping of the district's net load, which a deterministic black-box simulator measures. Two phases
+are graded: an \emph{offline} phase with 2,048 measured rows and two submissions, and an \emph{online} phase in which a
+frozen program may call the simulator at most 20 times, sequentially, with up to 50 points per call, using only the
+training rows before its first call.
 
-The project objective is to minimize the district ramping score returned by a deterministic black-box evaluator:
-\begin{equation}
-R(W)=\frac{1}{8}\sum_{w=1}^{8}\sum_{t=2}^{168}|E_{w,t}(W)-E_{w,t-1}(W)|,
-\end{equation}
-where $E_{w,t}$ denotes district net load at hour $t$ of week $w$. Lower $R$ is better. The online stage permits at most 20 sequential evaluator calls, each containing at most 50 candidate weight sets. Before the first call, the policy may use only the 2,048-row training table; subsequent calls may append measured results and retrain the surrogate. This makes duplicate prevention, restart safety, and provenance as important as the choice of model.
-
-Our work separates three questions: whether a surrogate ranks low-score regions accurately, how an optimizer turns its predictions into a diverse batch, and whether the complete policy remains reproducible under the evaluator budget. The report compares these components with the frozen-v3.2 protocol and then records the online result separately from offline predictions.
+Three properties make the online phase hard for standard Bayesian optimisation~\cite{rasmussen,turbo}. The search
+space has 21 weights on three 6-simplices (18 degrees of freedom), the budget is 1,000 points, and the surrogate that would rank
+candidates is unreliable exactly where improvements lie: at the two points we could measure offline, surrogate
+predictions were 8--43~kWh too optimistic (Section~\ref{sec:problem}). On the other hand, every call returns 50 exact
+measurements and is scored by its minimum, so a batch can be designed as a set of experiments rather than a list of
+predicted optima. Our contribution exploits this:
+\begin{itemize}
+\item \textbf{Additive block descent} (Section~\ref{sec:block}). Each candidate except a few combination points
+changes the weights of one building only, so its effect is measured in isolation; the next call combines the buildings' improvements, whose value the
+additive model predicts from measured effects alone, without a fitted model.
+\item \textbf{A controlled evaluation} (Section~\ref{sec:exp}). Complete 20-call rehearsals on the released simulator,
+six seeds for v2, v4 and the ablation and three for v1 and the submitted policy, exact permutation tests, and an
+ablation that removes the block structure and the two rules that depend on it. We also
+report a negative result: evidence-driven slot allocation (Section~\ref{sec:alloc}), which reassigns batch slots by
+measured hit rates, changes where points are spent but not the final $R$.
+\end{itemize}
+The policy is deployed as a deterministic package that recomputes every batch exactly from its log; when the BLAS
+configuration matches, the graded run reproduces its rehearsal.

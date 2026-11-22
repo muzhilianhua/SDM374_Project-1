@@ -1,0 +1,15 @@
+﻿Windows-10-10.0.26200-SP0 | Intel64 Family 6 Model 183 Stepping 1, GenuineIntel | 20 logical CPUs (reference: 12)
+  python        3.11.16    pinned 3.11     ok
+  numpy         1.24.4     pinned 1.24.4   ok
+  scipy         1.10.1     pinned 1.10.1   ok
+  scikit-learn  1.2.2      pinned 1.2.2    ok
+  BLAS: openblas 0.3.21 threads=12 arch=Haswell; openblas 0.3.18 threads=12 arch=Haswell | OPENBLAS_CORETYPE=Haswell OPENBLAS_NUM_THREADS=12 OMP_NUM_THREADS=None MKL_NUM_THREADS=None
+  train.csv sha256 877b5f8ee265… ok (2048 rows)
+  config.json   145106747bf662c4bf0f84f21144abbd0ade6274f285428f520aca7ed6d9d84b
+  train.csv     877b5f8ee265245dd693148a5d7b11f28f48b426e43ac3ac1be8b7a934249023
+  run.py        15e914bb2fdfdc2135c70f9f65bfd24884b97ea098ecc039128f3c7e4c90ee8d
+  policy.py     b8cf4e8a47fb417ff21a033c8d37ac2255d3176d5661989cc1d4e12b1962863c
+  surrogate.py  4c02dace00279d6064c7ced04847a8217fe7c6a481e938ca0d034399826cedc8
+  solver.exe    D:\sdm374-dev-solver-2026\solver.exe
+                sha256 = pinned; usage.count absent
+check: PASS

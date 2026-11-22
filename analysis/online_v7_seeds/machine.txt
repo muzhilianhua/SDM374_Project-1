@@ -1,0 +1,8 @@
+﻿
+
+Name                      : Intel(R) Core(TM) i5-14600KF
+NumberOfLogicalProcessors : 20
+
+
+
+Microsoft Windows 11 专业版 10.0.26200

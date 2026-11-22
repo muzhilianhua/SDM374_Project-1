@@ -1,0 +1,13 @@
+{
+ "call": 14,
+ "previous_manifest_sha256": "7ddace9a8c3e08beed6b902b634f9cd6933a9153e34f896480e81c85fbe637b1",
+ "files": {
+  "canonical.json": "d2fad77f809a251fcbc143a2c884cfc5a3d7b859989707d4707717005c010bff",
+  "inputs.json": "bb53dc392853b23348a5829e5877f22fd29d36a3cabe3111cac07ab6e8941cae",
+  "policy_state.json": "d30b14808b9cab89d32b094743385ce50ee7ad43c172d36f8e427fb0e2a2b1ce",
+  "result.json": "e9dbc5284642a65d9938acbb08f4d98003bf6096a289902f4ae4b11bc00cf252",
+  "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout.txt": "62078b9bea1bc008af9a429d5d33c1311fd9f42d991c0048e4c0f2c46a443121",
+  "weight.json": "ab495b48ac7c2f21bcfc9f005bd771cd2fe2ebe50dbaec638e456d7d219cd1e2"
+ }
+}

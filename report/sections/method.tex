@@ -1,0 +1,79 @@
+\section{Method}
+\label{sec:method}
+The policy sees the 2,048 training rows and the results of its own calls, nothing else. It keeps the incumbent
+$W^\ast$ (the best point measured so far; initially the best training row, which is never resent) and proposes 50 new
+points per call.
+
+\subsection{Additive Block Descent}
+\label{sec:block}
+Let $B_t$ be the \emph{base} of call $t$ and $B_t[b\!\leftarrow\!w]$ the base with block $b$ replaced by $w$. Every
+candidate except the combinations below has this single-block form, so its measured effect
+$\delta_b(w)=R(B_t[b\!\leftarrow\!w])-R(B_t)$ belongs to one building. Each building keeps a table $v_b$ that gives
+every measured block an additive value, anchored at $0$ for that building's block of the best training row; a
+single-block point adds $v_b(w)=v_b(B_t[b])+\delta_b(w)$. Under additivity, $\delta_b$ does not depend on the other
+blocks of the base, so values measured at different bases are comparable, and
+\begin{equation}
+\hat R(w_1,w_2,w_3)=R(W^\ast)+\textstyle\sum_{b=1}^{3}\bigl(v_b(w_b)-v_b(w^\ast_b)\bigr),
+\label{eq:add}
+\end{equation}
+which needs no model fit. The base of the next call is the combination with the lowest $\hat R$ among the incumbent's
+block and the two best improving blocks of each building; up to six further combinations are sent with it. Base and
+combination points change several buildings at once, and they are chosen by \eqref{eq:add}, not by the surrogate. The
+design gives three properties at once: every point is an attributable experiment, one batch advances three
+6-dimensional simplex searches (7 weights each) in parallel, and improvements found in different buildings are composed at the cost of one
+point each. It is a block-coordinate descent~\cite{bcd} that uses additivity as additive Bayesian optimisation
+does~\cite{addgp}, but with measured rather than modelled block effects.
+
+Within a block, candidates come from three slot classes with fixed shares 50/25/25 in v1 and v2: \emph{surrogate} picks, the lowest lower confidence bound
+(mean $-$ std) among 1,500 perturbations, from a ridge trend plus an ARD GP on the 600 rows nearest the base;
+\emph{random} moves at a per-building trust scale that grows by 1.5 after a success and shrinks by 0.6 after a failure,
+within $[0.01,1]$~\cite{turbo}; \emph{fine} moves (small multiplicative steps, zeroing a minor weight, or a tiny share
+between the 0.1\,\% and 10\,\% quantiles of the training weights, $1.6\times10^{-6}$ to $7.2\times10^{-3}$). From
+call 13, half of the fine slots are one-coordinate log-grid \emph{scans}. In calls 1--6, v2 adds three \emph{shift}
+moves per building outside the shares, biased towards objectives whose share correlates negatively with $R$ in the
+training rows; call 1 of v1 and v2 also holds eight multi-building jumps built from surrogate-predicted blocks.
+
+\begin{algorithm}[t]
+\caption{One call of the policy (v4)}
+\label{alg:call}
+\small
+\begin{algorithmic}[1]
+\Require training rows, this run's measured points, seed, call index $t$
+\State $W^\ast\gets$ best measured point; update block values $v_b$ (anchored as above), trust scales, null intervals, hit counts $h_c,n_c$
+\State $B_t\gets\arg\min\hat R$ over combinations of each building's two best improving blocks~\eqref{eq:add}
+\State batch $\gets\{B_t\}\,\cup$ up to six next-best combinations
+\State compute class shares $s_c$ by~\eqref{eq:share}
+\For{building $b=1,2,3$ and class $c$}
+\State draw $s_c n_b$ blocks $w$ of class $c$ from $B_t[b]$ ($n_b$: free slots of $b$, rounded), skipping null intervals and sent points
+\State batch $\gets$ batch $\cup\,\{B_t[b\!\leftarrow\!w]\}$
+\EndFor
+\State send the 50 points; record every $R$ \Comment{randomness seeded by (seed, $t$)}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Evidence-Driven Allocation}
+\label{sec:alloc}
+Fixed class shares spend most slots where little is found: with shares 50/25/25 the surrogate held 44\,\% of the
+points of v2 but hit only 3.5\,\% of the time. Variant v4 makes scans a class of their own from call 9, drops the
+call-1 jumps (no hit in any rehearsal), and adds three rules that use the run's own results only.
+\emph{Plateau filter:} a one-coordinate step that returns exactly $R(B_t)$ ($|\delta|\le10^{-9}$) is null; for each
+building, base block and coordinate, no later step is proposed inside the range spanned by the null steps found so
+far, and a new base block starts with no such range. Scans step just outside this range and re-apply the previous
+call's improving coordinates to the new base.
+\emph{Posterior shares:} with $h_c$ hits (points below their call's base) among $n_c$ points of class $c$ over the last
+four calls,
+\begin{equation}
+s_c=f_c+\Bigl(1-\textstyle\sum_{c'}f_{c'}\Bigr)\frac{r_c}{\sum_{c'}r_{c'}},\qquad r_c=\frac{h_c+1}{n_c+5},
+\label{eq:share}
+\end{equation}
+a Beta(1,4) posterior mean with floors $f_c=0.25$ for surrogate picks and 0.10 otherwise, so no class is starved.
+\emph{No repeats:} a weight vector equal to a training row or a sent point is never proposed, so every call sends 50
+new weight vectors; distinct vectors can still return the same $R$ on a plateau.
+
+\subsection{Deployment}
+\label{sec:deploy}
+The submitted policy (h7) is v4 for calls 1--11; from call 12 it replaces up to 12 fine or zeroing slots by coarser
+single-coordinate, multi-coordinate and restart moves. All randomness derives from (seed, call), and the graded
+package pins and checks the BLAS kernel and thread count, because the GP hyperparameter fit amplifies rounding differences into
+different selections. The package writes each batch to disk before sending it, never resends a charged call, and
+can recompute every batch from its log without the simulator.
