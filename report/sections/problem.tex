@@ -15,7 +15,7 @@ however, lay far from the data, and the two points we could measure there contra
 the baseline optimum was predicted at 75.9 and measured 119.09, and our first submission, the consensus of three tree
 models, was predicted at 107--111 and measured 119.71. Our second submission was therefore a step of length 0.05 from
 the best row, chosen by an additive ARD Gaussian process~\cite{rasmussen} as its most confident direction among
-19,483 random ones. It measured 115.68, below the bar, but its gain ($-0.08$) was 35 times smaller than predicted.
+19,483 random ones. It measured 115.68, 0.08~kWh below the bar, but its gain ($-0.08$) was 35 times smaller than predicted.
 The same holds online: the additive GP predicts the 200 lowest of 6,548 locally measured points ($R\approx105.1$) at
 $124.4\pm8.8$, because its prior mean reverts to the data average beyond about two training spacings.
 
@@ -40,8 +40,9 @@ stacked ensemble & 118.73 & 111.42\\
 \textbf{Structure that measurements reveal.} After the offline phase the simulator was released, and the TA allowed
 local runs to design the policy, provided the submitted code uses only the training rows before its first call. An
 exploratory search (about 22,500 local evaluations, never an input to the policy) showed three regularities. First,
-$R$ is additive over buildings within a basin (interaction error about 0.03~kWh); the training rows already agree, as
-a building-additive model cross-validates as well as an unconstrained one ($R^2$ 0.846 vs.\ 0.844). Second, $R$ is
+$R$ is additive over buildings within a basin, i.e.\ the low-$R$ region around one combination of dominant objectives
+(interaction error about 0.03~kWh). The training rows agree globally, more loosely: a building-additive model
+cross-validates as well as an unconstrained one ($R^2$ 0.846 vs.\ 0.844), so additivity costs almost no fit. Second, $R$ is
 terraced: along one weight it is constant on plateaus 0.02--0.2\,\% of a weight wide, so many moves return exactly
 the same value. Third, tiny weights act as switches: shares of $10^{-5}$ to $3\times10^{-3}$ on otherwise unused
 objectives flip near-tied hourly decisions, and the last gains came from one-coordinate scans. Additivity motivates

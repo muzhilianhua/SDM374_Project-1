@@ -8,17 +8,18 @@ frozen program may call the simulator at most 20 times, sequentially, with up to
 training rows before its first call.
 
 Three properties make the online phase hard for standard Bayesian optimisation~\cite{rasmussen,turbo}. The search
-space is 21-dimensional and simplex-constrained, the budget is 1,000 points, and the surrogate that would rank
+space has 21 weights on three 6-simplices (18 degrees of freedom), the budget is 1,000 points, and the surrogate that would rank
 candidates is unreliable exactly where improvements lie: at the two points we could measure offline, surrogate
 predictions were 8--43~kWh too optimistic (Section~\ref{sec:problem}). On the other hand, every call returns 50 exact
 measurements and is scored by its minimum, so a batch can be designed as a set of experiments rather than a list of
 predicted optima. Our contribution exploits this:
 \begin{itemize}
-\item \textbf{Additive block descent} (Section~\ref{sec:block}). Each candidate changes the weights of one building
-only, so its effect is measured in isolation; the next call combines the buildings' improvements, whose value the
+\item \textbf{Additive block descent} (Section~\ref{sec:block}). Each candidate except a few combination points
+changes the weights of one building only, so its effect is measured in isolation; the next call combines the buildings' improvements, whose value the
 additive model predicts from measured effects alone, without a fitted model.
 \item \textbf{A controlled evaluation} (Section~\ref{sec:exp}). Complete 20-call rehearsals on the released simulator,
-six seeds per main variant, exact permutation tests, and an ablation that removes only the block structure. We also
+six seeds for v2, v4 and the ablation and three for v1 and the submitted policy, exact permutation tests, and an
+ablation that removes the block structure and the two rules that depend on it. We also
 report a negative result: evidence-driven slot allocation (Section~\ref{sec:alloc}), which reassigns batch slots by
 measured hit rates, changes where points are spent but not the final $R$.
 \end{itemize}

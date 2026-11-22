@@ -22,14 +22,16 @@
 We tune the 21 objective weights of three building energy controllers to minimise the ramping $R$ of the
 district's net load, measured by a deterministic simulator, with 20 sequential calls of 50 points and only 2,048
 training rows before the first call. Surrogate optima away from the data proved 8--43~kWh too optimistic, so we let
-measurements, not predictions, drive the search. In \emph{additive block descent}, each candidate changes one
-building, which makes every point an experiment with an attributable effect, and the next call combines the
-buildings' improvements at a value predicted from those measured effects alone. In complete rehearsals on the real
-simulator, combinations account for 33\,\% of the descent, with an additive prediction error of 0.17~kWh against 4.9
-for surrogate picks. Removing the block structure and keeping everything else raises the mean final $R$ by 1.66~kWh
-over six seeds ($p=0.078$; $p=0.024$ against all 15 block-descent runs). Reallocating batch slots by measured hit
-rates changed where points were spent but not the final $R$ ($-0.29$~kWh, $p=0.76$). The submitted policy reaches
-$R=102.81$, 11.1\,\% below our offline result, in a deterministic package that reproduces its rehearsal exactly.
+measured block effects steer the search and use the surrogate only to propose candidates. In \emph{additive block
+descent}, every candidate except a few combination points changes one building, which makes each point an
+experiment with an attributable effect; the next call combines the buildings' improvements at a value predicted
+from those measured effects alone. In complete rehearsals on the real simulator, combinations account for 33\,\% of
+the descent, with an additive prediction error of 0.17~kWh against 4.9 for surrogate picks. Removing the block
+structure, together with the two rules that need single-block results, raises the mean final $R$ by 1.65~kWh over
+six seeds ($p=0.078$, not significant at 5\,\%); against all 15 block-descent runs pooled, the gap is 1.40~kWh
+($p=0.024$, a post hoc test). Reallocating batch slots by measured hit rates changed where points were spent but not
+the final $R$ ($-0.28$~kWh, $p=0.76$). The submitted policy reaches $R=102.81$ on its submitted seed (mean 105.50 over
+three seeds), 11.1\,\% below our offline result; its package recomputes all 20 submitted batches exactly from its log.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -43,26 +45,31 @@ black-box optimisation, batch Bayesian optimisation, block coordinate descent, b
 
 \section{Discussion and Conclusion}
 \label{sec:discussion}
-Block descent replaces a prediction by a measurement where the prediction was weakest. It needs no model to value a
-combination, because additivity, checked on the training rows before the first call, turns measured single-block
-effects into an almost exact forecast. The allocation rules show the limit of the same idea: measured hit rates moved
-slots to scans as intended, but the hits they bought were too small to change the final $R$ within 20 calls. The
-method depends not on this simulator but on two properties: the input splits into weakly interacting blocks, and
-each evaluation round is a batch.
+Block descent replaces a prediction by a measurement where the prediction was weakest. It needs no fitted model to
+value a combination: in the low-$R$ region where the search operates, additivity turns measured single-block effects
+into a close forecast (interaction error about 0.03~kWh, combination error 0.17~kWh). The allocation rules show the
+limit of the same idea: measured hit rates moved slots to scans as intended, but the hits they bought were too small
+to change the final $R$ within 20 calls. The method depends not on this simulator but on two properties: the input
+splits into weakly interacting blocks, and each evaluation round is a batch.
 
 \textbf{Limits.} (i) Seeds dominate variants: v4's six seeds span 4.8~kWh, so six seeds per variant resolve only
-large differences, the block ablation sits at the margin ($p=0.078$), and the submitted seed's 102.81 should not be
-read as the expected score (v4 mean 106.19). An independent additive-GP batch optimisation matched v4's mean in its
-single run, so we claim that the block structure helps this policy, not that block descent beats a well-tuned
-Bayesian optimiser. (ii) All comparisons use one simulator and one problem; the variants and the seed were chosen on
-local runs, which the TA allowed, but the submitted code contains no locally measured point, value or weight.
-(iii) The graded result depends on the course computer emitting the same batches; the package checks the BLAS
-configuration but cannot enforce it.
+large differences. The evidence favours the block structure but does not establish it at the 5\,\% level: the
+primary ablation gives $p=0.078$, and the two comparisons below 0.05 (v2 and the pooled runs against v4j) were chosen
+after seeing the data. The submitted seed's 102.81 should not be read as the expected score (h7 mean 105.50, v4 mean
+106.19). (ii) The ablation removes the block structure together with the plateau filter and the re-application of
+improving coordinates, which need it; the v2 comparison separates the blocks from those two rules but not from the
+allocation. An independent additive-GP batch optimisation matched v4's mean in its single run, so we do not claim
+that block descent beats a well-tuned Bayesian optimiser. (iii) All comparisons use one simulator and one problem; the
+variants and the seed were chosen on local runs, which the TA allowed, but the submitted code contains no locally
+measured point, value or weight. The graded result depends on the course computer emitting the same batches; the
+package checks the BLAS configuration but cannot guarantee that the grading machine's hardware and libraries round
+identically.
 
-\textbf{Conclusion.} Under a 1,000-point budget the policy lowers $R$ from the best training row (115.76) to
-103.3--108.0 across v4's seeds, against 115.68 for our best offline submission and 119.09 for the course baseline.
-The design principle that carries over is to make each point of a batch an experiment whose outcome can be
-attributed to one block and reused in later combinations.
+\textbf{Conclusion.} Under a 1,000-point budget, the submitted policy lowers $R$ from the best training row (115.76)
+to a mean of 105.50 over three seeds (102.81 on the submitted one), and v4 reaches 103.3--108.0 over six seeds,
+against 115.68 for our best offline submission and 119.09 for the course baseline. The design principle that carries
+over is to make each point of a batch an experiment whose outcome can be attributed to one block and reused in later
+combinations.
 
 \bibliographystyle{IEEEtran}
 \begin{thebibliography}{9}
