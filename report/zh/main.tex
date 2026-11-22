@@ -1,0 +1,83 @@
+% Chinese backup of ../main.tex: same content, numbers and figures. Build with XeLaTeX:
+%   cd report/zh && latexmk -xelatex main.tex
+% Keep it in step with the English sources whenever those change.
+\documentclass[conference]{IEEEtran}
+\usepackage[UTF8,scheme=plain,fontset=mac]{ctex}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\graphicspath{{../}}
+\renewcommand{\abstractname}{摘要}
+\renewcommand{\refname}{参考文献}
+\renewcommand{\tablename}{表}
+\renewcommand{\figurename}{图}
+\renewcommand{\IEEEkeywordsname}{关键词}
+\floatname{algorithm}{算法}
+\algrenewcommand\algorithmicrequire{\textbf{输入：}}
+\algrenewcommand\algorithmicfor{\textbf{对}}
+\algrenewcommand\algorithmicdo{\textbf{执行}}
+\algrenewcommand\algorithmicend{\textbf{结束}}
+\linespread{1.08}
+% Mark text still to be written; none may remain at submission.
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+
+\title{基于实测加性的分块下降：\\二十次调用下的批量黑箱调参}
+
+\author{\IEEEauthorblockN{张子木、刘润泽、艾子齐、胡馨澜、武韵扬}
+\IEEEauthorblockA{SDM374 机器学习系统设计，南方科技大学}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+我们调节三栋建筑能源控制器的 21 个目标权重，以最小化区域净负荷的爬坡量 $R$；$R$ 由一个确定性仿真器测得，预算为 20 次
+顺序调用、每次 50 个点，且首次调用前只能使用 2,048 行训练数据。远离数据处的代理模型最优解偏乐观 8--43~kWh，因此我们让实测
+而不是预测来驱动搜索。在\emph{加性分块下降}中，每个候选只改动一栋建筑，使每个点都成为效果可归因的实验；下一次调用把各
+建筑的改进组合起来，组合的值仅凭这些实测效果来预测。在真实仿真器上的完整预演中，组合贡献了 33\,\% 的下降，其加性预测误差
+为 0.17~kWh，而代理模型挑选点的误差为 4.9。去掉分块结构、其余不变，平均最终 $R$ 在六个种子上升高 1.66~kWh（$p=0.078$；与全部
+15 次分块下降运行相比 $p=0.024$）。按实测命中率重新分配批次名额改变了点的去向，却没有改变最终 $R$（$-0.29$~kWh，$p=0.76$）。
+提交的策略达到 $R=102.81$，比我们的离线结果低 11.1\,\%，其确定性运行包能精确复现预演。
+\end{abstract}
+
+\begin{IEEEkeywords}
+黑箱优化，批量贝叶斯优化，分块坐标下降，建筑能源管理
+\end{IEEEkeywords}
+
+\input{sections/introduction}
+\input{sections/problem}
+\input{sections/method}
+\input{sections/experiments}
+
+\section{讨论与结论}
+\label{sec:discussion}
+分块下降在预测最弱的地方用实测替代了预测。它无需模型就能评估一个组合，因为加性（首次调用前已在训练行上检验）把实测的
+单块效果变成了几乎精确的预报。分配规则显示了同一思路的边界：按实测命中率，名额如设计那样转向了扫描，但换来的命中太小，
+在 20 次调用内改变不了最终 $R$。该方法不依赖于这个仿真器，而依赖两条性质：输入可以分成相互作用较弱的块，且每轮评估是
+一个批次。
+
+\textbf{局限。} (i) 种子的影响压过变体：v4 的六个种子相差 4.8~kWh，因此每个变体六个种子只能分辨较大的差异，分块消融正处在
+显著性边缘（$p=0.078$），提交种子的 102.81 也不应被当作预期成绩（v4 平均 106.19）。一个独立的加性 GP 整批优化在其唯一一次
+运行中与 v4 的均值持平，因此我们的结论是分块结构对这个策略有效，而不是分块下降优于调好的贝叶斯优化器。(ii) 所有比较都只用了
+一个仿真器和一个问题；变体和种子是在本地运行上选定的，助教确认这是允许的，但提交的代码不含任何本地测得的点、数值或权重。
+(iii) 评分结果取决于课程电脑能否发出相同的批次；运行包会检查 BLAS 配置，但无法强制保证。
+
+\textbf{结论。} 在 1,000 个点的预算下，该策略在 v4 的不同种子上把 $R$ 从最佳训练行（115.76）降到 103.3--108.0，而我们最好的
+离线提交为 115.68，课程基线为 119.09。可以推广的设计原则是：让批次中的每个点都成为结果可归因于单个块、并能在之后的组合
+中复用的实验。
+
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{9}
+\bibitem{rasmussen} C.~E. Rasmussen and C.~K.~I. Williams, \emph{Gaussian Processes for Machine Learning}. MIT Press, 2006.
+\bibitem{turbo} D.~Eriksson, M.~Pearce, J.~Gardner, R.~D. Turner, and M.~Poloczek, ``Scalable global optimization via local Bayesian optimization,'' in \emph{NeurIPS}, 2019.
+\bibitem{addgp} K.~Kandasamy, J.~Schneider, and B.~P{\'o}czos, ``High dimensional Bayesian optimisation and bandits via additive models,'' in \emph{ICML}, 2015.
+\bibitem{bcd} S.~J. Wright, ``Coordinate descent algorithms,'' \emph{Mathematical Programming}, vol.~151, no.~1, pp.~3--34, 2015.
+\end{thebibliography}
+\end{document}

@@ -5,11 +5,12 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 % Mark text still to be written; none may remain at submission.
 \newcommand{\todo}[1]{\textcolor{red}{[#1]}}
 
-\title{Additive Block Descent with Evidence-Driven Slots:\\
-Twenty Calls to Tune Three Building Energy Controllers}
+\title{Measured-Additive Block Descent for Twenty-Call Batch Black-Box Tuning}
 
 \author{\IEEEauthorblockN{Zimu Zhang, Runze Liu, Ziqi Ai, Xinlan Hu, Yunyang Wu}
 \IEEEauthorblockA{SDM374 Machine Learning System Design, Southern University of Science and Technology}}
@@ -19,44 +20,49 @@ Twenty Calls to Tune Three Building Energy Controllers}
 
 \begin{abstract}
 We tune the 21 objective weights of three building energy controllers to minimise the ramping $R$ of the
-district's net load, measured by a deterministic black-box simulator. Offline, surrogate models trained on 2,048
-rows and searched far from the data were optimistic by 8--43~kWh at the two points we could check, so our best
-offline submission was a short, surrogate-vetted step from the best training row ($R=115.68$, below the course
-bar of 115.76). Online, with at most 20 sequential calls of 50 points and only the training rows before the first
-call, we replace a global surrogate search by an additive block descent: each candidate changes one building, the
-next call combines the buildings' improvements, and batch slots are reallocated to the moves that actually lowered
-$R$. On the real simulator, all 16 rehearsal runs of the policy family beat our offline result in the first call; the
-submitted hybrid policy reaches $R=102.81$ in 1,000 points with the submitted seed, 11.1\,\% below our offline result,
-and 105.50 on average over three seeds. The graded package is
-deterministic, crash-safe and reproduces every recorded batch bit for bit.
+district's net load, measured by a deterministic simulator, with 20 sequential calls of 50 points and only 2,048
+training rows before the first call. Surrogate optima away from the data proved 8--43~kWh too optimistic, so we let
+measurements, not predictions, drive the search. In \emph{additive block descent}, each candidate changes one
+building, which makes every point an experiment with an attributable effect, and the next call combines the
+buildings' improvements at a value predicted from those measured effects alone. In complete rehearsals on the real
+simulator, combinations account for 33\,\% of the descent, with an additive prediction error of 0.17~kWh against 4.9
+for surrogate picks. Removing the block structure and keeping everything else raises the mean final $R$ by 1.66~kWh
+over six seeds ($p=0.078$; $p=0.024$ against all 15 block-descent runs). Reallocating batch slots by measured hit
+rates changed where points were spent but not the final $R$ ($-0.29$~kWh, $p=0.76$). The submitted policy reaches
+$R=102.81$, 11.1\,\% below our offline result, in a deterministic package that reproduces its rehearsal exactly.
 \end{abstract}
 
+\begin{IEEEkeywords}
+black-box optimisation, batch Bayesian optimisation, block coordinate descent, building energy management
+\end{IEEEkeywords}
+
 \input{sections/introduction}
-\input{sections/offline}
-\input{sections/landscape}
-\input{sections/strategy}
-\input{sections/online_results}
-\input{sections/runner}
+\input{sections/problem}
+\input{sections/method}
+\input{sections/experiments}
 
 \section{Discussion and Conclusion}
 \label{sec:discussion}
-\textbf{What worked.} The decisive step was not a better surrogate but a search structure that the measurements
-supported: additivity over buildings turned one 21-dimensional problem into three 7-dimensional ones advanced in
-parallel inside every batch, and per-move hit rates told the policy where its 50 slots paid off. The surrogate
-remained useful as one move among several, not as the arbiter of the batch.
+Block descent replaces a prediction by a measurement where the prediction was weakest. It needs no model to value a
+combination, because additivity, checked on the training rows before the first call, turns measured single-block
+effects into an almost exact forecast. The allocation rules show the limit of the same idea: measured hit rates moved
+slots to scans as intended, but the hits they bought were too small to change the final $R$ within 20 calls. The
+method depends not on this simulator but on two properties: the input splits into weakly interacting blocks, and
+each evaluation round is a batch.
 
-\textbf{Limits.} (i) Every policy comparison uses at most three seeds, while one policy's seeds span up to 4.8~kWh;
-no variant is established as better than v4. h7 gained 0.47 over v4 on the seed used to design it, but only 0.09 on
-average over three paired seeds, and lost on one (Section~\ref{sec:results}). (ii) The seed and the policy were chosen on local runs of the released simulator, which
-the TA confirmed as allowed; the submitted code contains no locally measured point, value or weight, but the
-expected graded score is the seed spread, not the best seed. (iii) Bit-for-bit reproduction across machines depends on
-the BLAS kernel and thread count; the package pins and checks both, but the course computer's result was not
-available at the time of writing.
+\textbf{Limits.} (i) Seeds dominate variants: v4's six seeds span 4.8~kWh, so six seeds per variant resolve only
+large differences, the block ablation sits at the margin ($p=0.078$), and the submitted seed's 102.81 should not be
+read as the expected score (v4 mean 106.19). An independent additive-GP batch optimisation matched v4's mean in its
+single run, so we claim that the block structure helps this policy, not that block descent beats a well-tuned
+Bayesian optimiser. (ii) All comparisons use one simulator and one problem; the variants and the seed were chosen on
+local runs, which the TA allowed, but the submitted code contains no locally measured point, value or weight.
+(iii) The graded result depends on the course computer emitting the same batches; the package checks the BLAS
+configuration but cannot enforce it.
 
-\textbf{Conclusion.} Under a 1,000-point budget the policy family lowers $R$ from the best training row (115.76) to
-102.8--108.0 on the real simulator, against 115.68 for our best offline submission and 119.09 for the course
-baseline. The lesson that carries over is to spend the budget where measurements, not model predictions, show
-progress, and to make the run that is graded the run that was rehearsed.
+\textbf{Conclusion.} Under a 1,000-point budget the policy lowers $R$ from the best training row (115.76) to
+103.3--108.0 across v4's seeds, against 115.68 for our best offline submission and 119.09 for the course baseline.
+The design principle that carries over is to make each point of a batch an experiment whose outcome can be
+attributed to one block and reused in later combinations.
 
 \bibliographystyle{IEEEtran}
 \begin{thebibliography}{9}
@@ -64,6 +70,5 @@ progress, and to make the run that is graded the run that was rehearsed.
 \bibitem{turbo} D.~Eriksson, M.~Pearce, J.~Gardner, R.~D. Turner, and M.~Poloczek, ``Scalable global optimization via local Bayesian optimization,'' in \emph{NeurIPS}, 2019.
 \bibitem{addgp} K.~Kandasamy, J.~Schneider, and B.~P{\'o}czos, ``High dimensional Bayesian optimisation and bandits via additive models,'' in \emph{ICML}, 2015.
 \bibitem{bcd} S.~J. Wright, ``Coordinate descent algorithms,'' \emph{Mathematical Programming}, vol.~151, no.~1, pp.~3--34, 2015.
-\bibitem{repo} SDM374 Project~1 team repository: decisions log (\texttt{docs/decisions.md}), studies under \texttt{analysis/}, graded package \texttt{submission/}, 2026.
 \end{thebibliography}
 \end{document}

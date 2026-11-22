@@ -1,29 +1,25 @@
 \section{Introduction}
 \label{sec:intro}
-Each of three buildings on a shared microgrid runs an energy controller that trades off seven objectives: cost,
-carbon, peak, discomfort, degradation, ramping and resilience. A candidate $W\in\mathbb{R}^{3\times7}$ holds one
-non-negative weight vector per building; we normalise each row to sum to one. The course simulator returns the
-district ramping
-\begin{equation}
-R(W)=\frac{1}{8}\sum_{w=1}^{8}\sum_{t=2}^{168}\bigl|E_{w,t}(W)-E_{w,t-1}(W)\bigr|\ \text{kWh},
-\label{eq:R}
-\end{equation}
-where $E_{w,t}$ is the net load in hour $t$ of week $w$; lower is better. The simulator is deterministic.
+Three buildings on a shared microgrid each run an energy controller that trades off seven objectives (cost,
+carbon, peak, discomfort, degradation, ramping and resilience). We tune the $3\times7$ objective weights to
+minimise the ramping of the district's net load, which a deterministic black-box simulator measures. Two phases
+are graded: an \emph{offline} phase with 2,048 measured rows and two submissions, and an \emph{online} phase in which a
+frozen program may call the simulator at most 20 times, sequentially, with up to 50 points per call, using only the
+training rows before its first call.
 
-The project has two phases. \emph{Offline}, we fit surrogates $R\approx M(W)$ on 2,048 measured rows (best row
-\texttt{p01969}, $R=115.76$) and submit two candidates, one after the other; the bar is to beat 115.76, which also
-beats the course quadratic-ridge baseline (its $W^\ast$ measured 119.09). \emph{Online}, a frozen program may call the
-simulator at most 20 times, sequentially, with up to 50 weight sets per call; a call scores the minimum $R$ of its
-batch and the grade takes the best call. Before its first call the program may use only the training rows. The online
-score must beat our own offline result, and teams are ranked by it.
-
-The two phases reward different things. Offline, one prediction has to be right; online, one point in fifty has to be
-low, and every call returns 50 exact measurements. Our contributions are:
+Three properties make the online phase hard for standard Bayesian optimisation~\cite{rasmussen,turbo}. The search
+space is 21-dimensional and simplex-constrained, the budget is 1,000 points, and the surrogate that would rank
+candidates is unreliable exactly where improvements lie: at the two points we could measure offline, surrogate
+predictions were 8--43~kWh too optimistic (Section~\ref{sec:problem}). On the other hand, every call returns 50 exact
+measurements and is scored by its minimum, so a batch can be designed as a set of experiments rather than a list of
+predicted optima. Our contribution exploits this:
 \begin{itemize}
-\item an account, with real measurements, of why surrogate optima far from the data fail on this problem and what a
-safe offline step looks like (Sections~\ref{sec:offline}--\ref{sec:landscape});
-\item an online policy that exploits measured additivity over buildings and reallocates batch slots by observed hit
-rates, with a hybrid variant that replaces only the slots that yield nothing (Section~\ref{sec:strategy});
-\item a rehearsal protocol on the real simulator with several seeds, and a graded package that is deterministic,
-crash-safe and audit-ready (Sections~\ref{sec:results}--\ref{sec:runner}).
+\item \textbf{Additive block descent} (Section~\ref{sec:block}). Each candidate changes the weights of one building
+only, so its effect is measured in isolation; the next call combines the buildings' improvements, whose value the
+additive model predicts from measured effects alone, without a fitted model.
+\item \textbf{A controlled evaluation} (Section~\ref{sec:exp}). Complete 20-call rehearsals on the released simulator,
+six seeds per main variant, exact permutation tests, and an ablation that removes only the block structure. We also
+report a negative result: evidence-driven slot allocation (Section~\ref{sec:alloc}), which reassigns batch slots by
+measured hit rates, changes where points are spent but not the final $R$.
 \end{itemize}
+The policy is deployed as a deterministic package whose graded run equals its rehearsal.
